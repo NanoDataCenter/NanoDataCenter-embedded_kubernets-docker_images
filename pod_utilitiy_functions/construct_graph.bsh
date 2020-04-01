@@ -1,0 +1,5 @@
+
+cd construct_graph
+ls
+python construct_graph_py3.py
+

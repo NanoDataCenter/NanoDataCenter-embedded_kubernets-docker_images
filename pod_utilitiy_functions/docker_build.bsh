@@ -1,0 +1,1 @@
+docker build --tag nanodatacenter/pod_utility_function .
