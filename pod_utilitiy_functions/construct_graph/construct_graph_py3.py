@@ -86,14 +86,13 @@ if __name__ == "__main__" :
    cd.add_job_queue("CLOUD_JOB_SERVER",2048,forward=False)
    cd.add_hash("CLOUD_SUB_EVENTS")
    cd.close_package_contruction()
-      
-
+   
    bc.add_header_node("CLOUD_SERVICE_HOST_INTERFACE")
-   bc.add_info_node( "HOST_INFORMATION","HOST_INFORMATION",properties={"host":"192.168.1.41" ,"port": 6379, "key_data_base": 3, "key":"_UPLOAD_QUEUE_" ,"depth":1024} )
+   bc.add_info_node( "HOST_INFORMATION","HOST_INFORMATION",properties={"host":"192.168.1.41" ,"port": 6379, "key_data_base": 6, "key":"_UPLOAD_QUEUE_" ,"depth":1024} )
    bc.end_header_node("CLOUD_SERVICE_HOST_INTERFACE")
    bc.end_header_node("CLOUD_SERVICE_QUEUE")
 
-   construct_processor(name="block_chain_server",containers = ["monitor_redis"])
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","log_stream_events"])
    #
    #
    #  Add other processes if desired
