@@ -75,8 +75,10 @@ def valid_data( input_data):
 
    if "site" in input_data:
        if "name" in input_data:
-          if "data" in input_data:
-              return True
+          if "time_stamp" in input_data:
+             if "key" in input_data:
+                if "data" in input_data:
+                   return True
    return False              
 
 if __name__ == "__main__":

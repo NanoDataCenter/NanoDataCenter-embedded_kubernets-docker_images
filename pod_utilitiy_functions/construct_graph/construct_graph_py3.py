@@ -92,7 +92,7 @@ if __name__ == "__main__" :
    bc.end_header_node("CLOUD_SERVICE_HOST_INTERFACE")
    bc.end_header_node("CLOUD_SERVICE_QUEUE")
 
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","log_stream_events"])
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","log_stream_events","stream_events_to_cloud"])
    #
    #
    #  Add other processes if desired

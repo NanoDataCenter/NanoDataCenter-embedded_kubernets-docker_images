@@ -35,7 +35,7 @@ class Redis_RPC_Client(object):
         request["method"] = method
         request["params"] = parameters
         request["id"]   = str(uuid.uuid1())    
-        request_msg = msgpack.packb( request,use_bin_type = True )
+        request_msg = msgpack.packb( request )
         self.redis_handle.delete(request["id"] )
         self.redis_handle.lpush(self.rpc_queue, request_msg)
         data =  self.redis_handle.brpop(request["id"],timeout = timeout )
@@ -43,7 +43,7 @@ class Redis_RPC_Client(object):
         self.redis_handle.delete(request["id"] )
         if data == None:
             raise ValueError("No Communication with Modbus Server")
-        response = msgpack.unpackb(data[1],encoding='utf-8')
+        response = msgpack.unpackb(data[1])
         
         return response
                 
@@ -74,7 +74,7 @@ class RPC_Server(object):
                     if self.timeout_function != None:
                         self.timeout_function()
                else:
-                   input = msgpack.unpackb(input[1],encoding='utf-8')  # 0 parameter is the queue
+                   input = msgpack.unpackb(input[1])  # 0 parameter is the queue
                    
                    self.process_message(  input )
                        
@@ -88,7 +88,7 @@ class RPC_Server(object):
         params  = input["params"]
         response = self.handler[method](params)
        
-        self.redis_handle.lpush( id, msgpack.packb(response,use_bin_type = True))        
+        self.redis_handle.lpush( id, msgpack.packb(response))        
         self.redis_handle.expire(id, 30)
 
 class String_Field(object):
@@ -262,7 +262,7 @@ class Redis_Hash_Dictionary( object ):
       
    def hset( self, field, data ):
    
-      pack_data = msgpack.packb(data,use_bin_type = True )
+      pack_data = msgpack.packb(data )
       
       if self.redis_handle.hget(self.key,field)== pack_data: # donot propagte identical values
          return
@@ -285,7 +285,7 @@ class Redis_Hash_Dictionary( object ):
       if pack_data == None:
          return None
       
-      return  msgpack.unpackb(pack_data,encoding='utf-8')
+      return  msgpack.unpackb(pack_data)
       
 
    def hgetall( self ):
@@ -337,11 +337,11 @@ class Single_Element(object):
       if pack_data == None:
          return None
       
-      return  msgpack.unpackb(pack_data,encoding='utf-8')
+      return  msgpack.unpackb(pack_data)
   
    def set( self, data ):
    
-      pack_data = msgpack.packb(data,use_bin_type = True )
+      pack_data = msgpack.packb(data )
       
       if self.redis_handle.get(self.key)== pack_data: # donot propagte identical values
          return
@@ -385,7 +385,7 @@ class Job_Queue_Client( object ):
          return None
       return_value = []
       for pack_data in list_data:
-        return_value.append(msgpack.unpackb(pack_data,encoding='utf-8'))
+        return_value.append(msgpack.unpackb(pack_data))
       return return_value
       
    def pop(self):
@@ -399,9 +399,9 @@ class Job_Queue_Client( object ):
           return False, None
        else:
          
-          return True,msgpack.unpackb(pack_data,encoding='utf-8')     
+          return True,msgpack.unpackb(pack_data)     
    def push(self,data):
-       pack_data =  msgpack.packb(data,use_bin_type = True )
+       pack_data =  msgpack.packb(data )
        self.redis_handle.lpush(self.key,pack_data)
        self.redis_handle.ltrim(self.key,0,self.depth)
        if self.cloud_handler != None:
@@ -453,7 +453,7 @@ class Job_Queue_Server( object ):
           return False, None
        else:
          
-          return True,msgpack.unpackb(pack_data,encoding='utf-8')
+          return True,msgpack.unpackb(pack_data)
           
    def show_next_job(self):
        pack_data = self.redis_handle.lindex(self.key, -1)
@@ -461,10 +461,9 @@ class Job_Queue_Server( object ):
           return False, None
        else:
           
-          return True, msgpack.unpackb(pack_data,encoding='utf-8')
-
+          return True, msgpack.unpackb(pack_data)
    def push_front(self,data):
-       pack_data =  msgpack.packb(data,use_bin_type = True )
+       pack_data =  msgpack.packb(data )
        self.redis_handle.rpush(self.key,pack_data)
        self.redis_handle.ltrim(self.key,0,self.depth)
        if self.cloud_handler != None:
@@ -493,7 +492,7 @@ class Stream_List_Writer(object):
        assert(type(data)== type(dict()) )
        if "timestamp" not in data:
           data["timestamp"] = time.time()
-       pack_data =  msgpack.packb(data,use_bin_type = True )
+       pack_data =  msgpack.packb(data )
 
        self.redis_handle.lpush(self.key,pack_data)
        self.redis_handle.ltrim(self.key,0,self.depth)
@@ -523,7 +522,7 @@ class Stream_List_Reader(object):
        
        for pack_data in pack_list:
           
-          data = msgpack.unpackb(pack_data,encoding='utf-8')
+          data = msgpack.unpackb(pack_data)
           return_value.append(data)
        return return_value
 
@@ -578,7 +577,7 @@ class Stream_Redis_Writer(Redis_Stream):
        store_dictionary = {}
        if len(list(data.keys())) == 0:
            return
-       packed_data  =msgpack.packb(data,use_bin_type = True )
+       packed_data  =msgpack.packb(data )
        out_data = {}
        out_data["data"] = packed_data
        self.xadd(key = self.key, max_len=self.depth,id=id,data_dict=out_data )
@@ -678,7 +677,7 @@ class Stream_Redis_Writer(Redis_Stream):
        
        if len(list(data.keys())) == 0:
            return
-       packed_data  =msgpack.packb(data,use_bin_type = True )
+       packed_data  =msgpack.packb(data )
        out_data = {}
        out_data["data"] = packed_data
        

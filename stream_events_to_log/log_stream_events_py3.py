@@ -1,6 +1,9 @@
 
 import msgpack
-
+import redis
+import base64
+from  utilities.web3_top_class import Web_Class_IPC
+from  utilities.event_listener_top_class import Event_Listner_Class_IPC
 
 class Local_Queue_Server( object ):
  
@@ -20,7 +23,16 @@ class Local_Queue_Server( object ):
            self.redis_handle.lset(self.key, index,"__#####__")
            self.redis_handle.lrem(self.key, 1,"__#####__") 
            
-                
+   def list_range(self,start=0,stop=-1):
+      
+      list_data =  self.redis_handle.lrange(self.key,start,stop)
+     
+      if list_data == None:
+         return None
+      return_value = []
+      for pack_data in list_data:
+        return_value.append(msgpack.unpackb(pack_data))
+      return return_value                
 
  
    def pop(self):
@@ -32,7 +44,7 @@ class Local_Queue_Server( object ):
           return False, None
        else:
          
-          return True,msgpack.unpackb(pack_data,encoding='utf-8')
+          return True,msgpack.unpackb(pack_data)
           
    def show_next_job(self):
        pack_data = self.redis_handle.lindex(self.key, -1)
@@ -40,10 +52,10 @@ class Local_Queue_Server( object ):
           return False, None
        else:
           
-          return True, msgpack.unpackb(pack_data,encoding='utf-8')
+          return True, msgpack.unpackb(pack_data)
 
    def push_front(self,data):
-       pack_data =  msgpack.packb(data,use_bin_type = True )
+       pack_data =  msgpack.packb(data )
        self.redis_handle.rpush(self.key,pack_data)
        self.redis_handle.ltrim(self.key,0,self.depth)
   
@@ -55,20 +67,59 @@ class Local_Queue_Server( object ):
 
 
 
-
 class Stream_Event_Monitor(object):
 
-   def __init__(self,redis_handle,cloud_log_stream ):
-       self.stream_server = Local_Queue_Server(redis_handle,cloud_log_stream["key"])
-       print(self.stream_server.length())
+   def __init__(self,redis_handle,key,w3,el ):
+       self.stream_server = Local_Queue_Server(redis_handle,key)
+       self.w3  = w3
+       self.el = el
+       self.el_filter = self.el.construct_loop_filter("EventHandler" )
+       self.event_object = self.w3.get_contract("EventHandler")
+       #print(self.el.get_all_entries("EventHandler"))
+       #self.decode_data(self.el.get_all_entries("EventHandler"))
+       #exit()
        
    def log_data(self,*parameters):
-       pass      
+       print(self.stream_server.length())
+       try:       
+          if self.stream_server.length() != 0:
+              data = self.stream_server.show_next_job()
+              self.log_to_block_chain(data)
+       except:
+          raise
+          print("exception")           
  
+   def log_to_block_chain(self,data):
+       print("data",data)
+       data = data[1]
+       print("data",data)
+       data =data[1]
+       print("data",data)
+       site = data["site"]
+       name = data['name']
+       pack_data = msgpack.packb(data)  #json.dumps(data)
+       pack_data = base64.b64encode(pack_data).decode()
+       parameters = [name,site,pack_data]
+       #transmit_event( string memory event_id, string memory sub_event, string memory data)   
+       tx_reciept = self.w3.transact_contract_data(self.event_object, "transmit_event" ,parameters)
+       print(tx_reciept)
+       raise
        
- 
+   def decode_data(self,data):  # make sure data can be decode from block chain
+       for  i in data:
+           #print("i",type(i),i)
+           #print(i['args'])
+           compress = i['args']["data"]
+           print("compress",compress)
+           try:
+               decode = base64.b64decode(compress.encode())
+               print("decode",type(decode),decode)
+               print("msg pack ", msgpack.unpackb(decode))
+           except:
+              print("bad data",i['args']["data"])
+
        
-def construct_stream_server_instance( qs, site_data ):
+def construct_stream_server_instance( qs, site_data,w3,el ):
           
     
     query_list = []
@@ -78,8 +129,10 @@ def construct_stream_server_instance( qs, site_data ):
     node_sets,node_list = qs.match_list(query_list)                                       
     node_data = node_list[0]
     
-    stream_event_monitor = Stream_Event_Monitor(qs.get_redis_data_handle() , node_data )
-    exit()
+
+    redis_handle = redis.StrictRedis( host = node_data["host"] , port=node_data["port"], db=node_data['key_data_base'] )
+    stream_event_monitor = Stream_Event_Monitor(redis_handle, node_data["key"],w3,el )
+    
     
     
   
@@ -128,15 +181,22 @@ if __name__ == "__main__":
     data = file_handle.read()
     file_handle.close()
     redis_site = json.loads(data)
-    print("made it here 1")
+   
     #
     # Setup handle
     # open data stores instance
    
     qs = Query_Support( redis_site )
     
-    stream_event_monitor = construct_stream_server_instance(qs, redis_site )
-    print("made it here 2")
+    
+    
+    redis_contract_handle = redis.StrictRedis( host = redis_site["host"] , port=redis_site["port"], db=redis_site["redis_contract_db"] )
+    ipc_socket = "/ipc/geth.ipc"
+    w3 = Web_Class_IPC(ipc_socket,redis_contract_handle)
+    el = Event_Listner_Class_IPC(ipc_socket,redis_contract_handle)
+    stream_event_monitor = construct_stream_server_instance(qs, redis_site,w3,el )
+    
+    
     #
     # Adding chains
     #
@@ -145,5 +205,5 @@ if __name__ == "__main__":
     #
     # Executing chains
     #
-    print("made it here 3")
+    
     cf.execute()
