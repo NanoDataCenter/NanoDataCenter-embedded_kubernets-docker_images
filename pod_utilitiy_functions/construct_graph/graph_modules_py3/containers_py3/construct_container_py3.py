@@ -10,7 +10,7 @@ class Construct_Containers(object):
          if i == "monitor_redis":
              print(i)
              Redis_Monitor_Container(bc,cd,i)
-         elif i == "log_stream_events":
+         elif i == "stream_events_to_log":
              print(i)
              LOG_STREAM_EVENTS_CONTAINER(bc,cd,i)     
          elif i == "stream_events_to_cloud":

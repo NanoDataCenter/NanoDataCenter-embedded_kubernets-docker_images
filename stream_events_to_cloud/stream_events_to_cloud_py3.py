@@ -157,8 +157,6 @@ if __name__ == "__main__":
            data = local_queue.show_next_job()
            print("data",data[1])
            if valid_data(data[1]):
-              
-              print(remote_client.length())
               remote_client.push(data)
            else:
               print("invalid data")

@@ -19,9 +19,10 @@ from  construct_data_structures_py3 import Construct_Data_Structures
 
 from  graph_modules_py3.containers_py3.construct_container_py3 import Construct_Containers
 
-def construct_processor(name,containers):
+def construct_processor(name,containers,services):
     properties = {}
     properties["containers"] = containers
+    properties["services"] = services
     bc.add_header_node("PROCESSOR",name,properties= properties) 
     cd.construct_package("SYSTEM_MONITORING")
     cd.add_redis_stream("FREE_CPU",forward = True) # one month of data
@@ -92,7 +93,7 @@ if __name__ == "__main__" :
    bc.end_header_node("CLOUD_SERVICE_HOST_INTERFACE")
    bc.end_header_node("CLOUD_SERVICE_QUEUE")
 
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","log_stream_events","stream_events_to_cloud"])
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","postgres","ethereum"])
    #
    #
    #  Add other processes if desired

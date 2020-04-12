@@ -67,14 +67,14 @@ class Local_Queue_Server( object ):
 
 
 
-class Stream_Event_Monitor(object):
+class Stream_Event_Logger(object):
 
-   def __init__(self,redis_handle,key,w3,el ):
+   def __init__(self,redis_handle,key,w3,el = None ):
        self.stream_server = Local_Queue_Server(redis_handle,key)
        self.w3  = w3
-       self.el = el
-       self.el_filter = self.el.construct_loop_filter("EventHandler" )
-       self.event_object = self.w3.get_contract("EventHandler")
+       #self.el = el
+       #self.el_filter = self.el.construct_loop_filter("EventHandler" )
+       #self.event_object = self.w3.get_contract("EventHandler")
        #print(self.el.get_all_entries("EventHandler"))
        #self.decode_data(self.el.get_all_entries("EventHandler"))
        #exit()
@@ -83,18 +83,19 @@ class Stream_Event_Monitor(object):
        print(self.stream_server.length())
        try:       
           if self.stream_server.length() != 0:
-              data = self.stream_server.show_next_job()
+              data = self.stream_server.pop()
+              print("data",data)
               self.log_to_block_chain(data)
+
        except:
-          raise
-          print("exception")           
+          print("bad data")   
  
    def log_to_block_chain(self,data):
-       print("data",data)
+       
        data = data[1]
-       print("data",data)
+       
        data =data[1]
-       print("data",data)
+       
        site = data["site"]
        name = data['name']
        pack_data = msgpack.packb(data)  #json.dumps(data)
@@ -102,8 +103,8 @@ class Stream_Event_Monitor(object):
        parameters = [name,site,pack_data]
        #transmit_event( string memory event_id, string memory sub_event, string memory data)   
        tx_reciept = self.w3.transact_contract_data(self.event_object, "transmit_event" ,parameters)
-       print(tx_reciept)
-       raise
+       #print(tx_reciept)
+       
        
    def decode_data(self,data):  # make sure data can be decode from block chain
        for  i in data:
@@ -131,7 +132,7 @@ def construct_stream_server_instance( qs, site_data,w3,el ):
     
 
     redis_handle = redis.StrictRedis( host = node_data["host"] , port=node_data["port"], db=node_data['key_data_base'] )
-    stream_event_monitor = Stream_Event_Monitor(redis_handle, node_data["key"],w3,el )
+    stream_event_monitor = Stream_Event_Logger(redis_handle, node_data["key"],w3,el )
     
     
     
