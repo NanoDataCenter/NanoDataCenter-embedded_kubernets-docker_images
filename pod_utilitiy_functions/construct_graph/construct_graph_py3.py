@@ -92,8 +92,15 @@ if __name__ == "__main__" :
    bc.add_info_node( "HOST_INFORMATION","HOST_INFORMATION",properties={"host":"192.168.1.41" ,"port": 6379, "key_data_base": 6, "key":"_UPLOAD_QUEUE_" ,"depth":1024} )
    bc.end_header_node("CLOUD_SERVICE_HOST_INTERFACE")
    bc.end_header_node("CLOUD_SERVICE_QUEUE")
-
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","postgres","ethereum"])
+   
+   
+   bc.add_header_node("CLOUD_BLOCK_CHAIN_SERVER")
+   cd.construct_package("CLOUD_BLOCK_CHAIN_SERVER")
+   cd.add_rpc_server("BLOCK_CHAIN_RPC_SERVER",{"timeout":5,"queue":"BLOCK_CHAIN_RPC_SERVER"})
+   cd.close_package_contruction()
+   bc.end_header_node("CLOUD_BLOCK_CHAIN_SERVER")
+   
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum"])
    #
    #
    #  Add other processes if desired

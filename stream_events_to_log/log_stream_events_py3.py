@@ -74,13 +74,14 @@ class Stream_Event_Logger(object):
        self.w3  = w3
        #self.el = el
        #self.el_filter = self.el.construct_loop_filter("EventHandler" )
-       #self.event_object = self.w3.get_contract("EventHandler")
+       self.event_object = self.w3.get_contract("EventHandler")
        #print(self.el.get_all_entries("EventHandler"))
        #self.decode_data(self.el.get_all_entries("EventHandler"))
        #exit()
        
    def log_data(self,*parameters):
        print(self.stream_server.length())
+       
        try:       
           if self.stream_server.length() != 0:
               data = self.stream_server.pop()
@@ -88,6 +89,7 @@ class Stream_Event_Logger(object):
               self.log_to_block_chain(data)
 
        except:
+         
           print("bad data")   
  
    def log_to_block_chain(self,data):
@@ -103,7 +105,8 @@ class Stream_Event_Logger(object):
        parameters = [name,site,pack_data]
        #transmit_event( string memory event_id, string memory sub_event, string memory data)   
        tx_reciept = self.w3.transact_contract_data(self.event_object, "transmit_event" ,parameters)
-       #print(tx_reciept)
+       print(tx_reciept)
+       
        
        
    def decode_data(self,data):  # make sure data can be decode from block chain
