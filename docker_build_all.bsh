@@ -1,0 +1,22 @@
+cd basic_python_container
+./docker_build.bsh
+cd ..
+cd contract_management
+./docker_build.bsh
+cd ..
+cd ethereum
+./docker_build.bsh
+cd ..
+cd pod_utilitiy_functions
+./docker_build.bsh
+cd ..
+cd redis_monitoring
+./docker_build.bsh
+cd ..
+cd stream_events_to_cloud
+./docker_build.bsh
+cd ..
+cd stream_events_to_log
+./docker_build.bsh
+cd ..	
+~/docker_clean_up
