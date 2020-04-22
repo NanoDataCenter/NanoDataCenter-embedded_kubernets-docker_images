@@ -1,4 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-docker run -it --rm  --network host   --name logs_to_blockchain --mount type=bind,source=/mnt/ssd/site_config,target=/data/ --mount type=bind,source=/mnt/ssd/ethereum/,target=/ipc/  --mount type=bind,source=/mnt/ssd/ethereum/keystore/,target=/keystore/ nanodatacenter/logs_to_blockchain  python load_contracts.py
-

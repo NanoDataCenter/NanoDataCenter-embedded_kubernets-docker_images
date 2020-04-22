@@ -23,6 +23,7 @@ class Event_Listner_Class_IPC(Web_Class_IPC):
           temp = dict(i)
           temp["args"] = dict(i["args"])
           temp["timestamp"] = self.get_block_timestamp(i["blockNumber"])
+          temp["blockNumber"] = i["blockNumber"]
           return_value.append(temp)        
        return return_value
        

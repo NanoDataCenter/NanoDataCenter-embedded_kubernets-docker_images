@@ -17,7 +17,7 @@ if __name__ == "__main__":
     import datetime
     
 
-  
+    #send_rpc_message( self, method,parameters,timeout=30 ):
 
     #
     #
@@ -47,9 +47,18 @@ if __name__ == "__main__":
     rpc_client = generate_handlers.construct_rpc_client()
     queue_name = data_structures["BLOCK_CHAIN_RPC_SERVER"]['queue']
     print("queue_name",queue_name)
+    
     rpc_client.set_rpc_queue(queue_name)
+
     parameters = {"contract_name":"EventHandler",  "start_block":0,"end_block":'latest'}
-    print(rpc_client.send_rpc_message("fetch_block_chain_data",parameters) )
+    data = rpc_client.send_rpc_message("fetch_block_chain_data",parameters) 
+    print("length",len(data))
+    print("\n\n")
+    print("first element ",data[0])
+    print("\n\n")
+    print("last element ",data[-1])
+    data = rpc_client.send_rpc_message("fetch_current_block_number",[])
+    print(data)
      
        
        

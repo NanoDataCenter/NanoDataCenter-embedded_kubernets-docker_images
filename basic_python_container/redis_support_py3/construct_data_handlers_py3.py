@@ -42,7 +42,7 @@ class Redis_RPC_Client(object):
         
         self.redis_handle.delete(request["id"] )
         if data == None:
-            raise ValueError("No Communication with Modbus Server")
+            raise ValueError("No Communication with RPC SERVER")
         response = msgpack.unpackb(data[1])
         
         return response

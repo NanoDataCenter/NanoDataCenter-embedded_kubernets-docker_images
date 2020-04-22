@@ -764,4 +764,156 @@ depends on text_factory, str by default
 BLOB
 
 bytes
+
+CREATE TABLE project (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  description TEXT
+);
+CREATE TABLE developer (
+  id INTEGER PRIMARY KEY,
+  name TEXT,
+  role INT
+);
+CREATE TABLE skill (
+  id INTEGER PRIMARY KEY,
+  name TEXT
+);
+CREATE TABLE assignments (
+  developerId INTEGER,
+  projectId INTEGER,
+  FOREIGN KEY(developerId) REFERENCES developer(id) ON DELETE CASCADE,
+  FOREIGN KEY(projectId) REFERENCES project(id) ON DELETE CASCADE,
+  PRIMARY KEY(developerId)
+);
+CREATE TABLE competencies (
+  developerId INTEGER,
+  skillId INTEGER,
+  value INTEGER,
+  FOREIGN KEY(developerId) REFERENCES developer(id) ON DELETE CASCADE,
+  FOREIGN KEY(skillId) REFERENCES skill(id) ON DELETE CASCADE,
+  PRIMARY KEY(developerId, skillId)
+);
+
+# There's a lot of INSERT INTO statements here!
+
+Suppose we would like to add datetime and json support to the database. There are conversion functions you can declare to and from the database.
+
+For datetimes we declare this interface and add a birthday column to person. Note that it is important to connect to the sqlite database with the PARSE_DECLTYPES option.
+
+import datetime as dt
+
+connection = sqlite3.connect(db_filename, detect_types=sqlite3.PARSE_DECLTYPES)
+
+def adapt_datetime(datetime):
+    return (datetime.strftime('%Y-%m-%d %H:%M:%S')).encode()
+
+def convert_datetime(blob):
+    return dt.datetime.strptime(blob.decode(), '%Y-%m-%d %H:%M:%S')
+
+sqlite3.register_adapter(dt.datetime, adapt_datetime)
+sqlite3.register_adapter(dt.date, adapt_datetime)
+sqlite3.register_converter('datetime', convert_datetime)
+
+with connection:
+    connection.execute("ALTER TABLE person ADD COLUMN birthday DATETIME")
+We can easily check that the columns have be added by using sqlite’s special pragma statements. Here we print every column of the sqlite table person.
+
+for row in connection.execute('PRAGMA table_info(person)'):
+    print(tuple(row))
+(0, 'first_name', 'TEXT', 0, None, 0)
+(1, 'last_name', 'TEXT', 0, None, 0)
+(2, 'age', 'FLOAT', 0, None, 0)
+(3, 'birthday', 'DATETIME', 0, None, 0)
+Lets look what happens when we insert a person with a birthday into the table.
+
+with connection:
+    connection.execute("""
+    UPDATE person
+    SET birthday = ?
+    WHERE first_name = ? AND last_name = ?
+    """, (dt.date(1977, 4, 23), 'john', 'smith'))
+
+for row in connection.execute('SELECT * FROM person;'):
+    print(tuple(row))
+('chris', 'ostrouchov', 27.0, None)
+('john', 'smith', 32.0, datetime.datetime(1977, 4, 23, 0, 0))
+('jane', 'doe', 15.0, None)
+A commonly asked question is if it is possible to store json in an sql database. While this is a highly debated topic on if it is the right thing to do, it is certainly possible in sqlite. In fact using similar code with the adapters and converters we can create a simple json interface.
+
+import json
+
+def adapt_json(data):
+    return (json.dumps(data, sort_keys=True)).encode()
+
+def convert_json(blob):
+    return json.loads(blob.decode())
+
+sqlite3.register_adapter(dict, adapt_json)
+sqlite3.register_adapter(list, adapt_json)
+sqlite3.register_adapter(tuple, adapt_json)
+sqlite3.register_converter('JSON', convert_json)
+
+with connection:
+    connection.execute("ALTER TABLE person ADD COLUMN interests JSON")
+
+for row in connection.execute('PRAGMA table_info(person)'):
+    print(tuple(row))
+(0, 'first_name', 'TEXT', 0, None, 0)
+(1, 'last_name', 'TEXT', 0, None, 0)
+(2, 'age', 'FLOAT', 0, None, 0)
+(3, 'birthday', 'DATETIME', 0, None, 0)
+(4, 'interests', 'JSON', 0, None, 0)
+Let us insert some interests for myself into the database. We now see how adaptable sqlite is! However one thing to note is that sqlite has no easy way of querying the `json` column because to the library it is just a binary blob. If you would like support directly from SQLite see the json1 extension. Note that the json1 extension will have better performance and allows expressions on paths within the json column. We will show next how we can achieve the same scalabilty with Python and perform complex expressions on paths within the json column.
+
+with connection:
+    interests = {
+        'books': ['C Programming Language', 'Daniels\' Running Formula'],
+        'hobbies': ['running', 'programming']
+    }
+    connection.execute("""
+    UPDATE person
+    SET interests = ?
+    WHERE first_name = ? AND last_name = ?
+    """, (interests, 'chris', 'ostrouchov'))
+
+for row in connection.execute('SELECT * FROM person;'):
+    print(tuple(type(_) for _ in row))
+    print(tuple(row))
+(<class 'str'>, <class 'str'>, <class 'float'>, <class 'NoneType'>, <class 'dict'>)
+('chris', 'ostrouchov', 27.0, None, {'books': ['C Programming Language', "Daniels' Running Formula"], 'hobbies': ['running', 'programming']})
+(<class 'str'>, <class 'str'>, <class 'float'>, <class 'datetime.datetime'>, <class 'NoneType'>)
+('john', 'smith', 32.0, datetime.datetime(1977, 4, 23, 0, 0), None)
+(<class 'str'>, <class 'str'>, <class 'float'>, <class 'NoneType'>, <class 'NoneType'>)
+('jane', 'doe', 15.0, None, None)
+SQLite allow you to create functions and aggregate functions. The python interface to SQLite provides a convenient method of creating functions that will be directly executed within sqlite. These functions will run directly inside of sqlite.
+
+Here we create a simple json path function to return subpath of a json data.
+
+import re
+
+sqlite3.enable_callback_tracebacks(True)
+
+def json_path(json_path, blob):
+    if blob is None: return None
+    paths = [int(_) if re.match('\d+', _) else _ for _ in  json_path.split('.')]
+    path_value = json.loads(blob.decode())
+    for path in paths:
+        path_value = path_value[path]
+    if isinstance(path_value, (int, float, str, bytes)):
+        return path_value
+    return (json.dumps(path_value)).encode()
+
+with connection:
+    connection.create_function("json_path", 2, json_path)
+Using sqlite custom functions can really help performance for queries that would normally return a large amount of data. In this example we query what could be large json files. If perform json_path on each value we reduce the amount of data the query returns. Since a json path can return another json object see SQLite CAST expression. This allow you to state the type of the return expression. In this case CAST json_path("books.1", interests) AS JSON.
+
+with connection:
+    for row in connection.execute('SELECT json_path(?, interests) FROM person', ("books.1",)):
+        print(row)
+("Daniels' Running Formula",)
+(None,)
+(None,)
+Overall python exposes a beautiful interface to sqlite. I use it on many of my projects including the advanced features such as the adapter functions and custom python functions. I hope this tutorial has been informative. Do share your views and corrections if I made a mistake.
+
 '''

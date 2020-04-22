@@ -1,6 +1,9 @@
 import msgpack
 import redis
 import base64
+import os
+import sqlite3
+import sys
 
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 
@@ -20,32 +23,42 @@ class Construct_RPC_Server(object):
        self.initialize_data_base_handles()       
        self.rpc_queue_handle.register_call_back( "list_list_data_bases",self.list_data_bases)
        self.rpc_queue_handle.register_call_back( "create_database", self.create_database)
+       self.rpc_queue_handle.register_call_back( "delete_database",self.delete_database)
        self.rpc_queue_handle.register_call_back("close_database",self.close_database)
        self.rpc_queue_handle.register_call_back("vacuum",self.vacuum)
-       self.rpc_queue_handle.register_call_back("create_table",self.vacuum)
-       self.rpc_queue_handle.register_call_back("create_text_search_table",self.vacuum)
-       self.rpc_queue_handle.register_call_back("exec",self.vacuum)
-       self.rpc_queue_handle.register_call_back("select",self.vacuum)
-       self.rpc_queue_handle.register_call_back("bluk_upload",self.bulk_upload)
-       self.rpc_queue_handle.register_call_back("copy",self.copy)
-       self.rpc_queue_handle.register_call_back("statistics",self.statistics)
+       self.rpc_queue_handle.register_call_back("version",self.close_database)
+       self.rpc_queue_handle.register_call_back("set_txt",self.set_text)
+       self.rpc_queue_handle.register_call_back("get_txt",self.get_text)
+       self.rpc_queue_handle.register_call_back("backup",self.backup)
+       self.rpc_queue_handle.register_call_back("execute",self.ex_exec)
+       self.rpc_queue_handle.register_call_back("execute_script",self.ex_script)
+       self.rpc_queue_handle.register_call_back("commit",self.commit)
+       self.rpc_queue_handle.register_call_back("select",self.select)
        self.rpc_queue_handle.add_time_out_function(self.process_null_msg)
        self.rpc_queue_handle.start()
-      
+   
+   def process_null_msg( self ):  
+       print("null message")         
  
    def initialize_data_base_handles(self):
        self.db_handlers = {}
-       if "default" not in self.sql_databases:
-           self.sql_databases["default"] = "/sqlite/default.db"
-       if "memory" not in self.sql_databases:
-             self.sql_database["memory"] = ":memory:"
+       if self.sql_databases.hexists("default") == False:
+           self.sql_databases.hset("default","/sqlite/default.db")
+       if self.sql_databases.hexists("memory") == False:
+             self.sql_databases.hset("memory",":memory:")
        
        for i in self.sql_databases.hkeys():
            try:
-               self.db_handlers[j] = sqlite.connect(self.sql_databases.hget(i))      
+               if i == "default":
+                  self.db_handlers[i] = sqlite3.connect("/sqlite/default.db") 
+               elif i == "memory":
+                  self.db_handlers[i] = sqlite3.connect(":memory:") 
+               else:
+                  self.db_handlers[i] = sqlite3.connect("/sqlite/"+i)
+               
            except:
                print("db connection problem ",i,self.sql_databases.hget(i))           
-               self.sql_databases.hdel(i)
+               self.sql_databases.hdelete(i)
                
                       
  
@@ -54,69 +67,160 @@ class Construct_RPC_Server(object):
        print("null message")   
   
    def list_data_bases(self,input_message):
+       print("list data base")
        return_value = self.sql_databases.hgetall()
-       return return_value       
+       return [True,return_value]       
        
    def create_database(self,input_msg):
+       print("create database")
        try:
-           name = input_msg["database_name"]
-           file_name = input_msg["file_name"]
-           file_path = "/sqlite/"+file_name
-           connection = sqlite.connect(file_path)
-           self.sql_databases.hset(name,file_path)
-           self.db_handlers[name] = connection
-           return True
-       except:
-           return False
+           name = input_msg["database"]
+           if self.sql_databases.hexists(name) == False:
+              file_path = "/sqlite/"+name
+              connection = sqlite3.connect(file_path)
+              self.sql_databases.hset(name,file_path)
+              self.db_handlers[name] = connection
+              return [True,""]
+           else:
+               return [False, "duplicate database" ]
+       except :
+           return [False,str(sys.exc_info()[:2])]
            
- 
+           
    def close_database(self,input_msg):
        try:
-           name = input_msg["database_name"]
-           connection = self.db_handlers[name]
-           connection.close(connection)
-           del self.db_handlers[name]
-           self.sql_databases.hdel(name)
-           return True
-       except:
-           return True
+           name = input_msg["database"]
+           if name not in self.sql_databases:
+              connection = self.db_handlers[name]
+              connection.close(connection)
+              del self.db_handlers[name]
+              self.sql_databases.hdel(name)
+              return [True,""]
+           else:
+              return [False,"non existant database"]
+       except :
+           return [False,str(sys.exc_info()[:2])]
+ 
+   def delete_database(self,input_msg):
+       try:
+           name = input_msg["database"]
+           if name not in self.db_handlers :  # database must be closed to delete file
+              file_path = "/sqlite/"+name
+              os.remove(file_path)
+              return [True,""]
+           else:
+              return [False,"data base is still active" ]
+       except :
+           return [False,str(sys.exc_info()[:2])]
+           
+
+
+            
 
    def vacuum(self,input_msg):
        try:
-           db_name = input_msg["database_name"]
+           db_name = input_msg["database"]
            connection = self.db_handlers[db_name]
-           connection.exec("VACUUM")
-           return True
-       except:
-           return False
+           connection.execute("VACUUM")
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
        
-   def create_table(self,input_msg):
-      pass
+   def version(self,input_msg):
+       try:
+ 
+           return [True,sqlite3.version]
+       except :
+          return [False,str(sys.exc_info()[:2])]
    
-   
-   def create_text_search_table(self,input_msg):
-      pass
-   
-   
-   
+   def set_text(self,input_msg):
+       try:
+           db_name = input_msg["database"]
+           state = input_msg["text_state"]
+           connection = self.db_handlers[db_name]
+           connection.text_factory = state
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
+          
+   def get_text(self,input_msg):
+       try:
+           db_name = input_msg["database"]
+           connection = self.db_handlers[db_name]
+           connection.text_factory = state
+           return [True,connection.text_factory]
+       except :
+           return [False,str(sys.exc_info()[:2])]
+  
+   def backup(self,input_msg):
+       try:
+           db_name = input_msg["database"]
+           backup_db = input_msg["backup_db"]
+           pages     = input_msg["pages"]
+           connection = self.db_handlers[db_name]
+           backup_connection = self.connection(self.backup_db,pages)
+           connection.backup(backup_connection,pages)
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
+  
    def ex_exec(self,input_msg):
-       pass
-   
-   def select(self,input_msg):
-      pass
-   
+       try:
+           db_name = input_msg["database"]
+           script  = input_msg["script"]
+           connection = self.db_handlers[db_name]
+           connection.execute(script)
+           connection.commit()
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
+  
+   def ex_script(self,input_msg):
+       try:
+           db_name = input_msg["database"]
+           script  = input_msg["script"]
+           connection = self.db_handlers[db_name]
+           connection.executescript(script)
+           connection.commit()
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
+          
+       
+   def commit(self,commit):
+       try:
+           db_name = input_msg["database"]       
+           connection = self.db_handlers[db_name]        
+           connection.commit()
+           return [True,'']
+       except :
+           return [False,str(sys.exc_info()[:2])]
 
-   def bulk_upload(self,input_msg):
-       pass
+   def select(self,commit):
+       try:
+           db_name = input_msg["database"]   
+           script  = input_msg["script"]           
+           connection = self.db_handlers[db_name]        
+           connection.execute(script)
+           return_value = []
+           while True:
+              r = connection.fetchone()
+              if len(r.keys()) == 0:
+                 break
+              temp = {}
+              for j in r.keys():
+                temp[j] = r[j]
+              return_value.append(temp)
+              
+           
+           return [True,return_value]
+       except :
+           return [False,str(sys.exc_info()[:2])]
+             
+
    
    
-   
-   def copy(self,input_msg):
-      pass
-   
-   
-   def statistics(self,input_message):
-      pass
+ 
  
        
 def construct_sql_server_instance( qs, site_data ):

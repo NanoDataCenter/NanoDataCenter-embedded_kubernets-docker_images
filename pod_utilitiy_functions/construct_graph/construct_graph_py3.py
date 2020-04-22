@@ -100,7 +100,15 @@ if __name__ == "__main__" :
    cd.close_package_contruction()
    bc.end_header_node("CLOUD_BLOCK_CHAIN_SERVER")
    
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum"])
+   bc.add_header_node("SQL_SERVER")
+   cd.construct_package("SQL_SERVER")
+   cd.add_rpc_server("SQL_SERVER_RPC_SERVER",{"timeout":5,"queue":"SQL_RPC_SERVER"})
+   cd.add_hash("SQL_DB_MAPPING")
+   cd.close_package_contruction()
+   bc.end_header_node("SQL_SERVER")
+   
+   
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","sql_server"],services=["redis","ethereum"])
    #
    #
    #  Add other processes if desired
