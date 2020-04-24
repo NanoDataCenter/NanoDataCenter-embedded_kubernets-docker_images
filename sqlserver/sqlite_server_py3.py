@@ -26,7 +26,7 @@ class Construct_RPC_Server(object):
        self.rpc_queue_handle.register_call_back( "delete_database",self.delete_database)
        self.rpc_queue_handle.register_call_back("close_database",self.close_database)
        self.rpc_queue_handle.register_call_back("vacuum",self.vacuum)
-       self.rpc_queue_handle.register_call_back("version",self.close_database)
+       self.rpc_queue_handle.register_call_back("version",self.version)
        self.rpc_queue_handle.register_call_back("set_txt",self.set_text)
        self.rpc_queue_handle.register_call_back("get_txt",self.get_text)
        self.rpc_queue_handle.register_call_back("backup",self.backup)
@@ -51,10 +51,13 @@ class Construct_RPC_Server(object):
            try:
                if i == "default":
                   self.db_handlers[i] = sqlite3.connect("/sqlite/default.db") 
+                  self.db_handlers[i].row_factory = sqlite3.Row
                elif i == "memory":
                   self.db_handlers[i] = sqlite3.connect(":memory:") 
+                  self.db_handlers[i].row_factory = sqlite3.Row
                else:
                   self.db_handlers[i] = sqlite3.connect("/sqlite/"+i)
+                  self.db_handlers[i].row_factory = sqlite3.Row
                
            except:
                print("db connection problem ",i,self.sql_databases.hget(i))           
@@ -76,10 +79,11 @@ class Construct_RPC_Server(object):
        try:
            name = input_msg["database"]
            if self.sql_databases.hexists(name) == False:
-              file_path = "/sqlite/"+name
+              file_path = "/sqlite/"+name+".db"
               connection = sqlite3.connect(file_path)
               self.sql_databases.hset(name,file_path)
               self.db_handlers[name] = connection
+              self.db_handlers[name].row_factory = sqlite3.Row
               return [True,""]
            else:
                return [False, "duplicate database" ]
@@ -90,11 +94,11 @@ class Construct_RPC_Server(object):
    def close_database(self,input_msg):
        try:
            name = input_msg["database"]
-           if name not in self.sql_databases:
+           if name  in self.db_handlers:
               connection = self.db_handlers[name]
-              connection.close(connection)
+              connection.close()
               del self.db_handlers[name]
-              self.sql_databases.hdel(name)
+              self.sql_databases.hdelete(name)
               return [True,""]
            else:
               return [False,"non existant database"]
@@ -105,8 +109,11 @@ class Construct_RPC_Server(object):
        try:
            name = input_msg["database"]
            if name not in self.db_handlers :  # database must be closed to delete file
-              file_path = "/sqlite/"+name
-              os.remove(file_path)
+              file_path = "/sqlite/"+name+".db"
+              try:
+                  os.remove(file_path)
+              except:
+                pass
               return [True,""]
            else:
               return [False,"data base is still active" ]
@@ -137,6 +144,10 @@ class Construct_RPC_Server(object):
        try:
            db_name = input_msg["database"]
            state = input_msg["text_state"]
+           if state == "bytes":
+              state = bytes
+           else:
+              state = str
            connection = self.db_handlers[db_name]
            connection.text_factory = state
            return [True,'']
@@ -147,8 +158,14 @@ class Construct_RPC_Server(object):
        try:
            db_name = input_msg["database"]
            connection = self.db_handlers[db_name]
-           connection.text_factory = state
-           return [True,connection.text_factory]
+           state = connection.text_factory
+           if state == bytes:
+              state = "bytes"
+           else:
+              connection.text_factory = str
+              state = "string"
+              
+           return [True,state]
        except :
            return [False,str(sys.exc_info()[:2])]
   
@@ -158,10 +175,11 @@ class Construct_RPC_Server(object):
            backup_db = input_msg["backup_db"]
            pages     = input_msg["pages"]
            connection = self.db_handlers[db_name]
-           backup_connection = self.connection(self.backup_db,pages)
-           connection.backup(backup_connection,pages)
+           backup_connection = self.db_handlers[backup_db]
+           connection.backup(target=backup_connection,pages = pages)
            return [True,'']
        except :
+          
            return [False,str(sys.exc_info()[:2])]
   
    def ex_exec(self,input_msg):
@@ -187,7 +205,7 @@ class Construct_RPC_Server(object):
            return [False,str(sys.exc_info()[:2])]
           
        
-   def commit(self,commit):
+   def commit(self,input_msg):
        try:
            db_name = input_msg["database"]       
            connection = self.db_handlers[db_name]        
@@ -196,25 +214,33 @@ class Construct_RPC_Server(object):
        except :
            return [False,str(sys.exc_info()[:2])]
 
-   def select(self,commit):
+   def select(self,input_msg):
+       print("select")
        try:
            db_name = input_msg["database"]   
            script  = input_msg["script"]           
            connection = self.db_handlers[db_name]        
-           connection.execute(script)
+           cursor = connection.execute(script)
+          
+           
            return_value = []
            while True:
-              r = connection.fetchone()
-              if len(r.keys()) == 0:
+              r = cursor.fetchone()
+              print("r",r)
+              
+              
+              if r==None:
                  break
               temp = {}
               for j in r.keys():
                 temp[j] = r[j]
+              
               return_value.append(temp)
               
-           
+           print(return_value)
            return [True,return_value]
        except :
+         
            return [False,str(sys.exc_info()[:2])]
              
 
