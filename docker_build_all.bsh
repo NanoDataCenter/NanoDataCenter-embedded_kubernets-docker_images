@@ -18,5 +18,8 @@ cd stream_events_to_cloud
 cd ..
 cd stream_events_to_log
 ./docker_build.bsh
+cd ..
+cd sqlite_server
+./docker_build.bsh
 cd ..	
 ~/docker_clean_up

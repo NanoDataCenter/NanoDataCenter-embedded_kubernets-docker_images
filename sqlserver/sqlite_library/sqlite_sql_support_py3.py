@@ -31,7 +31,7 @@ class SQLITE_Client_Support(Construct_RPC_Library):
    
  
    
-   def create_text_search_table(self,database_name,table_name, fields ):#tested
+   def create_text_search_table(self,database_name,table_name, fields ): #test
        script = "create virtual table  "
       
        script = script+table_name+" "
@@ -58,24 +58,71 @@ class SQLITE_Client_Support(Construct_RPC_Library):
           
    
        
-   def select_composite(self,database_name,table_name,return_fields,fields,where_clause,distinct_flag=False):
+   def select_composite(self,database_name,table_name,return_fields,where_clause=None,distinct_flag=False): # tested
        #"select rowid, name, ingredients from recipe where name match 'pie'"
-       script = "select "+",".join(return_fields)+ "  where "+where_clause+" );"
+       if distinct_flag != False:
+          script = "select distinct "
+       else:
+          script = "select "
+       script = script+"  "+",".join(return_fields) + "  FROM "+table_name+" "
+       if where_clause != None:
+           script = script+ "  where "+where_clause+" ; "
+       else:
+           script = script+" ; "
+       
+      
        return self.select(database_name,script)
        
 
-   def insert_composite(self,database_name,table_name,field_names,field_values):
+   def insert_composite(self,database_name,table_name,field_names,field_values): #tested
+       
+       filtered_values=[]
        for i in field_values:
+           temp = []
+           for j in i:
+              if type(j) == str:
+                 temp.append('"'+j+'"')
+              else:
+                 temp.append(str(j))
+           filtered_values.append(temp)
+           
+       script = ""    
+       for i in filtered_values:
            if len(field_names) != len(i):
               raise ValueError("field names and field values are not same length")       
-           script = 'INSERT INTO '+table_name+'('+",".join(field_names)+ " VALUES("+",".join(i)+");"
-           self.ex_exec(database_name,script)
+           script = script + 'INSERT INTO '+table_name+' ('+",".join(field_names)+" ) "+ " VALUES("+",".join(i)+");"
+      
+       self.ex_script(database_name,script)
    
 
-   def delete(self,database_name,table_name,where_clause):   
+   def delete(self,database_name,table_name,where_clause):  #tested  
        script = 'DELETE FROM '+table_name+' WHERE '+where_clause+";"
        return self.ex_exec(database_name,script)
-
+  
+ 
+   def update(self,database,table_name,row_id,row_values,where_clause=None):
+       if len(row_id) != len(row_values):
+          raise ValueError("row id and row values are not same length")          
+   
+       script = "UPDATE "+table_name+" SET  "
+       filtered_values=[]
+       for i in row_values:
+          if type(i) == str:
+             filtered_values.append('"'+i+'"')
+          else:
+              filtered_values.append(str(j))
+       for i in range(0,len(filtered_values)):
+           if i != len(filtered_values)-1:
+               script = script +" "+row_id[i] +" = "+filtered_values[i]+", "
+           else:
+               script = script +" "+row_id[i] +" = "+filtered_values[i]+" "
+       if where_clause != None:
+           script = script + "WHERE  "+where_clause+ " ; "
+       else:
+           script = script+ " ;"
+       print(script)    
+       self.ex_exec(database,script)
+   
 if __name__ == "__main__":
 
  
@@ -145,20 +192,47 @@ if __name__ == "__main__":
     print(sqlite_client.create_text_search_table("test","text",["a","b"]))
     print("tables",sqlite_client.list_tables("test"))
     print("schema",sqlite_client.get_table_schema("test","text"))
-
-    temp = '''create table recipe( name text, ingredients text);'''
+    field_values = [
+    [.1, 'broccoli peppers cheese tomatoes'],
+    [.15, "test data"],
+    [.2, 'pumpkin onions garlic celery'],
+    [.3, 'broccoli cheese onions flour'],
+    [.3, 'duplicate value'],
+    [.4, 'pumpkin sugar flour butter']]
     
-    #print(sqlite_client.ex_exec("test",temp))
-    temp = """
-    insert into recipe (name, ingredients) values ('broccoli stew', 'broccoli peppers cheese tomatoes');
-    insert into recipe (name, ingredients) values ('pumpkin stew', 'pumpkin onions garlic celery');
-    insert into recipe (name, ingredients) values ('broccoli pie', 'broccoli cheese onions flour');
-    insert into recipe (name, ingredients) values ('pumpkin pie', 'pumpkin sugar flour butter');
-    """
-    #print(sqlite_client.ex_script("test",temp))
+    print("insert_composite",sqlite_client.insert_composite("test","text",["a","b"],field_values))
+    print("select_composite",sqlite_client.select_composite("test","text",["a","b"]))
+    print("select_composite",sqlite_client.select_composite("test","text",["a","b"],"a < .2"))
+    print("select_composite",sqlite_client.select_composite("test","text",["a"],"a >= .2",True))
 
-    #print(sqlite_client.select("test","select * from recipe"))
-    # print(sqlite_client.select("test","select rowid,name,ingredients from recipe"))
+    print(sqlite_client.delete("test","text","a <= .2"))
+    print("select_composite",sqlite_client.select_composite("test","text",["a","b"]))
+    
+    #
+    #
+    #  Now testing alter command
+    #
+    #
+    print("tables",sqlite_client.list_tables("test"))
+    print("alter_table_rename",sqlite_client.alter_table_rename("test","text","new_text" ))
+    print("tables",sqlite_client.list_tables("test"))
+    print(sqlite_client.create_table("test","test",["a text","b text"]))
+    print("insert_composite",sqlite_client.insert_composite("test","test",["a","b"],field_values))
+    print("select_composite",sqlite_client.select_composite("test","test",["a","b"]))
+    print("alter_table_add_column",sqlite_client.alter_table_add_column("test","test","c text"    ))
+    print("schema",sqlite_client.get_table_schema("test","test"))
+    print("select_composite",sqlite_client.select_composite("test","test",["a","b","c"]))
+    
+    #
+    #
+    # Testing Update Command
+    #
+    #
+    print("update ",sqlite_client.update("test","test",["c"],["default_value"],where_clause="a>.2"))
+    print("select_composite",sqlite_client.select_composite("test","test",["a","b","c"]))
+    print("update ",sqlite_client.update("test","test",["c"],["new default"]))
+    print("select_composite",sqlite_client.select_composite("test","test",["a","b","c"]))
+
     
     print(sqlite_client.close_database("test")) 
     print(sqlite_client.delete_database("test"))

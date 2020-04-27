@@ -108,7 +108,7 @@ if __name__ == "__main__" :
    bc.end_header_node("SQL_SERVER")
    
    
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","sql_server"],services=["redis","ethereum"])
+   construct_processor(name="block_chain_server",containers = ["sqlite_server","monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum"])
    #
    #
    #  Add other processes if desired
