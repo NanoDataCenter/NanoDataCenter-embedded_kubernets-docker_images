@@ -82,6 +82,9 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
+   
+
+
    bc.add_header_node("CLOUD_SERVICE_QUEUE")
    cd.construct_package("CLOUD_SERVICE_QUEUE_DATA")
    cd.add_job_queue("CLOUD_JOB_SERVER",2048,forward=False)
