@@ -54,6 +54,14 @@ def construct_processor(name,containers,services):
     cd.close_package_contruction()
     bc.end_header_node("NODE_PROCESSES")
     
+    bc.add_header_node("DOCKER_MONITOR",name,properties)
+    cd.construct_package("DATA_STRUCTURES")
+    cd.add_redis_stream("ERROR_STREAM",forward=True)
+    cd.add_hash("ERROR_HASH")
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.close_package_contruction()
+    bc.end_header_node("DOCKER_MONITOR")
+    
     Construct_Containers(bc,cd,containers)
     bc.end_header_node("PROCESSOR")    
 
@@ -111,7 +119,7 @@ if __name__ == "__main__" :
    bc.end_header_node("SQL_SERVER")
    
    
-   construct_processor(name="block_chain_server",containers = ["sqlite_server","monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum"])
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum_go","sqlite_server"])
    #
    #
    #  Add other processes if desired
