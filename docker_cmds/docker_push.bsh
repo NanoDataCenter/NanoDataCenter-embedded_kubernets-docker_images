@@ -7,3 +7,4 @@ docker push nanodatacenter/ethereum-go
 docker push nanodatacenter/redis_monitoring       
 docker push nanodatacenter/basic_python_container   
 docker push nanodatacenter/sqlite_server
+docker push nanodatacenter/flask_web

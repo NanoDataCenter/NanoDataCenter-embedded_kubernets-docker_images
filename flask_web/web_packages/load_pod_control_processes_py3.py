@@ -9,7 +9,7 @@ from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
  
 class Load_Pod_Control_Processes(object):
 
-   def __init__( self, app, auth, request, render_template,qs,site_data,sub_system_name):
+   def __init__( self, app, auth, request, render_template,qs,site_data,url_rule_class,subsystem_name,path):
        self.app      = app
        self.auth     = auth
        self.request  = request
@@ -17,44 +17,48 @@ class Load_Pod_Control_Processes(object):
      
        self.qs = qs
        self.site_data = site_data
+       self.url_rule_class = url_rule_class
+       self.subsystem_name = subsystem_name
        
        self.assemble_handlers()
-       self.assemble_url_rules(sub_system_name)
+       self.assemble_url_rules()
+       self.url_rule_class.move_directories(path)
+       
 
 
 
        
   
 
-   def assemble_url_rules(self,sub_system_name):
+   def assemble_url_rules(self):
        
-       menu_list = []
        
-       self.rule_data = {}
        
-       a1 = self.auth.login_required( self.process_control )
-       self.app.add_url_rule(sub_system_name+'/start_and_stop_processes/<int:controller_id>',"start_and_stop_processes",a1)
-       self.rule_data[sub_system_name+'/start_and_stop_processes'] = [a1,sub_system_name+'/start_and_stop_processes/0' ]
+       slash_name = "/"+self.subsystem_name
+       self.menu_data = {}
+       self.menu_list = []
+       
+       function_list = [ self.auth.login_required( self.process_control ),
+                         self.display_exception_status,
+                         self.display_exception_log ]
+                         
+       url_list = [ [ '/start_and_stop_processes/<int:controller_id>',"start_and_stop_processes" ,'/start_and_stop_processes/0',"Stop/Start Node Processes"  ],
+                    [ '/display_exception_status/<int:controller_id>',"display_exception_status" ,'/display_exception_status/0',"Node Processes Status"  ],
+                     [ '/display_exception_log/<int:controller_id>',"display_exception_log" ,'/display_exception_log/0',"Node Process Exception Log"  ] ]                            
+
+      
+       self.url_rule_class.add_get_rules(self.subsystem_name,function_list,url_list)
       
 
-       
-       a1 = self.auth.login_required( self.display_exception_status )
-       self.app.add_url_rule(sub_system_name+'/display_exception_status/<int:controller_id>',"display_exception_status",a1)
-       self.rule_data[sub_system_name+'/display_exception_status'] = [a1,sub_system_name+'/display_exception_status/0' ]
-       
-       
-       a1 = self.auth.login_required( self.display_exception_log )
-       self.app.add_url_rule(sub_system_name+'/display_exception_log/<int:controller_id>',"display_exception_log",a1)
-       self.rule_data[sub_system_name+'/display_exception_log'] = [a1,sub_system_name+'/display_exception_log/0' ]
        
        
        # internal callable
        a1 = self.auth.login_required( self.load_processes )
-       self.app.add_url_rule(sub_system_name+'/manage_processes/load_process',"load_process",a1,methods=["POST"])
+       self.app.add_url_rule(slash_name+'/manage_processes/load_process',"load_process",a1,methods=["POST"])
        
        # internal call
        a1 = self.auth.login_required( self.manage_processes )
-       self.app.add_url_rule(sub_system_name+'/manage_processes/change_process',"change_process",a1,methods=["POST"])
+       self.app.add_url_rule(slash_name+'/manage_processes/change_process',"change_process",a1,methods=["POST"])
     
     
    def assemble_handlers(self):  
@@ -82,9 +86,9 @@ class Load_Pod_Control_Processes(object):
        # Assemble data structures for each controller
        #
        #
-       self.ds_handlers = []
+       self.handlers = []
        for i in self.controller_names:
-          self.ds_handlers.append(self.assemble_data_structures(i))
+          self.handlers.append(self.assemble_data_structures(i))
 
    
        
@@ -104,13 +108,13 @@ class Load_Pod_Control_Processes(object):
        package = package_sources[0] 
        data_structures = package["data_structures"]
        generate_handlers = Generate_Handlers(package,self.qs)
-       ds_handlers = {}
-       ds_handlers["ERROR_STREAM"]        = generate_handlers.construct_redis_stream_reader(data_structures["ERROR_STREAM"])
-       ds_handlers["ERROR_HASH"]        = generate_handlers.construct_hash(data_structures["ERROR_HASH"])
-       ds_handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["WEB_COMMAND_QUEUE"])
+       handlers = {}
+       handlers["ERROR_STREAM"]        = generate_handlers.construct_redis_stream_reader(data_structures["ERROR_STREAM"])
+       handlers["ERROR_HASH"]        = generate_handlers.construct_hash(data_structures["ERROR_HASH"])
+       handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["WEB_COMMAND_QUEUE"])
        
-       ds_handlers["WEB_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
-       return ds_handlers
+       handlers["WEB_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
+       return handlers
 
 
    #

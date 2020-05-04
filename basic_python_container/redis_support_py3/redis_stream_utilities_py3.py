@@ -45,16 +45,18 @@ class Redis_Stream(object):
       
        return_value = []
        for i in temp:
+         
           return_item= {}
+          i = list(i)
           i[0] = i[0].decode()
           ids = i[0].split("-")
           
           return_item["id"] = i[0]
           return_item["timestamp"] = float(ids[0])/1000.
           return_item["sub_id"] = int(ids[1])
-          packed_data = i[1][1]
+          packed_data = i[1][b'data']
 
-          return_item["data"] = msgpack.unpackb(packed_data,encoding='utf-8')
+          return_item["data"] = msgpack.unpackb(packed_data)
           return_value.append(return_item)
       
        return return_value
