@@ -54,11 +54,11 @@ class Load_Pod_Control_Processes(object):
        
        # internal callable
        a1 = self.auth.login_required( self.load_processes )
-       self.app.add_url_rule(self.slash_name+'/manage_processes/load_process',self.subsystem_name+"node_process_load_process",a1,methods=["POST"])
+       self.app.add_url_rule(self.slash_name+'/manage_processes/load_process',self.slash_name+"node_process_load_process",a1,methods=["POST"])
        
        # internal call
        a1 = self.auth.login_required( self.manage_processes )
-       self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',self.subsystem_name+"node_process_change_process",a1,methods=["POST"])
+       self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',self.slash_name+"node_process_change_process",a1,methods=["POST"])
     
     
    def assemble_handlers(self):  

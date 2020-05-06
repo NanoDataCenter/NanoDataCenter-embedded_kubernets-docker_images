@@ -1,10 +1,16 @@
  
+ 
+status_function_url = null
+status_update_function = null
+ 
+ 
+ 
 function status_request_function()
 {
    json_object = {}
 
    
-   ajax_get( '/ajax/status_update', "Data Not Fetched", status_update )
+   ajax_get( status_function_url, "Data Not Fetched",status_update_function )
  
    
 }
@@ -47,26 +53,25 @@ function status_update( data )
 
 }
 
-
+ 
 
 function system_state_init()
-{    var g,h,i
-     var alarm_data;
-     var  queue_interval_id;
-     var  nintervalId;
-     var data = [];
-     var conversion_factor_index;
-     var conversion_factor;
-     var conversion_factor_array;
-
-
- 
+{   
+   
+ $('#status_panel').hide();
+} 
+  
+function status_url_update( status_url,status_update )
+{
+    status_update_function = status_update
+    status_function_url = status_url
+    //$( "#status_panel"  ).bind({ popucdpafteropen: status_request_function })
+    $("#status_panel").click(function(){
+        $("#status_modal").modal("show");
+        status_request_function()
+    });
+    $('#status_panel').show();
     
-   
-   $( "#status_panel"  ).bind({ popucdpafteropen: status_request_function })
-   
-   
-
-  } 
+}
 
 

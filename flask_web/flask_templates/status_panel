@@ -50,10 +50,7 @@
 
 
 $(document).ready(function(){
-    $("#status_panel").click(function(){
-        $("#status_modal").modal("show");
-        status_request_function()
-    });
+    system_state_init()
     $("#myModal").on('shown.bs.modal', function () {
             alert('The modal is fully shown.');
             // add jquery load function

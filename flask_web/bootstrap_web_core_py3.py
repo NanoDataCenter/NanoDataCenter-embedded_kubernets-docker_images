@@ -13,7 +13,7 @@ import flask
 from flask import Flask
 from flask import render_template,jsonify
 from flask_httpauth import HTTPDigestAuth
-from flask import request, session
+from flask import request, session, url_for
 
 from redis_support_py3.graph_query_support_py3 import  Query_Support
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
@@ -141,14 +141,33 @@ class PI_Web_Server_Core(object):
        self.generate_menu_template()
        self.generate_modal_template()
        
+       
+   def generate_default_index_page(self):
+       self.app.add_url_rule("/","home_page",self.links_a1)
+       
    def generate_index_page(self,module,element):
        menu_data = self.url_rule_class.subsystems[module]["menu_data"]
    
        menu_element = menu_data[element]
        self.app.add_url_rule("/","home page",menu_element[0])
        
-   def generate_status_function(self):
-       pass
+   def generate_site_map(self):
+       self.links_a1 = self.auth.login_required( self.site_map_function )
+       self.app.add_url_rule("/link_page","/links_page",self.links_a1)
+   
+   
+   def site_map_function(self):   
+   
+       links = []
+       for rule in self.app.url_map.iter_rules():
+           # Filter out rules we can't navigate to in a browser
+           # and rules that require parameters
+           
+           #url = url_for(rule.endpoint, **(rule.defaults or {}))
+           links.append((rule.endpoint))
+           links.sort()
+       return render_template("list_of_endpoints",endpoints = links)
+         
 
    def run_http( self):
        self.app.run(threaded=True , use_reloader=True, host='0.0.0.0',port=80,debug = True)
@@ -274,9 +293,11 @@ if __name__ == "__main__":
 
    pi_web_server = PI_Web_Server_Core(__name__, redis_site_data  )
    pi_web_server.generate_menu_page()
-   pi_web_server.generate_index_page("Pod_Control_Processes","start_and_stop_processes")
+   #pi_web_server.generate_index_page("Pod_Control_Processes","start_and_stop_processes")
    
-   pi_web_server.generate_status_function()
+   pi_web_server.generate_site_map()
+   
+   pi_web_server.generate_default_index_page()
    pi_web_server.run_http()
    
    
