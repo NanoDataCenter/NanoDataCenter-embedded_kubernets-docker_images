@@ -22,7 +22,7 @@ class Load_Pod_Control_Processes(object):
        
        self.assemble_handlers()
        self.assemble_url_rules()
-       self.url_rule_class.move_directories(self.path)
+       self.path_dest = self.url_rule_class.move_directories(self.path)
        
 
 
@@ -38,13 +38,13 @@ class Load_Pod_Control_Processes(object):
        self.menu_data = {}
        self.menu_list = []
        
-       function_list = [ self.auth.login_required( self.process_control ),
+       function_list = [ self.process_control ,
                          self.display_exception_status,
                          self.display_exception_log ]
                          
-       url_list = [ [ '/start_and_stop_processes/<int:controller_id>',"start_and_stop_processes" ,'/start_and_stop_processes/0',"Stop/Start Pod Processes"  ],
-                    [ '/display_exception_status/<int:controller_id>',"display_exception_status" ,'/display_exception_status/0',"Pod Processes Status"  ],
-                     [ '/display_exception_log/<int:controller_id>',"display_exception_log" ,'/display_exception_log/0',"Pod Process Exception Log"  ] ]                            
+       url_list = [ [ 'start_and_stop_processes','/<int:controller_id>','/0',"Stop/Start Pod Processes"  ],
+                    [ 'display_exception_status','/<int:controller_id>','/0',"Pod Processes Status"  ],
+                     [ 'display_exception_log','/<int:controller_id>','/0',"Pod Process Exception Log"  ] ]                            
 
       
        self.url_rule_class.add_get_rules(self.subsystem_name,function_list,url_list)
@@ -54,11 +54,11 @@ class Load_Pod_Control_Processes(object):
        
        # internal callable
        a1 = self.auth.login_required( self.load_processes )
-       self.app.add_url_rule(self.slash_name+'/manage_processes/load_process',"node_process_load_process",a1,methods=["POST"])
+       self.app.add_url_rule(self.slash_name+'/manage_processes/load_process',self.subsystem_name+"node_process_load_process",a1,methods=["POST"])
        
        # internal call
        a1 = self.auth.login_required( self.manage_processes )
-       self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',"node_process_change_process",a1,methods=["POST"])
+       self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',self.subsystem_name+"node_process_change_process",a1,methods=["POST"])
     
     
    def assemble_handlers(self):  
@@ -129,7 +129,7 @@ class Load_Pod_Control_Processes(object):
       
       display_list = self.handlers[controller_id]["WEB_DISPLAY_DICTIONARY"].hkeys()
       
-      return self.render_template(self.path+"/pod_process_control",
+      return self.render_template(self.path_dest+"/pod_process_control",
                                   display_list = display_list, 
                                   command_queue_key = "WEB_COMMAND_QUEUE",
                                   process_data_key = "WEB_DISPLAY_DICTIONARY",
@@ -179,7 +179,7 @@ class Load_Pod_Control_Processes(object):
            temp = controller_exceptions[i]["error_output"]
            controller_exceptions[i]["error_output"] = [temp]
       
-       return self.render_template(self.path+"/pod_process_exception_status",
+       return self.render_template(self.path_dest+"/pod_process_exception_status",
                                   controller_keys = controller_exceptions.keys(),
                                   controller_exceptions = controller_exceptions,
                                   controller_id = controller_id,
@@ -205,7 +205,7 @@ class Load_Pod_Control_Processes(object):
                    i["error_output"] = temp
                    controller_exceptions.append(i)
        
-       return self.render_template(self.path+"/pod_process_exception_log",                                 
+       return self.render_template(self.path_dest+"/pod_process_exception_log",                                 
                                   log_data = controller_exceptions,
                                   controller_id = controller_id,
                                   controllers = self.controller_names )

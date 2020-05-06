@@ -19,8 +19,14 @@ from redis_support_py3.graph_query_support_py3 import  Query_Support
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from web_packages.load_static_pages_py3     import  Load_Static_Files 
 from web_packages.load_redis_access_py3     import  Load_Redis_Access
-from pod_process_control.load_pod_control_processes_py3 import Load_Pod_Control_Processes
+
 from redis_support_py3.construct_data_handlers_py3 import Redis_RPC_Client
+
+from web_core.pod_process_control.load_pod_control_processes_py3 import Load_Pod_Control_Processes
+from web_core.processor_performance.processor_performance_py3 import Processor_Monitoring
+from web_core.redis_monitor.load_redis_management_py3 import Load_Redis_Monitoring
+from web_core.docker_process_control.load_docker_process_control_py3 import Load_Docker_Processes
+
 
 class URL_Rule_Class(object):
 
@@ -32,27 +38,35 @@ class URL_Rule_Class(object):
 
 
    def add_get_rules(self,subsystem_name,function_list,url_list):
-       slash_name = "/"+subsystem_name
+       slash_name = "/"+subsystem_name+"/"
        assert(len(function_list)==len(url_list))
        menu_list = []
        menu_data = {}
        for i in range(0,len(function_list)):
            a1 = self.auth.login_required( function_list[i] )
-           self.app.add_url_rule(slash_name+url_list[i][0],url_list[i][1],a1)
-           menu_data[url_list[i][1]] =[a1,url_list[i][2],url_list[i][3]] 
-           menu_list.append(url_list[i][1])
+           self.app.add_url_rule(slash_name+url_list[i][0]+url_list[i][1],slash_name+url_list[i][0],a1)
+           menu_data[url_list[i][0]] =[a1,url_list[i][0]+url_list[i][2],url_list[i][3]] 
+           menu_list.append(url_list[i][0])
        self.subsystems[subsystem_name] = {"menu_list":menu_list,"menu_data":menu_data}      
        self.subsystem_order.append(subsystem_name)
        
    def move_directories(self,path):
-       os.system("ls flask_templates")
-       os.system('mkdir flask_templates/'+path)
-       os.system('mkdir flask_templates/js/'+path)
-       os.system("ls flask_templates")
-      
-       os.system('cp -r ' +path+'/templates/* flask_templates/'+path)
+       path_test = path.split("/")
+       if len(path_test) != 1:
+          path_dest = path_test[1]
+       else:
+          path_dest = path
+       #print(path)
+       #print(path_dest)
        
-       os.system('cp -r ' +path+'/js/* flask_templates/js/'+path)
+       os.system('mkdir flask_templates/'+path_dest)
+       os.system('mkdir flask_templates/js/'+path_dest)
+       #os.system("ls flask_templates")
+      
+       os.system('cp -r ' +path+'/templates/* flask_templates/'+path_dest)
+       
+       os.system('cp -r ' +path+'/js/* flask_templates/js/'+path_dest)
+       return path_dest
 
 
 class PI_Web_Server_Core(object):
@@ -98,16 +112,20 @@ class PI_Web_Server_Core(object):
        self.subsystems = []
        self.modules = {}
        
-       subsystem_name = "Pod_Control_Processes"
-       Load_Pod_Control_Processes(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Pod_Control_Processes",'pod_process_control')
-      
        
-       #self.menu.append(self.load_node_process_interface())
-       #self.menu.append(self.load_docker_interface())
-       #self.menu.append(self.load_processor_utilization_interface())
-       #self.menu_append(self.self.load_redis_monitoring())
- 
+       Load_Pod_Control_Processes(self.app, self.auth, request, render_template, self.qs,
+                                         self.site_data,self.url_rule_class,"Pod_Control_Processes",'web_core/pod_process_control')
+
+       
+       Processor_Monitoring(self.app, self.auth, request, render_template, self.qs,
+                                         self.site_data,self.url_rule_class,"Controller_Resoure_Utiliation",'web_core/controller_monitor')      
+       
+       Load_Redis_Monitoring(self.app, self.auth, request, render_template, self.qs,
+                                         self.site_data,self.url_rule_class,"Redis_Monitor",'web_core/redis_monitor') 
+       Load_Docker_Processes(self.app, self.auth, request, render_template, self.qs,
+                                         self.site_data,self.url_rule_class,"Docker_Process_Control",'web_core/docker_process_control') 
+
+                                         
  
    def get_pw( self,username):
        
@@ -125,6 +143,7 @@ class PI_Web_Server_Core(object):
        
    def generate_index_page(self,module,element):
        menu_data = self.url_rule_class.subsystems[module]["menu_data"]
+   
        menu_element = menu_data[element]
        self.app.add_url_rule("/","home page",menu_element[0])
        
@@ -181,18 +200,7 @@ class PI_Web_Server_Core(object):
        
        
 
-   '''
-           sub_system_data = self.url_rule_class.subsystems[i]
-           temp = sub_system_data["menu_data"]
-           
-           #
-        
-           for j in sub_system_data['menu_list']:
-                 data = temp[j]                      
-                 output_string = output_string + '<li><a href="' +'"/'+i+data[1]+'" target="_self">'+data[2]+'</a></li>\n'
-                  
-           f.write(output_string)
-   '''
+  
  
    def generate_modal_template(self):
       
@@ -233,8 +241,10 @@ class PI_Web_Server_Core(object):
            #
         
            for j in sub_system_data['menu_list']:
-                 data = temp[j]                      
-                 f.write('<li><a href='+'"/'+i+data[1]+'" target="_self">'+data[2]+'</a></li>\n')
+                 data = temp[j]      
+                 #print("data",data)  
+                 format_output = '<li><a href='+'"/'+i+'/'+data[1]+'" target="_self">'+data[2]+'</a></li>\n'                 
+                 f.write(format_output)
                   
        
 

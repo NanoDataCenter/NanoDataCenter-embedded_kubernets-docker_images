@@ -59,6 +59,7 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("ERROR_STREAM",forward=True)
     cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")
     

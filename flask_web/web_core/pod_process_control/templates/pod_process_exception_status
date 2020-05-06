@@ -14,9 +14,7 @@
       </script>
       <script type="text/javascript">
 
-$("#controller_select").val( {{ controller_id|int  }});
 
-$("#controller_select").bind('click',change_controller)
  
 function change_controller(event,ui)
 {
@@ -28,6 +26,17 @@ function change_controller(event,ui)
   current_page = current_page+"/"+$("#controller_select")[0].selectedIndex
   window.location.href = current_page
 }
+ $(document).ready(
+ function()
+ {
+   
+   
+   $("#controller_select").val( {{controller_id|int  }});
+   $("#controller_select").bind('change',change_controller)   
+   
+
+ }
+)
  
 </script>
   
@@ -51,23 +60,21 @@ function change_controller(event,ui)
 </center>
 </div>
 <div style="margin-top:20px"></div>
-<h4>Exception Log </h4>
-
-{% for item in log_data %}
+<h4>Latest Exception Status </h4>
+{% for item in controller_keys %}
 <div style="margin-top:10px"></div>
-<h5>{{item.script}}</h5>
+<h5>{{controller_exceptions[item].script}}</h5>
 <ul>  
-<li>script: {{item.script}} </li>
-<li>crc: {{item.crc}} </li>
-<li>timestamp: {{item.timestamp}} </li>
-<li>date time:  {{item.datetime}} </li>
+<li>name: {{controller_exceptions[item].script}} </li>
+<li>time: {{controller_exceptions[item].time}}
 <li>exception stack:</li>
+</ul>
 <ul>
-{% for line in item.error_output %}
+{% for line in controller_exceptions[item].error_output %}
  <li>{{line}}</li>
 {% endfor %}
 </ul>
-</ul>
+
 {% endfor %}
 </div>
 
