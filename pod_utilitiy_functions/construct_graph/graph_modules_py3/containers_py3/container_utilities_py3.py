@@ -10,6 +10,9 @@ class Start_Container(object):
         cd.add_hash("ERROR_HASH")
         cd.add_job_queue("WEB_COMMAND_QUEUE",1)
         cd.add_hash("WEB_DISPLAY_DICTIONARY")
+        cd.add_redis_stream("PROCESS_VSZ")
+        cd.add_redis_stream("PROCESS_RSS")
+        cd.add_redis_stream("PROCESS_CPU") 
         cd.close_package_contruction()
         
 class End_Container(object):

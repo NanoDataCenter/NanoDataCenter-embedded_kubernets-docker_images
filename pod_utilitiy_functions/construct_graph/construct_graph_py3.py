@@ -44,7 +44,7 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("UDP") 
     cd.close_package_contruction()
     properties = {}
-    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True}]
+    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True}]
     bc.add_header_node("NODE_PROCESSES",name,properties=properties)
     cd.construct_package("DATA_STRUCTURES")
     cd.add_redis_stream("ERROR_STREAM",forward=True)
