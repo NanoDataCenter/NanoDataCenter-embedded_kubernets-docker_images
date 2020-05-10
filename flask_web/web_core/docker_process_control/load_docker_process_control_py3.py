@@ -101,8 +101,8 @@ class Load_Docker_Processes(Base_Stream_Processing):
        
        #print(data_structures.keys())
        handlers = {}
-       handlers["ERROR_STREAM"]        = generate_handlers.construct_redis_stream_writer(data_structures["ERROR_STREAM"])
-       handlers["ERROR_STATE"]        = generate_handlers.construct_hash(data_structures["ERROR_HASH"])
+       handlers["ERROR_STREAM"]        = generate_handlers.construct_redis_stream_reader(data_structures["ERROR_STREAM"])
+      
        handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["WEB_COMMAND_QUEUE"])
        handlers["WEB_DISPLAY_DICTIONARY"] = generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
        return  handlers    
@@ -146,7 +146,7 @@ class Load_Docker_Processes(Base_Stream_Processing):
        self.menu_list = []
        
        function_list = [ self.container_control,
-                         self.container_exception_status,
+                        
                          self.container_exception_log,
                          self.process_control ,
                          self.display_exception_status,
@@ -156,7 +156,7 @@ class Load_Docker_Processes(Base_Stream_Processing):
                          self.display_rss  ]
                          
        url_list = [ [ 'start_and_stop_container','/<int:processor_id>','/0',"Stop/Start Docker Container"  ],
-                    [ 'container_exception_status','/<int:processor_id>','/0',"Managed Container Processes Status"  ],
+                   
                      [ 'container_exception_log','//<int:processor_id>','/0',"Managed Container Process Exception Log"  ],
                     [ 'start_and_stop_managed_container_processes','/<int:container_id>','/0',"Stop/Start Managed Container Processes"  ],
                     [ 'display_exception_status','/<int:container_id>','/0',"Managed Container Processes Status"  ],
@@ -216,11 +216,31 @@ class Load_Docker_Processes(Base_Stream_Processing):
                                   manage_process =  '"'+self.slash_name+'/manage_containers/change_containers'+'"' )
    
        
-   def container_exception_status(self,container_id):
-       pass
+
        
-   def container_exception_log(self,container_id):
-       pass
+   def container_exception_log(self,processor_id):
+       processor_name = self.processor_names[processor_id]
+       temp_list = self.container_control_structure[processor_name]["ERROR_STREAM"].revrange("+","-" , count=20)
+
+       container_exceptions = []
+       for j in temp_list:
+           i = j["data"]
+           i["timestamp"] = j["timestamp"]
+           i["datetime"] =  datetime.datetime.fromtimestamp( i["timestamp"]).strftime('%Y-%m-%d %H:%M:%S')
+
+           temp = i["error_output"]
+           if len(temp) > 0:
+               temp = i["error_output"]
+               if len(temp) > 0:
+                   temp = [temp]
+                   #temp = temp.split("\n")
+                   i["error_output"] = temp
+                   container_exceptions.append(i)
+       
+       return self.render_template(self.path_dest+"/docker_exception_log",                                 
+                                  log_data = container_exceptions,
+                                  processor_id = processor_id,
+                                  processors = self.processor_names )           
  
    def process_control(self,container_id):
       container_name = self.managed_container_names[container_id]
