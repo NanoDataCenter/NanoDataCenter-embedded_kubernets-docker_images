@@ -115,6 +115,9 @@ class PI_Web_Server_Core(object):
        
        Load_Pod_Control_Processes(self.app, self.auth, request, render_template, self.qs,
                                          self.site_data,self.url_rule_class,"Pod_Control_Processes",'web_core/pod_process_control')
+                                         
+       Load_Docker_Processes(self.app, self.auth, request, render_template, self.qs,
+                                         self.site_data,self.url_rule_class,"Docker_Process_Control",'web_core/docker_process_control') 
 
        
        Processor_Monitoring(self.app, self.auth, request, render_template, self.qs,
@@ -122,8 +125,6 @@ class PI_Web_Server_Core(object):
        
        Load_Redis_Monitoring(self.app, self.auth, request, render_template, self.qs,
                                          self.site_data,self.url_rule_class,"Redis_Monitor",'web_core/redis_monitor') 
-       Load_Docker_Processes(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Docker_Process_Control",'web_core/docker_process_control') 
 
                                          
  

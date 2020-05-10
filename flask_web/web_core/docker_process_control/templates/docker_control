@@ -10,11 +10,11 @@
        display_list = {{display_list}} 
        command_queue_key = "{{ command_queue_key}}"
        process_data_key = "{{ process_data_key}}"
-       container_id = {{container_id}}                         
+       processor_id = {{processor_id}}                         
        load_process = {{load_process}}
        manage_process = {{manage_process}}                          
       
-      {% include "js/docker_process_control/docker_process_control.js" %}
+      {% include "js/docker_process_control/docker_control.js" %}
       </script>
 
   
@@ -23,13 +23,13 @@
 {% block application %}
 <div class="container">
 <center>
-<h4>Select Container</h4>
+<h4>Select Processor</h4>
 </center>
 
 <div id="select_tag">
 <center>
-<select id="container_select">
-  {% for item in containers %}
+<select id="processor_select">
+  {% for item in processor_names %}
   
   <option value="{{loop.index0}}">{{item}}</option>
   {% endfor %}

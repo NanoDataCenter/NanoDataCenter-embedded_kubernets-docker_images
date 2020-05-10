@@ -8,6 +8,7 @@ RUN pip install Werkzeug
 RUN pip install Jinja2
 RUN pip install flask_httpauth
 #RUN pip install urllib
+ENV CONTAINER_NAME "flask_web"
 COPY . .
 
 

@@ -8,7 +8,7 @@ function refresh_data(event,ui)
 function load_data()
 {
    json_object = {}
-   json_object["container"]  = container_id
+   json_object["processor_id"]  = processor_id
 
   
    ajax_post_get(load_process,json_object, getQueueEntries, "Initialization Error!!!!") 
@@ -49,7 +49,7 @@ function getQueueEntries( data )
           
           name = display_list[i]
 	      temp  = data_ref[name]
-          data1 = 'Process: '+temp.name+" -- Enabled: "+temp.enabled+"  -- Active: "+
+          data1 = 'Container: '+temp.name+" -- Enabled: "+temp.enabled+"  -- Active: "+
                     temp.active+" --  Error State: "+temp.error 
           data = '<label for='+id+">"+data1+" </label>"
           html += '<div class="btn-group" >'
@@ -93,7 +93,7 @@ function getQueueEntries( data )
 
 
 
-function  change_process_status(event,ui)
+function  change_container_status(event,ui)
 {
 	 
 	  
@@ -118,9 +118,9 @@ function  change_process_status(event,ui)
 
   let temp_json = JSON.stringify(data_ref)
   json_object = {}
-  json_object["container"]  = container_id
+  json_object["processor_id"]  = processor_id
   json_object["process_data"] = temp_json
-  ajax_post_confirmation(manage_process, json_object,"Do you want to start/kill selected processes ?",
+  ajax_post_confirmation(manage_process, json_object,"Do you want to start/kill selected containers ?",
                             "Changes Made", "Changes Not Made") 
   
 
@@ -129,14 +129,14 @@ function  change_process_status(event,ui)
 
 
  
-function change_container(event,ui)
+function change_processor(event,ui)
 {
   current_page = window.location.href
   
  
   current_page = current_page.slice(0,-2)
   
-  current_page = current_page+"/"+$("#container_select")[0].selectedIndex
+  current_page = current_page+"/"+$("#processor_select")[0].selectedIndex
   window.location.href = current_page
 }
  
@@ -146,10 +146,10 @@ $(document).ready(
  {
    load_data() 
    
-   $("#container_select").val( {{ container_id|int  }});
-   $("#container_select").bind('change',change_container)   
+   $("#processor_select").val( {{ processor_id|int  }});
+   $("#processor_select").bind('change',change_processor)   
    $("#refresh_b").bind("click",refresh_data)
-   $("#change_state").bind("click",change_process_status)
+   $("#change_state").bind("click",change_container_status)
 
  }
 )

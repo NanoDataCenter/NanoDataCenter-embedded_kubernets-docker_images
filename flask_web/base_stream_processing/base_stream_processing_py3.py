@@ -43,7 +43,7 @@ class Base_Stream_Processing(object):
          new_key = new_key.replace('%','')
          new_key = new_key.replace('/','')
         
-         return_value[new_key] = self.format_key(i,stream_data,show_legend,title+i,"Date",i,ntick_x,ntick_y)
+         return_value[new_key] = self.format_key(i,stream_data,show_legend,title+i,title_x,title_y,ntick_x,ntick_y)
      
       old_keys = keys
       keys = []
