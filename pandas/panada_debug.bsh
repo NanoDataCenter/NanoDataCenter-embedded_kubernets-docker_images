@@ -1,0 +1,4 @@
+
+#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+docker run   -it --network host --rm  --name pandas  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/panadas  /bin/bash
+
