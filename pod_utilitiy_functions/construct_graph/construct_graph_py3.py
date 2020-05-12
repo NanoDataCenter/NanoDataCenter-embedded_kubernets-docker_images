@@ -118,7 +118,8 @@ if __name__ == "__main__" :
    cd.add_hash("SQL_DB_MAPPING")
    cd.close_package_contruction()
    bc.end_header_node("SQL_SERVER")
-   
+ 
+   bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS"]} )
    
    construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum_go","sqlite_server"])
    #
