@@ -11,59 +11,66 @@ class Docker_Processes(Common_Class):
       
        
        
-     
+
+             
           
    
    def execute_15_minutes(self):
+       print("execute_15_minutes")
        web_display = {}
        error_hash  = {}
        self.handlers["SYSTEM_STATUS"].hset(self.subsystem_name,True)
-      
+       new_data = {}
        for i in self.processors:
-           temp_web = {}
-           temp_error = {}
-           for j in self.containers[i]:           
-               temp_web[j] = self.common_obj.general_hash_iterator(self.subsystem_name,self.analyize_web_display,self.watch_handlers[i]["WEB_DISPLAY_DICTIONARY"])
-               temp_error[j]  = self.common_obj.general_hash_iterator(self.subsystem_name,self.analyize_error_display,self.watch_handlers[i]["ERROR_HASH"])
-           web_display[i] = temp_web
-           error_hash[i] = temp_error
+           container_data = {}
+           for j in self.containers[i]: 
+               web_display = self.common_obj.general_hash_iterator(self.subsystem_name,self.analyize_web_display,self.watch_handlers[i][j]["WEB_DISPLAY_DICTIONARY"])
+               error_display  = self.common_obj.general_hash_iterator(self.subsystem_name,self.analyize_error_display,self.watch_handlers[i][j]["ERROR_HASH"])
+               
+               container_data[j] = {"web_display":web_display,"error_hash":error_display}
+           new_data[i] = container_data
        
+       #print("new_data",new_data)
        status = True
-       data = self.handlers["MONITORING_DATA"].hget(self.subsystem_name)       
-       if data == None:
-          self.handlers["MONITORING_DATA"].hset(self.subsystem_name,[web_display,error_hash]) 
-          return          
- 
-       status = True
+       self.handlers["SYSTEM_STATUS"].hset(self.subsystem_name,True)
+       ref_total_data = self.handlers["MONITORING_DATA"].hget(self.subsystem_name)
+       if ref_total_data == None:
+          ref_total_data = new_data          
        for i in self.processors:
-           for j in self.containers[i]
-               status = status and self.common_obj.detect_new_alert(self.subsystem_name,data[0][i][j],web_display[i][j])
-               status = status and self.common_obj.check_for_error_flag(self.subsystem_name,error_hash[i][j])      
+           ref_data = ref_total_data[i]
+           #print("ref_data",i,ref_data)
+           if ref_data == None:
+              print("continue",i)
+           else:
+               for j in self.containers[i]:
+                   ref_container = ref_data[j]
+                   #print("ref_container",j,ref_container)
+                   if ref_container == None:
+                      print("continue",i)
+                   else:
+                      status = status and self.common_obj.detect_new_alert(self.subsystem_name,new_data[i][j]["web_display"],ref_container["web_display"])
+                      status = status and self.common_obj.check_for_error_flag(self.subsystem_name,new_data[i][j]["error_hash"])
+
+                
        print("status",status)
        if status == False: # change is monitoring status
            print("log alert")
-           #self.common_obj.log_alert([web_display,error_hash])
-           
-       self.handlers["MONITORING_DATA"].hset(self.subsystem_name,[web_display,error_hash])  
-       print("MONITORING_DATA",self.handlers["MONITORING_DATA"].hget(self.subsystem_name))
-       print("SYSTEM_STATUS",self.handlers["SYSTEM_STATUS"].hget(self.subsystem_name))
+           self.common_obj.log_alert(self.subsystem_name,new_data)
+       self.handlers["MONITORING_DATA"].hset(self.subsystem_name,new_data)
 
 
    def construct_data_structures(self):
        
        self.processors = self.common_obj.find_processors()
-       self.containers = self.common_obj.find_containers()
-       
-       search_list = ["PACKAGE"]
+       self.containers = self.common_obj.find_all_containters()
        data_structures = ["WEB_DISPLAY_DICTIONARY","ERROR_HASH"]
-       self.watch_handlers = self.common_obj.generate_hash_structures_with_processor_container(self.processors,search_list,data_structures)
+       self.watch_handlers = self.common_obj.generate_structures_with_processor_container(self.processors,data_structures)
        
 
 
    def analyize_web_display( self,data):
-       print("web_display",data)
-       exit()
-       print("WEB_DISPLAY_DICTIONARY",data)
+ 
+       #print("WEB_DISPLAY_DICTIONARY",data)
        if data["error"] == False:
           flag  = True
        else:
@@ -73,9 +80,8 @@ class Docker_Processes(Common_Class):
 
 
    def analyize_error_display( self,data):
-       print("error_display",data)
-       exit()
-       print("ERROR_DISPLAY",data)
+       #print("error_display",data)
+
        if 'time' not in data:
           return [False,True,json.dumps("")]
        ref_time = time.time()-15*60  # 15 minutes in past

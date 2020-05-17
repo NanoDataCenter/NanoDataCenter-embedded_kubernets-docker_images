@@ -9,6 +9,8 @@
 
 from .pod_processes_py3 import Pod_Processes
 from .docker_containers_py3 import Docker_Containers
+from .docker_processes_py3 import Docker_Processes
+from .processor_utilization_py3 import Processor_Utilization
 class Generate_Core_Monitoring(object):
 
    def __init__(self,common_functions):
@@ -16,8 +18,10 @@ class Generate_Core_Monitoring(object):
        self.subsystem_order = []
        self.common_functions = common_functions
        subsystem_list = [ 
-                          ["pod_processes",Pod_Processes],
-                          ["docker_containers",Docker_Containers]                          
+                          #["pod_processes",Pod_Processes],
+                          #["docker_containers",Docker_Containers], 
+                          #["docker_processes",Docker_Processes],
+                          ["processor_utilization",Processor_Utilization]                          
        
                          ]   
        self.add_subsystems(subsystem_list)
@@ -44,6 +48,10 @@ class Generate_Core_Monitoring(object):
    def execute_hour(self):
        for i in self.subsystem_order:
            self.subsystems[i].execute_hour()  
+           
+   def execute_day(self):
+      for i in self.subsystem_order:
+          self.subsystems[i].execute_day()  
 
    def execute_alarm_daily_count(self):
        for i in self.subsystem_order:

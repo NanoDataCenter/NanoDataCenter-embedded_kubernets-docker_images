@@ -19,7 +19,9 @@ class Op_Monitor(object):
 
    def execute_hour(self,*parameters):
        self.construct_monitors.execute_hour()
-       
+   
+   def execute_day(self,*parameters):
+       self.construct_monitors.execute_day()   
 
  
        
@@ -97,6 +99,13 @@ def add_chains(redis_monitor, cf):
     cf.insert.one_step(op_monitor.execute_hour)
     cf.insert.log("ending hour op monitoring")
     cf.insert.wait_event_count( event = "HOUR_TICK")
+    cf.insert.reset()
+
+    cf.define_chain("day_measurements", True)
+    cf.insert.log("starting hour op monitoring")
+    cf.insert.one_step(op_monitor.execute_day)
+    cf.insert.log("ending hour op monitoring")
+    cf.insert.wait_event_count( event = "DAY_TICK")
     cf.insert.reset()
 
 

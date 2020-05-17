@@ -16,6 +16,10 @@ class Common_Class(object):
    
    def execute_hour(self):
        pass
+       
+   def execute_day(self):
+       pass
+
 
    def execute_alarm_daily_count(self):
        pass
