@@ -24,6 +24,8 @@ def construct_processor(name,containers,services):
     properties["containers"] = containers
     properties["services"] = services
     bc.add_header_node("PROCESSOR",name,properties= properties) 
+    bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS"]} )
+
     cd.construct_package("SYSTEM_MONITORING")
     cd.add_redis_stream("FREE_CPU",forward = True) # one month of data
     cd.add_redis_stream("RAM",forward = True)
@@ -38,10 +40,9 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("BLOCK_DEV")
     cd.add_redis_stream("CONTEXT_SWITCHES")
     cd.add_redis_stream("RUN_QUEUE")       
-    cd.add_redis_stream("DEV") 
-    cd.add_redis_stream("SOCK") 
-    cd.add_redis_stream("TCP") 
-    cd.add_redis_stream("UDP") 
+    cd.add_redis_stream("EDEV") 
+     
+
     cd.close_package_contruction()
     properties = {}
     properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True}]
@@ -131,7 +132,7 @@ if __name__ == "__main__" :
    bc.end_header_node("SYSTEM_MONITOR")
    
    
-   bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS"]} )
+   
    
    construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud"],services=["redis","ethereum_go","sqlite_server"])
    #

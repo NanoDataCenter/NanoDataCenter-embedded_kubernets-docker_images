@@ -38,10 +38,7 @@ class Processor_Monitoring(Base_Stream_Processing):
                            self.process_block_dev ,
                            self.process_context_switches ,
                            self.process_run_queue, 
-                           self.process_dev ,
-                           self.process_sock,
-                           self.process_tcp ,
-                           self.process_udp ]
+                           self.process_edev ]
       
       
        url_list = [
@@ -55,10 +52,8 @@ class Processor_Monitoring(Base_Stream_Processing):
                       [ 'block_dev' ,'/<int:controller_id>','/0',"Display Block Device Loading"  ],
                       [ 'context_switches' ,'/<int:controller_id>','/0',"Display Context Switch Loading" ],
                       [ 'run_queue','/<int:controller_id>','/0',"Display Run Queue Loading"  ],
-                      [ 'dev'  ,'/<int:controller_id>','/0',"Network Device Errors" ],
-                      [ 'sock' ,'/<int:controller_id>','/0',"Display Socket Loading" ],
-                      [ 'tcp'  ,'/<int:controller_id>','/0',"Display TCP Loading"  ],
-                      [ 'udp'  ,'/<int:controller_id>','/0',"Display UDP Loading"  ]
+                      [ 'edev'  ,'/<int:controller_id>','/0',"Network Device Errors" ]
+                      
         ]
 
        self.url_rule_class.add_get_rules(self.subsystem_name,function_list,url_list)
@@ -110,10 +105,8 @@ class Processor_Monitoring(Base_Stream_Processing):
        handlers["BLOCK_DEV"] = generate_handlers.construct_redis_stream_reader(data_structures["BLOCK_DEV"])
        handlers["CONTEXT_SWITCHES"] = generate_handlers.construct_redis_stream_reader(data_structures["CONTEXT_SWITCHES"])
        handlers["RUN_QUEUE"] = generate_handlers.construct_redis_stream_reader(data_structures["RUN_QUEUE"])
-       handlers["DEV"] = generate_handlers.construct_redis_stream_reader(data_structures["DEV"])
-       handlers["SOCK"] = generate_handlers.construct_redis_stream_reader(data_structures["SOCK"])
-       handlers["TCP"] = generate_handlers.construct_redis_stream_reader(data_structures["TCP"])
-       handlers["UDP"] = generate_handlers.construct_redis_stream_reader(data_structures["UDP"])
+       handlers["EDEV"] = generate_handlers.construct_redis_stream_reader(data_structures["EDEV"])
+       
        return handlers
 
 
@@ -265,7 +258,7 @@ class Processor_Monitoring(Base_Stream_Processing):
        temp_data = self.handlers[controller_id]["IO_SPACE"].revrange("+","-" , count=1000)
        temp_data.reverse()
        chart_title = " IO Space Activity: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="",title_x="Date")
        
 
        return self.render_template( "streams/stream_multi_controller",
@@ -283,7 +276,7 @@ class Processor_Monitoring(Base_Stream_Processing):
        temp_data = self.handlers[controller_id]["BLOCK_DEV"].revrange("+","-" , count=1000)
        temp_data.reverse()
        chart_title = " Block Space Activity: "
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="",title_x="Date")
        
 
        return self.render_template( "streams/stream_multi_controller",
@@ -301,7 +294,7 @@ class Processor_Monitoring(Base_Stream_Processing):
        temp_data = self.handlers[controller_id]["CONTEXT_SWITCHES"].revrange("+","-" , count=1000)
        temp_data.reverse()
        chart_title = " Context Switches: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="",title_x="Date")
        
 
        return self.render_template( "streams/stream_multi_controller",
@@ -320,7 +313,7 @@ class Processor_Monitoring(Base_Stream_Processing):
        temp_data = self.handlers[controller_id]["RUN_QUEUE"].revrange("+","-" , count=1000)
        temp_data.reverse()
        chart_title = " RUN QUEUE Activity: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="",title_x="Date")
        
 
        return self.render_template( "streams/stream_multi_controller",
@@ -334,11 +327,11 @@ class Processor_Monitoring(Base_Stream_Processing):
                                      )
 
       
-   def process_dev(self,controller_id):
-       temp_data = self.handlers[controller_id]["DEV"].revrange("+","-" , count=1000)
+   def process_edev(self,controller_id):
+       temp_data = self.handlers[controller_id]["EDEV"].revrange("+","-" , count=1000)
        temp_data.reverse()
        chart_title = " NETWORK DEVICE ERRORS: "
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="",title_x="Date")
        
 
        return self.render_template( "streams/stream_multi_controller",
@@ -351,63 +344,5 @@ class Processor_Monitoring(Base_Stream_Processing):
                                      
                                      )
 
-
-      
-
-   def process_sock(self,controller_id):
-       temp_data = self.handlers[controller_id]["SOCK"].revrange("+","-" , count=1000)
-       temp_data.reverse()
-       chart_title = " IO Space Activity: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
-       
-
-       return self.render_template( "streams/stream_multi_controller",
-                                     stream_data = stream_data,
-                                     stream_keys = stream_keys,
-                                     title = stream_keys,
-                                     stream_range = stream_range,
-                                     controllers = self.controllers,
-                                     controller_id = controller_id
-                                     
-                                     )
-
-
-
-   def process_tcp(self,controller_id):
-       temp_data = self.handlers[controller_id]["TCP"].revrange("+","-" , count=1000)
-       temp_data.reverse()
-       chart_title = " TCP Activity: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
-       
-
-       return self.render_template( "streams/stream_multi_controller",
-                                     stream_data = stream_data,
-                                     stream_keys = stream_keys,
-                                     title = stream_keys,
-                                     stream_range = stream_range,
-                                     controllers = self.controllers,
-                                     controller_id = controller_id
-                                     
-                                     )
-
-
-       
-
-   def process_udp(self,controller_id):
-       temp_data = self.handlers[controller_id]["UDP"].revrange("+","-" , count=1000)
-       temp_data.reverse()
-       chart_title = " UDP Activity: "+self.controllers[controller_id]
-       stream_keys,stream_range,stream_data = self.format_data(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
-       
-
-       return self.render_template( "streams/stream_multi_controller",
-                                     stream_data = stream_data,
-                                     stream_keys = stream_keys,
-                                     title = stream_keys,
-                                     stream_range = stream_range,
-                                     controllers = self.controllers,
-                                     controller_id = controller_id
-                                     
-                                     )
 
  

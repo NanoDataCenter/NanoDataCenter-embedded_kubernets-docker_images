@@ -203,6 +203,7 @@ class  Common_Functions(object):
 
    def general_stream_handler(self,processor_name,comparison_handler,stream_handler,duration, fields):# all keys
        stream_data = stream_handler.revrange(time.time(),time.time()-duration, count=1000)
+
        compare_values = {}
        for field in fields:
            temp = []
@@ -210,10 +211,10 @@ class  Common_Functions(object):
               if field in value["data"]:
                  temp.append(value["data"][field])
            compare_values[field] = temp
-       print(compare_values)
+       
        return_value = comparison_handler(compare_values)
        print(return_value)
-       exit()
+       
            
  
               
@@ -221,6 +222,26 @@ class  Common_Functions(object):
    def log_alert(self,subsystem,data):
        
        self.handlers["SYSTEM_ALERTS"].push(data={"subsystem":subsystem,"data":data})  
+   
+   def convert_to_float(self,item):
+       return_value = []
+       for i in item:
+         return_value.append(float(i))
+       return return_value         
+ 
+   def determine_statistics(self,data):
        
- 
- 
+       return_data = {}
+       #print("data",data)
+       for key,item in data.items():
+           item = self.convert_to_float(item)
+           temp ={}
+           temp["mean"] = statistics.mean(item)
+           temp["median"] = statistics.median(item)
+           temp["std"] = statistics.stdev(item)
+           temp["max"] = max(item)
+           temp["min"] = min(item)
+           return_data[key] =temp
+       
+
+       return return_data
