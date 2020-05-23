@@ -24,7 +24,7 @@ def construct_processor(name,containers,services):
     properties["containers"] = containers
     properties["services"] = services
     bc.add_header_node("PROCESSOR",name,properties= properties) 
-    bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS"]} )
+    bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN"]} )
 
     cd.construct_package("SYSTEM_MONITORING")
     cd.add_redis_stream("FREE_CPU",forward = True) # one month of data

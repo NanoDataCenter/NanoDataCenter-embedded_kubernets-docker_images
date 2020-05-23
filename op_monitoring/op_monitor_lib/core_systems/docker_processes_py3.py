@@ -8,6 +8,7 @@ class Docker_Processes(Common_Class):
        Common_Class.__init__(self,subsystem_name,common_obj )
        self.construct_data_structures()
        self.handlers = common_obj.handlers
+       
       
        
        
@@ -28,8 +29,10 @@ class Docker_Processes(Common_Class):
                error_display  = self.common_obj.general_hash_iterator(self.subsystem_name,self.analyize_error_display,self.watch_handlers[i][j]["ERROR_HASH"])
                
                container_data[j] = {"web_display":web_display,"error_hash":error_display}
+              
+
            new_data[i] = container_data
-       
+
        #print("new_data",new_data)
        status = True
        self.handlers["SYSTEM_STATUS"].hset(self.subsystem_name,True)

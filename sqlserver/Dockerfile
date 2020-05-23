@@ -1,5 +1,5 @@
 FROM nanodatacenter/basic_python_container
 ENV CONTAINER_NAME "sqlite_server"
 
-VOLUME [/data/,/sqlite/db_file.db]
+VOLUME [/data/,/sqlite/]
 COPY . .

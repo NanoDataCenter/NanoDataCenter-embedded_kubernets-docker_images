@@ -1,6 +1,8 @@
 
 from .core_systems.core_systems_py3  import Generate_Core_Monitoring
-#from .monitor_redis_py3              import Generate_Monitor_Redis
+from .servers.monitor_redis_py3   import Redis_Monitor
+from .servers.monitor_sql_server_py3   import SQLITE_Monitor
+from .servers.monitor_block_chain_py3  import Block_Chain_Monitor
 from .common_functions_py3   import Common_Functions
 class Construct_Monitors(object):
 
@@ -14,12 +16,17 @@ class Construct_Monitors(object):
            if i == "CORE_OPS":
                print(i)
                self.monitors[i] = Generate_Core_Monitoring(self.common_functions)
-           #if i == "monitor_redis":
-           #    print(i)
-           #    self.monitors[i] = Generate_Monitor_Redis(self.common_functions)
+           elif i == "MONITOR_REDIS":
+               print(i)
+               self.monitors[i] = Redis_Monitor("MONITOR_REDIS",self.common_functions)
               
-          
-                  
+           elif i == "MONITOR_SQLITE":
+                print(i)
+                self.monitors[i] = SQLITE_Monitor("MONITOR_SQLITE",self.common_functions)
+
+           elif i == "MONITOR_BLOCK_CHAIN":
+                print(i)
+                self.monitors[i] = Block_Chain_Monitor("MONITOR_BLOCK_CHAIN",self.common_functions)                  
            else:
                raise         
           
