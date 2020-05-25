@@ -86,7 +86,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Number of Redis Key in : "
       
-       stream_keys,stream_range,stream_data = self.format_data_specific_key(temp_data,title=chart_title,title_y="Deg F",title_x="Date",specific_key = "keys")
+       stream_keys,stream_range,stream_data = self.format_data_specific_key(temp_data,title=chart_title,title_y="Key Number",title_x="Date",specific_key = "keys")
        
        
        return self.render_template( "streams/base_stream",
@@ -110,7 +110,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Redis Client : "
        
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Client Number",title_x="Date")
        
       
        return self.render_template( "streams/base_stream",
@@ -130,7 +130,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Redis Memory Utilization : "
        
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Memory Stream",title_x="Date")
        
       
        return self.render_template( "streams/base_stream",
@@ -153,7 +153,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Number of Redis Command Calls/hour : "
        
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Call Stream",title_x="Date")
        
        #print("made it here",stream_keys,stream_data)
        return self.render_template( "streams/base_stream",
@@ -173,7 +173,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Redis Command Time in us : "
        
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Command Stream",title_x="Date")
        
       
        return self.render_template( "streams/base_stream",
@@ -193,7 +193,7 @@ class Load_Redis_Monitoring(Base_Stream_Processing):
        temp_data.reverse()
        chart_title = " Redis Execution time/hour : "
        
-       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Deg F",title_x="Date")
+       stream_keys,stream_range,stream_data = self.format_data_variable_title(temp_data,title=chart_title,title_y="Server Time",title_x="Date")
        
       
        return self.render_template( "streams/base_stream",

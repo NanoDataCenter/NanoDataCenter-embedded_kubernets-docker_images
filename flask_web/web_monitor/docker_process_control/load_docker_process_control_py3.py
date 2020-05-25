@@ -11,6 +11,7 @@ from base_stream_processing.base_stream_processing_py3 import Base_Stream_Proces
 class Load_Docker_Processes(Base_Stream_Processing):
 
    def __init__( self, app, auth, request, render_template,qs,site_data,url_rule_class,subsystem_name,path):
+      
        self.app      = app
        self.auth     = auth
        self.request  = request

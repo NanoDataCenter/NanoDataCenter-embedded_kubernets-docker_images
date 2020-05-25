@@ -1,0 +1,30 @@
+{% extends "base_template" %}
+
+{% block application_javascript %}
+ 
+
+  
+{% endblock %}
+
+{% block application %}
+
+<div style="margin-top:20px"></div>
+
+<h4>Subsystem Status</div>
+<ul>
+{% for item in subsystems %}
+
+{% if states[item] %}
+<li  style="color:#00FF00";><a href="{{links[item]}}" style="color:#00FF00";>Subsystem {{ item }}</a> </li>
+{% else %}
+<li  style="color:#00FF00";><a href="{{links[item]}}" style="color:#00FF00";>Subsystem {{ item }}</a> </li>
+{% endif %}
+   
+{% endfor %}
+{% endblock %}
+<div>
+
+
+
+
+
