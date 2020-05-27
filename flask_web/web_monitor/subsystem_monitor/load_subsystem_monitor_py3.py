@@ -1,6 +1,6 @@
 import os
 import json
-from datetime import datetime
+import datetime
 import time
 from base_stream_processing.base_stream_processing_py3 import Base_Stream_Processing
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
@@ -119,15 +119,16 @@ class Load_Subsystem_Monitor(object):
                  
    def subsystem_error_stream_log(self):
        
-       temp_list = self.handlers["SYSTEM_ALERTS"].revrange("+","-" , count=20)
+       temp_list = self.handlers["SYSTEM_ALERTS"].revrange("+","-" , count=50)
        print("temp_list",temp_list)
        error_log = []
       
        for j in temp_list:
+           print("j",j)
            i = {}
            i["data"] = json.dumps(j["data"])
-        
-           i["datetime"] =  datetime.datetime.fromtimestamp( j["timestamp"]).strftime('%Y-%m-%d %H:%M:%S')
+           i["datetime"] =  datetime.datetime.fromtimestamp(j["timestamp"]).isoformat()
+           
            error_log.append(i)
     
        

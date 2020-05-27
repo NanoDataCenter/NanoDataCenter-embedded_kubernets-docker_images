@@ -19,7 +19,7 @@ from web_monitor.subsystem_monitor.load_subsystem_monitor_py3 import Load_Subsys
 from bootstrap_web_core_py3 import PI_Web_Server_Core
 
 
-class PI_Web_Server_Server(PI_Web_Server_Core):
+class PI_Web_Monitor_Server(PI_Web_Server_Core):
 
    def __init__(self , name, site_data ):
        PI_Web_Server_Core.__init__(self,name,site_data)

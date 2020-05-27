@@ -130,7 +130,14 @@ if __name__ == "__main__" :
    cd.add_redis_stream("SYSTEM_PUSHED_ALERTS")
    cd.close_package_contruction()
    bc.end_header_node("SYSTEM_MONITOR")
-   
+
+   bc.add_header_node("TICKET_CONTROL")
+   bc.add_info_node( "DATA_BASE","TICKET_CONTROL", properties = {"db":"SYSTEM_CONTROL.db"} )
+   bc.add_info_node("TABLE","TICKET_CONTROL",properties = {"name":"TICKET_CONTROL.db",
+                    "fields":[ "id INTEGER AUTOINCREMENT","active Int","create_timestamp FLOAT","close_timestamp FLOAT","type Int","subtype Text","description TEXT","resolution TEXT"   ]} )
+   bc.add_info_node("VALID_TYPES","TICKET_CONTROL",properties = {"types":["OTHERS","IRRIGATION_ISSUES","IRRIGATION_EQUIPMENT","TRIMMING"]})                   
+   bc.end_header_node("TICKET_CONTROL")
+    
    
    bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN"]} ) 
    
