@@ -42,7 +42,7 @@
   <h4>Refresh State</h4>       
    <button type="button" id="refresh_b">Refresh</button>
    <div style="margin-top:20px"></div>
-   <h4>Edit Managed Processes</h4>
+   <h4>Edit Managed Containers</h4>
    
    <h4>Toggle Check Box to Change State  -- Check to Enable  Uncheck to Disable</h4>
    

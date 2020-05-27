@@ -172,10 +172,12 @@ class  Common_Functions(object):
 
        
        status_map = {}
-       error_count = 0           
+       error_count = 0 
+            
        for i in hash_obj.hkeys():
-           #print(i)
+          
            store_flag, status,result =  check_function(hash_obj.hget(i))
+         
            if store_flag == False:
               continue
            status_map[i] = [status,result]
@@ -185,6 +187,7 @@ class  Common_Functions(object):
            
        if error_count >0:
           print("failure",i)
+          
           self.handlers["SYSTEM_STATUS"].hset(processor,False)
      
        return [error_count, status_map]
@@ -239,11 +242,14 @@ class  Common_Functions(object):
 
    def general_stream_handler(self,comparison_handler,stream_handler,duration):# all keys
        raw_data = stream_handler.revrange(time.time(),time.time()-duration, count=1000)
+       
+
        stream_data = []
        for i in raw_data:
            stream_data.append(i["data"])
-
-       
+        
+       if len(stream_data) == 0:
+          return [False,json.dumps(stream_data)]       
        return_value = comparison_handler(stream_data)
        return return_value
        
@@ -254,17 +260,19 @@ class  Common_Functions(object):
            return_value[j] = []
        for i in input_stream:
            for j in keys:
-               return_value[j].append(i[j])
+               if j in i:
+                   return_value[j].append(i[j])
  
        return return_value           
 
    def log_alert(self,subsystem,data):
-       
+       print("****************************** log alert *********************",subsystem,data)
        self.handlers["SYSTEM_ALERTS"].push(data={"subsystem":subsystem,"data":data})  
    
         
  
    def determine_statistics(self,data):
+       
        data_list = []
        for item in data:
            data_list.append(float(item))

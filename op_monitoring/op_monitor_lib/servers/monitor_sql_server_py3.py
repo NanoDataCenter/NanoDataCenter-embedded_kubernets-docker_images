@@ -68,7 +68,7 @@ class SQLITE_Monitor(Common_Class):
           test_value = self.rpc_client.send_rpc_message( method="list_list_data_bases",parameters=parameters,timeout=10 )
           return_value = test_value[0]          
        except:
-          raise
+          
           print("exception failure")
           return_value = False       
        return return_value

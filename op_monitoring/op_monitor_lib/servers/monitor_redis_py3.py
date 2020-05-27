@@ -69,7 +69,7 @@ class Redis_Monitor(Common_Class):
        if stat_data['connected_clients']["max"] > 200:
           status == False
        stat_data['blocked_clients'] = self.common_obj.determine_statistics(filter_data['blocked_clients']) 
-       if stat_data['blocked_clients']["max"] > 5:
+       if stat_data['blocked_clients']["max"] > 200:
           status == False       
              
        return_value = [status,json.dumps(stat_data)]

@@ -46,6 +46,8 @@ class Docker_Processes(Common_Class):
               print("continue",i)
            else:
                for j in self.containers[i]:
+                   if j == "op_monitor":
+                      continue
                    ref_container = ref_data[j]
                    #print("ref_container",j,ref_container)
                    if ref_container == None:

@@ -39,6 +39,8 @@ def construct_op_monitoring_instance( qs, site_data ):
  
     data = data_sources[0]
     monitoring_list = data['OP_MONITOR_LIST']
+    print("monitoring_list",monitoring_list)
+  
     query_list = []
     query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
 
@@ -64,7 +66,8 @@ def construct_op_monitoring_instance( qs, site_data ):
     handlers["MONITORING_DATA"] = generate_handlers.construct_hash(data_structures["MONITORING_DATA"])
     handlers["SYSTEM_ALERTS"] = generate_handlers.construct_stream_writer(data_structures["SYSTEM_ALERTS"] )
     handlers["SYSTEM_PUSHED_ALERTS"]= generate_handlers.construct_stream_writer(data_structures["SYSTEM_PUSHED_ALERTS"] )
-    
+   
+    handlers["SYSTEM_STATUS"].delete_all()
    
     op_monitor = Op_Monitor(site_data ,qs,monitoring_list,handlers )
     

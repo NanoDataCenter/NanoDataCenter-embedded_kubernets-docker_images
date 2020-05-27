@@ -15,15 +15,16 @@
 {% for item in subsystems %}
 
 {% if states[item] %}
-<li  style="color:#00FF00";><a href="{{links[item]}}" style="color:#00FF00";>Subsystem {{ item }}</a> </li>
+<li  style="color:#00FF00";><a href="{{sub_error_display+loop.index0|string }}" style="color:#00FF00";>Subsystem {{ item }} </a> </li>
 {% else %}
-<li  style="color:#00FF00";><a href="{{links[item]}}" style="color:#00FF00";>Subsystem {{ item }}</a> </li>
+<li  style="color:#00FF00";><a href="{{sub_error_display+loop.index0|string }}" style="color:#00FF00";>Subsystem {{ item }} </a> </li>
 {% endif %}
    
 {% endfor %}
-{% endblock %}
-<div>
 
+<a href="{{error_stream }}" >List of Subsystem Error Logs</a>
+</div>
+{% endblock %}
 
 
 

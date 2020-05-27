@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 from base_stream_processing.base_stream_processing_py3 import Base_Stream_Processing
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from flatten_dict import flatten
 class Load_Subsystem_Monitor(object):
 
    def __init__(self, app, auth, request, render_template,qs,site_data,url_rule_class,subsystem_name,path):
@@ -20,8 +21,9 @@ class Load_Subsystem_Monitor(object):
        self.assemble_handlers()
        self.assemble_url_rules()
        self.path_dest = self.url_rule_class.move_directories(self.path)     
-
-       
+       self.subsystems = self.handlers["SYSTEM_STATUS"].hkeys()
+       self.subsystems.sort()  
+     
    def assemble_url_rules(self):
     
        self.slash_name = "/"+self.subsystem_name
@@ -31,7 +33,9 @@ class Load_Subsystem_Monitor(object):
        
 
        
-       function_list =   [ self.system_status,
+       function_list =   [ self.subsystem_status,
+                           self.subsystem_error_status,
+                           self.subsystem_error_stream_log
                          ]
                            
  
@@ -39,7 +43,9 @@ class Load_Subsystem_Monitor(object):
    
       
        url_list = [
-                      [ 'system_status' ,'','',"System_Status"  ] 
+                      [ 'subsystem_status' ,'','',"Subsystem_Status"  ],
+                      [ 'subsystem_error_status', '/<int:subsystem_id>','/0',"Subsystem_Error_Status"  ],
+                      [ 'subsystem_error_log' ,'','',"Subsystem_Error_Log"  ],
                   ]
 
        self.url_rule_class.add_get_rules(self.subsystem_name,function_list,url_list)
@@ -65,54 +71,101 @@ class Load_Subsystem_Monitor(object):
        self.handlers["MONITORING_DATA"] = generate_handlers.construct_hash(data_structures["MONITORING_DATA"])
        self.handlers["SYSTEM_ALERTS"] = generate_handlers.construct_redis_stream_reader(data_structures["SYSTEM_ALERTS"])
        
+      
 
-
-   def  system_status(self):
+   def  subsystem_status(self):
        
-       subsystems = self.handlers["SYSTEM_STATUS"].hkeys()
-       states    = self.handlers["SYSTEM_STATUS"].hgetall()
-       values    =  self.handlers["MONITORING_DATA"].hgetall()
-       subsystems.sort()
-       print("subsystems",subsystems)
-       links = self.generate_links(subsystems,values)
-       number_of_errors = self.generate_errors(subsystems,values)
+       
+       error_states    = self.handlers["SYSTEM_STATUS"].hgetall()
+       
+       
+       subsystem_error_display =  self.slash_name+"/subsystem_error_status/"
+       error_stream_display = self.slash_name+"/subsystem_error_log"
+       
+      
        
        
        
        return self.render_template( self.path_dest+"/list_subsystem_status",
-                                    subsystems = subsystems,
-                                    states     = states, 
-                                    links      = links,
-                                    number_of_errors = number_of_errors
+                                    subsystems = self.subsystems,
+                                    states     = error_states,                                   
+                                    sub_error_display = subsystem_error_display,
+                                    error_stream      = error_stream_display
                                      )
+                                     
+   def subsystem_error_status(self,subsystem_id):
 
-   def generate_links(self,subsystems,values):
-       return_value = {}
-       for i in subsystems:
-           return_value[i] = self.generate_a_link(i,values[i])
-       return return_value
+       subsystem = self.subsystems[subsystem_id]
+       value    =  self.handlers["MONITORING_DATA"].hget(subsystem)
+       if type(value) != dict:
+          temp = value
+          value = {}
+          value[subsystem] = temp
+       flatten_value = flatten(value,reducer='path')
+       print("flatten value",flatten_value)
+       json_value = {}
+       for key,value in flatten_value.items():
+           if type(value) == list:
+               key = key+" Total Errors: "+str(value[0])
+               json_value[key] = value[1]
+           else:
+                json_value[key] = value
+       return self.render_template(self.path_dest+"/subsystem_error_display",                                 
+                                   error_status = json_value,
+                                   subsystem_id = subsystem_id,
+                                   subsystems = self.subsystems,
+                                   subsystem_name = subsystem)
+                                         
+                 
+   def subsystem_error_stream_log(self):
        
-   def generate_a_link(self,subsystem,value):
-       if subsystem in ['MONITOR_BLOCK_CHAIN','MONITOR_REDIS']:
-          print(subsystem)
-          print(value)
-          link = "/"+self.subsystem_name+"/single_level/"+subsystem
-          
-       elif subsystem in ['MONITOR_SQLITE']:
-          print(subsystem)
-          print(value)       
-          link = "/"+self.subsystem_name+"/single_level/"+subsystem
-          
-       else:
-           print(subsystem)
-           print(value)
-           
-           raise
-       print("link",link)
-       return link
+       temp_list = self.handlers["SYSTEM_ALERTS"].revrange("+","-" , count=20)
+       print("temp_list",temp_list)
+       error_log = []
+      
+       for j in temp_list:
+           i = {}
+           i["data"] = json.dumps(j["data"])
+        
+           i["datetime"] =  datetime.datetime.fromtimestamp( j["timestamp"]).strftime('%Y-%m-%d %H:%M:%S')
+           error_log.append(i)
+    
        
-   def generate_errors(self,subsystems,values):
-       return_values = []
-       for i in subsystems:
-          return_value = return_value + values[i][0]
-       return return_value
+       return self.render_template(self.path_dest+"/subsystem_error_log",                                 
+                                   error_log = error_log )
+                                  
+
+
+   ''' 
+       
+   def flatten(self,input_dict, separator='_', prefix=''):
+       output_dict = {}
+       for key, value in input_dict.items():
+           if isinstance(value, dict) and value:
+               deeper = self.flatten(value, separator, prefix+key+separator)
+               output_dict.update({key2: val2 for key2, val2 in deeper.items()})
+           elif isinstance(value, list) and value:
+               for index, sublist in enumerate(value, start=1):
+                   if isinstance(sublist, dict) and sublist:
+                       deeper = self.flatten(sublist, separator, prefix+key+separator+str(index)+separator)
+                       output_dict.update({key2: val2 for key2, val2 in deeper.items()})
+                   else:
+                       output_dict[prefix+key+separator+str(index)] = value
+           else:
+               output_dict[prefix+key] = value
+       return output_dict
+       
+       
+   def flatten_a(self,d,separator='_'):
+       out = {}
+       for key, val in d.items():
+           if isinstance(val, dict):
+               val = [val]
+           if isinstance(val, list):
+               for subdict in val:
+                   deeper = self.flatten_a(subdict,separator).items()
+                   out.update({key + separator + key2: val2 for key2, val2 in deeper})
+           else:
+               out[key] = val
+       return out
+   '''    

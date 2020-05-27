@@ -1,0 +1,77 @@
+{% extends "base_template" %}
+{% block application_javascript %}
+  <script type="text/javascript" >
+       False = false
+       True = true
+       None = null
+       subsystem_id = {{subsystem_id}}                         
+                               
+      
+
+      </script>
+      <script type="text/javascript">
+    
+
+function change_subsystem(event,ui)
+{
+  current_page = window.location.href
+ 
+ 
+  current_page = current_page.slice(0,-2)
+  
+  current_page = current_page+"/"+$("#subsystem_select")[0].selectedIndex
+  
+  window.location.href = current_page
+}
+
+
+ $(document).ready(
+ function()
+ {
+   
+   
+   $("#subsystem_select").val( {{ subsystem_id|int  }});
+   $("#subsystem_select").bind('change',change_subsystem)   
+   
+
+ }
+)
+</script> 
+{% endblock %}
+ 
+
+
+{% block application %}
+
+<div class="subsystem">
+<center>
+<h4>Select Subsystem</h4>
+</center>
+
+<div id="select_tag">
+<center>
+<select id="subsystem_select">
+  {% for item in subsystems %}
+  
+  <option value="{{loop.index0}}">{{item}}</option>
+  {% endfor %}
+  
+</select>
+</center>
+
+
+
+<div style="margin-top:20px"></div>
+<div>
+<h4>Error Status for Subsystem {{subsystem_name}} </h4>
+<ul>
+{% for key, value in error_status.items() %}
+<li>key: {{key}} </li>
+<ul>
+<li>status: {{value}}</li>
+</ul>
+{% endfor %}
+</ul>
+</div>
+
+{% endblock %}

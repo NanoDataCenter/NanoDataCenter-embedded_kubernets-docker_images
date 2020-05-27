@@ -17,15 +17,11 @@ from flask import request, session, url_for
 
 from redis_support_py3.graph_query_support_py3 import  Query_Support
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
-from web_packages.load_static_pages_py3     import  Load_Static_Files 
-from web_packages.load_redis_access_py3     import  Load_Redis_Access
+from web_core.load_static_pages_py3     import  Load_Static_Files 
+from web_core.load_redis_access_py3     import  Load_Redis_Access
 
 from redis_support_py3.construct_data_handlers_py3 import Redis_RPC_Client
 
-from web_core.pod_process_control.load_pod_control_processes_py3 import Load_Pod_Control_Processes
-from web_core.processor_performance.processor_performance_py3 import Processor_Monitoring
-from web_core.redis_monitor.load_redis_management_py3 import Load_Redis_Monitoring
-from web_core.docker_process_control.load_docker_process_control_py3 import Load_Docker_Processes
 
 
 class URL_Rule_Class(object):
@@ -51,6 +47,7 @@ class URL_Rule_Class(object):
        self.subsystem_order.append(subsystem_name)
        
    def move_directories(self,path):
+       #print("move directory path",path)
        path_test = path.split("/")
        if len(path_test) != 1:
           path_dest = path_test[1]
@@ -86,7 +83,7 @@ class PI_Web_Server_Core(object):
        
        
        
-       self.qs = Query_Support( redis_site_data )
+       self.qs = Query_Support( site_data)
        
        self.app         = Flask(name) 
        self.auth = HTTPDigestAuth()
@@ -113,18 +110,8 @@ class PI_Web_Server_Core(object):
        self.modules = {}
        
        
-       Load_Pod_Control_Processes(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Pod_Control_Processes",'web_core/pod_process_control')
-                                         
-       Load_Docker_Processes(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Docker_Process_Control",'web_core/docker_process_control') 
 
        
-       Processor_Monitoring(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Controller_Resoure_Utiliation",'web_core/controller_monitor')      
-       
-       Load_Redis_Monitoring(self.app, self.auth, request, render_template, self.qs,
-                                         self.site_data,self.url_rule_class,"Redis_Monitor",'web_core/redis_monitor') 
 
                                          
  
@@ -226,7 +213,7 @@ class PI_Web_Server_Core(object):
       
        f = open(self.app.template_folder+'/modals', 'w')
        for i in self.url_rule_class.subsystem_order:
-
+           #print("generate_modal_template - i",i)
            output_string = '<!–'+i+' –>\n'
            f.write(output_string)
            

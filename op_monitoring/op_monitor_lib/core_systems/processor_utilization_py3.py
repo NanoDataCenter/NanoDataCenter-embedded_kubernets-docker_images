@@ -88,7 +88,7 @@ class Processor_Utilization(Common_Class):
        
        
    def analyize_ram( self,data):
-       
+    
        filter_data = self.common_obj.filter_stream_values(['MemTotal','MemAvailable'],data)
        stat_data_total = self.common_obj.determine_statistics(filter_data['MemTotal'])
        stat_data_available = self.common_obj.determine_statistics(filter_data['MemAvailable'])

@@ -18,10 +18,10 @@ class Generate_Core_Monitoring(object):
        self.subsystem_order = []
        self.common_functions = common_functions
        subsystem_list = [ 
-                          ["pod_processes",Pod_Processes],
-                          ["docker_containers",Docker_Containers], 
-                          ["docker_processes",Docker_Processes],
-                          ["processor_utilization",Processor_Utilization]                          
+                          ["Pod_Processes",Pod_Processes],
+                          
+                          ["Docker_Processes",Docker_Processes],
+                          ["Processor_Utilization",Processor_Utilization]                          
        
                          ]   
        self.add_subsystems(subsystem_list)
