@@ -56,7 +56,7 @@ if __name__ == "__main__":
    redis_site_data = json.loads(data)
 
 
-   pi_web_server = PI_Web_Server_Server(__name__, redis_site_data  )
+   pi_web_server = PI_Web_Monitor_Server(__name__, redis_site_data  )
    pi_web_server.generate_menu_page()
    #pi_web_server.generate_index_page("Pod_Control_Processes","start_and_stop_processes")
    

@@ -59,7 +59,7 @@ class URL_Rule_Class(object):
        os.system('mkdir flask_templates/'+path_dest)
        os.system('mkdir flask_templates/js/'+path_dest)
        #os.system("ls flask_templates")
-      
+       #print("path",path,path_dest)
        os.system('cp -r ' +path+'/templates/* flask_templates/'+path_dest)
        
        os.system('cp -r ' +path+'/js/* flask_templates/js/'+path_dest)

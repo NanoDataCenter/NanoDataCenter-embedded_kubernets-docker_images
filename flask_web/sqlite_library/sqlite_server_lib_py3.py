@@ -31,10 +31,10 @@ class Construct_RPC_Library(object):
            raise ValueError(return_value[1])
   
    def list_data_bases(self):
-       print("list_data_bases")
+       #print("list_data_bases")
        parameters = {}
        return_value = self.rpc_client.send_rpc_message( method="list_list_data_bases",parameters=parameters,timeout=3 )
-       print("return_value",return_value)
+       #print("return_value",return_value)
        return self.filter_result(return_value)       
        
    def create_database(self,database):

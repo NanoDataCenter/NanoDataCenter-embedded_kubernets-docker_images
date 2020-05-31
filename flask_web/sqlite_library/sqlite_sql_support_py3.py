@@ -74,27 +74,24 @@ class SQLITE_Client_Support(Construct_RPC_Library):
        return self.select(database_name,script)
        
 
-   def insert_composite(self,database_name,table_name,field_names,field_values): #tested
-       
-       filtered_values=[]
-       for i in field_values:
-           temp = []
-           for j in i:
-              if type(j) == str:
-                 temp.append('"'+j+'"')
-              else:
-                 temp.append(str(j))
-           filtered_values.append(temp)
-           
-       script = ""    
-       for i in filtered_values:
-           if len(field_names) != len(i):
-              raise ValueError("field names and field values are not same length")       
-           script = script + 'INSERT INTO '+table_name+' ('+",".join(field_names)+" ) "+ " VALUES("+",".join(i)+");"
-      
+   def insert_composite(self,database_name,table_name,field_names,field_dictionary): #tested
+       field_values = []
+       for i in field_names:
+           field_values.append(field_dictionary[i])
+
+       script =  'INSERT INTO '+table_name+' ('+",".join(field_names)+" ) "+ " VALUES("+self.join_items(field_values)+");"
+       print("insert script  ",script)
        self.ex_script(database_name,script)
    
-
+   def join_items(self,items):
+       return_values = []
+       for i in items:
+           if type(i)== str:
+              return_values.append("'"+str(i)+"'")
+           else:
+              return_values.append(str(i))
+       return ",".join(return_values)
+               
    def delete(self,database_name,table_name,where_clause):  #tested  
        script = 'DELETE FROM '+table_name+' WHERE '+where_clause+";"
        return self.ex_exec(database_name,script)
