@@ -107,7 +107,7 @@ class SQLITE_Client_Support(Construct_RPC_Library):
           if type(i) == str:
              filtered_values.append('"'+i+'"')
           else:
-              filtered_values.append(str(j))
+              filtered_values.append(str(i))
        for i in range(0,len(filtered_values)):
            if i != len(filtered_values)-1:
                script = script +" "+row_id[i] +" = "+filtered_values[i]+", "

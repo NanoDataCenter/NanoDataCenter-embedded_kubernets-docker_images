@@ -6,7 +6,7 @@ class Start_Container(object):
         properties["command_list"] = command_list
         bc.add_header_node("CONTAINER",name,properties=properties)
         cd.construct_package("DATA_STRUCTURES")
-        cd.add_redis_stream("ERROR_STREAM",forward=True)
+        cd.add_redis_stream("ERROR_STREAM",forward=False)
         cd.add_hash("ERROR_HASH")
         cd.add_job_queue("WEB_COMMAND_QUEUE",1)
         cd.add_hash("WEB_DISPLAY_DICTIONARY")

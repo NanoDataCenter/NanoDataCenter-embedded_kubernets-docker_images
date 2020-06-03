@@ -134,11 +134,16 @@ if __name__ == "__main__" :
    bc.add_header_node("TICKET_CONTROL")
    bc.add_info_node( "DATA_BASE","TICKET_CONTROL", properties = {"db":"SYSTEM_CONTROL"} )
    bc.add_info_node("TABLE","TICKET_CONTROL",properties = {"name":"TICKET_CONTROL",
-                    "fields":[ "id INTEGER PRIMARY KEY  AUTOINCREMENT","active Int","create_timestamp FLOAT","close_timestamp FLOAT","type Int","subtype Text",
-                               "title Text","description TEXT","resolution TEXT"   ]} )
+                    "fields":["active","create_timestamp","close_timestamp","type","subtype","title","description","resolution"   ]} )
    bc.add_info_node("VALID_TYPES","TICKET_CONTROL",properties = {"types":["OTHERS","IRRIGATION_ISSUES","IRRIGATION_EQUIPMENT","TRIMMING","NON_IRRIGATION_FIXING"]})                   
    bc.end_header_node("TICKET_CONTROL")
-    
+   
+   bc.add_header_node("TICKET_LOG")
+   bc.add_info_node( "DATA_BASE","TICKET_LOG", properties = {"db":"SYSTEM_CONTROL"} )
+   bc.add_info_node("TABLE","TICKET_LOG",properties = {"name":"TICKET_LOG",
+                    "fields":["entry_timestamp","create_timestamp","close_timestamp","type","subtype","title","description","resolution"   ]} )
+                      
+   bc.end_header_node("TICKET_LOG")    
    
    bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN"]} ) 
    

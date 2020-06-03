@@ -12,16 +12,21 @@
    //                            "title Text","description TEXT","resolution TEXT"   ]} )
   function save_modify_ticket(event)
   {
-      // gather data
-      data = ["a","b"] // test data
-      data = {}
-      data["active"] = 1
+     
       
-      data["description"] =$("#new_problem_description").val()
-      data["resolution"] = ""
+      table_item["resolution"] =$("#modify_problem_resolution").val()
+      if( $("#modify-active").is(':checked') == true )
+      {
+          table_item["active"] = 1
+      }
+      else
+      {
+          table_item["active"] = 0
+      }
+      //alert(table_item["active"])
       var result = confirm("do you wish to make changes?");  
       if( result == true )
-           ajax_post_get(add_link, data, success_function, "entry not added") 
+           ajax_post_get(modify_link,table_item, success_function, "entry not modified") 
       
       
   }  
@@ -55,12 +60,13 @@
       $("#display_subtype").html("Subtype: "+entry.subtype)
       $("#display_creation_time_stamp").html("Creation Time: "+entry.create_timestamp)
       
-      alert(entry.description)
+      
       $("#display_problem_description").val(entry.description)
       $("#display_status").html("Status: "+entry.active)
-      
-      $("#display_resolution_time_stamp").html("Resolution Time: "+entry.close_time_stamp)
-  
+      if(entry.active != "active")
+      {
+      $("#display_resolution_time_stamp").html("Resolution Time: "+entry.close_timestamp)
+      }
       $("#display_problem_resolution").val(entry.resolution)
   }
   function load_modify_data(entry)
@@ -73,8 +79,9 @@
       $("#modify_type").html("Type: "+entry.type)
       $("#modify_subtype").html("Subtype: "+entry.subtype)
       
-
       
+      $("#modify-active").prop("checked", true)
+     
       $("#modify_creation_time_stamp").html("Creation Time: "+entry.create_timestamp)
       
       $("#modify_problem_description").val(entry.description)

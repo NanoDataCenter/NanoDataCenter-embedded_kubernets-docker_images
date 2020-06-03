@@ -1,0 +1,9 @@
+
+while [ 1 ]
+do
+   echo "flask web server"
+   python bootstrap_web_system_control_py3.py  2>  /tmp/bootstrap_web_system_control_py3.err 
+   sleep 10
+
+
+done

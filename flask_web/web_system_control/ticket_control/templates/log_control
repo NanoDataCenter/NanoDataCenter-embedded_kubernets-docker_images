@@ -6,15 +6,16 @@
     True      = true
     False     = false
     full_link = "{{full_link}}"
+    reset_link  = "{{reset_link}}"
     search_link = "{{search_link}}"
-    add_link =  "{{add_link}}"
-    modify_link = "{{modify_link}}"
     delete_link =  "{{delete_link}}"
+    export_link = "{{export_link}}"
     table_data  = {{table_data}}
+    select_string = "{{select_string}}"
 </script>
-{% include 'js/ticket_control/ticket_modify.js' %}   
-{% include 'js/ticket_control/ticket_addition.js' %}    
-{% include 'js/ticket_control/ticket_control.js' %}
+{% include 'js/ticket_control/ticket_log_display.js' %}
+{% include 'js/ticket_control/ticket_log.js' %}   
+
   
 {% endblock %}
 
@@ -24,13 +25,11 @@
     <h3>Select Action</h3>
    <select name="#action-choice" id="action-choice">
       <option   value="nop">No Operation</option>
-      
-      <option   value="add_entry">Add Entry</option>
-      <option   value="modify_entry">Modify Entry</option>
+      <option   value="reset_entry">Reset Data </option>
+      <option   value="search_entry">Search Entry</option>
       <option   value="display_entry">Display Entry</option>
       <option   value="delete_entry">Delete Entry</option>
-      
-
+      <option   value="export_data">Export Data</option>
    </select>
 
 <div style="margin-top:25px"></div>
@@ -53,7 +52,7 @@
 </div>
 
 
-{% include 'ticket_control/show_new_entry' %}
-{% include 'ticket_control/modify_entry' %}
-{% include 'ticket_control/search_entry' %}
+{% include 'ticket_control/log_display' %}
+{% include 'ticket_control/log_search' %}
+{% include 'ticket_control/log_export' %}
 {% endblock %}

@@ -21,12 +21,24 @@
   {
       var result = confirm("do you wish to delete item?");  
       if( result == true )
-           ajax_post_get(delete_link, item, success_function, "entry not deleted") 
-     
+      {
+           ajax_post_get(delete_link, item, delete_success_function, "entry not deleted") 
+      }
       
   } 
-
-
+  function delete_success_function()
+  {
+      
+      window.location = full_link
+  }  
+  function reset_entry()
+  {
+    var result = confirm("do you wish to delete item?");  
+    if( result == true )
+    {
+         window.location = full_link  
+    }  
+  }
   
   function delete_success_function()
   {
@@ -47,42 +59,7 @@
    }
 
    
-   if( choice == "add_entry")
-   {   
-       
-       $("#show_new_entry").show();
-       $("#main_panel").hide()
-   }
 
-
- 
-   
-   if( choice =="modify_entry")
-   {   
-       index = find_index()
-       
-       if( index >= 0 )
-       {
-          table_item = table_data[index]
-          item = table_data[index]
-          //alert(item.active)
-          if( item.active == "active")
-          {
-             //alert("modify data")
-             load_modify_data(item)
-          }
-          else
-          {
-             //alert("display data")
-             load_display_data(item) 
-          }              
-         
-       }       
-       else
-       {
-           set_status_bar("No Resources Selected !!!!")
-       }  
-   }
    if( choice =="display_entry")
    {   
        index = find_index()
@@ -90,7 +67,6 @@
        if( index >= 0 )
        {
          item = table_data[index]
-         //alert("display data")
          load_display_data(item) 
           
        }       
@@ -115,6 +91,12 @@
            set_status_bar("No Resources Selected !!!!")
        }  
    }
+   
+   if( choice =="reset_entry")
+   {   
+     reset_entry()
+   }   
+   
    if( choice == "search_entry")
    {   
        ;//
@@ -131,12 +113,9 @@
    $(document).ready(
       function()
       {
-        initialize_new_entry()
-        initialize_modify_entry()
-        $("#show_new_entry").hide();
-        $("#search_entry").hide();
-        $("#modify_entry").hide();
-        $("#display_entry").hide();
+       
+       
+        initialize_display_entry()
         $("#action-choice").bind('change',main_menu)
         $("#action-choice")[0].selectedIndex = 0;
       }

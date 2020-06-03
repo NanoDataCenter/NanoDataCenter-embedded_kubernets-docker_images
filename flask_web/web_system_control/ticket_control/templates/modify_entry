@@ -22,7 +22,7 @@
 <h5>Current Problem Resolution </h5>
 <textarea id="modify_problem_resolution" rows="10" cols="120" style="overflow:auto;">
 </textarea>
-<h5>Current Problem Description </h5>
+<h5>Problem Description </h5>
 <textarea id="modify_problem_description" rows="10" cols="120" readonly style="overflow:auto;">
 </textarea>
 
@@ -45,7 +45,7 @@
  
 <h5 id="display_status"></h5>
 <h5 id="display_resolution_time_stamp"></h5> 
-<h5>Current Problem Description </h5>
+<h5>Problem Description </h5>
 <textarea id="display_problem_description" rows="10" cols="120" readonly style="overflow:auto;">
 </textarea>
 <h5>Problem Resolution </h5>

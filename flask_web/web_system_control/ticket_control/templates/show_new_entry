@@ -28,7 +28,7 @@
 <input type="text" id="title" >  
 <br>
 <h5>Enter Problem Description </h5>
-<textarea id="new_problem_description" rows="25" cols="80">
+<textarea id="new_problem_description" rows="10" cols="120">
 </textarea>
 </div>
  
