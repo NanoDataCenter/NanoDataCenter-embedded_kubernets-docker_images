@@ -10,3 +10,7 @@ docker push nanodatacenter/sqlite_server
 docker push nanodatacenter/flask_web
 docker push nanodatacenter/pandas
 docker push nanodatacenter/rpi_mosquitto
+docker push nanodatacenter/op_monitor
+docker push nanodatacenter/mqtt_interface 
+
+

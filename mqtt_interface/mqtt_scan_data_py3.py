@@ -63,32 +63,19 @@ class MQTT_Log(object):
         data_structures = package["data_structures"]
         generate_handlers = Generate_Handlers(package,qs)
         self.ds_handlers = {}
-        self.ds_handlers["MQTT_INPUT_QUEUE"] = generate_handlers.construct_redis_stream_reader(data_structures["MQTT_INPUT_QUEUE"])
+       
         self.ds_handlers["MQTT_PAST_ACTION_QUEUE"] = generate_handlers.construct_redis_stream_writer(data_structures["MQTT_PAST_ACTION_QUEUE"])
-        self.ds_handlers["MQTT_SENSOR_QUEUE"] = generate_handlers.construct_redis_stream_writer(data_structures["MQTT_SENSOR_QUEUE"])
         self.ds_handlers["MQTT_CONTACT_LOG"] = generate_handlers.construct_hash(data_structures["MQTT_CONTACT_LOG"])
         self.ds_handlers["MQTT_REBOOT_LOG"] = generate_handlers.construct_hash(data_structures["MQTT_REBOOT_LOG"])
-        self.ds_handlers["MQTT_SENSOR_STATUS"] = generate_handlers.construct_hash(data_structures["MQTT_SENSOR_STATUS"])
+        
         contact_set = set(self.ds_handlers["MQTT_CONTACT_LOG"].hkeys())
         device_set = set(self.mqtt_devices.keys())
         difference_set = contact_set-device_set
         for i in list(difference_set):
            self.ds_handlers["MQTT_CONTACT_LOG"].hdelete(i)
            
-        return
-        contact_set = set(self.ds_handlers["MQTT_CONTACT_LOG"].hkeys())
-        difference_set = device_set -contact_set
-        print("contact_set",contact_set)
-        print("difference_set",difference_set)
-        for i in list(difference_set):
-            data = {}
-            data["time"] = time.time()
-            data["status"] = status
-            data["name"] = name
-            data["device_id"] = name # redundant with name
-            self.ds_handlers["MQTT_PAST_ACTION_QUEUE"].push({"action":"Device_Change","device_id":name,"status":status})
-            self.ds_handlers["MQTT_CONTACT_LOG"].hset(name,data)  
         
+
 
 
 
@@ -112,28 +99,30 @@ class MQTT_Log(object):
    
 
    def update_contact(self,name,key,status):
+       print("*******",name,key,status)
        old_data = self.ds_handlers["MQTT_CONTACT_LOG"].hget(name)
        print("old_data",old_data)
+       
        data = {}
        data["time"] = time.time()
        data["status"] = status
        data["name"] = name
        data["device_id"] = name # redundant with name
-       
+       self.ds_handlers["MQTT_CONTACT_LOG"].hset(name,data)  
        update_flag = False
        if old_data == None:
           update_flag = False # already made update
           self.ds_handlers["MQTT_PAST_ACTION_QUEUE"].push({"action":"Device_Change","device_id":name,"status":status})
-          self.ds_handlers["MQTT_CONTACT_LOG"].hset(name,data)  
+         
           return
        if old_data["status"] != status:
            update_flag = True
+           print("device change")
           
            self.ds_handlers["MQTT_PAST_ACTION_QUEUE"].push({"action":"Device_Change","device_id":name,"status":status})   
-       if status == True:
-          update_flag = True
-       if update_flag == True:
-          self.ds_handlers["MQTT_CONTACT_LOG"].hset(name,data)  
+       
+       
+          
 
    def check_heartbeat(self):
       
@@ -164,6 +153,7 @@ class MQTT_Log(object):
        data["device_id"] = name # redundant with name
        update_flag = False
        if (old_data == None) or (old_data["timestamp"] < timestamp):
+           print("update reboot log")
            self.ds_handlers["MQTT_REBOOT_LOG"].hset(name,data)  
            self.ds_handlers["MQTT_PAST_ACTION_QUEUE"].push({"action":"Device_Reboot","device_id":name,"status":True})   
 

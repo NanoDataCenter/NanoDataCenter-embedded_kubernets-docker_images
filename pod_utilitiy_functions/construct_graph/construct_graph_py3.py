@@ -102,7 +102,7 @@ if __name__ == "__main__" :
    construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","op_monitor"],services=["redis","ethereum_go","sqlite_server"])
    #
    
-   construct_processor(name="gateway_server",containers = ["mqtt_gateway_monitoring"],services=["rpi_mosquitto"])
+   construct_processor(name="gateway_server",containers = ["mqtt_interface"],services=["rpi_mosquitto"])
    #
    #
    #  Add other processes if desired
