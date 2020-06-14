@@ -8,7 +8,8 @@ docker pull nanodatacenter/redis_monitoring
 docker pull nanodatacenter/basic_python_container   
 docker pull nanodatacenter/sqlite_server
 docker pull nanodatacenter/flask_web
-
+docker pull nanodatacenter/rpi_mosquitto
+docker pull nanodatacenter/pandas
 
 
 #drwxr-xr-x 4 pi pi 4096 Mar 31 12:50 basic_python_container

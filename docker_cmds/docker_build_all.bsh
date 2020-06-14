@@ -20,10 +20,18 @@ cd ..
 cd stream_events_to_log
 ./docker_build.bsh
 cd ..
-cd sqlite_server
+cd sqlserver
 ./docker_build.bsh
 cd ..
 cd flask_web
 ./docker_build.bsh
 cd ..	
+cd rpi_mosquitto
+./docker_build.bsh
+cd ..
+cd pandas
+./docker_build.bsh
+cd ..
+
+
 ~/docker_clean_up

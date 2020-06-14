@@ -9,6 +9,7 @@ import json
 import redis
 from  build_configuration_py3 import Build_Configuration
 from  construct_data_structures_py3 import Construct_Data_Structures
+from   graph_modules_py3.cloud_site.site_definitions_py3 import Cloud_Site_Definitons
 #from  graph_modules_py3.lacima.construct_applications_py3 import Construct_Lacima_Applications
 #from  graph_modules_py3.lacima.construct_controller_py3 import Construct_Lacima_Controllers
 #from  graph_modules_py3.lacima.construct_redis_monitor_py3 import Construct_Lacima_Redis_Monitoring
@@ -92,65 +93,16 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   
+   Cloud_Site_Definitons(bc,cd)
 
 
-   bc.add_header_node("CLOUD_SERVICE_QUEUE")
-   cd.construct_package("CLOUD_SERVICE_QUEUE_DATA")
-   cd.add_job_queue("CLOUD_JOB_SERVER",2048,forward=False)
-   cd.add_hash("CLOUD_SUB_EVENTS")
-   cd.close_package_contruction()
    
-   bc.add_header_node("CLOUD_SERVICE_HOST_INTERFACE")
-   bc.add_info_node( "HOST_INFORMATION","HOST_INFORMATION",properties={"host":"192.168.1.41" ,"port": 6379, "key_data_base": 6, "key":"_UPLOAD_QUEUE_" ,"depth":1024} )
-   bc.end_header_node("CLOUD_SERVICE_HOST_INTERFACE")
-   bc.end_header_node("CLOUD_SERVICE_QUEUE")
-   
-   
-   bc.add_header_node("CLOUD_BLOCK_CHAIN_SERVER")
-   cd.construct_package("CLOUD_BLOCK_CHAIN_SERVER")
-   cd.add_rpc_server("BLOCK_CHAIN_RPC_SERVER",{"timeout":5,"queue":"BLOCK_CHAIN_RPC_SERVER"})
-   cd.close_package_contruction()
-   bc.end_header_node("CLOUD_BLOCK_CHAIN_SERVER")
-   
-   bc.add_header_node("SQL_SERVER")
-   cd.construct_package("SQL_SERVER")
-   cd.add_rpc_server("SQL_SERVER_RPC_SERVER",{"timeout":5,"queue":"SQL_RPC_SERVER"})
-   cd.add_hash("SQL_DB_MAPPING")
-   cd.close_package_contruction()
-   bc.end_header_node("SQL_SERVER")
- 
-   bc.add_header_node("SYSTEM_MONITOR")
-   cd.construct_package("SYSTEM_MONITOR")      
-   #cd.add_managed_hash(self,name,fields,forward=False) perfored way to store field how to get field in system
-   cd.add_hash("SYSTEM_STATUS")
-   
-   cd.add_hash("MONITORING_DATA")
-   cd.add_redis_stream("SYSTEM_ALERTS")
-   cd.add_redis_stream("SYSTEM_PUSHED_ALERTS")
-   cd.close_package_contruction()
-   bc.end_header_node("SYSTEM_MONITOR")
 
-   bc.add_header_node("TICKET_CONTROL")
-   bc.add_info_node( "DATA_BASE","TICKET_CONTROL", properties = {"db":"SYSTEM_CONTROL"} )
-   bc.add_info_node("TABLE","TICKET_CONTROL",properties = {"name":"TICKET_CONTROL",
-                    "fields":["active","create_timestamp","close_timestamp","type","subtype","title","description","resolution"   ]} )
-   bc.add_info_node("VALID_TYPES","TICKET_CONTROL",properties = {"types":["OTHERS","IRRIGATION_ISSUES","IRRIGATION_EQUIPMENT","TRIMMING","NON_IRRIGATION_FIXING"]})                   
-   bc.end_header_node("TICKET_CONTROL")
-   
-   bc.add_header_node("TICKET_LOG")
-   bc.add_info_node( "DATA_BASE","TICKET_LOG", properties = {"db":"SYSTEM_CONTROL"} )
-   bc.add_info_node("TABLE","TICKET_LOG",properties = {"name":"TICKET_LOG",
-                    "fields":["entry_timestamp","create_timestamp","close_timestamp","type","subtype","title","description","resolution"   ]} )
-                      
-   bc.end_header_node("TICKET_LOG")    
-   
-   bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN"]} ) 
    
    construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","op_monitor"],services=["redis","ethereum_go","sqlite_server"])
    #
    
-   construct_processor(name="gateway_server",containers = ["mqtt_gateway_monitoring"],services=["mosquitto"])
+   construct_processor(name="gateway_server",containers = ["mqtt_gateway_monitoring"],services=["rpi_mosquitto"])
    #
    #
    #  Add other processes if desired
