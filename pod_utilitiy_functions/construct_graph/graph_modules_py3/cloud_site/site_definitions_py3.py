@@ -53,8 +53,8 @@ class Cloud_Site_Definitons(object):
                     "fields":["entry_timestamp","create_timestamp","close_timestamp","type","subtype","title","description","resolution"   ]} )
                       
        bc.end_header_node("TICKET_LOG")    
-   
-       bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN"]} ) 
+       monitoring_systems = ["CORE_OPS","MONITOR_REDIS","MONITOR_SQLITE","MONITOR_BLOCK_CHAIN","MONITOR_RPI_MOSQUITTO","MONITOR_RPI_MOSQUITTO_CLIENTS"]
+       bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":monitoring_systems} ) 
    
        bc.add_header_node("MQTT_DEVICES")
        cd.construct_package("MQTT_DEVICES_DATA")

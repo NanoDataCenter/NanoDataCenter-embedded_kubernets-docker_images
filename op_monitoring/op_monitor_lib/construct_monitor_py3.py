@@ -3,7 +3,9 @@ from .core_systems.core_systems_py3  import Generate_Core_Monitoring
 from .servers.monitor_redis_py3   import Redis_Monitor
 from .servers.monitor_sql_server_py3   import SQLITE_Monitor
 from .servers.monitor_block_chain_py3  import Block_Chain_Monitor
-from .common_functions_py3   import Common_Functions
+from .servers.monitor_rpi_mosquitto_py3 import Rpi_Mosquitto_Monitor
+from .servers.monitor_rpi_mosquitto_clients_py3  import Rpi_Mosquitto_Client_Monitor
+from .common_functions_py3   import Common_Functions 
 class Construct_Monitors(object):
 
    def __init__(self,site_data,qs,monitoring_list,handlers):
@@ -26,9 +28,17 @@ class Construct_Monitors(object):
 
            elif i == "MONITOR_BLOCK_CHAIN":
                 print(i)
-                self.monitors[i] = Block_Chain_Monitor("MONITOR_BLOCK_CHAIN",self.common_functions)                  
+                self.monitors[i] = Block_Chain_Monitor("MONITOR_BLOCK_CHAIN",self.common_functions) 
+
+           elif i == "MONITOR_RPI_MOSQUITTO":
+                print(i)
+                self.monitors[i] = Rpi_Mosquitto_Monitor("MONITOR_RPI_MOSQUITTO",self.common_functions)  
+                
+           elif i == "MONITOR_RPI_MOSQUITTO_CLIENTS":
+                print(i)
+                self.monitors[i] = Rpi_Mosquitto_Client_Monitor("MONITOR_RPI_MOSQUITTO_CLIENTS",self.common_functions)                  
            else:
-               raise         
+               raise ValueError(i)        
           
 
    def execute_minute(self):

@@ -23,7 +23,7 @@ class Pod_Processes(Common_Class):
        
        new_data = {} 
        for i in self.processors:
-           #print(i)
+           print(i)
            web_display = self.common_obj.general_hash_iterator(i,self.analyize_web_display,self.watch_handlers[i]["WEB_DISPLAY_DICTIONARY"])
            error_hash  = self.common_obj.general_hash_iterator(i,self.analyize_error_display,self.watch_handlers[i]["ERROR_HASH"])
            new_data[i] = {"web_display":web_display,"error_hash":error_hash}
@@ -31,16 +31,21 @@ class Pod_Processes(Common_Class):
            
        
        
-       
+       #print("******************** should see this")
        #print("new_data",new_data)
        status = True
        self.handlers["SYSTEM_STATUS"].hset(self.subsystem_name,True)
        ref_total_data = self.handlers["MONITORING_DATA"].hget(self.subsystem_name)
+       #print("ref_total_data",ref_total_data)
        if ref_total_data == None:
           ref_total_data = new_data
+       #print("keys",ref_total_data.keys(),new_data.keys())   
        for i in self.processors:
-           
-           ref_data = ref_total_data[i]
+           #print(i)
+           if i not in ref_total_data:
+              ref_data = new_data[i]
+           else:
+              ref_data = ref_total_data[i]
            #print("ref_data",i,ref_data)
            if ref_data == None:
               print("continue",i)

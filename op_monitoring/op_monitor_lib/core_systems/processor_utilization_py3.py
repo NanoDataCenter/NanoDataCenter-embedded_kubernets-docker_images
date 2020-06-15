@@ -43,8 +43,11 @@ class Processor_Utilization(Common_Class):
           ref_total_data = new_data
        status = True   
        for i in self.processors:
+           if i not in ref_total_data:
+              ref_data = new_data[i]
+           else:
+              ref_data = ref_total_data[i]
            
-           ref_data = ref_total_data[i]
            new_ref  = new_data[i]
            
            if ref_data == None:

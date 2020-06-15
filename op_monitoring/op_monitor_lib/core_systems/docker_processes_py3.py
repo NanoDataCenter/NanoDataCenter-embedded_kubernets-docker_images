@@ -40,7 +40,10 @@ class Docker_Processes(Common_Class):
        if ref_total_data == None:
           ref_total_data = new_data          
        for i in self.processors:
-           ref_data = ref_total_data[i]
+           if i not in ref_total_data:
+              ref_data = new_data[i]
+           else:
+              ref_data = ref_total_data[i]
            #print("ref_data",i,ref_data)
            if ref_data == None:
               print("continue",i)
