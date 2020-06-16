@@ -16,13 +16,14 @@ from web_monitor.processor_performance.processor_performance_py3 import Processo
 from web_monitor.redis_monitor.load_redis_management_py3 import Load_Redis_Monitoring
 from web_monitor.docker_process_control.load_docker_process_control_py3 import Load_Docker_Processes
 from web_monitor.subsystem_monitor.load_subsystem_monitor_py3 import Load_Subsystem_Monitor
-from bootstrap_web_core_py3 import PI_Web_Server_Core
 
 
-class PI_Web_Monitor_Server(PI_Web_Server_Core):
 
-   def __init__(self , name, site_data ):
-       PI_Web_Server_Core.__init__(self,name,site_data)
+
+class PI_Web_Monitor_Server(object):
+
+   def __init__(base_self,self):
+       
 
 
        Load_Pod_Control_Processes(self.app, self.auth, request, render_template, self.qs,
@@ -42,6 +43,7 @@ class PI_Web_Monitor_Server(PI_Web_Server_Core):
        Load_Subsystem_Monitor(self.app, self.auth, request, render_template, self.qs,
                                          self.site_data,self.url_rule_class,"Subsystem_Monitor",'web_monitor/subsystem_monitor') 
  
+      
 
  
    

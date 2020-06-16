@@ -22,7 +22,9 @@ from web_core.load_redis_access_py3     import  Load_Redis_Access
 
 from redis_support_py3.construct_data_handlers_py3 import Redis_RPC_Client
 
-
+from bootstrap_web_system_control_py3 import PI_Web_System_Control
+from bootstrap_web_monitoring_py3     import PI_Web_Monitor_Server
+from bootstrap_mqtt_client_py3        import PI_MQTT_Client_Monitor
 
 class URL_Rule_Class(object):
 
@@ -108,14 +110,35 @@ class PI_Web_Server_Core(object):
       
        self.subsystems = []
        self.modules = {}
+       self.load_specified_modules()
        
+       
+   def load_specified_modules(self):
+       results=self.common_qs_search(["WEB_SERVER","WEB_SERVER"])
+       result = results[0]
+       modules = result["modules"]
+       for i in modules:
+           if i == "monitoring":
+               print(i)
+               PI_Web_Monitor_Server(self)
+           elif i == "system_control":
+                print(i)
+                PI_Web_System_Control(self)
+                
+           elif i == "mqtt_client":
+               print(i)
+               PI_MQTT_Client_Monitor(self )
+               
+           else:
+             raise ValueError("bad web module")         
+       self.result = result   
        
 
    def common_qs_search(self,search_list): # generalized graph search
        query_list = []
        query_list = self.qs.add_match_relationship( query_list,relationship="SITE",label=self.site_data["site"] )
        for i in range(0,len(search_list)-1):
-           if type(search_list[-1]) == list:
+           if type(search_list[i]) == list:
                query_list = self.qs.add_match_relationship( query_list,relationship = search_list[i][0],label = search_list[i][1] )
            else:
                query_list = self.qs.add_match_relationship( query_list,relationship = search_list[i] )
@@ -172,13 +195,13 @@ class PI_Web_Server_Core(object):
          
 
    def run_http( self):
-       self.app.run(threaded=True , use_reloader=True, host='0.0.0.0',port=80,debug = True)
+       self.app.run(threaded=True , use_reloader=True, host='0.0.0.0',port=self.port,debug =self.debug )
 
    def run_https( self ):
        startup_dict          = self.startup_dict
       
-       self.app.run(threaded=True , use_reloader=True, host='0.0.0.0',debug = True,
-           port=443 ,ssl_context=("/data/cert.pem", "/data/key.pem"))
+       self.app.run(threaded=True , use_reloader=True, host='0.0.0.0',debug =self.debug,
+           port=self.port ,ssl_context=("/data/cert.pem", "/data/key.pem"))
        
  
 
@@ -284,6 +307,8 @@ class PI_Web_Server_Core(object):
            f.write(output_string)
        f.close()           
 
+
+
 if __name__ == "__main__":
 
    file_handle = open("/data/redis_server.json",'r')
@@ -295,11 +320,18 @@ if __name__ == "__main__":
 
    pi_web_server = PI_Web_Server_Core(__name__, redis_site_data  )
    pi_web_server.generate_menu_page()
-   #pi_web_server.generate_index_page("Pod_Control_Processes","start_and_stop_processes")
+  
    
    pi_web_server.generate_site_map()
    
    pi_web_server.generate_default_index_page()
-   pi_web_server.run_http()
-   
+   port = pi_web_server.result["port"]
+   pi_web_server.port = port
+   debug = pi_web_server.result["debug"]
+   pi_web_server.debug = debug
+   https_flag = pi_web_server.result["https"]
+   if https_flag == False:
+       pi_web_server.run_https()
+   else:
+       pi_web_server.run_https()
    

@@ -4,6 +4,17 @@ class Cloud_Site_Definitons(object):
    def __init__(self,bc,cd):
        self.bc = bc
        self.cd = cd
+       
+       properties = {}
+       properties["port"] = 443
+       properties["https"]= True
+       properties["debug"]= True
+       properties["modules"] = ["monitoring","system_control","mqtt_client"]
+       bc.add_info_node("WEB_SERVER","WEB_SERVER",properties = properties),
+                    
+       
+       
+       
        bc.add_header_node("CLOUD_SERVICE_QUEUE")
        cd.construct_package("CLOUD_SERVICE_QUEUE_DATA")
        cd.add_job_queue("CLOUD_JOB_SERVER",2048,forward=False)

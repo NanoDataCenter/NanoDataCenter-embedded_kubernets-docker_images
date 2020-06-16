@@ -1,0 +1,47 @@
+{% extends "base_template" %}
+
+
+
+
+
+{% block application %}
+  <div data-role="page"> 
+
+
+
+
+    <h3 id="title_banner"></h3>   
+    
+    <div id="list_data" >
+    
+    <fieldset data-role="controlgroup" id="fieldset">
+        <h2>{{title}} </h2>
+        
+        {% for key ,i in time_history.items() %}
+           
+           {% set label_text = i["detail"] %}
+           {% set id = "entry_"+ (loop.index -1)|string %}
+           {% if i["status"]|string == "False"           %}
+               
+              <h7 id={{id}}><font color=red>{{label_text}}</font></h7><br>
+           {% else %}
+               <h7 id={{id}}>{{label_text}}</h7><br>
+           {% endif %}
+        {% endfor %}
+     </fieldset>
+    
+    
+    
+    
+    
+    
+    </div>
+    
+ {% endblock %}   
+    
+    
+    
+    
+    
+ 
+

@@ -12,15 +12,15 @@ from flask import render_template,jsonify
 from flask import request, session, url_for
 
 from sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
-from bootstrap_web_monitoring_py3 import PI_Web_Monitor_Server
+
 from web_system_control.ticket_control.load_ticket_control_py3 import Load_Ticket_Control
 
-class PI_Web_System_Control(PI_Web_Monitor_Server):
+class PI_Web_System_Control(object):
 
-   def __init__(self , name, site_data ):
-       PI_Web_Monitor_Server.__init__(self,name,site_data)
-       self.sqlite_client = SQLITE_Client_Support(self.qs, site_data)
-       Load_Ticket_Control( self.app, self.auth, request, render_template,self.qs,site_data,self.url_rule_class,self.sqlite_client,self.common_qs_search,"Ticket_Control",'web_system_control/ticket_control')
+   def __init__(base_self, self  ):
+       
+       self.sqlite_client = SQLITE_Client_Support(self.qs, self.site_data)
+       Load_Ticket_Control( self.app, self.auth, request, render_template,self.qs,self.site_data,self.url_rule_class,self.sqlite_client,self.common_qs_search,"Ticket_Control",'web_system_control/ticket_control')
 
  
    
