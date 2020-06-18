@@ -10,6 +10,8 @@ import redis
 from  build_configuration_py3 import Build_Configuration
 from  construct_data_structures_py3 import Construct_Data_Structures
 from   graph_modules_py3.cloud_site.site_definitions_py3 import Cloud_Site_Definitons
+from   graph_modules_py3.lacima.site_definitions_py3 import LACIMA_Site_Definitons
+
 #from  graph_modules_py3.lacima.construct_applications_py3 import Construct_Lacima_Applications
 #from  graph_modules_py3.lacima.construct_controller_py3 import Construct_Lacima_Controllers
 #from  graph_modules_py3.lacima.construct_redis_monitor_py3 import Construct_Lacima_Redis_Monitoring
@@ -111,7 +113,25 @@ if __name__ == "__main__" :
    
    bc.end_header_node("SITE")                                                  
 
+   bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
+
+   LACIMA_Site_Definitons(bc,cd)
+
+
    
+
+   
+   construct_processor(name="irrigation_controller",containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud"],services=["redis","rpi_mosquitto"])
+   #
+   
+   
+   #
+   #
+   #  Add other processes if desired
+   #
+   
+   
+   bc.end_header_node("SITE")                  
 
    bc.end_header_node("SYSTEM")
    bc.check_namespace()

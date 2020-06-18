@@ -116,6 +116,7 @@ class PI_Web_Server_Core(object):
    def load_specified_modules(self):
        results=self.common_qs_search(["WEB_SERVER","WEB_SERVER"])
        result = results[0]
+       
        modules = result["modules"]
        for i in modules:
            if i == "monitoring":
