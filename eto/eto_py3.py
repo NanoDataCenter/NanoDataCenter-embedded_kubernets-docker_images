@@ -9,9 +9,11 @@ from eto_py3.messo_handlers_py3 import Messo_ETO
 from eto_py3.messo_handlers_py3 import Messo_Precp
 from eto_py3.cimis_spatial_py3 import CIMIS_SPATIAL
 from eto_py3.cimis_handlers_py3 import CIMIS_ETO
+from eto_py3.hybrid_handler_py3 import Hybrid_Calculator
 from eto_py3.eto_init_py3 import Initialize_ETO_Accumulation_Table
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
- 
+from file_server_library.file_server_lib_py3 import Construct_RPC_Library
+
 
 
 
@@ -25,7 +27,7 @@ class Eto_Management(object):
         self.package  = package
         self.site_data = site_data
         self.qs = qs
-       
+        
         self.generate_redis_handlers()
         self.eto_hash_table =  self.ds_handlers["ETO_ACCUMULATION_TABLE"]
         self.initialize_values()
@@ -74,7 +76,9 @@ class Eto_Management(object):
             if data["type"] == "MESSO_RAIN":
                data["calculator"] = Messo_Precp(data,self.ds_handlers["ETO_VALUES"],self.ds_handlers["RAIN_VALUES"])
                continue
-            assert 0,"data type is not recognized "+data["type"] 
+            if data["type"] == "hybrid":
+               data["calculator"] = Hybrid_Calculator(data,self.eto_sources,self.ds_handlers["ETO_VALUES"],self.ds_handlers["RAIN_VALUES"])
+            #assert 0,"data type is not recognized "+data["type"] 
         
        
 
@@ -233,8 +237,8 @@ def construct_eto_instance(qs, site_data ):
     # Replace symbolic keys with actual api keys
     #
     replace_keys(site_data, eto_sources)
-    
-    initial_accumulation_tables = Initialize_ETO_Accumulation_Table(qs,site_data)
+    file_server_library = Construct_RPC_Library(qs,site_data)
+    initial_accumulation_tables = Initialize_ETO_Accumulation_Table(file_server_library)
 
    
    
@@ -327,7 +331,7 @@ if __name__ == "__main__":
     # Read Boot File
     # expand json file
     # 
-    file_handle = open("system_data_files/redis_server.json",'r')
+    file_handle = open("/data/redis_server.json",'r')
     data = file_handle.read()
     file_handle.close() 
     redis_site = json.loads(data)

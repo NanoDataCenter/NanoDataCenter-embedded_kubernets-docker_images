@@ -15,6 +15,7 @@ class Construct_Weather_Stations(object):
       cd.add_redis_stream("EXCEPTION_LOG",forward = True)
  
       cd.close_package_contruction()
+      self.add_station_wunderground_hybrid()
       self.add_station_cimis()
       self.add_station_cimis_satellite()
       self.add_station_messo_west_sruc1_eto()
@@ -23,9 +24,13 @@ class Construct_Weather_Stations(object):
       bc.end_header_node("WEATHER_STATIONS")
 
    def add_station_wunderground(self):
-       properties = {"access_key":"WUNDERGROUND","type":"WUNDERGROUND","pws":'KCAMURRI101','lat':33.2,"alt":2400, "priority":1}
+       properties = {"access_key":"WUNDERGROUND","type":"WUNDERGROUND","pws":'KCAMURRI101','lat':33.2,"alt":2400, "priority":130}
        self.bc.add_info_node( "WS_STATION",'KCAMURRI101',properties=properties) 
        
+       
+   def add_station_wunderground_hybrid(self):
+       properties = {"access_key":"WUNDERGROUND_HYBRID","stations":{"main":"KCAMURRI101","solar":"SRUC1"} ,"pws":'KCAMURRI101',"priority":11,"type":"hybrid"}
+       self.bc.add_info_node( "WS_STATION",'hybrid_1',properties=properties)     
       
    def add_station_cimis_satellite(self):
        properties = { "access_key":"ETO_CIMIS_SATELLITE"  , 

@@ -3,8 +3,7 @@
 
 
 
-from redis_support_py3.load_files_py3  import APP_FILES
-from redis_support_py3.load_files_py3  import SYS_FILES
+
 
 import json
 
@@ -12,15 +11,12 @@ import json
        
 class Initialize_ETO_Accumulation_Table(object):
 
-   def __init__(self, qs,redis_site_data ):
+   def __init__(self, file_system_library ):
+   
+       self.file_system_library = file_system_library
        
-       self.redis_site_data = redis_site_data
+       
       
-       
-       
-      
-       self.app_file_handle = APP_FILES( qs.get_redis_data_handle(),self.redis_site_data )
-       self.sys_filie_handle = SYS_FILES( qs.get_redis_data_handle(),self.redis_site_data)
        
  
   
@@ -33,7 +29,7 @@ class Initialize_ETO_Accumulation_Table(object):
        # the eto_site table may have changed
        # need to merge old table values into the new table
        # there may be insertions as well as deletions
-       eto_file_data = self.app_file_handle.load_file("eto_site_setup.json")
+       eto_file_data = json.loads(self.file_system_library.load_file("application_files","eto_site_setup.json"))
        
 
 
@@ -71,4 +67,4 @@ class Initialize_ETO_Accumulation_Table(object):
               
            self.eto_data_handler.hset(i,data )         
            
-           
+        

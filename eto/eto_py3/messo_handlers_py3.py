@@ -18,8 +18,8 @@ class Messo_ETO(object):
         self.station = self.messo_data["station"]
         self.token = "&token=" + self.app_key
 
-    def compute_previous_day(self):
-        if self.eto_dict.hget("messo:"+self.station+":normal_eto" ) != None:
+    def compute_previous_day(self,flag=False):
+        if (self.eto_dict.hget("messo:"+self.station+":normal_eto" ) != None)and(flag==False):
            print("****************** messo eto returning")
            return
         ts = time.time()
@@ -75,7 +75,7 @@ class Messo_ETO(object):
         self.eto_dict.hset("messo:"+self.station+":gust_eto",
                            { "eto":self.calculate_eto.__calculate_eto__( return_value_gust, self.alt,self.lat ), "priority":100,"status":"OK","time": date_string  })
 
-        
+        self.results_normal = return_value_normal
 
 
 class Messo_Precp(object):

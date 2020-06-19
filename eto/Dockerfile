@@ -1,8 +1,8 @@
-FROM nanodatacenter/panadas
-ENV CONTAINER_NAME "op_monitor"
+FROM nanodatacenter/basic_python_container
+ENV CONTAINER_NAME "eto"
  
+VOLUME [/data/]
 COPY . .
-
 
 
 

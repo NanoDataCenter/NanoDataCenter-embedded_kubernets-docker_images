@@ -28,9 +28,9 @@ class Wunder_Personal( object ):
      
    #https://api.weather.com/v2/pws/observations/hourly/7day?stationId=KCAMURRI101&format=json&units=e&apiKey=dc0b888f054d45a88b888f054db5a83b  
      
-   def compute_previous_day( self):
+   def compute_previous_day( self,flag = False):
        
-       if self.eto_sources.hget("wunder:"+self.pws+":Normal") != None:
+       if (self.eto_sources.hget("wunder:"+self.pws+":Normal") != None)and(flag==False):
           print("*********************","am returning wunder")
           return
        dt = datetime.datetime.now() + datetime.timedelta(days=-1)
@@ -96,7 +96,7 @@ class Wunder_Personal( object ):
                          
 
        
-       
+         
        self.eto_sources.hset("wunder:"+self.pws+":Normal", { "eto":self.calculate_eto.__calculate_eto__(results_normal,self.alt,self.lat),
                                                             "priority":self.priority,"status":"OK" ,"time":str(datetime.datetime.now())}       ) 
                                                             ### These sources are for information only                                                          
@@ -105,6 +105,7 @@ class Wunder_Personal( object ):
                                                             "priority":100,"status":"OK" ,"time":str(datetime.datetime.now())}       )                                                       
                                                             
        self.rain_sources.hset("wunder:"+self.pws ,{"rain":valid_data[-1]['imperial']['precipTotal'],"priority":self.priority,"time":str(datetime.datetime.now())})
+       self.results_normal = results_normal
 
 
    def __convert_to_C__(self, deg_f):
