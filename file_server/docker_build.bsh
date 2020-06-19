@@ -1,0 +1,1 @@
+docker build --tag nanodatacenter/file_server .

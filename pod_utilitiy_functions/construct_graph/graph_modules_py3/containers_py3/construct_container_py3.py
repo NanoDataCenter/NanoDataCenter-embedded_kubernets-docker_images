@@ -5,6 +5,10 @@ from .stream_events_to_cloud_py3 import Stream_Events_To_Cloud
 from .sqlite_server_py3 import SQLITE_Server
 from .op_monitor_py3 import OP_Monitor
 from .mqtt_interface_py3 import MQTT_Interface
+from .irrigation_container_py3 import IRRIGATION_CONTROL
+from .eto_container_py3  import ETO_CONTAINER
+from .irrigation_scheduling_py3 import IRRIGATION_SCHEDULING
+
 
 class Construct_Containers(object):
 
@@ -28,7 +32,13 @@ class Construct_Containers(object):
               OP_Monitor(bc,cd,i) 
          elif i == "mqtt_interface":
               MQTT_Interface(bc,cd,i)
-    
+         elif i == "irrigation_control":
+              IRRIGATION_CONTROL(bc,cd,i)
+              
+         elif i == "eto":
+              ETO_CONTAINER(bc,cd,i)   
+         elif i == "irrigation_scheduling":
+              IRRIGATION_SCHEDULING(bc,cd,i)                 
          else:
              raise         
           

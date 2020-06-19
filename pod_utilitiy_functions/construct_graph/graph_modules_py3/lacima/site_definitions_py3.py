@@ -1,4 +1,7 @@
 
+from .construct_weather_stations_py3 import Construct_Weather_Stations
+
+
 class LACIMA_Site_Definitons(object):
 
    def __init__(self,bc,cd):
@@ -63,7 +66,17 @@ class LACIMA_Site_Definitons(object):
        properties["BASE_TOPIC"] = "/"
        bc.add_info_node( "MQTT_SERVER","MQTT_SERVER",properties=properties )
        self.add_mqtt_monitor()
-       bc.end_header_node("MQTT_DEVICES")    
+       bc.end_header_node("MQTT_DEVICES")  
+       
+       
+       bc.add_header_node("FILE_SERVER")
+       cd.construct_package("FILE_SERVER")
+       cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":5,"queue":"FILE_RPC_SERVER"})
+
+       cd.close_package_contruction()
+       bc.end_header_node("FILE_SERVER")
+       
+       Construct_Weather_Stations(bc,cd)       
    
    def add_mqtt_monitor(self):
        mqtt_tag = "MQTT_SERVER_CHECK"
@@ -80,3 +93,5 @@ class LACIMA_Site_Definitons(object):
        properties["subscriptions"]["HEART_BEAT"] = True
        properties["subscriptions"]["SERVER_CHECK"] = True
        self.bc.add_info_node( "MQTT_DEVICE",mqtt_tag,properties=properties )
+       
+       
