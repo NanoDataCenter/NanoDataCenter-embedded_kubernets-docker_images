@@ -121,7 +121,8 @@ if __name__ == "__main__" :
    
 
    
-   construct_processor(name="irrigation_controller",containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto"],services=["redis","rpi_mosquitto","file_server"])
+   construct_processor(name="irrigation_controller",containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling"],
+                      services=["redis","rpi_mosquitto","file_server"])
    #
    
    

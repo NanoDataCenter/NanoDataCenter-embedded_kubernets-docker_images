@@ -1,6 +1,6 @@
 
 from .construct_weather_stations_py3 import Construct_Weather_Stations
-
+from .construct_irrigation_scheduling_py3 import Construct_Irrigation_Scheduling_Control
 
 class LACIMA_Site_Definitons(object):
 
@@ -76,7 +76,8 @@ class LACIMA_Site_Definitons(object):
        cd.close_package_contruction()
        bc.end_header_node("FILE_SERVER")
        
-       Construct_Weather_Stations(bc,cd)       
+       Construct_Weather_Stations(bc,cd)  
+       Construct_Irrigation_Scheduling_Control(bc,cd)       
    
    def add_mqtt_monitor(self):
        mqtt_tag = "MQTT_SERVER_CHECK"
