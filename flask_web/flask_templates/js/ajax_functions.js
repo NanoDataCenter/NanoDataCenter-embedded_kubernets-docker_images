@@ -51,10 +51,11 @@ function ajax_post_confirmation(url_path, data, confirmation_string,
 {
  
    var result = confirm(confirmation_string);  // change this
+   
    if( result == true )
    {
        $("#status_display").text("Current Status: Operation in Progress")
-
+      
        var json_string = JSON.stringify(data);
        $.ajax ({  type: "POST",
                   url: url_path,

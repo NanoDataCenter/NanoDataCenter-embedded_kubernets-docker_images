@@ -25,7 +25,9 @@ from redis_support_py3.construct_data_handlers_py3 import Redis_RPC_Client
 from bootstrap_web_system_control_py3 import PI_Web_System_Control
 from bootstrap_web_monitoring_py3     import PI_Web_Monitor_Server
 from bootstrap_mqtt_client_py3        import PI_MQTT_Client_Monitor
-
+from bootstrap_eto_py3                import ETO_Management
+from file_server_library.file_server_lib_py3 import Construct_RPC_Library
+from bootstrap_irrigation_scheduling_py3 import Irrigation_Scheduling
 class URL_Rule_Class(object):
 
    def __init__(self,app,auth):
@@ -68,6 +70,56 @@ class URL_Rule_Class(object):
        return path_dest
 
 
+
+
+class Load_App_Sys_Files(object):
+
+   def __init__( self, app, auth, request, file_server_library ):
+       self.app      = app
+       self.auth     = auth
+       self.request  = request
+      
+       self.file_server_library = file_server_library
+
+       a1 = auth.login_required( self.get_system_file )
+       app.add_url_rule("/ajax/get_system_file/<path:file_name>","get_system_file",a1)
+       a1 = auth.login_required( self.get_app_file )
+       app.add_url_rule("/ajax/get_app_file/<path:file_name>","get_app_file",a1)
+       a1 = auth.login_required( self.save_app_file )
+       app.add_url_rule("/ajax/save_app_file/<path:file_name>","save_app_file",a1,methods=["POST"])
+       a1 = auth.login_required( self.save_sys_file )
+       app.add_url_rule("/ajax/save_sys_file/<path:file_name>","save_sys_file",a1,methods=["POST"])
+               
+
+
+   def get_system_file(self, file_name):   
+       data = self.file_server_library.load_file( "application_files",file_name)
+      
+       return json.dumps(data)
+
+   def get_app_file(self,file_name):
+       data = self.file_server_library.load_file( "system_files",file_name)
+       return json.dumps(data )
+               
+   def save_app_file(self,file_name):
+       json_object = self.request.json
+      
+       if type(json_object) != str:
+          json_object = json.dumps(json_object)
+       self.file_server_library.save_file("application_files",file_name, json_object );
+       return json.dumps('SUCCESS')
+
+   def save_sys_file(self,file_name):
+       json_object = self.request.json
+       if type(json_object) != str:
+          json_object = json.dumps(json_object)
+       self.file_server_library.save_file( "system_files",file_name, json_object );
+       return json.dumps('SUCCESS') 
+       
+
+
+
+
 class PI_Web_Server_Core(object):
 
    def __init__(self , name, site_data ):
@@ -86,6 +138,7 @@ class PI_Web_Server_Core(object):
        
        
        self.qs = Query_Support( site_data)
+       self.file_server_library = Construct_RPC_Library(self.qs,self.site_data)
        
        self.app         = Flask(name) 
        self.auth = HTTPDigestAuth()
@@ -107,12 +160,12 @@ class PI_Web_Server_Core(object):
        
        Load_Static_Files(self.app,self.auth) #enable static files to be fetched
        self.redis_access = Load_Redis_Access(self.app, self.auth, request ) #enable web access for redis operations
-      
+       Load_App_Sys_Files( self.app, self.auth, request, self.file_server_library    )
        self.subsystems = []
        self.modules = {}
        self.load_specified_modules()
        
-       
+      
    def load_specified_modules(self):
        results=self.common_qs_search(["WEB_SERVER","WEB_SERVER"])
        result = results[0]
@@ -129,6 +182,24 @@ class PI_Web_Server_Core(object):
            elif i == "mqtt_client":
                print(i)
                PI_MQTT_Client_Monitor(self )
+
+           elif i == "eto":
+               print(i)
+               ETO_Management(self)
+               
+           elif i == "irrigation_scheduling":
+               print(i)
+               Irrigation_Scheduling(self)
+               
+           elif i == "irrigation_control":
+               print(i)
+               print("do nothing right now")
+               
+           elif i == "modbus_control":
+               print("do nothing right now")
+              
+ 
+
                
            else:
              raise ValueError("bad web module")         

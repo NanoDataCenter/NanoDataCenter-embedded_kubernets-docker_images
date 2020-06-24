@@ -15,7 +15,7 @@ class LACIMA_Site_Definitons(object):
        properties["port"] = 443
        properties["https"]= True
        properties["debug"]= True
-       properties["modules"] = ["monitoring","mqtt_client"]
+       properties["modules"] = ["monitoring","mqtt_client","eto","irrigation_scheduling","irrigation_control","modbus_control"]
        bc.add_info_node("WEB_SERVER","WEB_SERVER",properties = properties),
                     
        
