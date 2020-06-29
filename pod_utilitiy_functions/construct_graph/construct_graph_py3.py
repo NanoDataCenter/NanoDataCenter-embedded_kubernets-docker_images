@@ -119,9 +119,9 @@ if __name__ == "__main__" :
 
 
    
-
+   containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling","plc_io","modbus_server"   ]
    
-   construct_processor(name="irrigation_controller",containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling"],
+   construct_processor(name="irrigation_controller",containers = containers,
                       services=["redis","rpi_mosquitto","file_server"])
    #
    

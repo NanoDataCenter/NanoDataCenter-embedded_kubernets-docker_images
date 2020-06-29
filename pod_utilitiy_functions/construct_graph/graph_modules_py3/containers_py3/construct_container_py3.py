@@ -8,6 +8,8 @@ from .mqtt_interface_py3 import MQTT_Interface
 from .irrigation_container_py3 import IRRIGATION_CONTROL
 from .eto_container_py3  import ETO_CONTAINER
 from .irrigation_scheduling_py3 import IRRIGATION_SCHEDULING
+from .plc_io_container_py3  import PLC_IO_CONTAINER
+from .modbus_server_container_py3  import MODBUS_SERVER_CONTAINER
 
 
 class Construct_Containers(object):
@@ -38,7 +40,12 @@ class Construct_Containers(object):
          elif i == "eto":
               ETO_CONTAINER(bc,cd,i)   
          elif i == "irrigation_scheduling":
-              IRRIGATION_SCHEDULING(bc,cd,i)                 
+              IRRIGATION_SCHEDULING(bc,cd,i)     
+         elif i == "plc_io":
+              PLC_IO_CONTAINER(bc,cd,i)    
+              
+         elif i == "modbus_server":
+              MODBUS_SERVER_CONTAINER(bc,cd,i)                     
          else:
              raise         
           

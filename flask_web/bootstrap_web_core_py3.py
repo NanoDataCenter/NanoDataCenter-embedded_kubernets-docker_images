@@ -28,6 +28,7 @@ from bootstrap_mqtt_client_py3        import PI_MQTT_Client_Monitor
 from bootstrap_eto_py3                import ETO_Management
 from file_server_library.file_server_lib_py3 import Construct_RPC_Library
 from bootstrap_irrigation_scheduling_py3 import Irrigation_Scheduling
+from irrigation_control.load_irrigation_control_py3   import Load_Irrigation_Control
 class URL_Rule_Class(object):
 
    def __init__(self,app,auth):
@@ -193,7 +194,7 @@ class PI_Web_Server_Core(object):
                
            elif i == "irrigation_control":
                print(i)
-               print("do nothing right now")
+               Load_Irrigation_Control(self)
                
            elif i == "modbus_control":
                print("do nothing right now")
