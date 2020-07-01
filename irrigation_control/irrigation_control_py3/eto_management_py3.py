@@ -25,9 +25,9 @@ import time
 
 
 class ETO_Management(object):
-   def __init__(self,qs,redis_site,app_files,Generate_Handlers):
+   def __init__(self,qs,redis_site,file_server,Generate_Handlers):
  
-       self.app_files = app_files
+       self.file_server = file_server
        
        
        query_list = []
@@ -64,7 +64,7 @@ class ETO_Management(object):
            self.eto_hash_table.hset( queue_name , deficient) 
       
    def determine_eto_management(self,run_time, io_list):
-      self.eto_site_data = self.app_files.load_file( "eto_site_setup.json" )
+      self.eto_site_data =  json.loads(self.file_system_library.load_file("application_files","eto_site_setup.json"))
       
       sensor_list = self.find_queue_names( io_list )
       if len(sensor_list) == 0:

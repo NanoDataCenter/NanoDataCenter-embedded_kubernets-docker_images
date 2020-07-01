@@ -67,8 +67,8 @@ if __name__ == "__main__":
     from core_libraries.irrigation_hash_control_py3 import get_flow_checking_limits
     from redis_support_py3.graph_query_support_py3 import  Query_Support
     from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
-    from redis_support_py3.load_files_py3 import APP_FILES
-    from redis_support_py3.load_files_py3 import SYS_FILES
+    from file_server_library.file_server_lib_py3 import Construct_RPC_Library
+
     from   py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
     from   py_cf_new_py3.cluster_control_py3 import Cluster_Control
     from   irrigation_control_py3.Incomming_Queue_Management_py3 import Process_External_Commands
@@ -80,19 +80,19 @@ if __name__ == "__main__":
     from irrigation_control_py3.Failure_Report_py3 import Failure_Report
     from core_libraries.irrigation_hash_control_py3 import generate_irrigation_control
     from core_libraries.irrigation_hash_control_py3 import generate_sensor_minute_status
-    from core_libraries.irrigation_hash_control_py3 import generate_mqtt_devices
+    #from core_libraries.irrigation_hash_control_py3 import generate_mqtt_devices
     
     #
     #
     # Read Boot File
     # expand json file
     # 
-    file_handle = open("system_data_files/redis_server.json",'r')
+    file_handle = open("/data/redis_server.json",'r')
     data = file_handle.read()
     file_handle.close()
     redis_site = json.loads(data)
     qs = Query_Support( redis_site )
-                            
+                       
     irrigation_excessive_flow_limits = get_flow_checking_limits(redis_site,qs)
     query_list = []
     query_list = qs.add_match_relationship( query_list,relationship="SITE",label=redis_site["site"] )
@@ -105,9 +105,9 @@ if __name__ == "__main__":
     data_structures = package["data_structures"]
     
     generate_handlers = Generate_Handlers(package,qs)
-    
-    app_files        =  APP_FILES(qs.get_redis_data_handle(),redis_site)     
-    sys_files        =  SYS_FILES(qs.get_redis_data_handle(),redis_site)
+   
+   
+   
     ds_handlers = {}
     ds_handlers["IRRIGATION_PAST_ACTIONS"] = generate_handlers.construct_redis_stream_writer(data_structures["IRRIGATION_PAST_ACTIONS"] )
    
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     ds_handlers["VALVE_JOB_QUEUE_CLIENT"] = generate_handlers.construct_job_queue_client(data_structures["IRRIGATION_VALVE_JOB_QUEUE"] )
     ds_handlers["VALVE_JOB_QUEUE_SERVER"] = generate_handlers.construct_job_queue_server(data_structures["IRRIGATION_VALVE_JOB_QUEUE"] )
     ds_handlers["MQTT_SENSOR_STATUS"] = generate_sensor_minute_status(redis_site,qs)
-    ds_handlers["MQTT_CONTACT_LOG"] = generate_mqtt_devices(redis_site,qs)
+   
     irrigation_hash_control = generate_irrigation_control(redis_site,qs)  
 
  
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     control_field, control_field_nodes = qs.match_list(query_list)
     measurement_depths = control_field_nodes[0] 
     
-  
+    file_server_library = Construct_RPC_Library(qs,redis_site)
     
     
     current_operations = {}
@@ -156,7 +156,7 @@ if __name__ == "__main__":
     cf = CF_Base_Interpreter()
     cluster_control = Cluster_Control(cf)
     generate_control_events = Generate_Control_Events(cf)
-    eto_management = ETO_Management(qs,redis_site,app_files,Generate_Handlers)
+    eto_management = ETO_Management(qs,redis_site,file_server_library,Generate_Handlers)
     
     io_control = IO_Control(irrigation_hash_control,generate_control_events,qs,redis_site,generate_handlers)
     ##
@@ -169,19 +169,17 @@ if __name__ == "__main__":
        temp = status[1]
        ds_handlers["IRRIGATION_PAST_ACTIONS"].push({"action":"Deleting_Irrigation_Job","details":{"schedule_name":temp["schedule_name"],"step":temp["step"]},"level":"RED"})
 
-    print("IRRIGATION_CURRENT_CLIENT",ds_handlers["IRRIGATION_CURRENT_CLIENT"].length())
-    print("IRRIGATION_CURRENT_CLIENT",ds_handlers["IRRIGATION_CURRENT_CLIENT"].length())
-    print("IRRIGATION_CURRENT_CLIENT",ds_handlers["IRRIGATION_CURRENT_CLIENT"].length())
-    #ds_handlers["IRRIGATION_CURRENT_CLIENT"].delete_all() # delete current job to prevent circular reboots
+    
+    ds_handlers["IRRIGATION_CURRENT_CLIENT"].delete_all() # delete current job to prevent circular reboots
 
 
 
    
-    
+    '''
     while True:
        if verify_startup(io_control,current_operations,failure_report) == True:
           break
-          
+    '''      
           
     #
     # Three items are running at the same time
@@ -206,8 +204,8 @@ if __name__ == "__main__":
                                  cluster_id = "IRRIGATION_CONTROL", 
                                  cluster_control = cluster_control,
                                  cf = cf,
-                                 app_files = app_files,
-                                 sys_files = sys_files,
+                            
+                                 file_server = file_server_library,
                                  manage_eto =eto_management,
                                  irrigation_io = io_control,
                                  master_valves = master_valves,
@@ -222,7 +220,7 @@ if __name__ == "__main__":
                                  current_operations = current_operations )
                                 
                                  
-               
+    '''           
     Process_External_Commands( cf = cf,
                                     handlers = ds_handlers,
                                     app_files = app_files,
@@ -236,11 +234,11 @@ if __name__ == "__main__":
                                     equipment_current_limit = equipment_current_limit,
                                     current_operations = current_operations )
     
-   
+    
     Master_Valve("MASTER_VALVE", cf,cluster_control, io_control, ds_handlers,current_operations,failure_report,irrigation_excessive_flow_limits,irrigation_hash_control)
     
     Cleaning_Valve("CLEANING_VALVES",cf,cluster_control, io_control, ds_handlers,current_operations,failure_report,irrigation_excessive_flow_limits)
-                            
+    '''                        
     #
     #  Instanciate Sub modules
     #  

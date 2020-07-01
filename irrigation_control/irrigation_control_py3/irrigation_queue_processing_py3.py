@@ -13,7 +13,7 @@ from core_libraries.irrigation_hash_control_py3 import get_cleaning_limits
 from core_libraries.irrigation_hash_control_py3 import get_current_limits
 from core_libraries.irrigation_hash_control_py3 import get_cleaning_flow_limits
 from core_libraries.irrigation_hash_control_py3 import get_irrigation_current_limit
-from core_libraries.mqtt_current_monitor_interface_py3 import MQTT_Current_Monitor_Publish
+#from core_libraries.mqtt_current_monitor_interface_py3 import MQTT_Current_Monitor_Publish
 
 
 
@@ -24,15 +24,15 @@ from .common_irrigation_chains_py3       import  Check_Excessive_Current
 
 class Process_Irrigation_Command(object):
 
-   def __init__(self,redis_site_data, handlers,cluster_id,cluster_control,cf,app_files,sys_files,manage_eto,irrigation_io,
+   def __init__(self,redis_site_data, handlers,cluster_id,cluster_control,cf,file_system_server,manage_eto,irrigation_io,
                 master_valves,cleaning_valves,measurement_depths,eto_management ,irrigation_hash_control,qs,
                 generate_control_events, failure_report,current_operations ):
       self.handlers = handlers
       self.cluster_id = cluster_id
       self.cluster_ctrl = cluster_control
       self.cf = cf
-      self.app_files = app_files
-      self.sys_files = sys_files
+      self.file_system_server = file_system_server
+      
       self.manage_eto = manage_eto
       self.irrigation_io = irrigation_io
       self.master_valves = master_valves
@@ -52,7 +52,7 @@ class Process_Irrigation_Command(object):
       self.cleaning_flow_limits = get_cleaning_flow_limits(redis_site_data,qs)
       self.irrigation_current_limit = get_irrigation_current_limit(redis_site_data,qs)
       # connection to local mqtt publish server
-      self.mqtt_current_publish = MQTT_Current_Monitor_Publish(redis_site_data,"/REMOTES/CURRENT_MONITOR_1/",qs )
+      #self.mqtt_current_publish = MQTT_Current_Monitor_Publish(redis_site_data,"/REMOTES/CURRENT_MONITOR_1/",qs )
       
       self.check_off     = Check_Off(cf=cf,cluster_control=cluster_control,io_control=irrigation_io, handlers=handlers,
                                       irrigation_hash_control = irrigation_hash_control,
@@ -66,8 +66,8 @@ class Process_Irrigation_Command(object):
                                                              cluster_control = cluster_control,
                                                              io_control = irrigation_io, 
                                                              handlers = handlers,
-                                                             app_files = app_files, 
-                                                             sys_files = sys_files,
+                                                             file_system_server = file_system_server, 
+                                                       
                                                              master_valves = master_valves,
                                                              cleaning_valves = cleaning_valves,
                                                              measurement_depths = measurement_depths,
@@ -92,8 +92,8 @@ class Process_Irrigation_Command(object):
                                                            cluster_control=cluster_control,
                                                            io_control = irrigation_io,
                                                            handlers=handlers,
-                                                           app_files = app_files,
-                                                           sys_files=sys_files,
+                                                           file_system_server = file_system_server,
+                                                          
                                                            manage_eto = manage_eto,
                                                            measurement_depths = measurement_depths,
                                                            irrigation_hash_control = irrigation_hash_control,
@@ -413,29 +413,13 @@ class Process_Irrigation_Command(object):
 #
 #
 
-      
-   # Purpose is to check current controller is operational
-   def check_power_controller(self, cf_handle, chainObj, parameters, event):
-       
-       if event["name"] == "INIT":
-          return "CONTINUE"
-       else:
-          return False
-         
-       
 
        
  
       
 
 
-   def check_mqtt_devices(self, cf_handle, chainObj, parameters, event):
-        
-       if event["name"] == "INIT":
-          return "CONTINUE"
-       else:
-          return False
-
+   
        
  
 
@@ -451,13 +435,7 @@ class Process_Irrigation_Command(object):
        cleaning_sum += gpm
        self.irrigation_hash_control.hset("CLEANING_ACCUMULATION",cleaning_sum)
 
-   def send_mqtt_current_request(self,cf_handle,chainObj,parameters,event):
-       if event["name"] == "INIT":
-          return "CONTINUE"
-       else:
-         self.mqtt_current_publish.read_max_currents()
-         
-         self.mqtt_current_publish.read_relay_states()         
+   
          
          
 

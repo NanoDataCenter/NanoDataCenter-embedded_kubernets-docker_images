@@ -5,10 +5,10 @@ import os
 
 
 class Irrigation_Scheduling(object):
-   def __init__(self,handlers,app_files,sys_files,eto_management,irrigation_hash_control ):
+   def __init__(self,handlers,file_server,eto_management,irrigation_hash_control ):
        self.handlers = handlers
-       self.app_files = app_files
-       self.sys_files = sys_files
+       self.file_server = file_server
+      
        self.irrigation_hash_control = irrigation_hash_control
        self.eto_management = eto_management  
               
@@ -49,7 +49,7 @@ class Irrigation_Scheduling(object):
        
  
    def load_auto_schedule( self, schedule_name):
-       schedule_control = self.app_files.load_file("sprinkler_ctrl.json")
+       schedule_control = json.loads(self.file_server_library.load_file("application_files","sprinkler_ctrl.json"))
        try:
          link_data = self.get_json_data( schedule_name )["schedule"]
 
@@ -149,11 +149,11 @@ class Irrigation_Scheduling(object):
  
    def get_json_data( self, schedule_name ):
       
-       sprinkler_ctrl = self.app_files.load_file("sprinkler_ctrl.json")
+       sprinkler_ctrl = json.loads(self.file_server_library.load_file("application_files","sprinkler_ctrl.json"))
        
        for j in sprinkler_ctrl :  
            if j["name"] == schedule_name:
-               json_data=self.app_files.load_file(j["link"]) 
+               json_data= json.loads(self.file_server_library.load_file("application_files",j["link"]))
                if isinstance(json_data, str):
                      object_data = json.loads(json_data)
                
@@ -169,12 +169,12 @@ class Irrigation_Scheduling(object):
 
 
 class Process_External_Commands(object):
-   def __init__(self,cf, cluster_control, handlers,app_files,sys_files,eto_management,irrigation_io,
+   def __init__(self,cf, cluster_control, handlers,file_server,eto_management,irrigation_io,
                   irrigation_hash_control,generate_control_events,equipment_current_limit ,current_operations,failure_report ):
        self.cf = cf
        self.handlers = handlers
-       self.app_files = app_files
-       self.sys_files = sys_files
+       self.file_server = file_server
+       
        
        
        self.generate_control_events = generate_control_events
@@ -184,7 +184,7 @@ class Process_External_Commands(object):
        self.equipment_current_limit = equipment_current_limit
        self.current_operations = current_operations
        self.failure_report = failure_report       
-       self.irrigation_sched = Irrigation_Scheduling(handlers,app_files,sys_files,eto_management,irrigation_hash_control)
+       self.irrigation_sched = Irrigation_Scheduling(handlers,file_server,eto_management,irrigation_hash_control)
 
        self.clear_redis_sprinkler_data()              
        self.commands = {}
@@ -222,7 +222,7 @@ class Process_External_Commands(object):
                      object_data = json.loads(object_data)
                  
                   print("command",object_data["command"])
-                  self.commands[object_data["command"]]( object_data )
+                  #self.commands[object_data["command"]]( object_data )
 
               
            except Exception as tst:
