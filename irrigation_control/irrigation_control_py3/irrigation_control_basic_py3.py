@@ -5,7 +5,7 @@ from .irrigation_step_monitoring_py3 import Irrigation_Step_Monitoring
 class Irrigation_Control_Basic(object):
 
    def __init__( self,   cf,cluster_control,io_control,handlers,
-                        app_files, sys_files, manage_eto,measurement_depths,
+                        manage_eto,measurement_depths,
                         irrigation_hash_control,qs,redis_site,current_limit,
                         Check_Excessive_Current,failure_report,current_operations,generate_control_events,cleaning_flow_limits):
 
@@ -16,8 +16,8 @@ class Irrigation_Control_Basic(object):
        self.handlers  =  handlers
        self.measurement_depths = measurement_depths
        self.manage_eto   = manage_eto
-       self.app_files     = app_files
-       self.sys_files     = sys_files
+      
+       
        self.irrigation_hash_control = irrigation_hash_control
        self.current_limit = current_limit
        self.failure_report=failure_report

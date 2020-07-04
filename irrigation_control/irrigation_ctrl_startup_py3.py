@@ -175,11 +175,10 @@ if __name__ == "__main__":
 
 
    
-    '''
     while True:
        if verify_startup(io_control,current_operations,failure_report) == True:
           break
-    '''      
+        
           
     #
     # Three items are running at the same time
@@ -198,7 +197,7 @@ if __name__ == "__main__":
     
     equipment_current_limit =  limit_sources[0]["EQUIPMENT"]
     print("equipment_current_limit",equipment_current_limit)
-    
+  
     Process_Irrigation_Command( redis_site_data = redis_site,
                                  handlers=ds_handlers,
                                  cluster_id = "IRRIGATION_CONTROL", 
@@ -220,11 +219,10 @@ if __name__ == "__main__":
                                  current_operations = current_operations )
                                 
                                  
-    '''           
+        
     Process_External_Commands( cf = cf,
                                     handlers = ds_handlers,
-                                    app_files = app_files,
-                                    sys_files = sys_files,
+                                    file_server = file_server_library,
                                     irrigation_hash_control = irrigation_hash_control,
                                     eto_management = eto_management,
                                     cluster_control = cluster_control,
@@ -234,11 +232,11 @@ if __name__ == "__main__":
                                     equipment_current_limit = equipment_current_limit,
                                     current_operations = current_operations )
     
-    
+   
     Master_Valve("MASTER_VALVE", cf,cluster_control, io_control, ds_handlers,current_operations,failure_report,irrigation_excessive_flow_limits,irrigation_hash_control)
     
     Cleaning_Valve("CLEANING_VALVES",cf,cluster_control, io_control, ds_handlers,current_operations,failure_report,irrigation_excessive_flow_limits)
-    '''                        
+                           
     #
     #  Instanciate Sub modules
     #  

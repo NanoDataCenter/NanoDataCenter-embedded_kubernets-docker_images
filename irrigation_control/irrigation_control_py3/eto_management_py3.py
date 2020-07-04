@@ -45,7 +45,7 @@ class ETO_Management(object):
        
       
    def update_eto_values(self,sensor_list):
-       self.eto_site_data = self.app_files.load_file( "eto_site_setup.json" )
+       self.eto_site_data = json.loads(self.file_server.load_file("application_files","eto_site_setup.json"))
        for l in  sensor_list:
            j_index = l[0]
            queue_name = l[1]
@@ -64,7 +64,7 @@ class ETO_Management(object):
            self.eto_hash_table.hset( queue_name , deficient) 
       
    def determine_eto_management(self,run_time, io_list):
-      self.eto_site_data =  json.loads(self.file_system_library.load_file("application_files","eto_site_setup.json"))
+      self.eto_site_data =  json.loads(self.file_server.load_file("application_files","eto_site_setup.json"))
       
       sensor_list = self.find_queue_names( io_list )
       if len(sensor_list) == 0:

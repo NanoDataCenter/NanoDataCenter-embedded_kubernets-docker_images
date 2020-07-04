@@ -24,14 +24,14 @@ from .common_irrigation_chains_py3       import  Check_Excessive_Current
 
 class Process_Irrigation_Command(object):
 
-   def __init__(self,redis_site_data, handlers,cluster_id,cluster_control,cf,file_system_server,manage_eto,irrigation_io,
+   def __init__(self,redis_site_data, handlers,cluster_id,cluster_control,cf,manage_eto,irrigation_io,
                 master_valves,cleaning_valves,measurement_depths,eto_management ,irrigation_hash_control,qs,
-                generate_control_events, failure_report,current_operations ):
+                generate_control_events, failure_report,current_operations,file_server ):
       self.handlers = handlers
       self.cluster_id = cluster_id
       self.cluster_ctrl = cluster_control
       self.cf = cf
-      self.file_system_server = file_system_server
+      self.file_server = file_server
       
       self.manage_eto = manage_eto
       self.irrigation_io = irrigation_io
@@ -66,7 +66,7 @@ class Process_Irrigation_Command(object):
                                                              cluster_control = cluster_control,
                                                              io_control = irrigation_io, 
                                                              handlers = handlers,
-                                                             file_system_server = file_system_server, 
+                                                             file_server = file_server, 
                                                        
                                                              master_valves = master_valves,
                                                              cleaning_valves = cleaning_valves,
@@ -92,7 +92,7 @@ class Process_Irrigation_Command(object):
                                                            cluster_control=cluster_control,
                                                            io_control = irrigation_io,
                                                            handlers=handlers,
-                                                           file_system_server = file_system_server,
+                                                           
                                                           
                                                            manage_eto = manage_eto,
                                                            measurement_depths = measurement_depths,
@@ -441,7 +441,30 @@ class Process_Irrigation_Command(object):
 
          
 
+   # Purpose is to check current controller is operational
+   def check_power_controller(self, cf_handle, chainObj, parameters, event):
+       
+       if event["name"] == "INIT":
+          return "CONTINUE"
+       else:
+          return False
          
+       
+
+       
+ 
+      
+
+
+   def check_mqtt_devices(self, cf_handle, chainObj, parameters, event):
+        
+       if event["name"] == "INIT":
+          return "CONTINUE"
+       else:
+          return False
+
+       
+          
      
 
 

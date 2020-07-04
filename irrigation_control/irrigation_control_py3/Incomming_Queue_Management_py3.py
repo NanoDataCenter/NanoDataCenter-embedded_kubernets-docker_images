@@ -1,6 +1,7 @@
 
 import time
 import os
+import json
 
 
 
@@ -49,7 +50,7 @@ class Irrigation_Scheduling(object):
        
  
    def load_auto_schedule( self, schedule_name):
-       schedule_control = json.loads(self.file_server_library.load_file("application_files","sprinkler_ctrl.json"))
+       schedule_control = json.loads(self.file_server.load_file("application_files","sprinkler_ctrl.json"))
        try:
          link_data = self.get_json_data( schedule_name )["schedule"]
 
@@ -149,11 +150,11 @@ class Irrigation_Scheduling(object):
  
    def get_json_data( self, schedule_name ):
       
-       sprinkler_ctrl = json.loads(self.file_server_library.load_file("application_files","sprinkler_ctrl.json"))
+       sprinkler_ctrl = json.loads(self.file_server.load_file("application_files","sprinkler_ctrl.json"))
        
        for j in sprinkler_ctrl :  
            if j["name"] == schedule_name:
-               json_data= json.loads(self.file_server_library.load_file("application_files",j["link"]))
+               json_data= json.loads(self.file_server.load_file("application_files",j["link"]))
                if isinstance(json_data, str):
                      object_data = json.loads(json_data)
                
@@ -222,7 +223,7 @@ class Process_External_Commands(object):
                      object_data = json.loads(object_data)
                  
                   print("command",object_data["command"])
-                  #self.commands[object_data["command"]]( object_data )
+                  self.commands[object_data["command"]]( object_data )
 
               
            except Exception as tst:

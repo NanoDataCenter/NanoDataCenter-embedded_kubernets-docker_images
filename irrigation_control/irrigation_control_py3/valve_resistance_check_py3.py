@@ -10,8 +10,7 @@ class Valve_Resistance_Check(object):
                  cluster_control,
                  io_control, 
                  handlers,
-                 app_files, 
-                 sys_files,
+                 file_server,
                  master_valves,
                  cleaning_valves,
                  measurement_depths,                 
@@ -26,8 +25,7 @@ class Valve_Resistance_Check(object):
          
        self.get_json_object = get_json_object
        self.handlers = handlers
-       self.sys_files    = sys_files
-       self.app_files    = app_files
+       self.file_server = file_server
        self.cf           = cf
        self.cluster_control = cluster_control
        self.io_control      = io_control
@@ -95,12 +93,12 @@ class Valve_Resistance_Check(object):
        
        
        self.job_queue = []
-       sprinkler_ctrl = self.app_files.load_file("sprinkler_ctrl.json")
+       sprinkler_ctrl = json.loads(self.file_server.load_file("application_files","sprinkler_ctrl.json"))
 
        for j in sprinkler_ctrl:
            schedule = j["name"]
            
-           json_data  =self.app_files.load_file(j["link"]) 
+           json_data = json.loads(self.file_server.load_file("application_files",j["link"]))
            for i in json_data["schedule"]:
              for k in i:
                 remote = k[0]

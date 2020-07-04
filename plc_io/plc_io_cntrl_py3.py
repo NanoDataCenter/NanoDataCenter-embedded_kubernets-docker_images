@@ -6,12 +6,15 @@ class PLC_IO_Control(object):
    def __init__(self,
                 redis_site,
                 qs,
-                generate_irrigation_control ):
+                generate_irrigation_control,
+                generate_sensor_minute_status):
                 
        self.generate_irrigation_control = generate_irrigation_control
+       self.generate_sensor_minute_status = generate_sensor_minute_status
        self.redis_site = redis_site
        self.qs         = qs
        self.hash_update = self.generate_irrigation_control(redis_site,qs)
+       self.mqtt_stuff = self.generate_sensor_minute_status(redis_site,qs)
        self.construct_plc_elements(redis_site,qs)
        self.construct_plc_flow_measurements(redis_site,qs) 
        self.construct_plc_slave_current_measurements(redis_site,qs) 
@@ -37,8 +40,12 @@ class PLC_IO_Control(object):
    def measure_flow_meters(self,return_value):
        
        for i in self.plc_flow_meas:
-           return_value[i["name"]] = self.make_flow_measurement(i,"PLC_FLOW_METER")
-       
+           temp = self.make_flow_measurement(i,"PLC_FLOW_METER")
+           return_value[i["name"]] = temp
+           # temp hack till well monitor gets operational
+           self.mqtt_stuff.hset("MAIN_FLOW_METER",temp)
+           self.mqtt_stuff.hset("CLEANING_FLOW_METER",0)
+           
 
    def measure_irrigation_current(self,return_value):
        for i in self.plc_irrigation_current_meas:
@@ -214,7 +221,7 @@ if __name__ == "__main__":
     from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
     from   plc_control_py3.construct_classes_py3 import Construct_Access_Classes
     from core_libraries.irrigation_hash_control_py3 import generate_irrigation_control    
-
+    from core_libraries.irrigation_hash_control_py3 import generate_sensor_minute_status
     from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
 
     #
@@ -228,4 +235,4 @@ if __name__ == "__main__":
     redis_site = json.loads(data)
      
     qs = Query_Support( redis_site )
-    PLC_IO_Control(redis_site,qs,generate_irrigation_control)
+    PLC_IO_Control(redis_site,qs,generate_irrigation_control,generate_sensor_minute_status)
