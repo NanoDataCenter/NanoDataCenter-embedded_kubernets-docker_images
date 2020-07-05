@@ -26,10 +26,12 @@ class Station_Setup
 
    open( index, add_flag, eto_data , main_panel)
    {
+     
       station_control_class.main_panel = main_panel
       station_control_class.add_flag = add_flag
       station_control_class.eto_data = eto_data
       station_control_class.index    = index
+      
       $(main_panel).hide()
       $("#station_setup_set").show()
        if( add_flag == true )
@@ -258,21 +260,76 @@ class Station_Setup
 
    populate_valves()
    {
-        var controller_index;
-
-        controller_index = $("#station_controller")[0].selectedIndex;
-        var select_pins = this.controller_labels[this.controller_list[controller_index]]
-    
+       
+        var controller_value = $("#station_controller").val();
+        var controller_index = $("#station_controller")[0].selectedIndex;
+        var available_pins = []
+        var select_pins = []
+        var temp = station_control_class.eto_data
+        var eto_used_pins = []
+       // var controller_label = this.controller_labels[this.controller_list[controller_index]];
+        
+       
+        /* assemble current used pins */
+        for(let i = 0; i< temp.length;i++)
+        {   
+            if( temp[i].controller == controller_value)
+            {  
+                eto_used_pins.push(parseInt(temp[i].pin))
+                
+            }
+         
+                  
+            
+        }
+        /* assemble all bins */
+        var all_pins = pin_list[controller_index]["pins"]
+       
+       
+        /* now merge list */
+       
+        var unused_pins = []
+        
+        for(let i=0;i<all_pins.length;i++)
+        {
+            
+            var status = true;
+            
+            for(let j=0;j<eto_used_pins.length;j++)
+            {
+                
+                if( eto_used_pins[j] == i+1)
+                {   
+                    status = false;
+                } 
+                               
+                                
+            }
+            
+           
+            if(status== true)
+            {
+              
+                unused_pins.push(i+1)
+            }
+            
+        }
+        unused_pins.sort(function(a, b){return a-b})
+        
         $("#station_valve").empty()
-        for( let i = 0; i < select_pins.length; i++)
-        {      
-          $("#station_valve").append($("<option></option>").val(i+1).html("valve: "+(i+1)))
+        for( let i = 0; i < unused_pins.length; i++)
+        {  var temp
+           var val
+           val = unused_pins[i].toString();
+           
+          $("#station_valve").append($("<option></option>").val(val).html("valve: "+val))
+          
         } 
    
     
-       
+     
    }
-
+   
    structure_data(  )
    { 
        var i;

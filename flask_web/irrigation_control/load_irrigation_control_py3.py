@@ -250,8 +250,6 @@ class Load_Irrigation_Pages(Base_Stream_Processing):
        schedule_data = self.get_schedule_data()
 
        controller_pin = self.file_server_library.load_file( "system_files", "controller_cable_assignment.json" )
-       controller_pin_json = json.dumps(controller_pin)
-
        controller_valve_group = self.file_server_library.load_file( "system_files", "valve_group_assignments.json" )
        return self.render_template(self.path+'/irrigation_diagnostics', 
              filename = filename,

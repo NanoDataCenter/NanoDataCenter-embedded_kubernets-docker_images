@@ -29,7 +29,7 @@ class Construct_Weather_Stations(object):
        
        
    def add_station_wunderground_hybrid(self):
-       properties = {"access_key":"WUNDERGROUND_HYBRID","stations":{"main":"KCAMURRI101","solar":"SRUC1"} ,"pws":'KCAMURRI101',"priority":11,"type":"hybrid"}
+       properties = {"access_key":"WUNDERGROUND_HYBRID","stations":{"main":"KCAMURRI101","solar":"SRUC1"} ,"pws":'KCAMURRI101',"priority":1,"type":"hybrid"}
        self.bc.add_info_node( "WS_STATION",'hybrid_1',properties=properties)     
       
    def add_station_cimis_satellite(self):

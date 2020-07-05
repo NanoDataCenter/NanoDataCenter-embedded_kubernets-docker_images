@@ -48,9 +48,9 @@ function ajax_schedule_success()
    schedules_end_times = {}
    schedules_dow = {}
    schedules_pins = {}
-   alert(schedule_data_json)
+   
    data = JSON.parse(schedule_data_json);
-   alert(data)
+   
    for (var i = 0; i < data.length; i++) 
    {   
 	     schedules.push(data[i].name)

@@ -12,8 +12,10 @@
 <script src="/js/bootstrap.js"></script> 
 
 <script type="text/javascript" >
+{% include "js/status_definition.js" %}
 {% include "js/ajax_functions.js" %}
 {% include "js/redis_functions.js" %}
+
 </script>
 {% macro canvas( canvasName = "test", featuredColor = "Green", featuredMeasure = 0, qualScale1 = 0, qualScale1Color = "Black", titleText = "Step 1", maxValue = 35 ,std = "a") -%}
 			$("{{ "#"+canvasName }}").bullet({

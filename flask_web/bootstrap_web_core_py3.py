@@ -204,7 +204,17 @@ class PI_Web_Server_Core(object):
                
            else:
              raise ValueError("bad web module")         
-       self.result = result   
+       self.result = result 
+       if "status_function" in self.result:
+          print(self.result["status_function"])
+       else:
+          self.result["status_function"] = ""
+          print("status function not defined")
+       file_handle = open("flask_templates/js/status_definition.js","w")   
+       
+       file_handle.write('__status_option__ = "'+self.result["status_function"]+'"; \n') 
+       
+       file_handle.close()
        
 
    def common_qs_search(self,search_list): # generalized graph search

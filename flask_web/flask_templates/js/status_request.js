@@ -5,18 +5,18 @@ status_update_function = null
  
  
  
-function status_request_function()
+function irrigation_request_function()
 {
    json_object = {}
 
    
-   ajax_get( status_function_url, "Data Not Fetched",status_update_function )
+   ajax_get( '/ajax/status_update', "Data Not Fetched",irrigation_update )
  
    
 }
   
                   
-function status_update( data )
+function irrigation_update( data )
 {
        var temp
        var temp_1
@@ -55,23 +55,29 @@ function status_update( data )
 
  
 
-function system_state_init()
-{   
-   
- $('#status_panel').hide();
-} 
+
   
-function status_url_update( status_url,status_update )
+function irrigation_url_update(  )
 {
-    status_update_function = status_update
-    status_function_url = status_url
-    //$( "#status_panel"  ).bind({ popucdpafteropen: status_request_function })
+    
+    
+   
     $("#status_panel").click(function(){
         $("#status_modal").modal("show");
-        status_request_function()
+        irrigation_request_function()
     });
     $('#status_panel').show();
     
 }
 
-
+function system_state_init()
+{   
+ 
+ if (__status_option__ == "irrigation")
+ {
+     irrigation_url_update(  );
+     return;
+ }
+ $('#status_panel').hide();
+ 
+} 
