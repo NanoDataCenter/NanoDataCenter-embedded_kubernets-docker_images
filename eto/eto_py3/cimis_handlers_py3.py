@@ -30,6 +30,7 @@ class CIMIS_ETO(object):
         temp = response.read()
         #print("temp",temp)
         data = json.loads(temp.decode())
+        print("data",datagit )
         value = float(data["Data"]["Providers"][0]["Records"][0]['DayAsceEto']["Value"])
         print("value",value)
         print("*************** cimis made it here",value)
