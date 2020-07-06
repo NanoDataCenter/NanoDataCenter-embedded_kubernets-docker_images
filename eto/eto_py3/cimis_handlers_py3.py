@@ -14,7 +14,7 @@ class CIMIS_ETO(object):
         self.station = self.cimis_data["station"]
 
     def compute_previous_day( self):
-      
+        print("compute eto")
         if self.eto_data.hget("CIMIS:"+str(self.station) ) != None:
            print("***************** cimis eto returning")
            return
@@ -31,6 +31,7 @@ class CIMIS_ETO(object):
         #print("temp",temp)
         data = json.loads(temp.decode())
         value = float(data["Data"]["Providers"][0]["Records"][0]['DayAsceEto']["Value"])
+        print("value",value)
         print("*************** cimis made it here",value)
         date_string = str(datetime.datetime.now())
         self.eto_data.hset("CIMIS:"+str(self.station), {"eto":float(

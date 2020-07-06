@@ -33,6 +33,7 @@ class Eto_Management(object):
         self.initialize_values()
         self.generate_calculators()
         initial_accumulation_tables.initialize_eto_tables(self.eto_hash_table)
+        #self.new_day_rollover()
 
                                
     def generate_redis_handlers(self):
