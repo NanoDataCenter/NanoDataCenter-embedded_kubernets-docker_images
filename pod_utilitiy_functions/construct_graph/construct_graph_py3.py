@@ -21,7 +21,7 @@ from   graph_modules_py3.lacima.site_definitions_py3 import LACIMA_Site_Definito
 #from  graph_modules_py3.lacima.plc_measurements_py3 import Construct_Lacima_PLC_Measurements
 
 from  graph_modules_py3.containers_py3.construct_container_py3 import Construct_Containers
-
+from  graph_modules_py3.services_py3.construct_services_py3    import Construct_Services
 def construct_processor(name,containers,services):
     properties = {}
     properties["containers"] = containers
@@ -67,6 +67,7 @@ def construct_processor(name,containers,services):
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")
     print("containers",containers)
+    Construct_Services(bc,cd,services)
     Construct_Containers(bc,cd,containers)
     bc.end_header_node("PROCESSOR")    
 
@@ -119,7 +120,7 @@ if __name__ == "__main__" :
 
 
    
-   containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling","plc_io","modbus_server"   ]
+   containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling","modbus_server"   ]
    
    construct_processor(name="irrigation_controller",containers = containers,
                       services=["redis","rpi_mosquitto","file_server"])
