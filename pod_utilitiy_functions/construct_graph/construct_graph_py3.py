@@ -12,13 +12,7 @@ from  construct_data_structures_py3 import Construct_Data_Structures
 from   graph_modules_py3.cloud_site.site_definitions_py3 import Cloud_Site_Definitons
 from   graph_modules_py3.lacima.site_definitions_py3 import LACIMA_Site_Definitons
 
-#from  graph_modules_py3.lacima.construct_applications_py3 import Construct_Lacima_Applications
-#from  graph_modules_py3.lacima.construct_controller_py3 import Construct_Lacima_Controllers
-#from  graph_modules_py3.lacima.construct_redis_monitor_py3 import Construct_Lacima_Redis_Monitoring
-#from  graph_modules_py3.lacima.construct_mqtt_devices_py3  import  Construct_Lacima_MQTT_Devices
-#from  graph_modules_py3.lacima.construct_plc_devices_py3   import  Construct_Lacima_PLC_Devices
-#from  graph_modules_py3.lacima.construct_cloud_interface_py3 import Construct_Lacima_Cloud_Service
-#from  graph_modules_py3.lacima.plc_measurements_py3 import Construct_Lacima_PLC_Measurements
+
 
 from  graph_modules_py3.containers_py3.construct_container_py3 import Construct_Containers
 from  graph_modules_py3.services_py3.construct_services_py3    import Construct_Services
@@ -63,6 +57,8 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("ERROR_STREAM",forward=True)
     cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_rpc_server("DOCKER_UPDATE_QUEUE",{"timeout":5,"queue":name+"_DOCKER_RPC_SERVER"})
+    
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")

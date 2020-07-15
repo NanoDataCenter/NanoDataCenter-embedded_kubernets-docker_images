@@ -10,5 +10,6 @@ class MQTT_Interface(object):
        { "file":"mqtt_redis_gateway_py3.py","restart":True },
        { "file":"mqtt_scan_data_py3.py","restart":True }
        ]
-       Start_Container(bc,cd,name,command_list)             
+       starting_command = "docker run -d --name mqtt_interface --network host   --mount type=bind,source=/mnt/ssd/site_config,target=/data/   nanodatacenter/mqtt_interface /bin/bash process_control.bsh"
+       Start_Container(bc,cd,name,starting_command,command_list,"nanodatacenter/mqtt_interface")             
        End_Container(bc,cd)  

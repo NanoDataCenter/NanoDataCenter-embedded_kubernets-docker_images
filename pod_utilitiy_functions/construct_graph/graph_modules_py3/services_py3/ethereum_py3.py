@@ -10,5 +10,5 @@ class Ethereum_Service(object):
        
 
        
-       Start_Service(bc,cd,name,container_run_script)             
+       Start_Service(bc,cd,name,container_run_script,"nanodatacenter/ethereum-go")             
        End_Service(bc,cd)  

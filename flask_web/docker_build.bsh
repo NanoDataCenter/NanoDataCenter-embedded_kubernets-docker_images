@@ -1,1 +1,2 @@
 docker build --tag nanodatacenter/flask_web .
+../docker_cmds/docker_clean_up

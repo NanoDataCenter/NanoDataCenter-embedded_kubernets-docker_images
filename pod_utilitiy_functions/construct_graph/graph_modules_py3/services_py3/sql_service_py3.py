@@ -10,5 +10,5 @@ class SQLITE_Service(object):
        container_run_script = container_run_script + " nanodatacenter/sqlite_server /bin/bash sqlite_control.bsh "
 
        
-       Start_Service(bc,cd,name,container_run_script)             
+       Start_Service(bc,cd,name,container_run_script,"nanodatacenter/sqlite_server")             
        End_Service(bc,cd)  

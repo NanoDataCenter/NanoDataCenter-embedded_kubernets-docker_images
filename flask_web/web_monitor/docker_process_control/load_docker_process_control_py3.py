@@ -8,6 +8,8 @@ from redis_support_py3.graph_query_support_py3 import  Query_Support
 
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers 
 from base_stream_processing.base_stream_processing_py3 import Base_Stream_Processing
+from file_server_library.file_server_lib_py3  import Construct_RPC_Library
+
 class Load_Docker_Processes(Base_Stream_Processing):
 
    def __init__( self, app, auth, request, render_template,qs,site_data,url_rule_class,subsystem_name,path):
@@ -26,8 +28,9 @@ class Load_Docker_Processes(Base_Stream_Processing):
        self.assemble_url_rules()
        self.path_dest = self.url_rule_class.move_directories(self.path)
        
-           
+       self.file_server = Construct_RPC_Library( qs, site_data )           
        self.assemble_containers()
+       
        self.docker_performance_data_structures= {}
        for i in self.managed_container_names:
            self.docker_performance_data_structures[i] = self.assemble_container_data_structures(i)
@@ -54,12 +57,18 @@ class Load_Docker_Processes(Base_Stream_Processing):
            self.container_control_structure[i["name"]] = self.determine_container_structure(i["name"])
            
            services = set(i["services"])
+           self.services = list(services)
+          
            containers = set(i["containers"])
+           self.containers = list(containers)
            containers_list = containers.union(services)
-           self.all_container_names.extend(list(containers_list))     
+           self.all_container_names.extend(list(containers_list))   
+           
           
        self.processor_names.sort()  
        self.all_container_names.sort()
+       self.containers.sort()
+       self.services.sort()
        #print(self.container_control_structure)
        #print(self.all_container_names)
        self.managed_container_names = []
@@ -106,7 +115,10 @@ class Load_Docker_Processes(Base_Stream_Processing):
       
        handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["WEB_COMMAND_QUEUE"])
        handlers["WEB_DISPLAY_DICTIONARY"] = generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
-       return  handlers    
+       queue_name = data_structures["DOCKER_UPDATE_QUEUE"]['queue']
+       handlers["DOCKER_UPDATE_QUEUE"] = generate_handlers.construct_rpc_client( )
+       handlers["DOCKER_UPDATE_QUEUE"].set_rpc_queue(queue_name)
+       return handlers
 
    def assemble_container_data_structures(self,container_name):
        
@@ -133,6 +145,7 @@ class Load_Docker_Processes(Base_Stream_Processing):
        handlers["PROCESS_VSZ"]  = generate_handlers.construct_redis_stream_reader(data_structures["PROCESS_VSZ"])
        handlers["PROCESS_RSS"] = generate_handlers.construct_redis_stream_reader(data_structures["PROCESS_RSS"])
        handlers["PROCESS_CPU"]  = generate_handlers.construct_redis_stream_reader(data_structures["PROCESS_CPU"])
+   
        return handlers
 
        
@@ -154,17 +167,20 @@ class Load_Docker_Processes(Base_Stream_Processing):
                          self.display_exception_log,
                          self.display_cpu_percent,
                          self.display_vsz,
-                         self.display_rss  ]
+                         self.display_rss,
+                         self.system_reset_and_docker_upgrade  ]
                          
        url_list = [ [ 'start_and_stop_container','/<int:processor_id>','/0',"Stop/Start Docker Container"  ],
                    
-                     [ 'container_exception_log','//<int:processor_id>','/0',"Managed Container Process Exception Log"  ],
+                     [ 'container_exception_log','/<int:processor_id>','/0',"Managed Container Process Exception Log"  ],
                     [ 'start_and_stop_managed_container_processes','/<int:container_id>','/0',"Stop/Start Managed Container Processes"  ],
                     [ 'display_exception_status','/<int:container_id>','/0',"Managed Container Processes Status"  ],
-                     [ 'display_exception_log','//<int:container_id>','/0',"Managed Container Process Exception Log"  ],
+                     [ 'display_exception_log','/<int:container_id>','/0',"Managed Container Process Exception Log"  ],
                      [  'display_cpu','/<int:container_id>','/0',"Managed Container CPU Utilization"    ],
                      [  'display_vsz','/<int:container_id>','/0',"Managed Container VSZ Utilization"    ],
-                     [ 'display_rss','/<int:container_id>','/0',"Managed Container RSS Utilization"  ] 
+                     [ 'display_rss','/<int:container_id>','/0',"Managed Container RSS Utilization"  ], 
+                     [ 'reset_upgrade','/<int:processor_id>','/0',"Reset System and Upgrade Containers" ]
+           
                      ]                            
 
       
@@ -181,6 +197,7 @@ class Load_Docker_Processes(Base_Stream_Processing):
        a1 = self.auth.login_required( self.manage_containers )
        self.app.add_url_rule(self.slash_name+'/manage_containers/change_containers',self.slash_name+'/manage_containers/change_containers',a1,methods=["POST"])
 
+       # internal call
        a1 = self.auth.login_required( self.load_processes )
        self.app.add_url_rule(self.slash_name+'/load_processes/load_process',self.slash_name+'/load_processes/load_process',a1,methods=["POST"])
        
@@ -188,9 +205,13 @@ class Load_Docker_Processes(Base_Stream_Processing):
        a1 = self.auth.login_required( self.manage_processes )
        self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',self.slash_name+"/manage_processes/change_process",a1,methods=["POST"])
     
+       # internal call
+       a1 = self.auth.login_required( self.manage_reset_upgrade )
+       self.app.add_url_rule(self.slash_name+'/manage_processes/manage_reset_upgrade',self.slash_name+"/manage_processes/manage_reset_upgrade",a1,methods=["POST"])
+
+ 
  
        
-
 
 
    #
@@ -416,3 +437,34 @@ class Load_Docker_Processes(Base_Stream_Processing):
                                      controller_id = container_id
                                      
                                      )
+                                     
+   def manage_reset_upgrade(self):
+       reset_data = self.request.get_json()
+       print("reset_data",reset_data)
+       processor_name = self.processor_names[reset_data["processor_id"]]
+       handlers = self.container_control_structure[processor_name]
+       rpc_client = handlers["DOCKER_UPDATE_QUEUE"]
+       try:
+          response = rpc_client.send_rpc_message("Upgrade",reset_data,timeout=5 )
+          
+          return json.dumps("SUCCESS")
+       except:
+         
+          raise
+    
+   def system_reset_and_docker_upgrade(self,processor_id):
+       processor_name = self.processor_names[processor_id]
+      
+       return self.render_template(self.path_dest+"/reset_upgrade",
+                                  processor_id = processor_id,
+                                  processor_names = self.processor_names,
+                                  services = self.services,
+                                  containers = self.containers,
+                                  services_json = json.dumps(self.services),
+                                  container_json = json.dumps(self.containers),
+                                  ajax_handler = self.slash_name+'/manage_processes/manage_reset_upgrade' )
+                                  
+                                  
+   
+
+       

@@ -8,7 +8,7 @@ class RPI_Mosquitto_Service(object):
        container_run_script = "docker run -d  --name rpi_mosquitto  --network host     nanodatacenter/rpi_mosquitto "
 
        
-       Start_Service(bc,cd,name,container_run_script)             
+       Start_Service(bc,cd,name,container_run_script,"nanodatacenter/mosquitto_db")             
        End_Service(bc,cd)  
 
 

@@ -13,7 +13,7 @@
        processor_id = {{processor_id}}                         
        load_process = {{load_process}}
        manage_process = {{manage_process}}                          
-      
+       
       {% include "js/docker_process_control/docker_control.js" %}
       </script>
 

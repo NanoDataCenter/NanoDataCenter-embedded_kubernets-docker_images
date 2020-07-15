@@ -10,5 +10,5 @@ class Redis_Service(object):
        
 
        
-       Start_Service(bc,cd,name,container_run_script)             
+       Start_Service(bc,cd,name,container_run_script,"redis")             
        End_Service(bc,cd)  

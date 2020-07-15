@@ -2,7 +2,7 @@
 from .redis_monitor_py3 import Redis_Monitor_Container
 from .log_stream_events_py3 import LOG_STREAM_EVENTS_CONTAINER
 from .stream_events_to_cloud_py3 import Stream_Events_To_Cloud
-from .sqlite_server_py3 import SQLITE_Server
+
 from .op_monitor_py3 import OP_Monitor
 from .mqtt_interface_py3 import MQTT_Interface
 from .irrigation_container_py3 import IRRIGATION_CONTROL
@@ -26,9 +26,7 @@ class Construct_Containers(object):
          elif i == "stream_events_to_cloud":
              print(i)
              Stream_Events_To_Cloud(bc,cd,i) 
-         elif i == "sqlite_server":
-             print(i)
-             SQLITE_Server(bc,cd,i)  
+
          elif i == "op_monitor":
               print(i)
               OP_Monitor(bc,cd,i) 
