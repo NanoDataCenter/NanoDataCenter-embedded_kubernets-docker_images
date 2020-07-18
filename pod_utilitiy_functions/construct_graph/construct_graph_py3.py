@@ -42,7 +42,7 @@ def construct_processor(name,containers,services):
 
     cd.close_package_contruction()
     properties = {}
-    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True}]
+    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True},{"file":"node_reset_py3.py","restart":True}]
     bc.add_header_node("NODE_PROCESSES",name,properties=properties)
     cd.construct_package("DATA_STRUCTURES")
     cd.add_redis_stream("ERROR_STREAM",forward=True)
@@ -58,7 +58,7 @@ def construct_processor(name,containers,services):
     cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
     cd.add_rpc_server("DOCKER_UPDATE_QUEUE",{"timeout":5,"queue":name+"_DOCKER_RPC_SERVER"})
-    
+    cd.add_hash("REBOOT_DATA")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")

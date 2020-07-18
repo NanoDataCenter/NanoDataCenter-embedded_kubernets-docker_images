@@ -14,7 +14,16 @@ function  change_system_status(event,ui)
 	        
 	  reset_data["pod"] = false
    }  
-   
+   if( $("#graph_reset").is(":checked") == true )
+   {  
+      count = count+1;
+	  reset_data["graph"] = true
+   }
+   else
+   {
+	        
+	  reset_data["graph"] = false
+   }     
   
    service_list = []
    for( i=0;i< services.length;i++)
@@ -60,13 +69,15 @@ function  change_system_status(event,ui)
   reset_data["containers"] = container_list
   processor_id
   reset_data["processor_id"] = processor_id
-  alert(JSON.stringify(reset_data))
-  alert(count)
- 
-  ajax_post_confirmation(ajax_handler, reset_data,"Do you want to upgrade selected components ?",
+  if(count > 0)
+  {
+    ajax_post_confirmation(ajax_handler, reset_data,"Do you want to upgrade selected components ?",
                             "Changes Made", "Changes Not Made") 
-  
-
+  }
+  else
+  {
+      alert("Nothing selected to upgradee")
+  }
 }
      
 

@@ -42,6 +42,9 @@
 <input type="checkbox" id="pod_reset" name="pod_reset" value="pod_reset">
 <label for="pod_reset"> Reset Pod Control Software</label><br>
 <div style="margin-top:20px"></div>
+<input type="checkbox" id="graph_reset" name="graph_reset" value="graph_reset">
+<label for="graph_reset"> Reset Configuration Graph</label><br>
+<div style="margin-top:20px"></div>
 
   
 <div>   
