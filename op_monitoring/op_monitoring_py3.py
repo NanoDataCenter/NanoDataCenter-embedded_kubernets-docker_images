@@ -84,30 +84,30 @@ def add_chains(redis_monitor, cf):
 
     cf.define_chain("minute_measurements", True)
     cf.insert.log("starting minute op monitoring")
-    cf.insert.one_step(op_monitor.execute_minute)
-    cf.insert.log("ending minute op monitoring")
+    #cf.insert.one_step(op_monitor.execute_minute)
+    #cf.insert.log("ending minute op monitoring")
     cf.insert.wait_event_count( event = "MINUTE_TICK")
     cf.insert.reset()
 
     cf.define_chain("fifteen_minute_measurements", True)
     cf.insert.log("starting 15_minute op monitoring")
-    cf.insert.one_step(op_monitor.execute_15_minutes)
-    cf.insert.log("ending 15_minute op monitoring")
+    #cf.insert.one_step(op_monitor.execute_15_minutes)
+    #cf.insert.log("ending 15_minute op monitoring")
     cf.insert.wait_event_count( event = "MINUTE_TICK",count=15)
     cf.insert.reset()
 
  
     cf.define_chain("hour_measurements", True)
     cf.insert.log("starting hour op monitoring")
-    cf.insert.one_step(op_monitor.execute_hour)
-    cf.insert.log("ending hour op monitoring")
+    #cf.insert.one_step(op_monitor.execute_hour)
+    #cf.insert.log("ending hour op monitoring")
     cf.insert.wait_event_count( event = "HOUR_TICK")
     cf.insert.reset()
 
     cf.define_chain("day_measurements", True)
     cf.insert.log("starting day op monitoring")
-    cf.insert.one_step(op_monitor.execute_day)
-    cf.insert.log("ending day op monitoring")
+    #cf.insert.one_step(op_monitor.execute_day)
+    #cf.insert.log("ending day op monitoring")
     cf.insert.wait_event_count( event = "DAY_TICK")
     cf.insert.reset()
 

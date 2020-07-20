@@ -4,11 +4,17 @@ from pprint import pprint
 docker_ctrl = Docker_Interface()
 
 docker_images = docker_ctrl.images()
+
 docker_list = []
 for i in docker_images:
-   name = i.tags[0]
-   name_list = name.split("/")
-   if (len(name_list) == 2) and (name_list[0] =="nanodatacenter"):
-      os.system("docker push "+name)
-  
+   
+   try:
+       name = i.tags[0]
+       name_list = name.split("/")
+       if (len(name_list) == 2) and (name_list[0] =="nanodatacenter"):
+           os.system("docker push "+name)
+   except:
+      print("check this ")
+      print("i",i.__dict__)
+      
    

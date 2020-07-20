@@ -51,14 +51,16 @@ class Docker_Processes(Common_Class):
                for j in self.containers[i]:
                    if j == "op_monitor":
                       continue
-                   ref_container = ref_data[j]
-                   #print("ref_container",j,ref_container)
-                   if ref_container == None:
-                      print("continue",i)
-                   else:
-                      status = status and self.common_obj.detect_new_alert(self.subsystem_name,new_data[i][j]["web_display"],ref_container["web_display"])
-                      status = status and self.common_obj.check_for_error_flag(self.subsystem_name,new_data[i][j]["error_hash"])
-
+                   try:
+                      ref_container = ref_data[j]
+                      #print("ref_container",j,ref_container)
+                      if ref_container == None:
+                          print("continue",i)
+                      else:
+                         status = status and self.common_obj.detect_new_alert(self.subsystem_name,new_data[i][j]["web_display"],ref_container["web_display"])
+                         status = status and self.common_obj.check_for_error_flag(self.subsystem_name,new_data[i][j]["error_hash"])
+                   except:
+                      print(j)
                 
        print("status",status)
        if status == False: # change is monitoring status
