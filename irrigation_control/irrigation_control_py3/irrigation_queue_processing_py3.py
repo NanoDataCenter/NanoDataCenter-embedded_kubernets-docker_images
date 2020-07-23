@@ -25,7 +25,7 @@ from .common_irrigation_chains_py3       import  Check_Excessive_Current
 class Process_Irrigation_Command(object):
 
    def __init__(self,redis_site_data, handlers,cluster_id,cluster_control,cf,manage_eto,irrigation_io,
-                master_valves,cleaning_valves,measurement_depths,eto_management ,irrigation_hash_control,qs,
+                main_valves,cleaning_valves,measurement_depths,eto_management ,irrigation_hash_control,qs,
                 generate_control_events, failure_report,current_operations,file_server ):
       self.handlers = handlers
       self.cluster_id = cluster_id
@@ -35,7 +35,7 @@ class Process_Irrigation_Command(object):
       
       self.manage_eto = manage_eto
       self.irrigation_io = irrigation_io
-      self.master_valves = master_valves
+      self.main_valves = main_valves
       self.cleaning_valves = cleaning_valves
       self.measurement_depths = measurement_depths
       self.eto_management = eto_management
@@ -68,7 +68,7 @@ class Process_Irrigation_Command(object):
                                                              handlers = handlers,
                                                              file_server = file_server, 
                                                        
-                                                             master_valves = master_valves,
+                                                             main_valves = main_valves,
                                                              cleaning_valves = cleaning_valves,
                                                              measurement_depths = measurement_depths,
                                                              irrigation_hash_control = irrigation_hash_control,

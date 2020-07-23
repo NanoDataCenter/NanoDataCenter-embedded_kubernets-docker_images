@@ -11,7 +11,7 @@ class Valve_Resistance_Check(object):
                  io_control, 
                  handlers,
                  file_server,
-                 master_valves,
+                 main_valves,
                  cleaning_valves,
                  measurement_depths,                 
                  irrigation_hash_control,
@@ -29,7 +29,7 @@ class Valve_Resistance_Check(object):
        self.cf           = cf
        self.cluster_control = cluster_control
        self.io_control      = io_control
-       self.master_valves = master_valves
+       self.main_valves = main_valves
        self.cleaning_valves = cleaning_valves   
        self.current_operations = current_operations
       
@@ -47,8 +47,8 @@ class Valve_Resistance_Check(object):
    def construct_chains( self, cf):
 
        cf.define_chain("resistance_check",False)        
-       cf.insert.one_step(self.generate_control_events.change_master_valve_offline)
-       cf.insert.one_step(self.generate_control_events.change_master_valve_offline)
+       cf.insert.one_step(self.generate_control_events.change_main_valve_offline)
+       cf.insert.one_step(self.generate_control_events.change_main_valve_offline)
        cf.insert.assert_function_terminate( "RELEASE_IRRIGATION_CONTROL" ,
                                              None, self.io_control.verify_irrigation_controllers)
        
@@ -58,7 +58,7 @@ class Valve_Resistance_Check(object):
        cf.insert.log("event IR_V_Valve_Check_Done")
        cf.insert.one_step(self.log_valve_check)
        cf.insert.send_event("RELEASE_IRRIGATION_CONTROL" ) 
-       cf.insert.one_step(self.generate_control_events.change_master_valve_online)
+       cf.insert.one_step(self.generate_control_events.change_main_valve_online)
        cf.insert.one_step(self.generate_control_events.change_cleaning_valve_online)
        cf.insert.terminate() 
 
@@ -107,7 +107,7 @@ class Valve_Resistance_Check(object):
 
       
       
-       for j in self.master_valves["MASTER_VALVES"]:
+       for j in self.main_valves["MASTER_VALVES"]:
           remote = j["remote"]
           pins    = j["pins"]
           

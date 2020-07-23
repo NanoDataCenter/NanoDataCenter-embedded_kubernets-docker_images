@@ -10,7 +10,7 @@ class SQLITE_Client_Support(Construct_RPC_Library):
        Construct_RPC_Library.__init__(self, qs,site_data)
     
    def list_tables(self,database_name): #tested
-       script = 'SELECT name from sqlite_master where type= "table";'
+       script = 'SELECT name from sqlite_main where type= "table";'
       
        temp = self.select(database_name,script)
       
