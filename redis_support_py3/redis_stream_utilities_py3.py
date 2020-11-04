@@ -2,7 +2,7 @@ import redis
 import time
 import msgpack
 
-class Redis_Stream(object):
+class Redis_Stream_Utilities(object):
    def __init__(self,redis_handle, exact_flag = False):
        self.redis_handle = redis_handle
        if exact_flag == True:

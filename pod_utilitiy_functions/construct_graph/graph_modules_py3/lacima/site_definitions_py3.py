@@ -3,6 +3,7 @@ from .construct_weather_stations_py3 import Construct_Weather_Stations
 from .construct_irrigation_scheduling_py3 import Construct_Irrigation_Scheduling_Control
 from .plc_measurements_py3 import Construct_Lacima_PLC_Measurements
 from .construct_plc_devices_py3 import Construct_Lacima_PLC_Devices
+from .wifi_devices_py3 import Construct_Lacima_WIFI_Devices
 class LACIMA_Site_Definitons(object):
 
    def __init__(self,bc,cd):
@@ -82,6 +83,7 @@ class LACIMA_Site_Definitons(object):
        Construct_Irrigation_Scheduling_Control(bc,cd) 
        Construct_Lacima_PLC_Measurements(bc,cd)       
        Construct_Lacima_PLC_Devices(bc,cd)
+       Construct_Lacima_WIFI_Devices(bc,cd)
    
    def add_mqtt_monitor(self):
        mqtt_tag = "MQTT_SERVER_CHECK"
@@ -100,3 +102,4 @@ class LACIMA_Site_Definitons(object):
        self.bc.add_info_node( "MQTT_DEVICE",mqtt_tag,properties=properties )
        
        
+   
