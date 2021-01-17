@@ -1,0 +1,58 @@
+{% extends "base_template" %}
+
+{% block application_javascript %}
+<script type="text/javascript" >
+    None      = ""
+    True      = true
+    False     = false
+    full_link = "{{full_link}}"
+    reset_link  = "{{reset_link}}"
+    search_link = "{{search_link}}"
+    delete_link =  "{{delete_link}}"
+    export_link = "{{export_link}}"
+    table_data  = {{table_data}}
+    select_string = "{{select_string}}"
+</script>
+{% include 'js/ticket_control/ticket_log_display.js' %}
+{% include 'js/ticket_control/ticket_log.js' %}   
+
+  
+{% endblock %}
+
+{% block application %}
+
+<div id="main_panel">
+    <h3>Select Action</h3>
+   <select name="#action-choice" id="action-choice">
+      <option   value="nop">No Operation</option>
+      <option   value="reset_entry">Reset Data </option>
+      <option   value="search_entry">Search Entry</option>
+      <option   value="display_entry">Display Entry</option>
+      <option   value="delete_entry">Delete Entry</option>
+      <option   value="export_data">Export Data</option>
+   </select>
+
+<div style="margin-top:25px"></div>
+<h3>{{Display_Title}} </h3>
+<div style="margin-top:10px"></div>
+{% for item in table_data %}
+
+{% set id = "ticket_log_"+ (loop.index -1)|string %}
+
+{% set label_text = item.summary_display %}
+
+<div class="form-check">
+<label class="form-check-label" for="{{id}}">     	   
+
+<input type="radio" class="form-check-input" id={{id}} name="optradio" value={{loop.index-1}}>{{label_text}}        
+</label>
+</div>
+{% endfor %}
+
+</div>
+
+
+{% include 'ticket_control/log_display' %}
+{% include 'ticket_control/log_search' %}
+{% include 'ticket_control/log_export' %}
+{% endblock %}

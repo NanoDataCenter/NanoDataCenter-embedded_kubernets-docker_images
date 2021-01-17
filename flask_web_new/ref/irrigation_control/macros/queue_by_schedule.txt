@@ -1,0 +1,241 @@
+
+
+<h3>Manually Control System</h3>     
+<h4>Select Operating Mode</h4> 
+    <select id="op_select">
+	      <option value="CLEAR">Stop Irrigation / Empty Queue</option>
+          <option value="SKIP_STATION">Skip Current Irrigation Step  </option>
+	      <option value="QUEUE_SCHEDULE">Queue Schedule</option>
+	      <option value="QUEUE_SCHEDULE_STEP">Queue Schedule Step</option>
+	      <option value="QUEUE_SCHEDULE_STEP_TIME">Queue Schedule Step Time</option>
+	      <option value="OPEN_MASTER_VALVE">Open Master Valve</option>
+	      <option value="CLOSE_MASTER_VALVE">Close Master Valve</option> 
+	      <option value="CLEAN_FILTER">Clean Filter</option> 
+          <option value="RESISTANCE_CHECK">Valve Resistance Check </option>
+          <option value="CHECK_OFF">Check Off Condition</option>
+          <option value="SUSPEND">Suspend Operation </option> 
+          <option value="RESUME">Resume Operation  </option> 
+          <option value="RESET_SYSTEM_QUEUE">Reset System Queue</option>
+	      <option value="RESET_SYSTEM_NOW">Reset System Now</option>
+	</select>
+  
+	<div id = "schedule_div">
+           <h4 id="schedule_label">Select Schedule</h4> 
+	       <select id="schedule_select">
+	       </select>
+    </div>
+       <div id ="step_div">
+        <h4 id="step_label">Select step</h4> 
+	    <select id="step_select">
+	    </select>
+    </div>
+    
+	<div id = "time_div"> 
+       <h4 id ="run_label">Select Run Time (1 to 60 Minutes) </h4> 
+       <select id="run_select">
+       </select>
+    </div>  
+
+<script>
+
+
+
+function generate_description( index , schedule_name)
+{
+   var temp_string;
+   temp_string = "step "+index+" controller/pins  --->";
+   index = index -1;
+   if( index >= schedules_pins[schedule_name].length)
+   { 
+      temp_string = "undefined"; 
+      return temp_string; 
+   }
+   for( i = 0; i < schedules_pins[schedule_name][index].length;i++)
+   {
+	 temp_string = temp_string + "   "+ schedules_pins[schedule_name][index][i];
+ 	
+   }
+   return temp_string;
+}
+
+
+function set_step(index)
+{
+  var schedule_name;
+  var temp_string;
+  schedule_name = schedules[index];
+  $("#step_select").empty()
+  for( var i = 1; i <= schedules_step[schedule_name].length; i++ )
+  {
+	temp_string = generate_description( i , schedule_name)
+     $("#step_select").append('<option value='+i+'>'+temp_string+'</option>');	
+	
+  }
+
+  $("#step_select")[0].selectedIndex = 0;
+
+}
+
+function set_visiblity( schedule_state,step_state,time_state)
+{
+    if( schedule_state == true)
+	{
+	   $("#schedule_div").show()
+	}
+	else
+	{
+	  $("#schedule_div").hide()
+	}
+
+    if( step_state == true)
+	{
+	   $("#step_div").show()
+	}
+	else
+	{
+	  $("#step_div").hide()
+	}
+    if( time_state == true)
+	{
+	   $("#time_div").show()
+	}
+	else
+	{
+	  $("#time_div").hide()
+	}
+
+
+
+}
+
+function op_select_change(event, ui) 
+{  
+   var temp_index     
+   temp_index = $("#op_select")[0].selectedIndex;	
+   switch( temp_index)
+   {
+   
+	     case  0:  // CLEAR
+	           set_visiblity( false,false,false);
+	           break;
+	    
+	     case 1:  // SKIP_STATION
+		    set_visiblity( false,false,false);
+	        break;
+	    
+	     case 2: // QUEUE_SCHEDULE
+		    set_visiblity( true,false,false);
+            break;
+
+	     case 3:  // QUEUE_SCHEDULE_STEP
+		    set_visiblity( true,true,false);
+            break;
+
+
+      case 4: // QUEUE_SCHEDULE_STEP_TIME_A   
+		    set_visiblity( true,true,true);
+            break;
+
+
+      default:  // OPEN_MASTER_VALVE
+		    set_visiblity( false,false,false);
+	        break;
+
+  
+   }
+}
+
+function  schedule_change(event, ui) 
+{  
+    
+   set_step($("#schedule_select")[0].selectedIndex )
+}
+
+function schedule_load()
+{
+         
+   schedules = []
+   schedules_step = {}
+   schedules_start_times = {}
+   schedules_end_times = {}
+   schedules_dow = {}
+   schedules_pins = {}
+   
+   data = JSON.parse({{schedule_data_json}});
+   
+   for (var i = 0; i < data.length; i++) 
+   {   
+	  schedules.push(data[i].name)
+	  schedules_step[data[i].name]            = data[i].steps
+      schedules_pins[data[i].name]            = data[i].controller_pins     
+   }
+   $("#schedule_select").empty()
+   for( var i = 0; i < schedules.length; i++ )
+   {
+      $("#schedule_select").append('<option value='+schedules[i]+'>'+schedules[i]+'</option>');	
+	
+    }
+       
+   $("#schedule_select")[0].selectedIndex = 0;
+
+   set_step( 0 );
+}
+
+
+function queue_by_schedule_initialization()
+{
+
+   schedules_pins = {}
+   schedules = []
+   schedules_steps = {}
+   schedules_start_times = {}
+   schedules_end_times = {}
+   schedules_dow = {}
+   controller_pin_data = {}
+   composite_limit_values = {}
+     
+     
+            
+   $("#schedule_div").hide()
+   $("#step_div").hide()
+   $("#time_div").hide()
+
+   $("#time_select").empty()
+   for( var i = 1; i <= 120; i++ )
+   {
+       $("#time_select").append('<option value='+i+'>'+i+'  minutes </option>');	
+	
+   }
+
+   $("#time_select")[0].selectedIndex = 9;
+
+  
+ 
+   
+   $( "#op_select" ).bind( "change",op_select_change) 
+   
+   $( "#schedule_select" ).bind( "change", schedule_change )
+ 
+ 
+   load_irrigation_schedule_data()
+
+}
+
+
+function load_queue_object()
+{
+
+       var json_object = {}
+
+       json_object["command"]         = $("#op_mode").val()
+       json_object["schedule_name"]   = $("#schedule_select").val()
+       json_object["step"]            = $("#step_select").val() 
+       json_object["run_time"]        = $("#time_select").val()
+	   return json_object
+}	   
+
+
+
+
+</script>
+

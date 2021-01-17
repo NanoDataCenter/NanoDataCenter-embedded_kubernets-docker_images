@@ -146,7 +146,7 @@ class Build_Configuration(object):
         extract = pickle.loads(buffer)
         file.close()
         keys = extract.keys()
-        print("len",len(keys))
+        #print("len",len(keys))
         for i,item in extract.items():
            self.redis_handle.restore(name = i,ttl=0, value = item, replace = True)
         

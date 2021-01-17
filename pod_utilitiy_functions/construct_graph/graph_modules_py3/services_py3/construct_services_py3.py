@@ -12,19 +12,19 @@ class Construct_Services(object):
        for i in services_list:
  
            if i == "rpi_mosquitto":
-               print(i)
+               #print(i)
                RPI_Mosquitto_Service(bc,cd,i)
            elif i == "redis":
-               print(i)
+               #print(i)
                Redis_Service(bc,cd,i)     
            elif i == "sqlite_server":
-               print(i)
+               #print(i)
                SQLITE_Service(bc,cd,i) 
            elif i == "file_server":
-               print(i)
+               #print(i)
                File_System_Service(bc,cd,i)  
            elif i == "ethereum_go":
-               print(i)
+               #print(i)
                Ethereum_Service(bc,cd,i) 
            else:
                raise         

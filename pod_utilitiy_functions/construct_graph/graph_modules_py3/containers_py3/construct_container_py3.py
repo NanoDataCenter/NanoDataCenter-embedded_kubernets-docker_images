@@ -18,17 +18,17 @@ class Construct_Containers(object):
       for i in container_list:
  
          if i == "monitor_redis":
-             print(i)
+             #print(i)
              Redis_Monitor_Container(bc,cd,i)
          elif i == "stream_events_to_log":
-             print(i)
+             #print(i)
              LOG_STREAM_EVENTS_CONTAINER(bc,cd,i)     
          elif i == "stream_events_to_cloud":
-             print(i)
+             #print(i)
              Stream_Events_To_Cloud(bc,cd,i) 
 
          elif i == "op_monitor":
-              print(i)
+              #print(i)
               OP_Monitor(bc,cd,i) 
          elif i == "mqtt_interface":
               MQTT_Interface(bc,cd,i)

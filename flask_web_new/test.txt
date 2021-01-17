@@ -1,0 +1,18 @@
+{'display_name': '', 'type': True, 'children': [{'display_name': 
+      'irrigation_functions', 'type': True, 'children': [
+	         {'display_name': 'control_by_schedule', 'class_name': 'irrigation/control_by_schedule', 'parameters': {}, 'type': False}
+	         {'display_name': 'control_by_controler_pin', 'class_name': 'irrigation/control_by_controller', 'parameters': {}, 'type': False}, 
+	         {'display_name': 'control_by_valve_group', 'class_name': 'irrigation/control_by_valve_group', 'parameters': {}, 'type': False}, 
+	         {'display_name': 'set_irrigation_parameters', 'class_name': 'irrigation/set_irrigation_parameters', 'parameters': {}, 'type': False}, 
+	         {'display_name': 'control_irrigation_queue', 'class_name': 'irrigation/control_irrigation_queue', 'parameters': {}, 'type': False}, 
+	        {'display_name': 'list_past_actions', 'class_name': 'common/table_manager', 'parameters': {'search_field': [['IRRIGIGATION_SCHEDULING_CONTROL'], ['PACKAGE', 'IRRIGIGATION_SCHEDULING_CONTROL_DATA']], 'handler': 'IRRIGATION_PAST_ACTIONS', 'stream_fields': {}}, 'type': False}, 
+	        {'display_name': 'irrigation_time_history', 'class_name': 'common/redis_stream_manager', 'parameters': {}, 'type': False}]}, 
+	 'display_name': 'system_data', 'type': True, 'children': [
+	       '{'display_name': 'redis_data', 'type': True, 'children': 
+		           [{'display_name': 'redis_key_stream', 'class_name': 'redis/key_stream', 'parameters': {}, 'type': False}, 
+				   {'display_name': 'redis_client_stream', 'class_name': 'redis/client_stream', 'parameters': {}, 'type': False}, 
+				   {'display_name': 'redis_call_stream', 'class_name': 'redis/call_stream', 'parameters': {}, 'type': False}, 
+				   {'display_name': 'redis_cmd_stream', 'class_name': 'redis/command_time', 'parameters': {}, 'type': False}, 
+				   {'display_name': 'redis_server_time', 'class_name': 'redis/server_time', 'parameters': {}, 'type': False}]}
+		   ]}, 
+    {'display_name': 'site_map', 'class_name': 'common/site_manager', 'parameters': {}, 'type': False}]}

@@ -1,6 +1,7 @@
 
 
 class Base_Stream_Processing(object):
+ 
 
    def format_data(self,stream_data,show_legend = False, title = "",title_x="",title_y="",ntick_x = 20,ntick_y=20):
       return_value = {}

@@ -16,6 +16,28 @@ from   graph_modules_py3.lacima.site_definitions_py3 import LACIMA_Site_Definito
 
 from  graph_modules_py3.containers_py3.construct_container_py3 import Construct_Containers
 from  graph_modules_py3.services_py3.construct_services_py3    import Construct_Services
+
+
+   
+
+
+def construct_system_definitions(bc,cd):
+    properties = {}
+    properties["command_list"] = []  #   [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True},{"file":"node_reset_py3.py","restart":True}]
+    bc.add_header_node("SYSTEM_CONTROL","SYSTEM_CONTROL",properties= properties) 
+    
+    cd.construct_package("SYSTEM_CONTROL")
+    cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
+    cd.add_single_element("SYSTEM_STATE")
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_redis_stream("ERROR_STREAM",forward=True)
+    cd.add_hash("ERROR_HASH")
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")
+
+    cd.close_package_contruction()
+    bc.end_header_node("SYSTEM_CONTROL")
+
+
 def construct_processor(name,containers,services):
     properties = {}
     properties["containers"] = containers
@@ -48,6 +70,10 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("ERROR_STREAM",forward=True)
     cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_job_queue("SYSTEM_COMMAND_QUEUE",10)
+    cd.add_job_queue("SYSTEM_RESPONSE_QUEUE",10)
+    cd.add_single_element("NODE_STATE")
+    cd.add_single_element("NODE_WD")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("NODE_PROCESSES")
@@ -62,10 +88,14 @@ def construct_processor(name,containers,services):
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")
-    print("containers",containers)
+    #print("containers",containers)
     Construct_Services(bc,cd,services)
     Construct_Containers(bc,cd,containers)
     bc.end_header_node("PROCESSOR")    
+
+
+
+
 
 if __name__ == "__main__" :
 
@@ -92,6 +122,8 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
+   construct_system_definitions(bc,cd)
+
    Cloud_Site_Definitons(bc,cd)
 
 
@@ -112,6 +144,7 @@ if __name__ == "__main__" :
 
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
+   construct_system_definitions(bc,cd)
    LACIMA_Site_Definitons(bc,cd)
 
 
@@ -119,7 +152,7 @@ if __name__ == "__main__" :
    containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling","modbus_server"   ]
    
    construct_processor(name="irrigation_controller",containers = containers,
-                      services=["redis","rpi_mosquitto","file_server"])
+                      services=["rpi_mosquitto","file_server"])
    #
    
    

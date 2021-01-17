@@ -1,0 +1,32 @@
+from templates.irrigation.control_by_schedule_py3  import Control_By_Schedule
+from templates.irrigation.control_by_controller_py3 import Control_By_Controller
+from templates.irrigation.control_by_valve_group_py3 import Control_By_Valve_Group
+from templates.irrigation.set_irrigation_parameters_py3  import Irrigation_Parameters
+from templates.irrigation.control_irrigation_queue_py3 import Control_Irrigation_Queue
+from templates.irrigation.past_actions_py3 import Past_Actions
+from templates.irrigation.irrigation_stream_py3 import Irrigation_Stream
+
+
+from templates.common.table_manager_py3 import Table_Manager
+from templates.common.redis_stream_manager_py3 import Redis_Stream_Manager
+from templates.common.site_manager_py3 import Site_Manager
+
+from templates.redis.redis_client_stream_manager_py3 import  Redis_Client_Stream
+from templates.redis.redis_command_time_manager_py3 import Redis_Command_Time_Stream
+from templates.redis.redis_call_stream_manager_py3 import Redis_Call_Stream
+from templates.redis.redis_key_stream_manager_py3 import   Redis_Key_Stream
+from templates.redis.redis_server_time_manager_py3 import Redis_Server_Time_Stream
+
+
+
+class Register_Ajax_Commands( object):
+   def __init__(self,parent_self):
+       self.parent_self = parent_self
+       ajax_map = {}
+    
+      
+      
+ 
+   
+       a1 = self.auth.login_required( self.mode_change )
+       self.app.add_url_rule('/ajax/mode_change',"get_mode_change",a1, methods=["POST"]) 

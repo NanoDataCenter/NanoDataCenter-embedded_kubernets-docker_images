@@ -1,0 +1,83 @@
+
+	
+{% extends "base_template" %}
+
+{% block application_javascript %}
+  <script type="text/javascript" >
+       False = false
+       True = true
+       None = null
+       processor_id = {{processor_id}}                         
+                               
+      
+
+      </script>
+      <script type="text/javascript">
+
+function change_processor(event,ui)
+{
+  current_page = window.location.href
+ 
+ 
+  current_page = current_page.slice(0,-2)
+  
+  current_page = current_page+"/"+$("#processor_select")[0].selectedIndex
+  
+  window.location.href = current_page
+}
+
+
+ $(document).ready(
+ function()
+ {
+   
+   
+   $("#processor_select").val( {{ processor_id|int  }});
+   $("#processor_select").bind('change',change_processor)   
+   
+
+ }
+)
+ 
+</script>
+  
+{% endblock %}
+
+{% block application %}
+<div class="container">
+<center>
+<h4>Select Processor</h4>
+</center>
+
+<div id="select_tag">
+<center>
+<select id="processor_select">
+  {% for item in processors %}
+  
+  <option value="{{loop.index0}}">{{item}}</option>
+  {% endfor %}
+  
+</select>
+</center>
+</div>
+<div style="margin-top:20px"></div>
+<h4>Exception Log </h4>
+
+{% for item in log_data %}
+<div style="margin-top:10px"></div>
+<h5>{{item.script}}</h5>
+<ul>  
+<li>container: {{item.container}} </li>
+<li>timestamp: {{item.timestamp}} </li>
+<li>date time:  {{item.datetime}} </li>
+<li>exception stack:</li>
+<ul>
+{% for line in item.error_output %}
+ <li>{{line}}</li>
+{% endfor %}
+</ul>
+</ul>
+{% endfor %}
+</div>
+
+{% endblock %}

@@ -642,11 +642,6 @@ class Influx_Stream_Writer(object):
        print("influx write",self.influx_handler.write_point(influx_data,tags))
 '''      
 
-class Redis_Stream(Stream_Redis_Writer, Stream_Redis_Reader):
-      def __init__(self,redis_handle,data,key,cloud_handler):
-          Stream_Redis_Writer.__init__(self,redis_handle,data,key,cloud_handler)
-          Stream_Redis_Reader.__init__(self,redis_handle,data,key,cloud_handler)
-
 
 
 class Stream_Redis_Writer(Redis_Stream):
@@ -733,6 +728,14 @@ class Stream_Redis_Reader(Redis_Stream):
        
 
        return data_list 
+
+
+class Redis_Stream(Stream_Redis_Writer, Stream_Redis_Reader):
+      def __init__(self,redis_handle,data,key,cloud_handler):
+          Stream_Redis_Writer.__init__(self,redis_handle,data,key,cloud_handler)
+          Stream_Redis_Reader.__init__(self,redis_handle,data,key,cloud_handler)
+
+
              
 class Generate_Handlers(object):
    

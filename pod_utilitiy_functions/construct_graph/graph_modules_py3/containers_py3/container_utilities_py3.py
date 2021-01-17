@@ -2,7 +2,7 @@ class Start_Container(object):
     
     def __init__(self,bc,cd,name,startup_command,command_list,container_image):
         properties = {}
-        print("name",name,startup_command,command_list,container_image)
+        #print("name",name,startup_command,command_list,container_image)
         properties["container_image"] = container_image
         properties["command_list"] = command_list
         properties["startup_command"] = startup_command
@@ -20,6 +20,6 @@ class Start_Container(object):
 class End_Container(object):
 
      def __init__(self,bc,cd):
-          print("end container")
+          #print("end container")
           bc.end_header_node("CONTAINER")
          

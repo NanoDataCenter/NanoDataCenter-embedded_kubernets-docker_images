@@ -1,0 +1,26 @@
+
+
+<h4><br><br><<self.button_title>></h4>
+<button type="button" id="<<self.button_name>>"><<self.button_title>></button>  
+
+
+<script>
+
+
+function <<self.function_name>>(event, ui) 
+{
+       
+       var json_object = <<self.load_data>>()
+
+      
+       ajax_post_confirmation(<<self.path>>, json_object, "Do you want to make mode change", 
+                                       "Changes Made", "Server Error" )
+}
+
+function <<self.initialization_name>>()
+{
+  $( "#<<self.button_name>>" ).bind( "click",<<self.function_name>> )
+
+}
+
+</script>
