@@ -35,7 +35,12 @@ class Generate_Web_Page_Definitions( object):
            print("class_name",i["class_name"] )
  
      
-                   
+   def generate_container_menus(self):
+       container_menu = Menu_Header(display_name="container_management") 
+       container_menu.add_child(Menu_Element('manage_containers',"manage_containers/start_and_stop_containers"))
+        
+       return container_menu         
+                      
 
    def generate_processor_menus(self):
        processor_menu = Menu_Header(display_name="processor_data") 
@@ -84,17 +89,19 @@ class Generate_Web_Page_Definitions( object):
        irrigation_menu.add_child(Menu_Element("list_past_actions","irrigation/past_actions"))
        irrigation_menu.add_child(Menu_Element("irrigation_time_history","irrigation/stream_manager"))
        
-       system_menu = Menu_Header(display_name="system_logs") 
-       system_menu.add_child(self.generate_redis_menus())
-       system_menu.add_child(self.generate_processor_menus())
        
-       
+       service_menu = Menu_Header(display_name="services")
+       service_menu.add_child(self.generate_redis_menus())
     
-       
+       system_menu = Menu_Header(display_name="system_functions") 
+       system_menu.add_child(self.generate_processor_menus())
+       system_menu.add_child(self.generate_container_menus())
+       system_menu.add_child(service_menu)
       
        top_menu.add_child(irrigation_menu)
        top_menu.add_child(system_menu)
        top_menu.add_child(Menu_Element("site_map","common/site_manager"))
+       top_menu.add_child(Menu_Element("/","common/site_manager"))
        return_value = top_menu.generate_data_structure()
        
        self.diagnos_list_top(return_value)

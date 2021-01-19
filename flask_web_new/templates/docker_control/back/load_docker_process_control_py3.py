@@ -151,6 +151,8 @@ class Load_Docker_Processes(Base_Stream_Processing):
        
   
 
+
+
    def assemble_url_rules(self):
        
        
@@ -188,6 +190,26 @@ class Load_Docker_Processes(Base_Stream_Processing):
       
 
        
+       
+       # internal callable
+       a1 = self.auth.login_required( self.load_containers )
+       self.app.add_url_rule(self.slash_name+'/manage_containers/load_containers',self.slash_name+'/manage_containers/load_containers',a1,methods=["POST"])
+       
+       # internal call
+       a1 = self.auth.login_required( self.manage_containers )
+       self.app.add_url_rule(self.slash_name+'/manage_containers/change_containers',self.slash_name+'/manage_containers/change_containers',a1,methods=["POST"])
+
+       # internal call
+       a1 = self.auth.login_required( self.load_processes )
+       self.app.add_url_rule(self.slash_name+'/load_processes/load_process',self.slash_name+'/load_processes/load_process',a1,methods=["POST"])
+       
+       # internal call
+       a1 = self.auth.login_required( self.manage_processes )
+       self.app.add_url_rule(self.slash_name+'/manage_processes/change_process',self.slash_name+"/manage_processes/change_process",a1,methods=["POST"])
+    
+       # internal call
+       a1 = self.auth.login_required( self.manage_reset_upgrade )
+       self.app.add_url_rule(self.slash_name+'/manage_processes/manage_reset_upgrade',self.slash_name+"/manage_processes/manage_reset_upgrade",a1,methods=["POST"])       
        
        # internal callable
        a1 = self.auth.login_required( self.load_containers )
@@ -289,7 +311,7 @@ class Load_Docker_Processes(Base_Stream_Processing):
           result = self.container_control_structure[processor_name]["WEB_DISPLAY_DICTIONARY"].hgetall()
 
           result_json = json.dumps(result)
-          
+     
           return result_json.encode()
           
 

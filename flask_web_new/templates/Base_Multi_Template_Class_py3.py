@@ -17,7 +17,7 @@ class Base_Multi_Template_Class(object):
     def application_page_contruction(self): # method is to be overriden
         return ""
     
-    def application_page_generation(self,controller,data):
+    def application_page_generation(self,controller,data):#method is to be overriden
         return ""
     
     def render_page(self):

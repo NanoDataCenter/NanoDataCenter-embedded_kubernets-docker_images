@@ -8,6 +8,7 @@ from templates.irrigation.control_irrigation_queue_py3 import Control_Irrigation
 from templates.irrigation.past_actions_py3 import Past_Actions
 from templates.irrigation.irrigation_stream_py3 import Irrigation_Stream
 
+from templates.docker_control.start_stop_container_py3 import Docker_Container_Control
 
 from templates.common.table_manager.table_manager_py3 import Table_Manager
 
@@ -20,6 +21,7 @@ from templates.processor_performance.process_performance_py3 import *
 class Register_Template_Classes( object):
    def __init__(self,parent_self):
        self.parent_self = parent_self
+       
        class_map = {}
        class_map["irrigation/control_by_schedule"]  = Control_By_Schedule
        class_map["irrigation/control_by_controller"]  = Control_By_Controller
@@ -52,6 +54,10 @@ class Register_Template_Classes( object):
        class_map["processor/run_queue"] =Processor_Run_Queue
        class_map["processor/edev"] = Processor_Edev
 
+       
+       class_map["manage_containers/start_and_stop_containers"] = Docker_Container_Control
+       
+       
        self.parent_self.class_map = class_map
       
       
