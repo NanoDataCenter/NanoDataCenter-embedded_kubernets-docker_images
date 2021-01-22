@@ -16,6 +16,11 @@ from templates.docker_control.container_processor_logs_py3 import Container_Vsz_
 from templates.docker_control.container_processor_logs_py3 import Container_Rss_Loading
 from templates.docker_control.start_and_stop_managed_container_processes_py3 import Start_and_Stop_Managed_Container_Processes
 
+from templates.pod_control.pod_exception_log_py3 import Pod_Exception_Log
+from templates.pod_control.pod_exception_status_py3 import Pod_Exception_Status
+from templates.pod_control.pod_control_start_stop_processes_py3 import Pod_Processor_Control
+
+Pod_Processor_Control
 
 from templates.common.table_manager.table_manager_py3 import Table_Manager
 
@@ -69,6 +74,10 @@ class Register_Template_Classes( object):
        class_map["manage_containers/vsz"]  = Container_Vsz_Loading
        class_map["manage_containers/rss"]  = Container_Rss_Loading
        class_map["manage_containers/start_and_stop_processes"] = Start_and_Stop_Managed_Container_Processes
+       
+       class_map["pod_control/view_exception_log"] = Pod_Exception_Log
+       class_map["pod_control/view_exception_status"] = Pod_Exception_Status
+       class_map["pod_control/process_control"] = Pod_Processor_Control
        self.parent_self.class_map = class_map
       
       
