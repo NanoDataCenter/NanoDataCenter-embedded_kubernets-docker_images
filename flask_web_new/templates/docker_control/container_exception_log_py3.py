@@ -1,13 +1,25 @@
+from .docker_container_base_py3 import Docker_Base_Class
+from templates.Base_Multi_Template_Class_py3  import Base_Multi_Template_Class
+from flask import request
+import json
+import datetime
+
+class Container_Exception_Log(Base_Multi_Template_Class,Docker_Base_Class):
+   def __init__(self,base_self,parameters = None):
+       Docker_Base_Class.__init__(self,base_self)
+       Base_Multi_Template_Class.__init__(self,base_self,parameters)
   
-
-
-
-  def container_exception_log(self,processor_id):
-       processor_name = self.processor_names[processor_id]
-       temp_list = self.container_control_structure[processor_name]["ERROR_STREAM"].revrange("+","-" , count=20)
-
+   def application_page_generation(self,container_id,data):
+       if container_id >= len(self.managed_container_names):
+            container_id = len(self.managed_container_names)-1
+       self.container_id = container_id
+       self.container_names = self.managed_container_names
+       self.container_name = self.managed_container_names[container_id]
+      
+       self.container_exception_log = self.handlers[self.container_name]["ERROR_STREAM"].revrange("+","-" , count=20)
+       
        container_exceptions = []
-       for j in temp_list:
+       for j in self.container_exception_log:
            i = j["data"]
            i["timestamp"] = j["timestamp"]
            i["datetime"] =  datetime.datetime.fromtimestamp( i["timestamp"]).strftime('%Y-%m-%d %H:%M:%S')
@@ -20,93 +32,132 @@
                    #temp = temp.split("\n")
                    i["error_output"] = temp
                    container_exceptions.append(i)
+
+       self.container_exceptions = container_exceptions
+       return self.generate_template()
+
+     
+   def generate_template(self):
+       return_value = []
+       return_value.append(self.process_html())
+       return_value.append(self.process_javascript())
+       return "\n".join(return_value)
+
+   def process_html(self):
+       self.row_index = []
        
-       return self.render_template(self.path_dest+"/docker_exception_log",                                 
-                                  log_data = container_exceptions,
-                                  processor_id = processor_id,
-                                  processors = self.processor_names ) 
+       self.mp.generate_header_rows = self.generate_header_rows
+       return_value = []
+       return_value.append(self.load_container_selection_html())
+       return_value.append( self.mp.macro_expand_start("{{","}}",self.process_html_raw()))
+       return "\n".join(return_value)
+
+   
+
+   def generate_header_rows(self):
+       return_value = []
+     
+       for i in range(0,len(self.container_exceptions)):
+           
+           datetime = self.container_exceptions[i]["datetime"]
+           script   = self.container_exceptions[i]["script"]
+          
+           error_lines = self.container_exception_log[i]["data"]["error_output"]
+           return_value.append('<tr data-tt-id="'+str(i+1)+'">')
+           return_value.append('<td>'+datetime+'</td>')
+           return_value.append('<td>'+script+'</td>')
+           return_value.append('</tr>')
+           #<tr data-tt-id="1.1" data-tt-parent-id="1">
+           for j in range(0,len(error_lines)):
+               return_value.append('<tr data-tt-id="'+str(i+1)+"."+str(j+1)+'"  data-tt-parent-id="'+str(i+1)+'" >')
+               return_value.append('<td>')
+               return_value.append('-->')
+               return_value.append('</td>')
+               return_value.append('<td>')
+               return_value.append(error_lines[j])
+               return_value.append('</td>')
+               
+               return_value.append('</tr>')
+       return "\n".join(return_value)
+
+   def process_html_raw(self):
+       return '''
+<link href="/static/css/jquery.treetable.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/jquery.treetable.theme.default.css" rel="stylesheet" type="text/css" />
+<link href="/static/css/screen.css" rel="stylesheet" type="text/css" />
+
+<script src="/static/js/jquery.treetable.js"></script>
+<h4>Container Exception Status </h4>
 
 
+<table id="example-basic">
+  
+  <thead>
+    <tr>
+      <th>Time Stamp</th>
+      <th>Process </th>
+    </tr>
+  </thead>
+ 
+  <tbody>
+     {{ (self.generate_header_rows  ) }}
+  </tbody>
+</table>
+       '''
 
-{% extends "base_template" %}
-
-{% block application_javascript %}
-  <script type="text/javascript" >
-       False = false
-       True = true
-       None = null
-       container_id = {{container_id}}                         
-                               
+   def process_javascript(self):
+       return_value = []
+       self.mp.container_id = self.container_id
       
+       return_value.append(self.load_container_control_javascript())
+       return_value.append( self.mp.macro_expand_start("{{","}}",self.process_javascript_raw()))
+       
+       return "\n".join(return_value)
 
-      </script>
-      <script type="text/javascript">
+   def process_javascript_raw(self):      
+       return '''
 
-function change_container(event,ui)
-{
-  current_page = window.location.href
- 
- 
-  current_page = current_page.slice(0,-2)
-  
-  current_page = current_page+"/"+$("#container_select")[0].selectedIndex
-  
-  window.location.href = current_page
-}
-
-
- $(document).ready(
+<script>
+$(document).ready(
  function()
  {
    
    
-   $("#container_select").val( {{ container_id|int  }});
-   $("#container_select").bind('change',change_container)   
-   
+   $("#container_select").val( {{ self.container_id }});
+   $("#container_select").bind('change',change_container)  
+  
 
- }
-)
+
+
+ $("#example-basic").treetable({
+  expandable:true
+});
+ })
  
+
 </script>
-  
-{% endblock %}
+       '''
 
-{% block application %}
-<div class="container">
-<center>
-<h4>Select Container</h4>
-</center>
 
-<div id="select_tag">
-<center>
-<select id="container_select">
-  {% for item in containers %}
-  
-  <option value="{{loop.index0}}">{{item}}</option>
-  {% endfor %}
-  
-</select>
-</center>
-</div>
-<div style="margin-top:20px"></div>
-<h4>Exception Log </h4>
 
-{% for item in log_data %}
-<div style="margin-top:10px"></div>
-<h5>{{item.script}}</h5>
-<ul>  
-<li>script: {{item.script}} </li>
-<li>crc: {{item.crc}} </li>
-<li>timestamp: {{item.timestamp}} </li>
-<li>date time:  {{item.datetime}} </li>
-<li>exception stack:</li>
-<ul>
-{% for line in item.error_output %}
- <li>{{line}}</li>
-{% endfor %}
-</ul>
-</ul>
-{% endfor %}
-</div>
 
-{% endblock %}                                  
+
+''' 
+       
+<tr data-tt-id="1">
+      <td>Node 1: Click on the icon in front of me to expand this branch.</td>
+      <td>I live in the second column.</td>
+    </tr>
+    <tr data-tt-id="1.1" data-tt-parent-id="1">
+      <td>Node 1.1: Look, I am a table row <em>and</em> I am part of a tree!</td>
+      <td>Interesting.</td>
+    </tr>
+    <tr data-tt-id="1.1.1" data-tt-parent-id="1.1">
+      <td>Node 1.1.1: I am part of the tree too!</td>
+      <td>That's it!</td>
+    </tr>
+    <tr data-tt-id="2">
+      <td>Node 2: I am another root node, but without children</td>
+      <td>Hurray!</td>
+    </tr>
+'''    

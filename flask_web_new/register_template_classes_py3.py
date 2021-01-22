@@ -8,7 +8,14 @@ from templates.irrigation.control_irrigation_queue_py3 import Control_Irrigation
 from templates.irrigation.past_actions_py3 import Past_Actions
 from templates.irrigation.irrigation_stream_py3 import Irrigation_Stream
 
-from templates.docker_control.start_stop_container_py3 import Docker_Container_Control
+from templates.docker_control.start_stop_container_py3 import Start_Stop_Containers
+from templates.docker_control.container_exception_status_py3 import Container_Exception_Status
+from templates.docker_control.container_exception_log_py3 import Container_Exception_Log
+from templates.docker_control.container_processor_logs_py3 import Container_Cpu_Loading
+from templates.docker_control.container_processor_logs_py3 import Container_Vsz_Loading
+from templates.docker_control.container_processor_logs_py3 import Container_Rss_Loading
+from templates.docker_control.start_and_stop_managed_container_processes_py3 import Start_and_Stop_Managed_Container_Processes
+
 
 from templates.common.table_manager.table_manager_py3 import Table_Manager
 
@@ -55,9 +62,13 @@ class Register_Template_Classes( object):
        class_map["processor/edev"] = Processor_Edev
 
        
-       class_map["manage_containers/start_and_stop_containers"] = Docker_Container_Control
-       
-       
+       class_map["manage_containers/start_and_stop_containers"] = Start_Stop_Containers
+       class_map["manage_containers/view_exception_status"] = Container_Exception_Status
+       class_map["manage_containers/view_exception_log"]  = Container_Exception_Log
+       class_map["manage_containers/cpu_loading"]  = Container_Cpu_Loading
+       class_map["manage_containers/vsz"]  = Container_Vsz_Loading
+       class_map["manage_containers/rss"]  = Container_Rss_Loading
+       class_map["manage_containers/start_and_stop_processes"] = Start_and_Stop_Managed_Container_Processes
        self.parent_self.class_map = class_map
       
       

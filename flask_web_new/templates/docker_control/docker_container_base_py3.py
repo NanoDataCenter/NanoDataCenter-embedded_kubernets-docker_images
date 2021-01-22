@@ -129,6 +129,49 @@ class Docker_Base_Class(object):
    
        return handlers
        
+   def generate_container_names(self):
+      return_value = []
+      
+      for i in range(0,len(self.container_names)):
+          return_value.append('<option value="'+str(i)+'">'+self.container_names[i]+'</option>')
+      return "\n".join(return_value)
+ 
+   def load_container_selection_html(self):
+       raw_html = '''
+<div class="container">
+<center>
+<h4>Select Container</h4>
+</center>
+
+<div id="select_tag">
+<center>
+<select id="container_select">
+  {{(self.generate_container_names )}}
+</select>
+</center>
+</div>
+       '''
+       self.mp.generate_container_names = self.generate_container_names
+       return self.mp.macro_expand_start("{{","}}",raw_html)
+       
+       
+       
+   def load_container_control_javascript(self):
+       return '''
+<script>
+function change_container(event,ui)
+{
+  
+  current_page = window.location.pathname
+  
+  
+  current_page = current_page+"?"+$("#container_select")[0].selectedIndex
+ 
+  window.location.href = current_page
+}
+</script>
+       '''    
+       
        
    def generate_processor_names(self):
       return_value = []
@@ -147,7 +190,7 @@ class Docker_Base_Class(object):
 
 <div id="select_tag">
 <center>
-<select id="processor_select">
+<select id="container_select">
   {{(self.generate_processor_names )}}
 </select>
 </center>
@@ -161,7 +204,7 @@ class Docker_Base_Class(object):
 <script>
 function change_processor(event,ui)
 {
-  current_page = window.location.path_name
+  current_page = window.location.pathname
  
   
   

@@ -22,17 +22,20 @@ class Base_Multi_Template_Class(object):
     
     def render_page(self):
         query_string = request.query_string
-        print("query_string",query_string)
-        print("query_string",str(query_string))
+        #print("query_string",query_string)
+        #print("query_string",str(query_string))
         query_string = str(query_string)
         query_list = query_string.split("?")
         if len(query_list) < 0:
            controller = 0
         else:
            try:
-               controller = int(query_list[-1])
+               temp = list(query_list[-1])
+               
+               controller = int(temp[2])
            except:
                controller = 0
+        
         output_page = []
         output_page.append(self.construct_top) 
         output_page.append(self.application_page_generation(controller,self.application))

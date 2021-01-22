@@ -34,11 +34,22 @@ class Generate_Web_Page_Definitions( object):
            print("display_name",i["display_name"] )
            print("class_name",i["class_name"] )
  
-     
+   
+
+   def generate_container_logs(self):
+       container_logs = Menu_Header(display_name="container_logs") 
+       container_logs.add_child(Menu_Element('display_exception_status',"manage_containers/view_exception_status"))
+       container_logs.add_child(Menu_Element('display_exception_logs',"manage_containers/view_exception_log"))
+       container_logs.add_child(Menu_Element('display_cpu_loading',"manage_containers/cpu_loading"))
+       container_logs.add_child(Menu_Element('display_vsz_useage',"manage_containers/vsz"))
+       container_logs.add_child(Menu_Element('display_rss_useage',"manage_containers/rss"))
+       return container_logs        
+
    def generate_container_menus(self):
        container_menu = Menu_Header(display_name="container_management") 
-       container_menu.add_child(Menu_Element('manage_containers',"manage_containers/start_and_stop_containers"))
-        
+       container_menu.add_child(Menu_Element('start_stop_containers',"manage_containers/start_and_stop_containers"))
+       container_menu.add_child(Menu_Element('start_stop_container_processes',"manage_containers/start_and_stop_processes"))
+       container_menu.add_child(self.generate_container_logs())
        return container_menu         
                       
 
@@ -61,7 +72,7 @@ class Generate_Web_Page_Definitions( object):
         
        return processor_menu         
    
-     
+    
       
    def generate_redis_menus(self):
        redis_menu = Menu_Header(display_name="redis_data") 
