@@ -146,13 +146,20 @@ class PI_Web_Server_Core(object):
        self.app.template_folder       =   'flask_templates'
        self.app.static_folder         =   'static'  
        self.app.config['SECRET_KEY']      = startup_dict["SECRET_KEY"]
+       self.web_server_name = os.getenv('Web_Instance')
+       
+       
+
        self.qs = Query_Support( site_data)
        #
        #
        # Get Server Properties
        #
        #
-       results=self.common_qs_search(["WEB_SERVER","WEB_SERVER"])
+       if self.web_server_name == None:
+             results=self.common_qs_search(["Web_Server_Definitions","WEB_SERVER"])  # if no name present chose first web server
+       else:
+             results=self.common_qs_search(["Web_Server_Definitions",["WEB_SERVER",self.web_server_name]])
        self.server_properties = results[0]
        #
        #  Set Up Basic Web URL Services
