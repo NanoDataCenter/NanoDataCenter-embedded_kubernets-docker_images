@@ -3,7 +3,7 @@ import time
 import redis
 import msgpack
 import json
-from .redis_stream_utilities_py3 import Redis_Stream
+from .redis_stream_utilities_py3 import Redis_Stream_Utilities
 
 class Job_Queue_Client( object ):
  
@@ -128,7 +128,7 @@ class Cloud_RX_Handler(object):
       self.data_handlers["RPOP"] = self.rpop
       self.data_handlers["STREAM_WRITE"] = self.stream_write
       self.data_handlers["STREAM_LIST_WRITE"] = self.stream_list_write
-      self.redis_stream =  Redis_Stream(redis_handle, exact_flag = False)
+      self.redis_stream =  Redis_Stream_Utilities(redis_handle, exact_flag = False)
       self.file_path = {}
       self.file_path["APP"] =  "app_data_files/"
       self.file_path["SYS"] =  "system_data_files/"

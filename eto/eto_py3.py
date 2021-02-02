@@ -93,6 +93,7 @@ class Eto_Management(object):
          
          self.ds_handlers["ETO_CONTROL"].hset("ETO_UPDATE_FLAG",0)
          self.ds_handlers["ETO_CONTROL"].hset("ETO_LOG_FLAG",0)
+         self.ds_handlers["ETO_CONTROL"].hset("ETO_UPDATE_VALUE",None)
          return "DISABLE"
 
     def make_measurement(self, *parameters):
@@ -103,19 +104,20 @@ class Eto_Management(object):
                 try:
                     source["calculator"].compute_previous_day()
                 except Exception as tst:
-                   
+                    
                     print("exception",source["name"],tst)
                     self.ds_handlers["EXCEPTION_VALUES"].hset(source["name"],str(tst))
         print("calculator done")       
              
 
     def update_eto_bins(self, *parameters):
-        print(int(self.ds_handlers["ETO_CONTROL"].hget("ETO_UPDATE_FLAG")))
+        #print(int(self.ds_handlers["ETO_CONTROL"].hget("ETO_UPDATE_FLAG")))
         if int(self.ds_handlers["ETO_CONTROL"].hget("ETO_UPDATE_FLAG")) == 1:
             return True
         self.ds_handlers["ETO_CONTROL"].hset("ETO_UPDATE_FLAG",1) 
         # find eto with lowest priority
         eto = self.find_eto()
+        self.ds_handlers["ETO_CONTROL"].hset("ETO_UPDATE_VALUE",eto)
         if eto ==  None:
            return False
         self.reference_eto = eto
@@ -260,9 +262,9 @@ def add_eto_chains(eto, cf):
     cf.insert.send_event("DAY_TICK")
     cf.insert.terminate()
 
-    cf.insert.wait_tod_le( hour =  1 )
+    cf.insert.wait_tod_le( hour =  4 )
     cf.insert.send_event("DAY_TICK")
-    cf.insert.wait_tod_ge( hour =  2 )
+    cf.insert.wait_tod_ge( hour =  5 )
     cf.insert.reset()
 
     cf.define_chain("eto_time_window", True)

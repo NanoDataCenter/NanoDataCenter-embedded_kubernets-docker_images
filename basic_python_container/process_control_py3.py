@@ -11,8 +11,9 @@ from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 import msgpack
 import pickle
 import zlib
+from system_error_log_py3 import  System_Error_Logging
 
-class Process_Control(object ):
+class Process_Control(object ):  # base class for controlling a process
 
    def __init__(self):
        pass
@@ -63,7 +64,7 @@ class Process_Control(object ):
          pass
     
        
-class Manage_A_Python_Process(Process_Control):
+class Manage_A_Python_Process(Process_Control):  # control a single process
 
    def __init__(self,command_string, restart_flag = True,  error_directory = "/tmp"):
 
@@ -125,6 +126,7 @@ class Manage_A_Python_Process(Process_Control):
 
    def rollover(self):
         os.system("mv "+self.error_file+"  " +self.error_file_rollover)
+        
            
    def kill(self):
        self.active = False
@@ -149,9 +151,9 @@ class System_Control(object):
        self.ds_handlers["ERROR_STREAM"]        = generate_handlers.construct_redis_stream_writer(data_structures["ERROR_STREAM"])
        self.ds_handlers["ERROR_HASH"]        = generate_handlers.construct_hash(data_structures["ERROR_HASH"])
        self.ds_handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_server(data_structures["WEB_COMMAND_QUEUE"])
-       
+       self.ds_handlers["WEB_COMMAND_QUEUE"].delete_all()
        self.ds_handlers["WEB_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
- 
+       self.ds_handlers["PROCESS_CONTROL"] = generate_handlers.construct_hash(data_structures["PROCESS_CONTROL"])
        self.startup_list = []
        self.process_hash = {}
        keys = self.ds_handlers["WEB_DISPLAY_DICTIONARY"].hkeys()
@@ -168,12 +170,28 @@ class System_Control(object):
        
       
        
-    
-
+   def update_process_status(self,script,data):   
+       
+       temp = self.ds_handlers["ERROR_HASH"].hget(script)
+       temp_data = temp["error_output"]
+       try:
+           temp_data = temp["error_output"]
+       except:
+            temp_data = None
+       
+       
+       self.ds_handlers["ERROR_HASH"].hset( script , { "script": script, "error_output" : data } )
+       if temp_data != data:
+           #print("******************************************",temp_data,data)
+           self.ds_handlers["ERROR_STREAM"].push( data = { "script": script, "error_output" : data } )
+           self.system_error_logging.log_error_message(message = json.dumps({ "script": script, "error_output" : data }))
+       else:
+          pass
+          #print("******************************************   data is equal")
        
    def launch_processes( self,*unused ):
-       self.ds_handlers["ERROR_HASH"].hset( "REBOOT" , { "script": "REBOOT", "error_output" : "SYSTEM REBOOT" } )
-       self.ds_handlers["ERROR_STREAM"].push( data = { "script": "REBOOT", "error_output" : "SYSTEM REBOOT" } )
+       self.update_process_status(script = "REBOOT",data =  "SYSTEM REBOOT")
+       
        for script in self.startup_list:
            temp = self.process_hash[script]
            temp.launch()
@@ -185,8 +203,8 @@ class System_Control(object):
                else:
                     
                     data = ""
-               self.ds_handlers["ERROR_HASH"].hset( script , { "script": script, "error_output" : data } )
-               self.ds_handlers["ERROR_STREAM"].push( data = { "script": script, "error_output" : data } )
+               self.update_process_status(script = script,data =  data)
+              
                temp.error = False
 
    
@@ -206,8 +224,8 @@ class System_Control(object):
                else:
                     
                     data = ""
-               self.ds_handlers["ERROR_HASH"].hset( script , { "script": script, "error_output" : data, "time":time.time()} )
-               self.ds_handlers["ERROR_STREAM"].push( data = { "script": script, "error_output" : data, "time":time.time() } )
+               self.update_process_status(script,data)
+               
                temp.rollover_flag = False
       
        self.update_web_display()
@@ -245,14 +263,18 @@ class System_Control(object):
                 
    def update_web_display(self):
        
-
+       status = True
        for script in self.startup_list:
+           temp = self.process_hash[script]
+           if temp.enabled == False or temp.active == False:
+               status = False
            temp = self.process_hash[script]
            #print("script",script)
            self.ds_handlers["WEB_DISPLAY_DICTIONARY"].hset(script,{"name":script,"enabled":temp.enabled,"active":temp.active,"error":temp.error})
-      
+       self.ds_handlers["PROCESS_CONTROL"].hset("Processor_Status",status)
  
-
+   def update_time_stamp(self,*parameters):
+       self.ds_handlers["PROCESS_CONTROL"].hset("WATCHDOG",time.time())
   
 
 
@@ -269,6 +291,7 @@ class System_Control(object):
    
        cf.define_chain("monitor_web_command_queue", False)
        cf.insert.wait_event_count( event = "TIME_TICK", count = 1)
+       cf.insert.one_step(self.update_time_stamp)
        cf.insert.one_step(self.process_web_queue)
        cf.insert.reset()
        
@@ -321,8 +344,10 @@ if __name__ == "__main__":
    #print("package_nodes",package_nodes)
    
    generate_handlers = Generate_Handlers(package_nodes[0],qs)
- 
+   system_error_logging  =  System_Error_Logging(qs,container_name,site_data)
+   
    system_control = System_Control(container_nodes[0],package_nodes[0],generate_handlers)
+   system_control.system_error_logging = system_error_logging
    cf = CF_Base_Interpreter()
    system_control.add_chains(cf)
    #
@@ -331,7 +356,7 @@ if __name__ == "__main__":
    try: 
        cf.execute()
    except:
-       system_control.terminate_jobs()
+       
        raise
 else:
    pass

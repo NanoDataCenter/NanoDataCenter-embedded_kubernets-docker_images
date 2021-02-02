@@ -18,6 +18,7 @@ from  graph_modules_py3.containers_py3.construct_container_py3 import Construct_
 from  graph_modules_py3.services_py3.construct_services_py3    import Construct_Services
 
 
+ 
    
 
 
@@ -36,6 +37,16 @@ def construct_system_definitions(bc,cd):
 
     cd.close_package_contruction()
     bc.end_header_node("SYSTEM_CONTROL")
+    
+    bc.add_header_node("SYSTEM_MONITOR")
+    cd.construct_package("SYSTEM_MONITOR")      
+    #cd.add_managed_hash(self,name,fields,forward=False) perfored way to store field how to get field in system
+    cd.add_hash("SYSTEM_STATUS")
+    cd.add_hash("MONITORING_DATA")
+    cd.add_redis_stream("SYSTEM_ALERTS")
+    cd.add_redis_stream("SYSTEM_PUSHED_ALERTS")
+    cd.close_package_contruction()
+    bc.end_header_node("SYSTEM_MONITOR")
 
 
 def construct_processor(name,containers,services):
@@ -45,14 +56,20 @@ def construct_processor(name,containers,services):
     bc.add_header_node("PROCESSOR",name,properties= properties) 
     
 
-    cd.construct_package("SYSTEM_MONITORING")
-    cd.add_redis_stream("FREE_CPU",forward = True) # one month of data
+   
+    properties = {}
+    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True}]
+    bc.add_header_node("NODE_SYSTEM",properties=properties)
+    
+    cd.construct_package("PROCESSOR_MONITORING")
+    cd.add_redis_stream("PROCESS_VSZ")  # for processes of node controller
+    cd.add_redis_stream("PROCESS_RSS")  # for processes of node controller
+    cd.add_redis_stream("PROCESS_CPU")  # for processes of node controller
+
+    cd.add_redis_stream("FREE_CPU",forward = True) # for entire processor
     cd.add_redis_stream("RAM",forward = True)
-    cd.add_redis_stream("DISK_SPACE",forward = True) # one month of data
+    cd.add_redis_stream("DISK_SPACE",forward = True) 
     cd.add_redis_stream("TEMPERATURE",forward = True)
-    cd.add_redis_stream("PROCESS_VSZ")
-    cd.add_redis_stream("PROCESS_RSS")
-    cd.add_redis_stream("PROCESS_CPU")   
     cd.add_redis_stream("CPU_CORE")
     cd.add_redis_stream("SWAP_SPACE")
     cd.add_redis_stream("IO_SPACE")
@@ -60,28 +77,35 @@ def construct_processor(name,containers,services):
     cd.add_redis_stream("CONTEXT_SWITCHES")
     cd.add_redis_stream("RUN_QUEUE")       
     cd.add_redis_stream("EDEV") 
-     
+    cd.close_package_contruction()
+    
+    
+    cd.construct_package("DOCKER_CONTROL")
+
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")
 
     cd.close_package_contruction()
-    properties = {}
-    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True},{"file":"node_reset_py3.py","restart":True}]
-    bc.add_header_node("NODE_PROCESSES",name,properties=properties)
-    cd.construct_package("DATA_STRUCTURES")
-    cd.add_redis_stream("ERROR_STREAM",forward=True)
+
+
+    cd.construct_package("DOCKER_MONITORING")
+    cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
-    cd.add_job_queue("SYSTEM_COMMAND_QUEUE",10)
-    cd.add_job_queue("SYSTEM_RESPONSE_QUEUE",10)
-    cd.add_single_element("NODE_STATE")
-    cd.add_single_element("NODE_WD")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
+    cd.add_hash("PROCESS_CONTROL")
     cd.close_package_contruction()
-    bc.end_header_node("NODE_PROCESSES")
     
+ 
+    
+   
+    bc.end_header_node("NODE_SYSTEM")
+    
+    
+     
     bc.add_header_node("DOCKER_MONITOR",name,properties)
     cd.construct_package("DATA_STRUCTURES")
     cd.add_redis_stream("ERROR_STREAM",forward=True)
-    cd.add_hash("ERROR_HASH")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
     cd.add_rpc_server("DOCKER_UPDATE_QUEUE",{"timeout":5,"queue":name+"_DOCKER_RPC_SERVER"})
     cd.add_hash("REBOOT_DATA")
@@ -149,10 +173,10 @@ if __name__ == "__main__" :
 
 
    
-   containers = ["monitor_redis","op_monitor","mqtt_interface","stream_events_to_cloud","eto","irrigation_scheduling","modbus_server"   ]
+   containers = ["eto"   ]
    
    construct_processor(name="irrigation_controller",containers = containers,
-                      services=["rpi_mosquitto","file_server"])
+                      services=[])
    #
    
    

@@ -15,6 +15,7 @@ class Start_Container(object):
         cd.add_redis_stream("PROCESS_VSZ")
         cd.add_redis_stream("PROCESS_RSS")
         cd.add_redis_stream("PROCESS_CPU") 
+        cd.add_hash("PROCESS_CONTROL")
         cd.close_package_contruction()
         
 class End_Container(object):

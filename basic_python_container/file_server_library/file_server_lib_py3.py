@@ -25,27 +25,22 @@ class Construct_RPC_Library(object):
        self.rpc_client.set_rpc_queue(queue_name)
     
    def load_file(self,path,file_name):
-       print("load_file")
+       print("file_exits")
        parameters = {}
        parameters["path"] = path
        parameters["file_name"] = file_name
        return_value = self.rpc_client.send_rpc_message( method="load",parameters=parameters,timeout=3 )
-      
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]  
+       return return_value  
        
    def save_file(self,path,file_name,data):
        print("save_file")
-       
+       print("delete_file")
        parameters = {}
        parameters["path"] = path
        parameters["file_name"] = file_name
        parameters["data"] = data
        return_value = self.rpc_client.send_rpc_message( method="save",parameters=parameters,timeout=3 )
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]  
+       return return_value
    
    def file_exists(self,path,file_name):
        print("file_exits")
@@ -53,18 +48,14 @@ class Construct_RPC_Library(object):
        parameters["path"] = path
        parameters["file_name"] = file_name
        return_value = self.rpc_client.send_rpc_message( method="file_exists",parameters=parameters,timeout=3 )
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]    
+       return return_value    
         
    def file_directory(self,path):
        print("file_directory")
        parameters = {}
        parameters["path"] = path
        return_value = self.rpc_client.send_rpc_message( method="file_directory",parameters=parameters,timeout=3 )
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]  
+       return return_value
            
 
    def delete_file(self, path,file_name):
@@ -73,18 +64,14 @@ class Construct_RPC_Library(object):
        parameters["path"] = path
        parameters["file_name"] = file_name
        return_value = self.rpc_client.send_rpc_message( method="delete_file",parameters=parameters,timeout=3 )
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]  
+       return return_value
    
    def mkdir(self,path):
        print("mkdir")
        parameters = {}
        parameters["path"] = path
        return_value = self.rpc_client.send_rpc_message( method="make_dir",parameters=parameters,timeout=3 )
-       if return_value[0] != True:
-          raise ValueError("load file failure")
-       return return_value[1]  
+       return return_value
    
  
   

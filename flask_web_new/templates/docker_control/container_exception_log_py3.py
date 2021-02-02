@@ -16,7 +16,7 @@ class Container_Exception_Log(Base_Multi_Template_Class,Docker_Base_Class):
        self.container_names = self.managed_container_names
        self.container_name = self.managed_container_names[container_id]
       
-       self.container_exception_log = self.handlers[self.container_name]["ERROR_STREAM"].revrange("+","-" , count=20)
+       self.container_exception_log = self.handlers[self.container_name]["ERROR_STREAM"].revrange("+","-" , count=100)
        
        container_exceptions = []
        for j in self.container_exception_log:
@@ -87,7 +87,7 @@ class Container_Exception_Log(Base_Multi_Template_Class,Docker_Base_Class):
 <link href="/static/css/screen.css" rel="stylesheet" type="text/css" />
 
 <script src="/static/js/jquery.treetable.js"></script>
-<h4>Container Exception Status </h4>
+<h4>Container Exception Log </h4>
 
 
 <table id="example-basic">

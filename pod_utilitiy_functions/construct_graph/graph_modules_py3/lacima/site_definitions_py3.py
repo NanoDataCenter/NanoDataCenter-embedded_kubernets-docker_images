@@ -16,9 +16,7 @@ class LACIMA_Site_Definitons(object):
        self.bc = bc
        self.cd = cd
        
-       monitoring_systems = ["CORE_OPS","MONITOR_REDIS","MONITOR_RPI_MOSQUITTO","MONITOR_RPI_MOSQUITTO_CLIENTS"]
-       bc.add_info_node( "OP_MONITOR","OP_MONITOR", properties = {"OP_MONITOR_LIST":monitoring_systems} ) 
-       
+      
        properties = {}
        properties["port"] = 8080
        properties["https"]= False
@@ -49,16 +47,7 @@ class LACIMA_Site_Definitons(object):
        
 
  
-       bc.add_header_node("SYSTEM_MONITOR")
-       cd.construct_package("SYSTEM_MONITOR")      
-       #cd.add_managed_hash(self,name,fields,forward=False) perfored way to store field how to get field in system
-       cd.add_hash("SYSTEM_STATUS")
-   
-       cd.add_hash("MONITORING_DATA")
-       cd.add_redis_stream("SYSTEM_ALERTS")
-       cd.add_redis_stream("SYSTEM_PUSHED_ALERTS")
-       cd.close_package_contruction()
-       bc.end_header_node("SYSTEM_MONITOR")
+       
 
 
    

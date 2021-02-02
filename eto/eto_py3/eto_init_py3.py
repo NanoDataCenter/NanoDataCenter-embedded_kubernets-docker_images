@@ -29,8 +29,11 @@ class Initialize_ETO_Accumulation_Table(object):
        # the eto_site table may have changed
        # need to merge old table values into the new table
        # there may be insertions as well as deletions
-       eto_file_data = json.loads(self.file_system_library.load_file("application_files","eto_site_setup.json"))
-       
+       response = self.file_system_library.load_file("application_files","eto_site_setup.json")
+       if response[0] == True:
+           eto_file_data = json.loads(response[1])
+       else:
+           raise ValueError("non exist file:  antapplication_files/eto_site_setup.json")
 
 
       
