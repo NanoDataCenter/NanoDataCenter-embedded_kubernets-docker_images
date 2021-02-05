@@ -8,19 +8,19 @@ from templates.irrigation.control_irrigation_queue_py3 import Control_Irrigation
 from templates.irrigation.past_actions_py3 import Past_Actions
 from templates.irrigation.irrigation_stream_py3 import Irrigation_Stream
 
-from templates.docker_control.start_stop_container_py3 import Start_Stop_Containers
-from templates.docker_control.container_exception_status_py3 import Container_Exception_Status
-from templates.docker_control.container_exception_log_py3 import Container_Exception_Log
-from templates.docker_control.container_processor_logs_py3 import Container_Cpu_Loading
-from templates.docker_control.container_processor_logs_py3 import Container_Vsz_Loading
-from templates.docker_control.container_processor_logs_py3 import Container_Rss_Loading
-from templates.docker_control.start_and_stop_managed_container_processes_py3 import Start_and_Stop_Managed_Container_Processes
 
-from templates.pod_control.pod_exception_log_py3 import Pod_Exception_Log
-from templates.pod_control.pod_exception_status_py3 import Pod_Exception_Status
-from templates.pod_control.pod_control_start_stop_processes_py3 import Pod_Processor_Control
+from templates.container_control.container_exception_status_py3 import Container_Exception_Status
+from templates.container_control.container_exception_log_py3 import Container_Exception_Log
+from templates.container_control.container_processor_logs_py3 import Container_Cpu_Loading
+from templates.container_control.container_processor_logs_py3 import Container_Vsz_Loading
+from templates.container_control.container_processor_logs_py3 import Container_Rss_Loading
+from templates.container_control.start_and_stop_managed_container_processes_py3 import Start_and_Stop_Managed_Container_Processes
 
-Pod_Processor_Control
+from templates.node_control.node_exception_log_py3 import Node_Exception_Log
+from templates.node_control.node_exception_status_py3 import Node_Exception_Status
+from templates.node_control.node_control_start_stop_processes_py3 import Node_Processor_Control
+from templates.node_control.manage_containers_py3 import Manage_Containers
+
 
 from templates.common.table_manager.table_manager_py3 import Table_Manager
 
@@ -67,7 +67,7 @@ class Register_Template_Classes( object):
        class_map["processor/edev"] = Processor_Edev
 
        
-       class_map["manage_containers/start_and_stop_containers"] = Start_Stop_Containers
+       
        class_map["manage_containers/view_exception_status"] = Container_Exception_Status
        class_map["manage_containers/view_exception_log"]  = Container_Exception_Log
        class_map["manage_containers/cpu_loading"]  = Container_Cpu_Loading
@@ -75,9 +75,10 @@ class Register_Template_Classes( object):
        class_map["manage_containers/rss"]  = Container_Rss_Loading
        class_map["manage_containers/start_and_stop_processes"] = Start_and_Stop_Managed_Container_Processes
        
-       class_map["pod_control/view_exception_log"] = Pod_Exception_Log
-       class_map["pod_control/view_exception_status"] = Pod_Exception_Status
-       class_map["pod_control/process_control"] = Pod_Processor_Control
+       class_map["node_control/view_exception_log"] = Node_Exception_Log
+       class_map["node_control/view_exception_status"] = Node_Exception_Status
+       class_map["node_control/process_control"] = Node_Processor_Control
+       class_map["node_control/manage_containers"] = Manage_Containers
        self.parent_self.class_map = class_map
       
       

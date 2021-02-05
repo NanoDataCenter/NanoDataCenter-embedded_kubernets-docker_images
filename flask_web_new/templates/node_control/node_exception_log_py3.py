@@ -1,12 +1,12 @@
-from .pod_base_class_py3 import Pod_Base_Class
+from .node_base_class_py3 import Node_Base_Class
 from templates.Base_Multi_Template_Class_py3  import Base_Multi_Template_Class
 from flask import request
 import json
 import datetime
 
-class Pod_Exception_Status(Base_Multi_Template_Class,Pod_Base_Class):
+class Node_Exception_Log(Base_Multi_Template_Class,Node_Base_Class):
    def __init__(self,base_self,parameters = None):
-       Pod_Base_Class.__init__(self,base_self)
+       Node_Base_Class.__init__(self,base_self)
        Base_Multi_Template_Class.__init__(self,base_self,parameters)
   
   
@@ -18,7 +18,7 @@ class Pod_Exception_Status(Base_Multi_Template_Class,Pod_Base_Class):
        
        self.processor_id = processor_id
        self.processor_name = self.processor_names[processor_id]
-      
+       print(self.handlers[processor_id])
        processor_exceptions = self.handlers[processor_id]["ERROR_HASH"].hgetall()
 
        for i in processor_exceptions.keys():
@@ -76,7 +76,7 @@ class Pod_Exception_Status(Base_Multi_Template_Class,Pod_Base_Class):
    def load_html(self):
        return '''
 <div style="margin-top:20px"></div>
-<h4>Exception Status for processor {{self.processor_name}} </h4>
+<h4>Exception Long for Node Control processes processor {{self.processor_name}} </h4>
 {{(self.generate_log_data) }}
 </div>
      '''

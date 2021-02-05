@@ -1,7 +1,7 @@
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers 
 import json
 
-class Pod_Base_Class(object):
+class Node_Base_Class(object):
 
    def __init__( self ,base_self):
        self.base_self = base_self   
@@ -47,18 +47,18 @@ class Pod_Base_Class(object):
        for i in self.processor_names:
           self.handlers.append(self.assemble_data_structures(i))
 
-   
-       
-
+ 
+      
  
    def assemble_data_structures(self,controller_name ):
+       
        query_list = []
        query_list = self.qs.add_match_relationship( query_list,relationship="SITE",label=self.site_data["site"] )
 
        query_list = self.qs.add_match_relationship( query_list, relationship = "PROCESSOR", label = controller_name )
-       query_list = self.qs.add_match_relationship( query_list, relationship = "NODE_PROCESSES", label = controller_name )
+       query_list = self.qs.add_match_relationship( query_list, relationship = "NODE_SYSTEM" )
        query_list = self.qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE" )
+                                        relationship = "PACKAGE" ,label= "DOCKER_MONITORING")
                                            
        package_sets, package_sources = self.qs.match_list(query_list)  
      
@@ -71,8 +71,29 @@ class Pod_Base_Class(object):
        handlers["WEB_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["WEB_COMMAND_QUEUE"])
        
        handlers["WEB_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["WEB_DISPLAY_DICTIONARY"])
-       return handlers
+       query_list = []
+       query_list = self.qs.add_match_relationship( query_list,relationship="SITE",label=self.site_data["site"] )
+
+       query_list = self.qs.add_match_relationship( query_list, relationship = "PROCESSOR", label = controller_name )
+       query_list = self.qs.add_match_relationship( query_list, relationship = "NODE_SYSTEM" )
+       query_list = self.qs.add_match_terminal( query_list, 
+                                        relationship = "PACKAGE" ,label= "DOCKER_CONTROL")
+                                           
+       package_sets, package_sources = self.qs.match_list(query_list)  
+     
+       package = package_sources[0] 
+       data_structures = package["data_structures"]
+       generate_handlers = Generate_Handlers(package,self.qs)
        
+       
+       handlers["DOCKER_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_client(data_structures["DOCKER_COMMAND_QUEUE"])
+       
+       handlers["DOCKER_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["DOCKER_DISPLAY_DICTIONARY"])
+       return handlers   
+       
+       
+       
+ 
    def generate_processor_names(self):
       return_value = []
       

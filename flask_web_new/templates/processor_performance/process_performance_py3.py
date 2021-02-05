@@ -30,7 +30,7 @@ class Processor_Performance_Stream_Base(object):
 
        query_list = self.qs.add_match_relationship( query_list, relationship = "PROCESSOR", label = controller )
        query_list = self.qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", property_mask={"name":"SYSTEM_MONITORING"} )
+                                        relationship = "PACKAGE", property_mask={"name":"PROCESSOR_MONITORING"} )
                                            
        package_sets, package_sources = self.qs.match_list(query_list)  
      

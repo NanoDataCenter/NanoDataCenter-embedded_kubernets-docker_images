@@ -1,12 +1,12 @@
-from .pod_base_class_py3 import Pod_Base_Class
+from .node_base_class_py3 import Node_Base_Class
 from templates.Base_Multi_Template_Class_py3  import Base_Multi_Template_Class
 from flask import request
 import json
 import datetime
 
-class Pod_Processor_Control(Base_Multi_Template_Class,Pod_Base_Class):
+class Node_Processor_Control(Base_Multi_Template_Class,Node_Base_Class):
    def __init__(self,base_self,parameters = None):
-       Pod_Base_Class.__init__(self,base_self)
+       Node_Base_Class.__init__(self,base_self)
        Base_Multi_Template_Class.__init__(self,base_self,parameters)
        
        

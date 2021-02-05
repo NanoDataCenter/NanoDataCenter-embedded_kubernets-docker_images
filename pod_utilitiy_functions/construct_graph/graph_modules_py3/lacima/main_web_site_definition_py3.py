@@ -28,17 +28,18 @@ class Generate_Main_Server_Web_Page_Definitions( object):
            print("display_name",i["display_name"] )
            print("class_name",i["class_name"] )
  
-   def generate_pod_logs(self):
-       pod_logs = Menu_Header(display_name="pod_logs") 
-       pod_logs.add_child(Menu_Element('display_exception_status',"pod_control/view_exception_status"))
-       pod_logs.add_child(Menu_Element('display_exception_logs',"pod_control/view_exception_log"))
-       return pod_logs        
+   def generate_node_control_logs(self):
+       node_control_logs = Menu_Header(display_name="node_control_logs") 
+       node_control_logs.add_child(Menu_Element('display_exception_status',"node_control/view_exception_status"))
+       node_control_logs.add_child(Menu_Element('display_exception_logs',"node_control/view_exception_log"))
+       return node_control_logs        
 
-   def generate_pod_menus(self):
-       pod_menu = Menu_Header(display_name="pod_management") 
-       pod_menu.add_child(Menu_Element('start_stop_processes',"pod_control/process_control"))
-       pod_menu.add_child(self.generate_pod_logs())
-       return pod_menu          
+   def generate_node_control_menus(self):
+       node_control_menu = Menu_Header(display_name="node_control_management") 
+       node_control_menu.add_child(Menu_Element('manage_containers',"node_control/manage_containers"))
+       node_control_menu.add_child(Menu_Element('start_stop_node_control_processes',"node_control/process_control"))
+       node_control_menu.add_child(self.generate_node_control_logs())
+       return node_control_menu          
 
    def generate_container_logs(self):
        container_logs = Menu_Header(display_name="container_logs") 
@@ -51,7 +52,6 @@ class Generate_Main_Server_Web_Page_Definitions( object):
 
    def generate_container_menus(self):
        container_menu = Menu_Header(display_name="container_management") 
-       container_menu.add_child(Menu_Element('start_stop_containers',"manage_containers/start_and_stop_containers"))
        container_menu.add_child(Menu_Element('start_stop_container_processes',"manage_containers/start_and_stop_processes"))
        container_menu.add_child(self.generate_container_logs())
        return container_menu         
@@ -106,12 +106,12 @@ class Generate_Main_Server_Web_Page_Definitions( object):
        
        
        service_menu = Menu_Header(display_name="services")
-       service_menu.add_child(self.generate_redis_menus())
+       #service_menu.add_child(self.generate_redis_menus())
     
        system_menu = Menu_Header(display_name="system_functions") 
        system_menu.add_child(self.generate_processor_menus())
        system_menu.add_child(self.generate_container_menus())
-       system_menu.add_child(self.generate_pod_menus())
+       system_menu.add_child(self.generate_node_control_menus())
        system_menu.add_child(service_menu)
       
        top_menu.add_child(irrigation_menu)

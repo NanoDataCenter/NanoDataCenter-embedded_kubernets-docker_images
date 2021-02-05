@@ -22,7 +22,7 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
    
 
 
-def construct_system_definitions(bc,cd):
+def construct_site_definitions(bc,cd):
     properties = {}
     properties["command_list"] = []  #   [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True},{"file":"node_reset_py3.py","restart":True}]
     bc.add_header_node("SYSTEM_CONTROL","SYSTEM_CONTROL",properties= properties) 
@@ -82,8 +82,8 @@ def construct_processor(name,containers,services):
     
     cd.construct_package("DOCKER_CONTROL")
 
-    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
-    cd.add_hash("WEB_DISPLAY_DICTIONARY")
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",1)
+    cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
 
     cd.close_package_contruction()
 
@@ -146,7 +146,7 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   construct_system_definitions(bc,cd)
+   construct_site_definitions(bc,cd)
 
    Cloud_Site_Definitons(bc,cd)
 
@@ -168,7 +168,7 @@ if __name__ == "__main__" :
 
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   construct_system_definitions(bc,cd)
+   construct_site_definitions(bc,cd)
    LACIMA_Site_Definitons(bc,cd)
 
 
