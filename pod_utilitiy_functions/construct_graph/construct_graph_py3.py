@@ -24,10 +24,10 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
 
 def construct_site_definitions(bc,cd):
     properties = {}
-    properties["command_list"] = []  #   [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True},{"file":"node_reset_py3.py","restart":True}]
-    bc.add_header_node("SYSTEM_CONTROL","SYSTEM_CONTROL",properties= properties) 
+    properties["command_list"] = []  #   [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_control_py3.py","restart":True}]
+    bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
     
-    cd.construct_package("SYSTEM_CONTROL")
+    cd.construct_package("SITE_CONTROL")
     cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
     cd.add_single_element("SYSTEM_STATE")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
@@ -36,7 +36,7 @@ def construct_site_definitions(bc,cd):
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
 
     cd.close_package_contruction()
-    bc.end_header_node("SYSTEM_CONTROL")
+    bc.end_header_node("SITE_CONTROL")
     
     bc.add_header_node("SYSTEM_MONITOR")
     cd.construct_package("SYSTEM_MONITOR")      
@@ -58,7 +58,7 @@ def construct_processor(name,containers,services):
 
    
     properties = {}
-    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_monitoring_py3.py","restart":True}]
+    properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_control_py3.py","restart":True}]
     bc.add_header_node("NODE_SYSTEM",properties=properties)
     
     cd.construct_package("PROCESSOR_MONITORING")

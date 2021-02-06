@@ -104,7 +104,8 @@ class Manage_Containers(Base_Multi_Template_Class,Node_Base_Class):
    <option value="0">No Action</option>
    <option value="1">Start/Stop Containers</option>
    <option value="2">Update Container Image</option>
-   <option value="3">Reboot Processor</option>
+   <option value="3">Update All Container Image</option>
+   <option value="4">Reboot Processor</option>
   </select>
    
    <h5 id="toggle_help">Toggle Check Box to Change State  -- Check to Enable  Uncheck to Disable</h5>
@@ -311,6 +312,12 @@ function  action_handler(event,ui)
      ajax_post_confirmation(manage_containers, json_object,"Do you want to upgrade selected containers ?", "Changes Made", "Changes Not Made")
   }
   if( parseInt($("#action_select").val()) == 3)
+  {
+     $("#action_select").val(0)
+     ajax_post_confirmation(manage_containers, json_object,"Do you want to upgrade all containers ?",
+                            "Changes Made", "Changes Not Made") 
+  }
+  if( parseInt($("#action_select").val()) == 4)
   {
      $("#action_select").val(0)
      ajax_post_confirmation(manage_containers, json_object,"Do you want to reboot selected processor ?",
