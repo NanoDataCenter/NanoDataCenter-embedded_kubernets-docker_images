@@ -22,11 +22,12 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
    
 
 
-def construct_site_definitions(bc,cd):
+def construct_site_definitions(bc,cd,services):
     properties = {}
-    properties["command_list"] = []  #   [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_control_py3.py","restart":True}]
+    properties["services"] = services
+    properties["command_list"] = [{"file":"docker_control_py3.py","restart":True},{"file":"redis_monitoring_py3.py","restart":True}]
     bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
-    
+   
     cd.construct_package("SITE_CONTROL")
     cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
     cd.add_single_element("SYSTEM_STATE")
@@ -34,8 +35,22 @@ def construct_site_definitions(bc,cd):
     cd.add_redis_stream("ERROR_STREAM",forward=True)
     cd.add_hash("ERROR_HASH")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
-
     cd.close_package_contruction()
+ 
+ 
+    cd.construct_package("REDIS_MONITORING")  # redis monitoring
+    cd.add_redis_stream("KEYS")
+    cd.add_redis_stream("CLIENTS")
+    cd.add_redis_stream("MEMORY")
+    cd.add_redis_stream("REDIS_MONITOR_CALL_STREAM")
+    cd.add_redis_stream("REDIS_MONITOR_CMD_TIME_STREAM")  
+    cd.add_redis_stream("REDIS_MONITOR_SERVER_TIME")  
+    cd.close_package_contruction()
+    
+
+       
+    
+    
     bc.end_header_node("SITE_CONTROL")
     
     bc.add_header_node("SYSTEM_MONITOR")
@@ -48,6 +63,8 @@ def construct_site_definitions(bc,cd):
     cd.close_package_contruction()
     bc.end_header_node("SYSTEM_MONITOR")
 
+ 
+ 
 
 def construct_processor(name,containers,services):
     properties = {}
@@ -146,7 +163,7 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   construct_site_definitions(bc,cd)
+   construct_site_definitions(bc,cd,[])
 
    Cloud_Site_Definitons(bc,cd)
 
@@ -168,7 +185,8 @@ if __name__ == "__main__" :
 
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   construct_site_definitions(bc,cd)
+   lacima_services = [ "redis", "file_server" ]
+   construct_site_definitions(bc,cd,services = lacima_services)
    LACIMA_Site_Definitons(bc,cd)
 
 

@@ -13,42 +13,42 @@ from eto_py3.hybrid_handler_py3 import Hybrid_Calculator
 from eto_py3.eto_init_py3 import Initialize_ETO_Accumulation_Table
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from file_server_library.file_server_lib_py3 import Construct_RPC_Library
-
-
-
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
 
 ONE_DAY = 24 * 3600
 
 
 class Eto_Management(object):
-    def __init__(self,  eto_sources, package,site_data,qs,initial_accumulation_tables ):
+    def __init__(self, site_data, qs  ):
 
-        self.eto_sources = eto_sources
-        self.package  = package
-        self.site_data = site_data
-        self.qs = qs
+        search_list = ["WEATHER_STATION_DATA"]
         
-        self.generate_redis_handlers()
+        self.ds_handlers = construct_all_handlers(site_data,qs,search_list)
+        
+        search_list = ["WS_STATION"]
+        self.eto_sources = common_qs_search(site_data,qs,search_list)
+        
+        self.replace_keys(site_data, self.eto_sources)
+        
         self.eto_hash_table =  self.ds_handlers["ETO_ACCUMULATION_TABLE"]
+        file_server_library = Construct_RPC_Library(qs,site_data)
+        initial_accumulation_tables = Initialize_ETO_Accumulation_Table(file_server_library)
+
         self.initialize_values()
-        self.generate_calculators()
         initial_accumulation_tables.initialize_eto_tables(self.eto_hash_table)
-        #self.new_day_rollover()
+        
+        self.generate_calculators()
+        
+        
 
                                
-    def generate_redis_handlers(self):
-        self.handlers = {}
-        data_structures = self.package["data_structures"]
-        generate_handlers = Generate_Handlers(self.package,self.qs)
-        self.ds_handlers = {}
-        self.ds_handlers["EXCEPTION_VALUES"] = generate_handlers.construct_hash(data_structures["EXCEPTION_VALUES"])
-        self.ds_handlers["ETO_VALUES"] = generate_handlers.construct_hash(data_structures["ETO_VALUES"])
-        self.ds_handlers["RAIN_VALUES"] = generate_handlers.construct_hash(data_structures["RAIN_VALUES"])
-        self.ds_handlers["ETO_CONTROL"] = generate_handlers.construct_hash(data_structures["ETO_CONTROL"])
-        self.ds_handlers["ETO_HISTORY"] = generate_handlers.construct_stream_writer(data_structures["ETO_HISTORY"])
-        self.ds_handlers["RAIN_HISTORY"] = generate_handlers.construct_stream_writer(data_structures["RAIN_HISTORY"] )
-        self.ds_handlers["EXCEPTION_LOG"] = generate_handlers.construct_stream_writer(data_structures["EXCEPTION_LOG"] )
-        self.ds_handlers["ETO_ACCUMULATION_TABLE"] = generate_handlers.construct_hash(data_structures["ETO_ACCUMULATION_TABLE"])
+    def replace_keys(self, redis_site_data,elements ):
+        redis_handle = redis.StrictRedis(redis_site["host"], redis_site["port"], db=redis_site["redis_password_db"], decode_responses=True)
+        for i in elements:
+           temp = i["access_key"]
+           api_key = redis_handle.hget("eto",temp)
+           i["access_key"] = api_key
 
     def initialize_values(self):
          if self.ds_handlers["ETO_CONTROL"].hget("ETO_UPDATE_FLAG") == None:
@@ -193,60 +193,17 @@ class Eto_Management(object):
       
        
        
-def replace_keys( redis_site_data,elements ):
-   redis_handle = redis.StrictRedis(redis_site["host"], redis_site["port"], db=redis_site["redis_password_db"], decode_responses=True)
-   for i in elements:
-      
-       temp = i["access_key"]
-       api_key = redis_handle.hget("eto",temp)
-      
-       i["access_key"] = api_key
 
 
 
 def construct_eto_instance(qs, site_data ):
 
-    #
-    #
-    # find nodes associated with WEATHER_STATIONS
-    #
-    #
-    
-    #
-    #  Find "WS_STATION" nodes
-    #
-    #
-    query_list = []
-    query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-    query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "WS_STATION" )
-                                        
-    eto_sets, eto_sources = qs.match_list(query_list) 
-    
-    
-    query_list = []
-    query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-
-    query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", property_mask={"name":"WEATHER_STATION_DATA"} )
-                                           
-    package_sets, package_sources = qs.match_list(query_list)  
-     
-    
 
     
-    
-    #
-    # Replace symbolic keys with actual api keys
-    #
-    replace_keys(site_data, eto_sources)
-    file_server_library = Construct_RPC_Library(qs,site_data)
-    initial_accumulation_tables = Initialize_ETO_Accumulation_Table(file_server_library)
-
    
    
     
-    eto = Eto_Management(eto_sources, package_sources[0],site_data,qs,initial_accumulation_tables )
+    
     
     
     
@@ -350,7 +307,7 @@ if __name__ == "__main__":
     
   
     
-    eto = construct_eto_instance( qs, redis_site)
+    eto = Eto_Management(redis_site,qs )
    
 
   

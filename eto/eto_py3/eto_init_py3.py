@@ -33,7 +33,7 @@ class Initialize_ETO_Accumulation_Table(object):
        if response[0] == True:
            eto_file_data = json.loads(response[1])
        else:
-           raise ValueError("non exist file:  antapplication_files/eto_site_setup.json")
+           raise ValueError("non exist file:  application_files/eto_site_setup.json")
 
 
       
