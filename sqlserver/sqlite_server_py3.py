@@ -34,11 +34,11 @@ class Construct_RPC_Server(object):
        self.rpc_queue_handle.register_call_back("execute_script",self.ex_script)
        self.rpc_queue_handle.register_call_back("commit",self.commit)
        self.rpc_queue_handle.register_call_back("select",self.select)
+       self.rpc_queue_handle.register_call_back("list_tables",self.list_tables)
        self.rpc_queue_handle.add_time_out_function(self.process_null_msg)
        self.rpc_queue_handle.start()
    
-   def process_null_msg( self ):  
-       print("null message")         
+      
  
    def initialize_data_base_handles(self):
        self.db_handlers = {}
@@ -67,12 +67,14 @@ class Construct_RPC_Server(object):
  
  
    def process_null_msg( self ):  
-       print("null message")   
+       pass #print("null message")   
   
    def list_data_bases(self,input_message):
        print("list data base")
        return_value = self.sql_databases.hgetall()
-       return [True,return_value]       
+       return [True,return_value]  
+   
+       
        
    def create_database(self,input_msg):
        print("create database")
@@ -121,7 +123,14 @@ class Construct_RPC_Server(object):
            return [False,str(sys.exc_info()[:2])]
            
 
+   def list_tables(self,input_msg):
+       try:
 
+           input_msg["script"] = "SELECT name FROM sqlite_master WHERE type='table';"
+           return self.select(input_msg)
+           
+       except :
+           return [False,str(sys.exc_info()[:2])]   
             
 
    def vacuum(self,input_msg):
@@ -183,6 +192,7 @@ class Construct_RPC_Server(object):
            return [False,str(sys.exc_info()[:2])]
   
    def ex_exec(self,input_msg):
+       print("ex_exec",input_msg)
        try:
            db_name = input_msg["database"]
            script  = input_msg["script"]
@@ -194,6 +204,7 @@ class Construct_RPC_Server(object):
            return [False,str(sys.exc_info()[:2])]
   
    def ex_script(self,input_msg):
+       print("ex_script",input_msg)
        try:
            db_name = input_msg["database"]
            script  = input_msg["script"]
@@ -215,7 +226,7 @@ class Construct_RPC_Server(object):
            return [False,str(sys.exc_info()[:2])]
 
    def select(self,input_msg):
-       print("select")
+       print("select",input_msg)
        try:
            db_name = input_msg["database"]   
            script  = input_msg["script"]           

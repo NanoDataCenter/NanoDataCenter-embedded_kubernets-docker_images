@@ -7,8 +7,8 @@
 import datetime
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from system_error_log_py3 import  System_Error_Logging
-
-
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from     sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
 ONE_DAY = 24 * 3600
 
 
@@ -16,20 +16,13 @@ class Eto_Monitoring(object):
     def __init__(self,qs,site_data ):
         
         container_name = os.getenv("CONTAINER_NAME")
-        self.error_logging = System_Error_Logging(qs,container_name,site_data)
-        query_list = []
-        query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-        query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", property_mask={"name":"WEATHER_STATION_DATA"} )
-                                           
-        package_sets, package_sources = qs.match_list(query_list)  
-     
-        self.handlers = {}
-        data_structures = package_sources[0]["data_structures"]
-        generate_handlers = Generate_Handlers(package_sources[0],qs)
-        self.ds_handlers = {}
-        self.ds_handlers["ETO_CONTROL"] = generate_handlers.construct_hash(data_structures["ETO_CONTROL"])
-       
+        self.sqlite_client = SQLITE_Client_Support(qs,site_data)
+      
+        self.error_logging = System_Error_Logging(qs,container_name,site_data,self.sqlite_client)
+
+        
+        search_list = ["WEATHER_STATION_DATA"]
+        self.ds_handlers = construct_all_handlers(site_data,qs,search_list)
     
      
 
@@ -42,11 +35,12 @@ class Eto_Monitoring(object):
         if  self.ds_handlers["ETO_CONTROL"].hget("ETO_LOG_FLAG")!=0:
              error_flag = False   
         
-        if  self.ds_handlers["ETO_CONTROL"].hget("ETO_UPDATE_VALUE")!=0:
-             error_flag = False   
+
 
         if error_flag == False:
-             self.error_logging.log_error_message("ETO Failed Rollover")
+            self.error_logging.log_error_message("ETO_Rollover",["action",False])
+        else:
+             self.error_logging.log_error_message("ETO_Rollover",["action",True])
         
         return "DISABLE"
 
@@ -62,9 +56,13 @@ class Eto_Monitoring(object):
              error_flag = False   
        
 
+ 
         if error_flag == False:
-             self.error_logging.log_error_message("ETO Update Eto Failure")
-        
+            self.error_logging.log_error_message("ETO Update",["action",False])
+        else:
+             self.error_logging.log_error_message("ETO Update",["action",True])
+
+ 
         return "DISABLE"
     
   
@@ -75,13 +73,14 @@ def add_eto_chains(eto, cf):
 
 
     cf.define_chain("Monitor_day_rollover", True)
+    cf.insert.wait_tod_le( hour =  6)
     cf.insert.wait_tod_ge( hour =  5)
     cf.insert.one_step(eto.check_new_day_rollover)
     cf.insert.wait_tod_le( hour =  6)
     cf.insert.reset()
 
     cf.define_chain("monitor_eto_update", True)
-    
+    cf.insert.wait_tod_le( hour =  14)
     cf.insert.wait_tod_ge( hour =  13)
     cf.insert.one_step(eto.check_eto_bin_update)
     cf.insert.wait_tod_le( hour =  14)

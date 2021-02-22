@@ -46,20 +46,44 @@ def construct_site_definitions(bc,cd,services):
     cd.add_redis_stream("REDIS_MONITOR_CMD_TIME_STREAM")  
     cd.add_redis_stream("REDIS_MONITOR_SERVER_TIME")  
     cd.close_package_contruction()
-    
-
-       
-    
-    
     bc.end_header_node("SITE_CONTROL")
+    
+    bc.add_header_node("FILE_SERVER")
+    cd.construct_package("FILE_SERVER")
+    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":15,"queue":"FILE_RPC_SERVER"})
+    cd.close_package_contruction()
+    bc.end_header_node("FILE_SERVER")
+
+    bc.add_header_node("FILE_SERVER_CLIENT")
+    cd.construct_package("FILE_SERVER_CLIENT")
+    cd.add_rpc_client("FILE_SERVER_RPC_SERVER",{"timeout":15,"queue":"FILE_RPC_SERVER"})
+    cd.close_package_contruction()
+    bc.end_header_node("FILE_SERVER_CLIENT")
+    
+    bc.add_header_node("SQL_SERVER")
+    cd.construct_package("SQL_SERVER")
+    cd.add_rpc_server("SQL_SERVER_RPC_SERVER",{"timeout":15,"queue":"SQL_RPC_SERVER"})
+    cd.add_hash("SQL_DB_MAPPING")
+    cd.close_package_contruction()
+    bc.end_header_node("SQL_SERVER")
+
+    bc.add_header_node("SQL_CLIENT")
+    cd.construct_package("SQL_CLIENT")
+    cd.add_rpc_client("SQL_SERVER_RPC_CLIENT",{"timeout":15,"queue":"SQL_RPC_SERVER"})
+    cd.close_package_contruction()
+    bc.end_header_node("SQL_CLIENT")     
     
     bc.add_header_node("SYSTEM_MONITOR")
     cd.construct_package("SYSTEM_MONITOR")      
-    #cd.add_managed_hash(self,name,fields,forward=False) perfored way to store field how to get field in system
-    cd.add_hash("SYSTEM_STATUS")
-    cd.add_hash("MONITORING_DATA")
-    cd.add_redis_stream("SYSTEM_ALERTS")
-    cd.add_redis_stream("SYSTEM_PUSHED_ALERTS")
+    cd.add_hash("SYSTEM_VERBS")
+
+    database_name = 'default'
+    table_name    = 'system_error_log'
+    field_names = ["processor","container","python_file","error_msg","time"]
+    cd.create_sql_text_search_table("SYSTEM_ALERTS",database_name,table_name,field_names)
+
+   
+
     cd.close_package_contruction()
     bc.end_header_node("SYSTEM_MONITOR")
 

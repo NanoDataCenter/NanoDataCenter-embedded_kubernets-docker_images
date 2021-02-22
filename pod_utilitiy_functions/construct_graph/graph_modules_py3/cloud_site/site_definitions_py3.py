@@ -33,12 +33,6 @@ class Cloud_Site_Definitons(object):
        cd.close_package_contruction()
        bc.end_header_node("CLOUD_BLOCK_CHAIN_SERVER")
    
-       bc.add_header_node("SQL_SERVER")
-       cd.construct_package("SQL_SERVER")
-       cd.add_rpc_server("SQL_SERVER_RPC_SERVER",{"timeout":5,"queue":"SQL_RPC_SERVER"})
-       cd.add_hash("SQL_DB_MAPPING")
-       cd.close_package_contruction()
-       bc.end_header_node("SQL_SERVER")
  
        
 

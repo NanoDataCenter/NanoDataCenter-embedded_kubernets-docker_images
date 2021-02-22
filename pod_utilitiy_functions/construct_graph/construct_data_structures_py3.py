@@ -23,6 +23,28 @@ class Construct_Data_Structures(object):
         self.current_package = None
         self.bc.add_info_node("PACKAGE",self.name,self.properties)
         
+   def create_sql_table(self,name,database_name,table_name,field_names):
+       assert(name not in self.properties )
+       properties = {}
+       properties["type"]  = "SQL_LOG_TABLE"
+       properties["name"] = name  
+       properties["database_name"] = database_name
+       properties["table_name"]  = table_name
+       properties["field_names"] = field_names       
+       self.properties["data_structures"][name] = properties 
+        
+        
+   def create_sql_text_search_table(self,name,database_name,table_name,field_names):
+       assert(name not in self.properties )
+       properties = {}
+       properties["type"]  = "SEARCH_SQL_LOG_TABLE"
+       properties["name"] = name  
+       properties["database_name"] = database_name
+       properties["table_name"]  = table_name
+       properties["field_names"] = field_names       
+       self.properties["data_structures"][name] = properties 
+
+       
    def add_single_element(self,name,forward=False):
        assert(name not in self.properties )
        properties = {}
@@ -81,9 +103,9 @@ class Construct_Data_Structures(object):
        properties["type"]  = "RPC_SERVER"
        self.properties["data_structures"][name] = properties 
       
-   def add_rpc_client(self,name):
+   def add_rpc_client(self,name,properties):
        assert(name not in self.properties )
-       properties = {}
+  
        properties["name"] = name
        properties["type"]  = "RPC_CLIENT"
        self.properties["data_structures"][name] = properties

@@ -32,7 +32,7 @@ class LACIMA_Site_Definitons(object):
        bc.add_info_node("WEB_SERVER","MAIN_WEB_SERVER",properties = properties)
        bc.end_header_node("Web_Server_Definitions")
        
-      
+     
        
        bc.add_header_node("CLOUD_SERVICE_QUEUE")
        cd.construct_package("CLOUD_SERVICE_QUEUE_DATA")
@@ -75,12 +75,7 @@ class LACIMA_Site_Definitons(object):
        bc.end_header_node("MQTT_DEVICES")  
        
        
-       bc.add_header_node("FILE_SERVER")
-       cd.construct_package("FILE_SERVER")
-       cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":5,"queue":"FILE_RPC_SERVER"})
 
-       cd.close_package_contruction()
-       bc.end_header_node("FILE_SERVER")
        
        Construct_Weather_Stations(bc,cd)  
        Construct_Irrigation_Scheduling_Control(bc,cd) 
