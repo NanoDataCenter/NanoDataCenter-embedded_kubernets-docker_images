@@ -1,0 +1,1 @@
+docker build --tag nanodatacenter/stream_events_to_cloud .
