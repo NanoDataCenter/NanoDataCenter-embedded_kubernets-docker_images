@@ -1,1 +1,0 @@
-docker build --tag nanodatacenter/mqtt_interface .

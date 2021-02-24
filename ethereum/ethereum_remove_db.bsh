@@ -1,6 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-docker run -it --rm   -p 30303:30303     --mount type=bind,source=/mnt/ssd/ethereum,target=/data/     nanodatacenter/ethereum-go  geth  --datadir /data/dev_data --ipcpath /data/geth.ipc removedb 
-
-
-

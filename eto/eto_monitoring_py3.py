@@ -9,6 +9,7 @@ from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from     sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
 ONE_DAY = 24 * 3600
 
 
@@ -23,7 +24,7 @@ class Eto_Monitoring(object):
         
         search_list = ["WEATHER_STATION_DATA"]
         self.ds_handlers = construct_all_handlers(site_data,qs,search_list)
-    
+        self.file_server_library = Construct_RPC_File_Library(qs,site_data)
      
 
 
@@ -65,7 +66,20 @@ class Eto_Monitoring(object):
  
         return "DISABLE"
     
-  
+    def check_required_files(self,*parameters):
+        
+       
+        
+        error_flag = self.file_server_library.file_exists("application_files","eto_site_setup.json")
+     
+        if error_flag == False:
+            print("file does not exit")
+            self.error_logging.log_error_message("NO_FILES",subject="sprinkler_ctrl.json")
+        
+            
+
+ 
+        return "DISABLE"  
     
 
 
@@ -86,7 +100,13 @@ def add_eto_chains(eto, cf):
     cf.insert.wait_tod_le( hour =  14)
     cf.insert.reset()
 
+    cf.define_chain("check_file", True)
+    cf.insert.one_step(eto.check_required_files)
+    cf.insert.wait_event_count( event = "HOUR_TICK",count = 1)
+    cf.insert.reset()
 
+
+ 
 
    
 if __name__ == "__main__":

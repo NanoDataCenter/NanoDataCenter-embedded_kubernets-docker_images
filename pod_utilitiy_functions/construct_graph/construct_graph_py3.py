@@ -195,7 +195,7 @@ if __name__ == "__main__" :
    
 
    
-   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","op_monitor"],services=["redis","ethereum_go","sqlite_server"])
+   construct_processor(name="block_chain_server",containers = ["monitor_redis","stream_events_to_log","stream_events_to_cloud","op_monitor"],services=["redis","ethereum_go","sqlite_server","file_server"])
    #
    
    construct_processor(name="gateway_server",containers = ["mqtt_interface"],services=["rpi_mosquitto"])
@@ -209,13 +209,13 @@ if __name__ == "__main__" :
 
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   lacima_services = [ "redis", "file_server" ]
+   lacima_services = [ "redis", "file_server" ,"sqlite_server"]
    construct_site_definitions(bc,cd,services = lacima_services)
    LACIMA_Site_Definitons(bc,cd)
 
 
    
-   containers = ["eto"   ]
+   containers = ["eto","irrigation_scheduling"   ]
    
    construct_processor(name="irrigation_controller",containers = containers,
                       services=[])

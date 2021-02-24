@@ -7,6 +7,10 @@ import redis
 import json
 import msgpack
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from system_error_log_py3 import  System_Error_Logging
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
 
 #
 #  DB_CONNECTIONS hash key for store data base file locations
@@ -96,7 +100,7 @@ class Construct_RPC_Server(object):
        
 def construct_fileserver_instance( qs, site_data ):
           
-    
+    '''
     query_list = []
     query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
     query_list = qs.add_match_relationship( query_list,relationship= "FILE_SERVER")
@@ -109,8 +113,11 @@ def construct_fileserver_instance( qs, site_data ):
     rpc_queue = generate_handlers.construct_rpc_sever(data_structures["FILE_SERVER_RPC_SERVER"] )
     Construct_RPC_Server(rpc_queue )
 
-
-
+    '''
+    search_list = ["FILE_SERVER","FILE_SERVER"]
+    rpc_queue = construct_all_handlers(site_data,qs,search_list,field_list=["FILE_SERVER_RPC_SERVER"])
+    field_list=None
+ 
 
 
 
@@ -151,7 +158,10 @@ if __name__ == "__main__":
     # open data stores instance
    
     qs = Query_Support( redis_site )
-    
+    container_name = os.getenv("CONTAINER_NAME")
+    self.sqlite_client = SQLITE_Client_Support(qs,site_data)
+    self.error_logging = System_Error_Logging(qs,container_name,site_data,self.sqlite_client)
+
     
     
     construct_fileserver_instance(qs, redis_site )
