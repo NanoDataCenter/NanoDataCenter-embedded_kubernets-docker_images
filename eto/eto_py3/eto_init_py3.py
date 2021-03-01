@@ -34,9 +34,7 @@ class Initialize_ETO_Accumulation_Table(object):
            print("response",response)
            eto_file_data = json.loads(response)
        except:
-          raise
-          print("eto_site_setup.json does not exit")
-          return
+          raise ValueError("eto_site_setup.json does not exit")
 
 
       

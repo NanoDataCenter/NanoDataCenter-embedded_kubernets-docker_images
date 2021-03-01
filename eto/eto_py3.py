@@ -68,6 +68,7 @@ class Eto_Management(object):
         for i in elements:
            temp = i["access_key"]
            api_key = redis_handle.hget("eto",temp)
+
            i["access_key"] = api_key
 
     def initialize_values(self):  # initialize if reboot

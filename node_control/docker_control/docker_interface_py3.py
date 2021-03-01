@@ -49,7 +49,7 @@ class Docker_Interface(object):
    def pull(self,image):
        return self.client.images.pull(image)
 
-   def images(self): #tested
+   def images(self):
        return_value = []
        image_object_list = self.client.images.list()
        for image_object in image_object_list:
@@ -60,7 +60,7 @@ class Docker_Interface(object):
          string_list = temp.split(":")
          if string_list[0] != "blank":
             return_value.append(string_list[0])
-       return return_value
+         return return_value
                      
    def images_raw(self): #tested
        return_value = []

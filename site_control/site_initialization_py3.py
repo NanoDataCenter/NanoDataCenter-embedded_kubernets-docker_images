@@ -29,6 +29,7 @@ docker_control = Docker_Interface()
 
 def load_docker_image(smtp,image):
    try:
+       print("pulling images")
        docker_control.pull(image)
    except:
        smtp.send_mail("load image failure",image)
