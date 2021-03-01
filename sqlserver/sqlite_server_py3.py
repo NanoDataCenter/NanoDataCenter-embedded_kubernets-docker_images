@@ -6,7 +6,7 @@ import sqlite3
 import sys
 
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
-
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 #
 #  DB_CONNECTIONS hash key for store data base file locations
 #
@@ -300,26 +300,25 @@ if __name__ == "__main__":
     from redis_support_py3.graph_query_support_py3 import  Query_Support
     import datetime
     import msgpack
-
+    
+    from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
   
 
-    #
-    #
-    # Read Boot File
-    # expand json file
-    # 
-    file_handle = open("/data/redis_server.json",'r')
-    data = file_handle.read()
-    file_handle.close()
-    redis_site = json.loads(data)
+
+    site_data = get_site_data()
+  
+
    
-    #
-    # Setup handle
-    # open data stores instance
+    qs = Query_Support( site_data )
+    
+
+    
+    search_list = ["SQL_SERVER","SQL_SERVER"]
+    data_structures = construct_all_handlers(site_data,qs,search_list)
+    rpc_queue = data_structures["SQL_SERVER_RPC_SERVER"] 
+    sql_databases = data_structures["SQL_DB_MAPPING"] 
+    Construct_RPC_Server(rpc_queue,sql_databases )
+
+
+
    
-    qs = Query_Support( redis_site )
-    
-    
-    
-    construct_sql_server_instance(qs, redis_site )
-    

@@ -1,45 +1,78 @@
-import redis
+
 import json
 import time
 import os
 from docker_control.docker_interface_py3 import Docker_Interface
-from redis_support_py3.graph_query_support_py3 import  Query_Support
-redis_site_file = "/mnt/ssd/site_config/redis_server.json"
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+from smtp_py3.smtp_py3 import  SMTP_py3
+redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis ./redis-server ./redis.conf"
+sqlite_run_script = "docker run    -d  --network host   --name sqlite_server    --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/sqlite/,target=/sqlite/  nanodatacenter/sqlite_server /bin/bash sqlite_control.bsh"
+file_server_script = "docker run   -d  --network host   --name file_server        --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"   
 
-file_server_startup_script = "docker run    -d  --network host   --name file_server    --mount type=bind,source=/mnt/ssd/site_config,target=/data/ "      
-file_server_startup_script = file_server_startup_script + "   --mount type=bind,source=/mnt/ssd/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"  
- 
-redis_startup_script = "docker run -d   --restart on-failure  --name redis -p 6379:6379 --mount type=bind,source=/mnt/ssd/redis,target=/data  " 
-redis_startup_script = redis_startup_script + " --mount type=bind,source=/mnt/ssd/redis/config/redis.conf,target=/usr/local/etc/redis/redis.conf redis"
-        
+required_images = ["nanodatacenter/redis", "nanodatacenter/sqlite_server","nanodatacenter/file_server"]
+required_containers = [ "redis" ,"sqlite_server" ,"file_server" ]
+startup_scripts = {}
+startup_scripts["redis"] = redis_startup_script
+startup_scripts["sqlite_server"] = sqlite_run_script
+startup_scripts["file_server"] = file_server_script
+
+redis_site_file ="/mnt/ssd/site_config/redis_server.json"
+
+
+
 docker_control = Docker_Interface()
 
+#
+# Note these images are required to be on site_control node
+#
+
+
+def load_docker_image(smtp,image):
+   try:
+       docker_control.pull(image)
+   except:
+       smtp.send_mail("load image failure",image)
+       while  True:
+          print("fatal error missing image ",image)
+          time.sleep(3600)
 
 
 
 
-file_handle = open(redis_site_file,'r')
-try:    
-    data = file_handle.read()
-    file_handle.close()
-    site_data = json.loads(data)
-except:
-    # post appropriate error message
-    raise    
-
-
+site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+print("site_data",site_data)
 
 if 'master' not in site_data:
    while True:  # not a site_control node
      time.sleep(5)
-     
-# startup redis
-#pull redis container
-docker_control.container_up("redis",redis_startup_script)
-# startup file_server
-docker_control.pull("nanodatacenter/file_server")
-docker_control.container_up("file_server",file_server_startup_script)
 
+print("made it here")
+smtp =  SMTP_py3(site_data,"site_initialization")
+
+
+system_images = docker_control.images()
+print("system_images",system_images)
+
+
+
+for i in required_images:
+   
+   if i not in system_images:       
+       load_docker_image(smtp,"nanodatacenter/file_server")
+       
+
+
+
+running_containers = docker_control.containers_ls_runing()
+
+for i in required_containers:
+   if i not in running_containers:
+       docker_control.container_up(i,startup_scripts[i])
+
+
+running_containers = docker_control.containers_ls_runing()
+print("running containers",running_containers)
+os.system("python3 /mnt/ssd/site_config/passwords.py")
 
 
 

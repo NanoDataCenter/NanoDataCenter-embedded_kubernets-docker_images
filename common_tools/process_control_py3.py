@@ -15,6 +15,7 @@ from system_error_log_py3 import  System_Error_Logging
 from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 
 class Process_Control(object ):  # base class for controlling a process
 
@@ -176,7 +177,7 @@ class System_Control(object):
    def update_process_status(self,script,data):   
        
        temp = self.ds_handlers["ERROR_HASH"].hget(script)
-       temp_data = temp["error_output"]
+      
        try:
            temp_data = temp["error_output"]
        except:
@@ -318,11 +319,9 @@ if __name__ == "__main__":
     # Read Boot File
     # expand json file
     # 
-   #time.sleep(20) # wait for mqtt server get started
-   file_handle = open("/data/redis_server.json",'r')
-   data = file_handle.read()
-   file_handle.close()
-   site_data = json.loads(data)
+
+   
+   site_data = get_site_data()
    qs = Query_Support( site_data )  
 
    

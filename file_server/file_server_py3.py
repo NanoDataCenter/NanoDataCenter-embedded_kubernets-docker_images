@@ -11,7 +11,7 @@ from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
 from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
-
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 #
 #  DB_CONNECTIONS hash key for store data base file locations
 #
@@ -33,8 +33,9 @@ class Construct_RPC_Server(object):
        self.rpc_queue_handle.start()
 
 
-   def process_null_msg( self ):  
-       print("null message")         
+   def process_null_msg( self ): 
+       return   
+       #print("null message")         
  
    
    def load_file(self,input_message):
@@ -98,26 +99,7 @@ class Construct_RPC_Server(object):
  
  
        
-def construct_fileserver_instance( qs, site_data ):
-          
-    '''
-    query_list = []
-    query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-    query_list = qs.add_match_relationship( query_list,relationship= "FILE_SERVER")
-    query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", property_mask={"name":"FILE_SERVER"} )
-    package_sets, package_sources = qs.match_list(query_list) 
-    package = package_sources[0]    
-    data_structures = package["data_structures"]
-    generate_handlers = Generate_Handlers( package, qs )
-    rpc_queue = generate_handlers.construct_rpc_sever(data_structures["FILE_SERVER_RPC_SERVER"] )
-    Construct_RPC_Server(rpc_queue )
 
-    '''
-    search_list = ["FILE_SERVER","FILE_SERVER"]
-    rpc_queue = construct_all_handlers(site_data,qs,search_list,field_list=["FILE_SERVER_RPC_SERVER"])
-    field_list=None
- 
 
 
 
@@ -140,29 +122,32 @@ if __name__ == "__main__":
     from redis_support_py3.graph_query_support_py3 import  Query_Support
     import datetime
     import msgpack
+   
 
   
 
-    #
-    #
-    # Read Boot File
-    # expand json file
-    # 
-    file_handle = open("/data/redis_server.json",'r')
-    data = file_handle.read()
-    file_handle.close()
-    redis_site = json.loads(data)
+
+    site_data = get_site_data()
    
     #
     # Setup handle
     # open data stores instance
    
-    qs = Query_Support( redis_site )
+    qs = Query_Support( site_data )
     container_name = os.getenv("CONTAINER_NAME")
-    self.sqlite_client = SQLITE_Client_Support(qs,site_data)
-    self.error_logging = System_Error_Logging(qs,container_name,site_data,self.sqlite_client)
+    sqlite_client = SQLITE_Client_Support(qs,site_data)
+    #
+    # error logging is only needed once
+    # for reboot message
+    #
+    error_logging = System_Error_Logging(qs,container_name,site_data,sqlite_client) 
 
     
     
-    construct_fileserver_instance(qs, redis_site )
+    search_list = ["FILE_SERVER","FILE_SERVER"]
+    data_structures = construct_all_handlers(site_data,qs,search_list,field_list=["FILE_SERVER_RPC_SERVER"])
+    rpc_queue = data_structures["FILE_SERVER_RPC_SERVER"]
+    Construct_RPC_Server(rpc_queue )
+ 
+
     

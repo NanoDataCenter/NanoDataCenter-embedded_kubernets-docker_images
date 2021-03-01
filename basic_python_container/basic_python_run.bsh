@@ -1,4 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-docker run   -it --network host --rm  --name pod_utility_function  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/basic_python_container /bin/bash
-

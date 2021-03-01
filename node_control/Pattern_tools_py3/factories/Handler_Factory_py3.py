@@ -10,7 +10,14 @@ class Handler_Factory(Generate_Handlers):
  
                                          
   
- 
+   def generate_handlers(self, field_list=None,type_list=None):
+       if (field_list == None) and (type_list==None):
+          return self.generate_all()
+       if field_list != None:
+          return self.generate_specific_key(field_list)
+       if search_list != None:
+          return self.generate_specific_type(type_list)
+       raise  ValueError("bad logic")          
 
    def generate_all(self):
 
@@ -29,7 +36,7 @@ class Handler_Factory(Generate_Handlers):
 
    def generate_specific_key(self,key_list):
        handlers = {}
-       key_set in key_list
+       key_set = set(key_list)
        data_structures = self.package["data_structures"]
        for key,data in data_structures.items():
            if key in key_set:
@@ -42,7 +49,7 @@ class Handler_Factory(Generate_Handlers):
 
    def generate_specific_type(self,type_list):
        handlers = {}
-       type_set in type_list
+       type_set = set(type_list)
        data_structures = self.package["data_structures"]
        for key,data in data_structures.items():
            if data["type"] in type_set:

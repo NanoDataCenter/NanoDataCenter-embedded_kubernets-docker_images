@@ -19,7 +19,7 @@ from Function_tools_py3.Function_Monad_py3 import Functional_Monand_Failure
 from Pattern_tools_py3.factories.iterators_py3 import pattern_iter_find_lowest
 from Pattern_tools_py3.factories.iterators_py3 import pattern_iter_strip_dict_dict
 from system_error_log_py3 import  System_Error_Logging
-
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
 from system_error_log_py3 import  System_Error_Logging
 
@@ -293,10 +293,8 @@ if __name__ == "__main__":
     # Read Boot File
     # expand json file
     # 
-    file_handle = open("/data/redis_server.json",'r')
-    data = file_handle.read()
-    file_handle.close() 
-    redis_site = json.loads(data)
+    
+    redis_site = get_site_data()
      
     #
     # Setup handle

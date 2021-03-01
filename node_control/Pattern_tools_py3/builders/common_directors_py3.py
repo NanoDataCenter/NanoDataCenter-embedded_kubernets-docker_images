@@ -2,13 +2,13 @@
 from Pattern_tools_py3.factories.Handler_Factory_py3 import Handler_Factory
 from Pattern_tools_py3.factories.graph_search_py3 import common_package_search
 
-def construct_all_handlers(site_data,qs,search_list,rpc_client=None):
+def construct_all_handlers(site_data,qs,search_list,rpc_client=None,field_list=None,type_list=None):
     
     package = common_package_search(site_data,qs,search_list)
    
     factory = Handler_Factory(package[0],qs )
-    handlers = factory.generate_all()
-    if rpc_client != None:
+    handlers = factory.generate_handlers(field_list,type_list)
+    if rpc_client != None:  #register rpc handler for sql types
        register_rpc_client(handlers,rpc_client)
     return handlers
 

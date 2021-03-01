@@ -147,7 +147,7 @@ class System_Control(object):
    def __init__(self,site_data,qs,container_name):
             
 
-
+       
        search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,["CONTAINER",container_name ],"DATA_STRUCTURES" ]
        self.ds_handlers = construct_all_handlers(site_data,qs,search_list,rpc_client=None)
 
@@ -176,7 +176,7 @@ class System_Control(object):
    def update_process_status(self,script,data):   
        
        temp = self.ds_handlers["ERROR_HASH"].hget(script)
-       temp_data = temp["error_output"]
+      
        try:
            temp_data = temp["error_output"]
        except:

@@ -31,8 +31,10 @@ class Initialize_ETO_Accumulation_Table(object):
        # there may be insertions as well as deletions
        try:
            response = self.file_system_library.load_file("application_files","eto_site_setup.json")
+           print("response",response)
            eto_file_data = json.loads(response)
        except:
+          raise
           print("eto_site_setup.json does not exit")
           return
 

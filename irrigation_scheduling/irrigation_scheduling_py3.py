@@ -18,6 +18,7 @@ from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 
 class Monitoring_Base(object):
 
@@ -315,10 +316,8 @@ if __name__ == "__main__":
     from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
     
     
-    file_handle = open("/data/redis_server.json",'r')
-    data = file_handle.read()
-    file_handle.close()
-    site_data = json.loads(data)
+
+    site_data = get_site_data()
      
     #
     # Setup handle
@@ -358,93 +357,3 @@ if __name__ == "__main__":
 else:
   pass    
 
-'''
-if __name__ == "__main__":
-
-    import datetime
-    import time
-    import string
-    import urllib.request
-    import math
-    import redis
-    import base64
-    import json
-
-    import os
-    import copy
-    
-    from redis_support_py3.graph_query_support_py3 import  Query_Support
-    import datetime
-    
-
-    from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
-
-    #
-    #
-    # Read Boot File
-    # expand json file
-    # 
-    file_handle = open("/data/redis_server.json",'r')
-    data = file_handle.read()
-    file_handle.close()
-    redis_site = json.loads(data)
-     
-    #
-    # Setup handle
-    # open data stores instance
-    
-
-    qs = Query_Support( redis_site )
-    
-    file_server_library = Construct_RPC_Library(qs,redis_site)
-    
-    query_list = []
-    query_list = qs.add_match_relationship( query_list,relationship="SITE",label=redis_site["site"] )
-
-    query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", property_mask={"name":"IRRIGIGATION_SCHEDULING_CONTROL_DATA"} )
-                                           
-    package_sets, package_sources = qs.match_list(query_list)  
-    #print("package sources",package_sources)
-    package = package_sources[0]
-    
-    #
-    #  do verifications of data package
-    #
-    #
-    #
-    data_structures = package["data_structures"]
-    
-    generate_handlers = Generate_Handlers( package, qs )
-    
-    
-    
-    
-    data_structures = package["data_structures"]
-    job_queue = generate_handlers.construct_job_queue_client(data_structures["IRRIGATION_JOB_SCHEDULING"])
-    job_queue.delete_all()
-  
-    completion_dictionary        = generate_handlers.construct_hash(data_structures["SYSTEM_COMPLETION_DICTIONARY"])
-    
- 
-
-    irrigation_control        = generate_irrigation_control(redis_site,qs)
-    sched        = Irrigation_Schedule_Monitoring( file_server_library,completion_dictionary,job_queue,irrigation_control )
-    action       = System_Monitoring(file_server_library,completion_dictionary,job_queue)
-
-    ntpd = Ntpd()
-    #
-    # Adding chains
-    #
-
-    cf = CF_Base_Interpreter()
-    add_chains(cf,sched,action,ntpd)
-    #
-    # Executing chains
-    #
-    
-    #cf.execute()
-
-else:
-  pass
-''' 

@@ -50,7 +50,30 @@ class Docker_Interface(object):
        return self.client.images.pull(image)
 
    def images(self): #tested
-       return self.client.images.list()
+       return_value = []
+       image_object_list = self.client.images.list()
+       for image_object in image_object_list:
+         try:
+              temp = image_object.attrs["RepoTags"][0]
+         except:
+              temp = "blank"  # place holder
+         string_list = temp.split(":")
+         if string_list[0] != "blank":
+            return_value.append(string_list[0])
+       return return_value
+                     
+   def images_raw(self): #tested
+       return_value = []
+       image_object_list = self.client.images.list()
+       for image_object in image_object_list:
+         try:
+              temp = image_object.attrs["RepoTags"][0]
+         except:
+              temp = "blank"  # place holder
+         string_list = temp.split(":")
+         if string_list[0] != "blank":
+            return_value.append(string_list)
+       return return_value
    
    def image_rmi(self,deleted_image): # tested
        self.client.images.remove(image=deleted_image)

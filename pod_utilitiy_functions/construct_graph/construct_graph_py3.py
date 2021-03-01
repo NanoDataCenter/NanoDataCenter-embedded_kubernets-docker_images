@@ -207,7 +207,11 @@ if __name__ == "__main__" :
    
    bc.end_header_node("SITE")                                                  
 
-   bc.add_header_node( "SITE","LACIMA_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
+   properties = {}
+   properties["services"] = [ "redis", "file_server" ,"sqlite_server"]
+   properties["address"] = "21005 Paseo Montana Murrieta, Ca 92562" 
+   properties["containers"] = []
+   bc.add_header_node( "SITE","LACIMA_SITE",  properties = properties )
 
    lacima_services = [ "redis", "file_server" ,"sqlite_server"]
    construct_site_definitions(bc,cd,services = lacima_services)
