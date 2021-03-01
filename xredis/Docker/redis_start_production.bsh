@@ -1,0 +1,1 @@
+docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis ./redis-server ./redis.conf

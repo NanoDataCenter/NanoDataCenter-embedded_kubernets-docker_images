@@ -1,0 +1,5 @@
+
+
+docker build --tag nanodatacenter/redis .
+../../docker_cmds/docker_clean_up
+
