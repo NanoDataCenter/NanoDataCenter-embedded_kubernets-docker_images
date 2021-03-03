@@ -50,40 +50,22 @@ def construct_site_definitions(bc,cd,services):
     
     bc.add_header_node("FILE_SERVER")
     cd.construct_package("FILE_SERVER")
-    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":15,"queue":"FILE_RPC_SERVER"})
+    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":1,"queue":"FILE_RPC_SERVER"})
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER")
 
     bc.add_header_node("FILE_SERVER_CLIENT")
     cd.construct_package("FILE_SERVER_CLIENT")
-    cd.add_rpc_client("FILE_SERVER_RPC_SERVER",{"timeout":15,"queue":"FILE_RPC_SERVER"})
+    cd.add_rpc_client("FILE_SERVER_RPC_SERVER",{"timeout":30,"queue":"FILE_RPC_SERVER"})
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER_CLIENT")
     
-    bc.add_header_node("SQL_SERVER")
-    cd.construct_package("SQL_SERVER")
-    cd.add_rpc_server("SQL_SERVER_RPC_SERVER",{"timeout":15,"queue":"SQL_RPC_SERVER"})
-    cd.add_hash("SQL_DB_MAPPING")
-    cd.close_package_contruction()
-    bc.end_header_node("SQL_SERVER")
-
-    bc.add_header_node("SQL_CLIENT")
-    cd.construct_package("SQL_CLIENT")
-    cd.add_rpc_client("SQL_SERVER_RPC_CLIENT",{"timeout":15,"queue":"SQL_RPC_SERVER"})
-    cd.close_package_contruction()
-    bc.end_header_node("SQL_CLIENT")     
+    
     
     bc.add_header_node("SYSTEM_MONITOR")
     cd.construct_package("SYSTEM_MONITOR")      
     cd.add_hash("SYSTEM_VERBS")
-
-    database_name = 'default'
-    table_name    = 'system_error_log'
-    field_names = ["processor","container","python_file","error_msg","time"]
-    cd.create_sql_text_search_table("SYSTEM_ALERTS",database_name,table_name,field_names)
-
-   
-
+    cd.add_redis_stream("SYSTEM_ALERTS")
     cd.close_package_contruction()
     bc.end_header_node("SYSTEM_MONITOR")
 
@@ -208,7 +190,7 @@ if __name__ == "__main__" :
    bc.end_header_node("SITE")                                                  
 
    properties = {}
-   properties["services"] = [ "redis", "file_server" ,"sqlite_server"]
+   properties["services"] = [ "redis", "file_server" ]
    properties["address"] = "21005 Paseo Montana Murrieta, Ca 92562" 
    properties["containers"] = []
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = properties )

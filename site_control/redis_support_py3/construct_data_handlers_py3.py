@@ -9,7 +9,7 @@ import uuid
 from .redis_stream_utilities_py3 import Redis_Stream_Utilities
 
 
-
+'''
 
 class SQL_LOG_TABLES(object):
    def __init__(self,properties    ):
@@ -20,10 +20,11 @@ class SQL_LOG_TABLES(object):
     
    
    def set_rpc_handler(self,handler):
+       print("made it here")
        self.rpc_handler = handler  
        self.check_db()
        self.check_table()
-     
+       
        
 
     
@@ -81,7 +82,7 @@ class SQL_TEXT_SEARCH_LOG_TABLES(SQL_LOG_TABLES):
         return self.rpc_handler.select_composite(self.database_name,self.table_name,self.field_names,where_clause=where_clause)    
      
      
- 
+''' 
 
 class Field_Not_Defined(Exception):
     pass       

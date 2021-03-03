@@ -1,12 +1,28 @@
 
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from system_error_log_py3 import  System_Error_Logging
+from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+
 
 
 class Redis_Monitor(object):
 
-   def __init__(self,redis_handle, redis_monitoring_streams ):
-       self.redis_handle = redis_handle
-       self.redis_monitoring_streams = redis_monitoring_streams
+   def __init__(self,site_data,qs ):
+       self.redis_handle = qs.get_redis_data_handle()
+       search_list = [ "REDIS_MONITORING"]
+       self.redis_monitoring_streams = construct_all_handlers(site_data,qs,search_list,rpc_client=None)
+
+   
+       
+       self.system_error_logging = System_Error_Logging(qs,"Node_Control",site_data)
+  
+       
+       
+       
        self.cpu_previous = None
       
        self.call_stat_previous = None
@@ -137,23 +153,11 @@ if __name__ == "__main__":
 
     from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
 
-    #
-    #
-    # Read Boot File
-    # expand json file
-    # 
-    file_handle = open("/mnt/ssd/site_config/redis_server.json")
-    data = file_handle.read()
-    file_handle.close()
-    redis_site = json.loads(data)
-    print("made it here 1")
-    #
-    # Setup handle
-    # open data stores instance
-   
-    qs = Query_Support( redis_site )
+    site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+    qs = Query_Support( site_data )  
+  
     
-    redis_monitor = construct_redis_instance(qs, redis_site )
+    redis_monitor = Redis_Monitor(site_data,qs )
     print("made it here 2")
     #
     # Adding chains

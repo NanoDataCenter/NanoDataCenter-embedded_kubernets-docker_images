@@ -7,7 +7,7 @@ exit
 while [ 1 ]
 do
    echo "executing process_control interface"
-   python3 node_control_py3.py 2>  /tmp/node_control_py3.err 
+   python3 site_control_py3.py 2>  /tmp/site_control_py3.err 
    sleep 10
 
 

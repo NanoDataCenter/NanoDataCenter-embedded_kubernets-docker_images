@@ -14,7 +14,7 @@ import msgpack
 
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
-from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
@@ -329,9 +329,9 @@ if __name__ == "__main__":
     file_server_library = Construct_RPC_File_Library(qs,site_data)
     
     container_name = os.getenv("CONTAINER_NAME")
-    sqlite_client = SQLITE_Client_Support(qs,site_data)
+   
       
-    error_logging = System_Error_Logging(qs,container_name,site_data,sqlite_client)   
+    error_logging = System_Error_Logging(qs,container_name,site_data)   
     
     search_list = ["IRRIGIGATION_SCHEDULING_CONTROL_DATA"]
     handlers = construct_all_handlers(site_data,qs,search_list,field_list = ["IRRIGATION_JOB_SCHEDULING","SYSTEM_COMPLETION_DICTIONARY"])   

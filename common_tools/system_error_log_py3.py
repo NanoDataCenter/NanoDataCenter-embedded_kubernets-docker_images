@@ -5,16 +5,16 @@ from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handle
 import sys
 
 class System_Error_Logging(object):
-   def __init__(self,qs,container,site_data,rpc_client):
+   def __init__(self,qs,container,site_data):
        self.processor = site_data["local_node"]
        self.container = container
        self.python_file = sys.argv[0]
        self.site_data = site_data
        self.qs = qs
-       self.rpc_client = rpc_client
+       
        search_list = ["SYSTEM_MONITOR","SYSTEM_MONITOR"]
         
-       self.handlers = construct_all_handlers(site_data,qs,search_list,rpc_client)
+       self.handlers = construct_all_handlers(site_data,qs,search_list)
        self.log_error_message("Reboot")
 
 

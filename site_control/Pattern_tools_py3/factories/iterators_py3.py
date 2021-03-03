@@ -16,3 +16,9 @@ def pattern_iter_strip_dict_dict( input_data,filter_key ): # strip dictionary of
     for key,item in input_data.items():
        return_value[key] = item[filter_key]
     return return_value   
+
+def pattern_iter_strip_list_dict( input_data,filter_key ): # strip dictionary of items where dict
+    return_value = []
+    for item in input_data:
+       return_value.append(item[filter_key])
+    return return_value   

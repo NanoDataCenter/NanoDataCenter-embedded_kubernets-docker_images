@@ -21,7 +21,13 @@ import re
 
 from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
 from redis_support_py3.graph_query_support_py3 import  Query_Support
-from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+
+from system_error_log_py3 import  System_Error_Logging
+
+
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 
 
 
@@ -33,29 +39,22 @@ from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 # Monitors status of raspberry pi
 #
 #
-
+ 
+  
 
 class PI_MONITOR( object ):
 
-   def __init__( self, package_node,generate_handlers,site_node ):
-       data_structures = package_node["data_structures"]
-       self.ds_handlers = {}
-       self.ds_handlers["FREE_CPU"]           = generate_handlers.construct_stream_writer(data_structures["FREE_CPU"])
-       self.ds_handlers["RAM"]                = generate_handlers.construct_stream_writer(data_structures["RAM"])
-       self.ds_handlers["DISK_SPACE"]         = generate_handlers.construct_stream_writer(data_structures["DISK_SPACE"])
-       self.ds_handlers["TEMPERATURE"]        = generate_handlers.construct_stream_writer(data_structures["TEMPERATURE"])
-       self.ds_handlers["PROCESS_VSZ"]        = generate_handlers.construct_stream_writer(data_structures["PROCESS_VSZ"])
-       self.ds_handlers["PROCESS_RSS"]        = generate_handlers.construct_stream_writer(data_structures["PROCESS_RSS"])
-       self.ds_handlers["PROCESS_CPU"]        = generate_handlers.construct_stream_writer(data_structures["PROCESS_CPU"])  
-       self.ds_handlers["CPU_CORE"]        = generate_handlers.construct_stream_writer(data_structures["CPU_CORE"])  
-       self.ds_handlers["SWAP_SPACE"]        = generate_handlers.construct_stream_writer(data_structures["SWAP_SPACE"])  
-       self.ds_handlers["IO_SPACE"]        = generate_handlers.construct_stream_writer(data_structures["IO_SPACE"])  
-       self.ds_handlers["BLOCK_DEV"]        = generate_handlers.construct_stream_writer(data_structures["BLOCK_DEV"])  
-       self.ds_handlers["CONTEXT_SWITCHES"]        = generate_handlers.construct_stream_writer(data_structures["CONTEXT_SWITCHES"])  
-       self.ds_handlers["RUN_QUEUE"]        = generate_handlers.construct_stream_writer(data_structures["RUN_QUEUE"])  
-       self.ds_handlers["EDEV"]        = generate_handlers.construct_stream_writer(data_structures["EDEV"])  
+   def __init__( self, site_data,qs ):
+   
+       search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,"NODE_SYSTEM", "PROCESSOR_MONITORING" ]
+       self.ds_handlers = construct_all_handlers(site_data,qs,search_list,rpc_client=None)
 
-       self.site_node = site_node
+   
+       
+       self.system_error_logging = System_Error_Logging(qs,"Node_Control",site_data)
+  
+
+       self.site_node = site_data["local_node"]
       
        
        self.construct_chains()
@@ -316,30 +315,11 @@ if __name__ == "__main__":
     # Read Boot File
     # expand json file
     # 
-   file_handle = open("/mnt/ssd/site_config/redis_server.json",'r')
-   data = file_handle.read()
-   file_handle.close()
-   site_data = json.loads(data)
+   site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+   qs = Query_Support( site_data )  
+  
 
-  
-   qs = Query_Support( site_data ) 
-   query_list = []
-   query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-   query_list = qs.add_match_relationship( query_list,relationship="PROCESSOR",label=site_data["local_node"] )
-   query_list = qs.add_match_relationship( query_list,relationship="NODE_SYSTEM")
-   query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", label = "PROCESSOR_MONITORING" )
-                                        
-                                        
-                                           
-   package_sets, package_nodes = qs.match_list(query_list)  
-  
-   query_list = []
-  
-  
-   
-   generate_handlers = Generate_Handlers(package_nodes[0],qs)
-   pi_monitor = PI_MONITOR(package_nodes[0],generate_handlers,site_data["local_node"])
+   pi_monitor = PI_MONITOR(site_data,qs)
    
    
 else:

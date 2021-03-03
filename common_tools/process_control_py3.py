@@ -12,7 +12,7 @@ import msgpack
 import pickle
 import zlib
 from system_error_log_py3 import  System_Error_Logging
-from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
 from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
@@ -326,8 +326,8 @@ if __name__ == "__main__":
 
    
    container_name = os.getenv("CONTAINER_NAME")
-   sqlite_client = SQLITE_Client_Support(qs,site_data)
-   system_error_logging = System_Error_Logging(qs,container_name,site_data,sqlite_client)
+   
+   system_error_logging = System_Error_Logging(qs,container_name,site_data)
    
    system_control = System_Control(site_data,qs,container_name)
    system_control.system_error_logging = system_error_logging

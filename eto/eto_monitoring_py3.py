@@ -8,7 +8,7 @@ import datetime
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
-from     sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
 from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
 ONE_DAY = 24 * 3600
 
@@ -17,9 +17,9 @@ class Eto_Monitoring(object):
     def __init__(self,qs,site_data ):
         
         container_name = os.getenv("CONTAINER_NAME")
-        self.sqlite_client = SQLITE_Client_Support(qs,site_data)
+        
       
-        self.error_logging = System_Error_Logging(qs,container_name,site_data,self.sqlite_client)
+        self.error_logging = System_Error_Logging(qs,container_name,site_data)
 
         
         search_list = ["WEATHER_STATION_DATA"]

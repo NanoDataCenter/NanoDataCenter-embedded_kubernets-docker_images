@@ -9,7 +9,7 @@ import msgpack
 from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
-from sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
 from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
 from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 #
@@ -135,12 +135,12 @@ if __name__ == "__main__":
    
     qs = Query_Support( site_data )
     container_name = os.getenv("CONTAINER_NAME")
-    sqlite_client = SQLITE_Client_Support(qs,site_data)
+    
     #
     # error logging is only needed once
     # for reboot message
     #
-    error_logging = System_Error_Logging(qs,container_name,site_data,sqlite_client) 
+    error_logging = System_Error_Logging(qs,container_name,site_data) 
 
     
     

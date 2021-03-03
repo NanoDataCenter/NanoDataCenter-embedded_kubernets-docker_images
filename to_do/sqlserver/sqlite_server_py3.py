@@ -67,7 +67,7 @@ class Construct_RPC_Server(object):
  
  
    def process_null_msg( self ):  
-       pass #print("null message")   
+       print("null message")   
   
    def list_data_bases(self,input_message):
        print("list data base")
@@ -194,25 +194,31 @@ class Construct_RPC_Server(object):
    def ex_exec(self,input_msg):
        print("ex_exec",input_msg)
        try:
+           
            db_name = input_msg["database"]
            script  = input_msg["script"]
            connection = self.db_handlers[db_name]
            connection.execute(script)
            connection.commit()
+           
            return [True,'']
        except :
            return [False,str(sys.exc_info()[:2])]
   
    def ex_script(self,input_msg):
-       print("ex_script",input_msg)
+       #print("ex_script",input_msg)
        try:
+       
+           print("@@@@@@@@@@@@@@@@@@@@@@@@")
            db_name = input_msg["database"]
            script  = input_msg["script"]
            connection = self.db_handlers[db_name]
            connection.executescript(script)
            connection.commit()
+           print("################################")
            return [True,'']
        except :
+           print("_______________________",sys.exc_info())
            return [False,str(sys.exc_info()[:2])]
           
        

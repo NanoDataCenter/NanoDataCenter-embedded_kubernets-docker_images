@@ -6,14 +6,14 @@ from docker_control.docker_interface_py3 import Docker_Interface
 from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 from smtp_py3.smtp_py3 import  SMTP_py3
 redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis ./redis-server ./redis.conf"
-sqlite_run_script = "docker run    -d  --network host   --name sqlite_server    --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/sqlite/,target=/sqlite/  nanodatacenter/sqlite_server /bin/bash sqlite_control.bsh"
+#sqlite_run_script = "docker run    -d  --network host   --name sqlite_server    --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/sqlite/,target=/sqlite/  nanodatacenter/sqlite_server /bin/bash sqlite_control.bsh"
 file_server_script = "docker run   -d  --network host   --name file_server        --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"   
 
 required_images = ["nanodatacenter/redis", "nanodatacenter/sqlite_server","nanodatacenter/file_server"]
-required_containers = [ "redis" ,"sqlite_server" ,"file_server" ]
+required_containers = [ "redis"  ,"file_server" ]
 startup_scripts = {}
 startup_scripts["redis"] = redis_startup_script
-startup_scripts["sqlite_server"] = sqlite_run_script
+#startup_scripts["sqlite_server"] = sqlite_run_script
 startup_scripts["file_server"] = file_server_script
 
 redis_site_file ="/mnt/ssd/site_config/redis_server.json"

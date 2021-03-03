@@ -5,39 +5,36 @@ from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
 import json 
 import time
 import os
+from system_error_log_py3 import  System_Error_Logging
+
+from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+
 
 class Control_Containers(object):
-   def __init__(self,site_data):
-       self.site_data = site_data
-       qs =  Query_Support( site_data )
+   def __init__(self):
+   
+       self.site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+       qs =  Query_Support( self.site_data )
       
-       query_list = []
-       query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-       query_list = qs.add_match_terminal( query_list,relationship="PROCESSOR",label=site_data["local_node"] )
-       node_sets, processor_node = qs.match_list(query_list)
+      
+       self.system_error_logging = System_Error_Logging(qs,"Node_Control",self.site_data)
   
-       services = {}
+ 
        
-       
-       
+       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,"NODE_SYSTEM", "DOCKER_CONTROL" ]
+       self.ds_handlers = construct_all_handlers(self.site_data,qs,search_list,rpc_client=None)
+       self.ds_handlers["DOCKER_COMMAND_QUEUE"].delete_all()
    
-   
-   
-       query_list = []
-       query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-       query_list = qs.add_match_relationship( query_list,relationship="PROCESSOR",label=site_data["local_node"] )
-       query_list = qs.add_match_relationship( query_list,relationship="NODE_SYSTEM")
-       query_list = qs.add_match_terminal( query_list, 
-                                        relationship = "PACKAGE", label = "DOCKER_CONTROL" )
+       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,"PROCESSOR"]
+       processor_nodes = common_qs_search(self.site_data,qs,search_list)
+       processor_node = processor_nodes[0]
+                                       
                                         
-                                        
-                                           
-       package_sets, package_nodes = qs.match_list(query_list)  
-   
-     
-   
-       generate_handlers = Generate_Handlers(package_nodes[0],qs)      
-       processor_node = processor_node[0]
+ 
+       
+       
        self.starting_scripts = {}
        self.container_images = {}
        self.find_starting_scripts(qs,"SERVICE",processor_node["services"],self.starting_scripts,self.container_images)
@@ -54,14 +51,8 @@ class Control_Containers(object):
        
        self.docker_interface =  Docker_Interface()  
        self.verify_container_images()       
-       package_node = package_nodes[0]
-       data_structures = package_node["data_structures"]
-       
-       
-       self.ds_handlers = {}
-       self.ds_handlers["DOCKER_COMMAND_QUEUE"]   = generate_handlers.construct_job_queue_server(data_structures["DOCKER_COMMAND_QUEUE"])
-       self.ds_handlers["DOCKER_DISPLAY_DICTIONARY"]   =  generate_handlers.construct_hash(data_structures["DOCKER_DISPLAY_DICTIONARY"])
-       self.ds_handlers["DOCKER_COMMAND_QUEUE"].delete_all()
+        
+      
        
        self.setup_environment()
        self.check_for_allocated_containers()
@@ -84,20 +75,21 @@ class Control_Containers(object):
        return string_list[0]
 
 
-   def find_system_image_names(self):
-          return list(map(self.strip_name,list( map(self.find_image_name,iter(self.docker_interface.images())))))
+
 
    def pull_missing_images(self, required_element):
        #print("required element",required_element)
+       print("required_element",required_element)
+       print(self.system_images)
        if required_element not in self.system_images:
-           #print("should not happen")
+           raise
            self.docker_interface.pull(required_element)
        #print(self.docker_interface.pull(required_element)) # for test
        return True
        
        
    def verify_container_images(self):
-       self.system_images = self.find_system_image_names()
+       self.system_images = self.docker_interface.images()
        required_images = list(self.container_images.values())
        print(list(map(self.pull_missing_images,required_images)))
       
@@ -108,38 +100,19 @@ class Control_Containers(object):
    
    def assemble_container_data_structures(self,qs,container_name):
        
-       query_list = []
-       query_list = qs.add_match_relationship( query_list,relationship="SITE",label=self.site_data["site"] )
-       query_list = qs.add_match_relationship( query_list,relationship="PROCESSOR",label=self.site_data["local_node"] )
-       query_list = qs.add_match_relationship( query_list,relationship="CONTAINER",label=container_name)
-       query_list = qs.add_match_terminal( query_list, 
-                                           relationship = "PACKAGE", label = "DATA_STRUCTURES" )
-
-       package_sets, package_nodes =qs.match_list(query_list)  
-      
+       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,["CONTAINER",container_name], "DATA_STRUCTURES" ]
+       return_value = construct_all_handlers(self.site_data,qs,search_list,rpc_client=None)
+       
+       return return_value
  
-           
-       #print("package_nodes",package_nodes)
-   
-       generate_handlers = Generate_Handlers(package_nodes[0],qs)
-       data_structures = package_nodes[0]["data_structures"]
-      
-       handlers = {}
-       handlers["PROCESS_VSZ"]  = generate_handlers.construct_redis_stream_writer(data_structures["PROCESS_VSZ"])
-       handlers["PROCESS_RSS"] = generate_handlers.construct_redis_stream_writer(data_structures["PROCESS_RSS"])
-       handlers["PROCESS_CPU"]  = generate_handlers.construct_redis_stream_writer(data_structures["PROCESS_CPU"])
-       return handlers  
-
    def find_starting_scripts(self,qs,relationship_label, entry_list,startup_scripts,container_images):
        
        for entry in entry_list:
-           query_list = []
-           query_list = qs.add_match_relationship( query_list,relationship="SITE",label=site_data["site"] )
-           query_list = qs.add_match_relationship( query_list,relationship="PROCESSOR",label=site_data["local_node"] )
-           query_list = qs.add_match_terminal( query_list,relationship=relationship_label,label=entry )
-           service_sets, service_nodes = qs.match_list(query_list)
-           startup_scripts[entry] = service_nodes[0]["startup_command"]
-           container_images[entry] = service_nodes[0]["container_image"]
+           search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,[relationship_label,entry] ]
+           service_sets = common_qs_search(self.site_data,qs,search_list)
+           service_node = service_sets[0]
+           startup_scripts[entry] = service_node["startup_command"]
+           container_images[entry] = service_node["container_image"]
           
 
 
@@ -331,15 +304,10 @@ if __name__ == "__main__":
     # Read Boot File
     # expand json file
     # 
-   #time.sleep(20) # wait for mqtt server get started
-   file_handle = open("/mnt/ssd/site_config/redis_server.json")
-   data = file_handle.read()
-   file_handle.close()
-   site_data = json.loads(data)
-  
  
  
-   system_control =  Control_Containers(site_data)
+ 
+   system_control =  Control_Containers()
    cf = CF_Base_Interpreter()
    system_control.add_chains(cf)
    #

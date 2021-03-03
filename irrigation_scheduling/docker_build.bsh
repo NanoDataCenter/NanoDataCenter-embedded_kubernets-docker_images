@@ -1,4 +1,5 @@
-
+docker stop irrigation_scheduling
+docker rm irrigation_scheduling
 cp -r ../common_tools/ .
 docker build --tag nanodatacenter/irrigation_scheduling .
 ../docker_cmds/docker_clean_up

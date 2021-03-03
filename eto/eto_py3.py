@@ -20,8 +20,6 @@ from Pattern_tools_py3.factories.iterators_py3 import pattern_iter_find_lowest
 from Pattern_tools_py3.factories.iterators_py3 import pattern_iter_strip_dict_dict
 from system_error_log_py3 import  System_Error_Logging
 from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
-from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
-from system_error_log_py3 import  System_Error_Logging
 
 ONE_DAY = 24 * 3600
 
@@ -31,9 +29,9 @@ class Eto_Management(object):
 
                 
         container_name = os.getenv("CONTAINER_NAME")
-        self.sqlite_client = SQLITE_Client_Support(qs,site_data)
+        
       
-        self.error_logging = System_Error_Logging(qs,container_name,site_data,self.sqlite_client)
+        self.error_logging = System_Error_Logging(qs,container_name,site_data)
 
         search_list = ["WEATHER_STATION_DATA"]
         

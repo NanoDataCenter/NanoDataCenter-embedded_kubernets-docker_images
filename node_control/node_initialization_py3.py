@@ -70,6 +70,7 @@ print("required_images",required_images)
 
 for i in required_images:
    if i not in system_images:
+
       docker.pull(i)  # put error handler aroung ithis
 
 running_containers = docker_control.containers_ls_runing()   
