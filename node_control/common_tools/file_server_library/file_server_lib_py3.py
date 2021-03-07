@@ -1,4 +1,4 @@
-from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from common_tools.Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 import datetime
 import msgpack
 

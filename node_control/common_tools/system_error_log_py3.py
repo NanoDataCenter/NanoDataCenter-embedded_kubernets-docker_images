@@ -1,7 +1,7 @@
 
 
 import time
-from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from .Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 import sys
 
 class System_Error_Logging(object):

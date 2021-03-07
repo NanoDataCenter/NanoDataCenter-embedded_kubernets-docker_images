@@ -1,0 +1,3 @@
+cp -r ../docker_control .
+cp -r ../common_tools .
+cp -r ../smtp_py3 .

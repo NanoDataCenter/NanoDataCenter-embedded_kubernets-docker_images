@@ -1,5 +1,3 @@
-
-
 import time
 import json
 import redis
@@ -77,7 +75,7 @@ class Manage_A_Python_Process(Process_Control):  # control a single process
        Process_Control.__init__(self)
        
        self.restart_flag = restart_flag
-       command_string = "python3   "+command_string
+       command_string = "python   "+command_string
        self.command_string = command_string
        command_list= shlex.split(command_string)
 
@@ -147,19 +145,19 @@ class Manage_A_Python_Process(Process_Control):  # control a single process
  
 
 class System_Control(object):
-   def __init__(self,site_data,qs):
+   def __init__(self,site_data,qs,container_name):
             
 
        
-       search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,"NODE_SYSTEM","DOCKER_MONITORING" ]
+       search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,["CONTAINER",container_name ],"DATA_STRUCTURES" ]
        self.ds_handlers = construct_all_handlers(site_data,qs,search_list,rpc_client=None)
 
-       search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,"NODE_SYSTEM"]
+       search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,["CONTAINER",container_name ]]
        processor_nodes = common_qs_search(site_data,qs,search_list)
        processor_node = processor_nodes[0]
        print(processor_node)
        self.command_list = processor_node["command_list"]
-      
+       
        self.startup_list = []
        self.process_hash = {}
        keys = self.ds_handlers["WEB_DISPLAY_DICTIONARY"].hkeys()
@@ -313,30 +311,25 @@ class System_Control(object):
  
   
 
-
-
-
-
-
- 
-  
-
 if __name__ == "__main__":
    
    cf = CF_Base_Interpreter()
     #
     #
-   site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+    # Read Boot File
+    # expand json file
+    # 
+
+   
+   site_data = get_site_data()
    qs = Query_Support( site_data )  
 
-
-
-  
    
-   system_control = System_Control(site_data,qs)
-
-   system_error_logging = System_Error_Logging(qs,"Node_Control",site_data)
-  
+   container_name = os.getenv("CONTAINER_NAME")
+   
+   system_error_logging = System_Error_Logging(qs,container_name,site_data)
+   
+   system_control = System_Control(site_data,qs,container_name)
    system_control.system_error_logging = system_error_logging
    cf = CF_Base_Interpreter()
    system_control.add_chains(cf)
@@ -346,7 +339,7 @@ if __name__ == "__main__":
    try: 
        cf.execute()
    except:
-      
+       
        raise
 else:
    pass

@@ -46,6 +46,10 @@ class Docker_Interface(object):
    def prune(self):
        return self.client.images.prune()
        
+       
+   def push(self,image):
+        return self.client.images.push(image)
+        
    def pull(self,image):
        return self.client.images.pull(image)
 
@@ -73,7 +77,8 @@ class Docker_Interface(object):
          string_list = temp.split(":")
          if string_list[0] != "blank":
             return_value.append(string_list)
-       return return_value   
+       return return_value
+   
    def image_rmi(self,deleted_image): # tested
        self.client.images.remove(image=deleted_image)
 

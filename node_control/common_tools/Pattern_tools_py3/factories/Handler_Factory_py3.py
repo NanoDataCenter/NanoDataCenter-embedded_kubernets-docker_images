@@ -1,5 +1,5 @@
 
-from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from common_tools.redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
 
 class Handler_Factory(Generate_Handlers):
       

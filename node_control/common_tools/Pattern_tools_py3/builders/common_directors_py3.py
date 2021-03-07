@@ -1,6 +1,6 @@
 
-from Pattern_tools_py3.factories.Handler_Factory_py3 import Handler_Factory
-from Pattern_tools_py3.factories.graph_search_py3 import common_package_search
+from common_tools.Pattern_tools_py3.factories.Handler_Factory_py3 import Handler_Factory
+from common_tools.Pattern_tools_py3.factories.graph_search_py3 import common_package_search
 
 def construct_all_handlers(site_data,qs,search_list,rpc_client=None,field_list=None,type_list=None):
     

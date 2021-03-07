@@ -22,3 +22,10 @@ def pattern_iter_strip_list_dict( input_data,filter_key ): # strip dictionary of
     for item in input_data:
        return_value.append(item[filter_key])
     return return_value   
+
+
+def form_dictionary_from_list( input_data,filter_key ): # strip dictionary of items where dict
+    return_value = {}
+    for i in input_data:
+       return_value[i[filter_key]] = i
+    return return_value   
