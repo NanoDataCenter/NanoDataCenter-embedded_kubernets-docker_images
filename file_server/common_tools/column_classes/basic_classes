@@ -1,0 +1,118 @@
+
+
+class Base_Class(object):
+
+    # not events are a list of [[search_list,event_names]...]
+    def  __init__(self,sys_handle,class_objs=None,event_list=None):
+	     
+	     self.sys_handle = sys_handle
+		 #
+		 # Find event objects
+		 #
+		 self.base_function = base_function
+		 self.event_queue = []
+		 self.active = False
+		 self.initialized = False 
+		 self.vote_state = False
+		 self.vote_value = None
+		 
+	
+	
+
+class Leaf(Base_Class):
+
+    def __init__(self,sys_handle,base_function,init_function=None,term_function=None,event_list=None):
+	    Base_Class.__init__(self,sys_handle,event_list=event_list)
+		
+	def reset(self):
+	   self.active = True
+	
+	
+	def initialize(self):
+	    
+		self.initialized = True
+		if self.init_function != None:
+		   self.init_function(self)
+		   
+    def terminate(self):
+		if self.term_function != None:
+		   self.init_function(self)
+	    
+	    self.active = False
+		self.initialized = False
+
+	
+    def process_event(self,event):
+	    if self.initialized == False:
+		   self.initialize()
+		   
+	    self.event_queue = []
+	    self.event_queue.append(event)
+		continue_flag = True
+		while (len(self.event_queue) != 0) and (continue_flag == True):
+		     return_value = self.base_function(self.sys_handle,self.global_events,event)
+		     continue_flag = self.analyize_return_code(return_value)
+		  
+	def analyize_return_code(self,return_value):
+        pass	
+
+class Iterator(Base_Class):
+
+    def __init__(self,sys_handle,class_objs):
+	    Base_Class.__init__(self,sys_handle,class_obj):
+		self.class_objs = class_objects
+
+    def reset(self):
+	    self.active = True
+	    for i in self.class_objs:
+		   i.reset()
+		
+		
+    def initialize(self):
+	    self.initialized = True
+		self.class_obj[0].initialize()
+	
+	def terminate(self):
+
+	    for i in self.class_objs:
+		   if (i.active == True )&&(i.initialized== True):
+		       i.terminate()
+	
+	
+    def process_event(self,event):
+
+        for i in self.class_obj:
+		   if i.active == True:
+		      if i.initialized == False:
+			     i.initialize()
+			  return_code = i.process_event()
+              if analyize_return_code(return_code) == False:
+                 break
+        if active_link == False:
+                		
+				 
+		   
+	    self.event_queue = []
+	    self.event_queue.append(event)
+		continue_flag = True
+		while (len(self.event_queue) != 0) and (continue_flag == True):
+		     return_value = self.base_function(self.sys_handle,self.global_events,event)
+		     continue_flag = self.analyize_return_code(return_value)
+		  
+		
+class Fork(Base_Class):
+
+    def __init__(self,sys_handle,class_objs,event_list,base_function):
+	    Base_Class.__init__(self,sys_handle,class_objs,event_list,base_function)
+		
+class Fork_Join(Base_Class):
+
+    def _init__(self,sys_handle,class_objs,event_list,base_function):
+	    Base_Class.__init__(self,sys_handle,class_objs,event_list,base_function)
+		
+
+class Vote(Base_Class):
+
+    def __init__(self,sys_handle,class_objs,event_list,base_function):
+	    Base_Class.__init__(self,sys_handle,class_objs,event_list,base_function)
+  

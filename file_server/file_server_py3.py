@@ -6,12 +6,12 @@ from os.path import isfile, join
 import redis
 import json
 import msgpack
-from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
-from system_error_log_py3 import  System_Error_Logging
-from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from common_tools.redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from common_tools.system_error_log_py3 import  System_Error_Logging
+from common_tools.Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 
-from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
-from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+
+from common_tools.Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 #
 #  DB_CONNECTIONS hash key for store data base file locations
 #
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     import os
     import copy
  
-    from redis_support_py3.graph_query_support_py3 import  Query_Support
+    from common_tools.redis_support_py3.graph_query_support_py3 import  Query_Support
     import datetime
     import msgpack
    

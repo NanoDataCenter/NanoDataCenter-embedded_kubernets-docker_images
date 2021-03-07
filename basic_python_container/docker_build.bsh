@@ -1,1 +1,4 @@
-docker build --tag nanodatacenter/basic_python_container .
+
+docker build --tag  nanodatacenter/basic_python_container . 
+../docker_cmds/docker_clean_up 
+

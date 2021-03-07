@@ -12,13 +12,13 @@
 
 import msgpack
 
-from redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
-from file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
+from common_tools.redis_support_py3.construct_data_handlers_py3 import Generate_Handlers
+from common_tools.file_server_library.file_server_lib_py3 import Construct_RPC_File_Library
 
-from system_error_log_py3 import  System_Error_Logging
-from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
-from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
-from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+from common_tools.system_error_log_py3 import  System_Error_Logging
+from common_tools.Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
+from common_tools.Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
+from common_tools.Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 
 class Monitoring_Base(object):
 
@@ -309,11 +309,11 @@ if __name__ == "__main__":
     import os
     import copy
     
-    from redis_support_py3.graph_query_support_py3 import  Query_Support
+    from common_tools.redis_support_py3.graph_query_support_py3 import  Query_Support
     import datetime
     
 
-    from py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
+    from common_tools.py_cf_new_py3.chain_flow_py3 import CF_Base_Interpreter
     
     
 
