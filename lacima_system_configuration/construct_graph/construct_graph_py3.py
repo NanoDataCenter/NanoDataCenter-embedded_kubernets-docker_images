@@ -25,7 +25,7 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
 def construct_site_definitions(bc,cd,services):
     properties = {}
     properties["services"] = services
-    properties["command_list"] = [{"file":"docker_control_py3.py","restart":True},{"file":"redis_monitoring_py3.py","restart":True}]
+    properties["command_list"] = [{"file":"docker_control_py3.py","restart":True}]
     bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
    
     cd.construct_package("SITE_CONTROL")
@@ -201,7 +201,7 @@ if __name__ == "__main__" :
 
 
    
-   containers = ["eto","irrigation_scheduling"   ]
+   containers = ["eto","irrigation_scheduling" ,"monitor_redis"  ]
    
    construct_processor(name="irrigation_controller",containers = containers,
                       services=[])

@@ -2,6 +2,7 @@
 import json
 import time
 import os
+import redis
 from docker_control.docker_interface_py3 import Docker_Interface
 from common_tools.Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 from smtp_py3.smtp_py3 import  SMTP_py3
@@ -53,8 +54,6 @@ smtp =  SMTP_py3(site_data,"site_initialization")
 
 
 system_images = docker_control.images()
-print("system_images",system_images)
-
 
 
 for i in required_images:
@@ -69,7 +68,18 @@ running_containers = docker_control.containers_ls_runing()
 if "redis" not in running_containers:
    docker_control.container_up("redis",startup_scripts["redis"])
 
-time.sleep(10)   
+print("waiting for redis connections")
+loop_flag = True
+while loop_flag:
+   try:
+      redis_handle = redis.StrictRedis(site_data["host"], site_data["port"], db=site_data["redis_password_db"], decode_responses=True)
+      print(redis_handle.ping())
+      if redis_handle.ping() == True:
+         loop_flag = False
+   except:
+      print("exception")
+      time.sleep(1)   
+  
 print("loading configuration graph")
 os.system(graph_script)
 

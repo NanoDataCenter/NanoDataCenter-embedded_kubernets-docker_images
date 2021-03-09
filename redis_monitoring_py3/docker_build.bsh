@@ -1,9 +1,9 @@
-docker stop eto
-docker rm eto
+docker stop redis_monitoring
+docker rm redis_monitoring
 cp -r ../common_tools .
 cp ../common_tools/process_control_py3.py .
 cp ../common_tools/process_control.bsh .
-docker build --tag nanodatacenter/eto .
+docker build --tag nanodatacenter/redis_monitoring .
 ../docker_cmds/docker_clean_up
 rm -r common_tools
 rm process_control_py3.py

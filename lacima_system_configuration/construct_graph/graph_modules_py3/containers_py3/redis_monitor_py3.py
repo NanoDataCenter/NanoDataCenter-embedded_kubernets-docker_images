@@ -5,6 +5,7 @@ from .container_utilities_py3 import End_Container
 class Redis_Monitor_Container(object):
 
     def __init__(self,bc,cd,name):
+      
        command_list = [  { "file":"redis_monitoring_py3.py","restart":True } ]
        startup_command = "docker run -d  --network host   --name monitor_redis  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/redis_monitoring  /bin/bash ./process_control.bsh "
        
