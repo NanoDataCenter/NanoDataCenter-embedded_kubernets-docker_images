@@ -10,8 +10,10 @@ from common_tools.redis_support_py3.graph_query_support_py3 import  Query_Suppor
 import redis
 
 site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
+required_containers = ["redis","file_server"]
 
-
+docker_control = Docker_Interface()
+smtp =  SMTP_py3(site_data,"node_initialization")
 loop_flag = True
 while loop_flag:
    try:
@@ -21,17 +23,25 @@ while loop_flag:
    except:
 
       time.sleep(10)   
-
-
-
 print("redis server is up")
-time.sleep(15) ## allow site services to setup
 
-docker_control = Docker_Interface()
+
+# need to wait for requried containers
+
+while loop_flag:
+   time.sleep(3)
+   loop_flag == False;
+   running_containers = docker_control.containers_ls_runing()
+   for i in required_containers:
+      if i not in running_containers:
+          loop_flag = True
+
+
+
 
 
 qs = Query_Support( site_data )
-smtp =  SMTP_py3(site_data,"node_initialization")
+
 
 #
 #  Basic services are up now can use tree to find configuration
