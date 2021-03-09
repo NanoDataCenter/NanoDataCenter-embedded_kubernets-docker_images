@@ -3,13 +3,13 @@ import json
 import time
 import os
 from docker_control.docker_interface_py3 import Docker_Interface
-from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
+from common_tools.Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
 from smtp_py3.smtp_py3 import  SMTP_py3
-redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis ./redis-server ./redis.conf"
+redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis /pod_util/redis-server /pod_util/redis.conf"
 #sqlite_run_script = "docker run    -d  --network host   --name sqlite_server    --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/sqlite/,target=/sqlite/  nanodatacenter/sqlite_server /bin/bash sqlite_control.bsh"
 file_server_script = "docker run   -d  --network host   --name file_server        --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"   
 
-required_images = ["nanodatacenter/redis", "nanodatacenter/sqlite_server","nanodatacenter/file_server"]
+required_images = ["nanodatacenter/redis","nanodatacenter/file_server","nanodatacenter/lacima_system_configuration"]
 required_containers = [ "redis"  ,"file_server" ]
 startup_scripts = {}
 startup_scripts["redis"] = redis_startup_script
@@ -17,6 +17,7 @@ startup_scripts["redis"] = redis_startup_script
 startup_scripts["file_server"] = file_server_script
 
 redis_site_file ="/mnt/ssd/site_config/redis_server.json"
+graph_script ="docker run   -it --network host --rm  --name lacima_system_configuration  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/lacima_system_configuration /bin/bash construct_graph.bsh"
 
 
 
@@ -59,12 +60,19 @@ print("system_images",system_images)
 for i in required_images:
    
    if i not in system_images:       
-       load_docker_image(smtp,"nanodatacenter/file_server")
+       load_docker_image(smtp,i)
        
 
 
 
 running_containers = docker_control.containers_ls_runing()
+if "redis" not in running_containers:
+   docker_control.container_up("redis",startup_scripts["redis"])
+
+time.sleep(10)   
+print("loading configuration graph")
+os.system(graph_script)
+
 
 for i in required_containers:
    if i not in running_containers:
@@ -72,6 +80,7 @@ for i in required_containers:
 
 
 running_containers = docker_control.containers_ls_runing()
+
 print("running containers",running_containers)
 os.system("python3 /mnt/ssd/site_config/passwords.py")
 
