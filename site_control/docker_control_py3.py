@@ -19,101 +19,88 @@ class Control_Containers(object):
        qs =  Query_Support( self.site_data )
       
       
-       self.system_error_logging = System_Error_Logging(qs,"Node_Control",self.site_data)
+       self.system_error_logging = System_Error_Logging(qs,"Site_Control",self.site_data)
   
- 
-       
-       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,"NODE_SYSTEM", "DOCKER_CONTROL" ]
+       search_list = [ ["SITE_CONTROL","SITE_CONTROL"] , "DOCKER_CONTROL" ]
        self.ds_handlers = construct_all_handlers(self.site_data,qs,search_list,rpc_client=None)
        self.ds_handlers["DOCKER_COMMAND_QUEUE"].delete_all()
-   
-       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,"PROCESSOR"]
+       
+       
+ 
+       search_list = [ ["SITE","LACIMA_SITE"]]
        processor_nodes = common_qs_search(self.site_data,qs,search_list)
        processor_node = processor_nodes[0]
-                                       
+      
                                         
  
        
        
        self.starting_scripts = {}
        self.container_images = {}
-       self.find_starting_scripts(qs,"SERVICE",processor_node["services"],self.starting_scripts,self.container_images)
+       self.find_starting_scripts(qs,"CONTAINER",processor_node["services"],self.starting_scripts,self.container_images)
        self.find_starting_scripts(qs,"CONTAINER",processor_node["containers"],self.starting_scripts,self.container_images)
        
-       #print(self.starting_scripts)
-       #print(self.container_images)
+       
 
        services = set(processor_node["services"])
        containers = set(processor_node["containers"])
        containers_set = containers.union(services)
        self.container_list = list(self.container_images.keys())  
-       #print("container_list",self.container_list)
+       
+       
        
        self.docker_interface =  Docker_Interface()  
        self.verify_container_images()       
-        
-      
+    
        
        self.setup_environment()
        self.check_for_allocated_containers()
        self.docker_performance_data_structures= {}
-       for i in self.container_list:
+       for i in services:
            self.docker_performance_data_structures[i] = self.assemble_container_data_structures(qs,i)
+           
+           
+   def assemble_container_data_structures(self,qs,container_name):
+       print("container name",container_name)
+       search_list = [  ["CONTAINER",container_name], "DATA_STRUCTURES" ]
+       return_value = construct_all_handlers(self.site_data,qs,search_list,rpc_client=None)
        
+       return return_value
+        
+   def find_starting_scripts(self,qs,relationship_label, entry_list,startup_scripts,container_images):
+       
+       for entry in entry_list:
+           
+           search_list = [ [relationship_label,entry] ]
+           service_sets = common_qs_search(self.site_data,qs,search_list)
+          
+           service_node = service_sets[0]
+           startup_scripts[entry] = service_node["startup_command"]
+           container_images[entry] = service_node["container_image"]
+          
    
 
-   def find_image_name(self,image_object):
-       try:
-           temp = image_object.attrs["RepoTags"][0]
-           #print(temp)
-           return temp
-       except:
-          return "blank"  # place holder
+
           
-   def strip_name(self,image_name):
-       string_list = image_name.split(":")
-       return string_list[0]
-
-
-
-
-   def pull_missing_images(self, required_element):
-       #print("required element",required_element)
-       print("required_element",required_element)
-       print(self.system_images)
-       if required_element not in self.system_images:
-           raise
-           self.docker_interface.pull(required_element)
-       #print(self.docker_interface.pull(required_element)) # for test
-       return True
+ 
        
        
    def verify_container_images(self):
        self.system_images = self.docker_interface.images()
-       required_images = list(self.container_images.values())
-       print(list(map(self.pull_missing_images,required_images)))
+       required_images = self.container_images.values()
+
+       for i in required_images:
+           if i not in self.system_images:
+                raise # images should be present?
+                self.docker_interface.pull(i)
+       
       
        
        
 
 
    
-   def assemble_container_data_structures(self,qs,container_name):
-       
-       search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,["CONTAINER",container_name], "DATA_STRUCTURES" ]
-       return_value = construct_all_handlers(self.site_data,qs,search_list,rpc_client=None)
-       
-       return return_value
- 
-   def find_starting_scripts(self,qs,relationship_label, entry_list,startup_scripts,container_images):
-       
-       for entry in entry_list:
-           search_list = [ ["PROCESSOR" ,self.site_data["local_node"]   ] ,[relationship_label,entry] ]
-           service_sets = common_qs_search(self.site_data,qs,search_list)
-           service_node = service_sets[0]
-           startup_scripts[entry] = service_node["startup_command"]
-           container_images[entry] = service_node["container_image"]
-          
+
 
 
       
@@ -128,7 +115,7 @@ class Control_Containers(object):
        running_containers = self.docker_interface.containers_ls_runing()
 
        for i in self.container_list:
-           print(i)
+           
            if i not in running_containers:
                self.docker_interface.container_up(i,self.starting_scripts[i])
                
@@ -235,7 +222,7 @@ class Control_Containers(object):
           
 
    def measure_container_processes(self,*args):
-   
+       
        for i in self.container_list:
            
            self.measure_ps_parameter(i,"%CPU","PROCESS_CPU")
@@ -248,6 +235,7 @@ class Control_Containers(object):
        f = os.popen("docker top "+container_name+ "  -aux | grep python")
        data = f.read()
        f.close()
+       
        lines = data.split("\n")
        return_value = {}
        for i in range(0,len(lines)):

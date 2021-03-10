@@ -49,7 +49,14 @@ if 'master' not in site_data:
    while True:  # not a site_control node
      time.sleep(5)
 
-print("made it here")
+running_containers = docker_control.containers_ls_runing()
+for i in required_containers:
+    if i in running_containers:
+        docker_control.container_stop(i)
+        docker_control.container_rm(i)
+docker_control.prune()
+running_containers = docker_control.containers_ls_runing()
+
 smtp =  SMTP_py3(site_data,"site_initialization")
 
 
@@ -64,7 +71,7 @@ for i in required_images:
 
 
 
-running_containers = docker_control.containers_ls_runing()
+
 if "redis" not in running_containers:
    docker_control.container_up("redis",startup_scripts["redis"])
 

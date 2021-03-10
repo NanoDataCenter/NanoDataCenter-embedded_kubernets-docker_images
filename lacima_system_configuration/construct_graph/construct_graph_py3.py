@@ -22,7 +22,9 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
    
 
 
-def construct_site_definitions(bc,cd,services):
+def construct_site_definitions(bc,cd,services,containers = []):
+    Construct_Services(bc,cd,services)
+    Construct_Containers(bc,cd,containers)
     properties = {}
     properties["services"] = services
     properties["command_list"] = [{"file":"docker_control_py3.py","restart":True}]
@@ -32,11 +34,27 @@ def construct_site_definitions(bc,cd,services):
     cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
     cd.add_single_element("SYSTEM_STATE")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
-    cd.add_redis_stream("ERROR_STREAM",forward=True)
+    cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
- 
+    
+    cd.construct_package("DOCKER_CONTROL")
+
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",1)
+    cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
+
+    cd.close_package_contruction()
+
+
+    cd.construct_package("DOCKER_MONITORING")
+    cd.add_redis_stream("ERROR_STREAM")
+    cd.add_hash("ERROR_HASH")
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")
+    cd.add_hash("PROCESS_CONTROL")
+    cd.close_package_contruction()
+    
  
     cd.construct_package("REDIS_MONITORING")  # redis monitoring
     cd.add_redis_stream("KEYS")
@@ -195,8 +213,8 @@ if __name__ == "__main__" :
    properties["containers"] = []
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = properties )
 
-   lacima_services = [ "redis", "file_server" ,"sqlite_server"]
-   construct_site_definitions(bc,cd,services = lacima_services)
+   lacima_services = [ "redis", "file_server"]
+   construct_site_definitions(bc,cd,services = lacima_services,containers=[])
    LACIMA_Site_Definitons(bc,cd)
 
 

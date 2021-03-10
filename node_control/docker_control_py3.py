@@ -37,7 +37,7 @@ class Control_Containers(object):
        
        self.starting_scripts = {}
        self.container_images = {}
-       self.find_starting_scripts(qs,"SERVICE",processor_node["services"],self.starting_scripts,self.container_images)
+       self.find_starting_scripts(qs,"CONTAINER",processor_node["services"],self.starting_scripts,self.container_images)
        self.find_starting_scripts(qs,"CONTAINER",processor_node["containers"],self.starting_scripts,self.container_images)
        
        #print(self.starting_scripts)

@@ -36,8 +36,13 @@ while loop_flag:
       if i not in running_containers:
           loop_flag = True
 
-
-
+running_containers = docker_control.containers_ls_runing()
+for i in required_containers:
+    if i not in required_containers:
+        docker_control.container_stop(i)
+        docker_control.container_rm(i)
+docker_control.prune()
+running_containers = docker_control.containers_ls_runing()
 
 
 qs = Query_Support( site_data )
