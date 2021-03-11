@@ -14,7 +14,7 @@ import msgpack
 import pickle
 import zlib
 from system_error_log_py3 import  System_Error_Logging
-from  sqlite_library.sqlite_sql_support_py3 import SQLITE_Client_Support
+
 from Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
 from Pattern_tools_py3.factories.get_site_data_py3 import get_site_data

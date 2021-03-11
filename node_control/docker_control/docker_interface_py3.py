@@ -40,9 +40,11 @@ class Docker_Interface(object):
           self.container_start(container)
        
    def container_rm(self,container): # tested
-       container_object = self.client.containers.get(container)
-       if container_object != None:
-          container_object.remove()
+       if container in self.containers_ls_all():
+           container_object = self.client.containers.get(container)
+           if container_object != None:
+              container_object.remove()
+              
    def prune(self):
        return self.client.images.prune()
        

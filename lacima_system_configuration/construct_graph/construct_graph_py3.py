@@ -22,11 +22,15 @@ from  graph_modules_py3.services_py3.construct_services_py3    import Construct_
    
 
 
-def construct_site_definitions(bc,cd,services,containers = []):
+def construct_site_definitions(bc,cd,graph_container_image,graph_container_script,services,containers = []):
     Construct_Services(bc,cd,services)
     Construct_Containers(bc,cd,containers)
     properties = {}
     properties["services"] = services
+    properties["containers"] = containers
+    properties["graph_container_image"] = graph_container_image
+    properties["graph_container_script"] = graph_container_script
+    
     properties["command_list"] = [{"file":"docker_control_py3.py","restart":True}]
     bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
    
@@ -90,10 +94,11 @@ def construct_site_definitions(bc,cd,services,containers = []):
  
  
 
-def construct_processor(name,containers,services):
+def construct_processor(name,containers,services=[],required_containers=[]):
     properties = {}
     properties["containers"] = containers
     properties["services"] = services
+    properties["required_containers"] = required_containers
     bc.add_header_node("PROCESSOR",name,properties= properties) 
     
 
@@ -187,7 +192,9 @@ if __name__ == "__main__" :
    
    bc.add_header_node( "SITE","CLOUD_SITE",  properties = {"address":"21005 Paseo Montana Murrieta, Ca 92562" } )
 
-   construct_site_definitions(bc,cd,[])
+   graph_container_image = "nanodatacenter/lacima_system_configuration"
+   graph_container_script ="docker run   -it --network host --rm  --name lacima_system_configuration  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/lacima_system_configuration /bin/bash construct_graph.bsh"
+   construct_site_definitions(bc,cd,graph_container_image,graph_container_script,services=[],containers = [])
 
    Cloud_Site_Definitons(bc,cd)
 
@@ -214,7 +221,12 @@ if __name__ == "__main__" :
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = properties )
 
    lacima_services = [ "redis", "file_server"]
-   construct_site_definitions(bc,cd,services = lacima_services,containers=[])
+   graph_container_image = "nanodatacenter/lacima_system_configuration"
+   graph_container_script ="docker run   -it --network host --rm  --name lacima_system_configuration  --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/lacima_system_configuration /bin/bash construct_graph.bsh"
+   construct_site_definitions(bc,cd,graph_container_image,graph_container_script,services=lacima_services,containers = [])
+
+   
+  
    LACIMA_Site_Definitons(bc,cd)
 
 
@@ -222,7 +234,7 @@ if __name__ == "__main__" :
    containers = ["eto","irrigation_scheduling" ,"monitor_redis"  ]
    
    construct_processor(name="irrigation_controller",containers = containers,
-                      services=[])
+                      services=[],required_containers=["redis","file_server"])
    #
    
    
