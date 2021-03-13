@@ -31,12 +31,11 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     properties["graph_container_image"] = graph_container_image
     properties["graph_container_script"] = graph_container_script
     
-    properties["command_list"] = [{"file":"docker_control_py3.py","restart":True}]
+    properties["command_list"] = [{"file":"docker_control_py3.py","restart":True},{"file":"redis_monitoring_py3.py","restart":True},{"file":"node_monitoring_py3.py","restart":True}]
     bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
    
     cd.construct_package("SITE_CONTROL")
-    cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
-    cd.add_single_element("SYSTEM_STATE")
+
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
     cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
@@ -50,6 +49,12 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
 
     cd.close_package_contruction()
 
+    cd.construct_package("NODE_MONITORING")
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")
+    cd.add_hash("NODE_STATUS")
+    cd.close_package_contruction()
+   
 
     cd.construct_package("DOCKER_MONITORING")
     cd.add_redis_stream("ERROR_STREAM")
@@ -59,7 +64,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_hash("PROCESS_CONTROL")
     cd.close_package_contruction()
     
- 
+   
     cd.construct_package("REDIS_MONITORING")  # redis monitoring
     cd.add_redis_stream("KEYS")
     cd.add_redis_stream("CLIENTS")
@@ -69,6 +74,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_redis_stream("REDIS_MONITOR_SERVER_TIME")  
     cd.close_package_contruction()
     bc.end_header_node("SITE_CONTROL")
+   
     
     bc.add_header_node("FILE_SERVER")
     cd.construct_package("FILE_SERVER")
@@ -231,7 +237,7 @@ if __name__ == "__main__" :
 
 
    
-   containers = ["eto","irrigation_scheduling" ,"monitor_redis"  ]
+   containers = ["eto","irrigation_scheduling"  ]
    
    construct_processor(name="irrigation_controller",containers = containers,
                       services=[],required_containers=["redis","file_server"])

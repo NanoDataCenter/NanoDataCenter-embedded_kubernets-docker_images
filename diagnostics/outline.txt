@@ -1,0 +1,18 @@
+Check System <Iterator>
+     Check Site <Iterator>
+         Check Redis
+         Check Docker Containers
+
+     Check Nodes <For Itterator>
+         Check Watch Docks
+         Check Processor
+         Check Docker Containers
+        
+     Check I/O Devices <For Iterators -- from graph>
+        Check Lan Switches
+        Check Wifi Devices
+        Check Mosquitto Devices
+        Check Modbus System
+     Check Applications <For itterator --- from graph>
+        Check Eto
+        

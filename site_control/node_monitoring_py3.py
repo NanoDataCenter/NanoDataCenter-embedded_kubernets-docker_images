@@ -26,48 +26,58 @@ from common_tools.system_error_log_py3 import  System_Error_Logging
 from common_tools.Pattern_tools_py3.builders.common_directors_py3 import construct_all_handlers
 from common_tools.Pattern_tools_py3.factories.graph_search_py3 import common_qs_search
 from common_tools.Pattern_tools_py3.factories.get_site_data_py3 import get_site_data
-
+from common_tools.Pattern_tools_py3.factories.iterators_py3 import pattern_iter_strip_list_dict
 
 class Control_Nodes(object):
-   def __init__(self):
+   def __init__(self,config_file):
    
        self.site_data = get_site_data("/mnt/ssd/site_config/redis_server.json")
-       qs =  Query_Support( self.site_data )
+       self.qs =  Query_Support( self.site_data )
       
       
-       self.system_error_logging = System_Error_Logging(qs,"Site_Control",self.site_data)
+       self.system_error_logging = System_Error_Logging(self.qs,"Site_Control",self.site_data)
   
   
+       
        #
-       #  Find all nodes
-       #  Identify the master node
-       print(self.site_data)   
-       local_node = self.site_data['local_node' ]
-       print("local_node",local_node)
+       # Find all nodes
        #
-       # Find all processors
-       #
-       search_list = [ "PROCESSOR"  ,"PROCESSOR"]
-       processor_nodes = common_qs_search(self.site_data,qs,search_list)
-       print("processor_nodes",processor_nodes)
-       self.nodes = {}
-       self.node_containers = {}
-       self.site_containers = {}
-       for i in processor_nodes:
-
-          name = i{'name']
-          containers = i['containers']
-          services = i['services']
-          self.processor_nodes[name] = {"master_node":False,"containers":containers,"services":services}
-          if name == local_node:
-              self.processor[name]["master_node"] = True
-          self.node_containers[name] = containers
-          self.node_containers[name].extend(services)       
+       search_list = [ "PROCESSOR" ]
+       nodes = common_qs_search(self.site_data,self.qs,search_list)
+       print("processor_nodes",nodes)
+       self.monitoring_nodes = pattern_iter_strip_list_dict(nodes,"name")
+       print(self.monitoring_nodes)
+       self.command_queue = self.find_command_queue()
+       print(self.command_queue)
+       quit()
+     
     
+   def find_command_queue(self):
+       command_queue = {}
+       for i in self.monitoring_nodes:
+            search_list = [ ["PROCESSOR" ,i   ] ,"NODE_SYSTEM", "DOCKER_CONTROL" ]
+            handlers = construct_all_handlers(self.site_data,self.qs,search_list,rpc_client=None,field_list=["DOCKER_COMMAND_QUEUE"])
+            command_queue[i] = handlers["DOCKER_COMMAND_QUEUE"]
+       return command_queue
 
 
+bc.add_header_node("SITE_CONTROL","SITE_CONTROL",properties= properties) 
+   
+    cd.construct_package("SITE_CONTROL")
+    cd.add_job_queue("SYSTEM_COMMAND_QUEUE",1)
+    cd.add_single_element("SYSTEM_STATE")
+    
+    
+    cd.add_job_queue("WEB_COMMAND_QUEUE",1)#used
+    cd.add_redis_stream("ERROR_STREAM") #
+    cd.add_hash("ERROR_HASH") #
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")#
+    cd.close_package_contruction()
+    
+    cd.construct_package("DOCKER_CONTROL")
 
-
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",1)
+    cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
 
 if __name__ == "__main__":
    
@@ -79,8 +89,8 @@ if __name__ == "__main__":
     # 
  
  
- 
-   system_control =  Control_Nodes()
+   config_file = "/mnt/ssd/site_config/redis_server.json"
+   system_control =  Control_Nodes(config_file)
    cf = CF_Base_Interpreter()
    system_control.add_chains(cf)
    #

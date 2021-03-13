@@ -151,7 +151,9 @@ class System_Control(object):
        
        search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,["CONTAINER",container_name ],"DATA_STRUCTURES" ]
        self.ds_handlers = construct_all_handlers(site_data,qs,search_list,rpc_client=None)
-
+       data = {}
+       data["action"] = "reboot"
+       self.ds_handlers["POWER_UP_LOG"].push(data)
        search_list = [ ["PROCESSOR" ,site_data["local_node"]   ] ,["CONTAINER",container_name ]]
        processor_nodes = common_qs_search(site_data,qs,search_list)
        processor_node = processor_nodes[0]

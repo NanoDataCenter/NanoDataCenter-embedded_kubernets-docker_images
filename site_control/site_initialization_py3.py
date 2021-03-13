@@ -156,7 +156,7 @@ class Site_Initialization(object):
 
 
 if __name__ == "__main__":
-    redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis /pod_util/redis-server /pod_util/redis.conf"
+    redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
     Site_Initialization(config_file = "/mnt/ssd/site_config/redis_server.json",
                               password_script ="python3 /mnt/ssd/site_config/passwords.py",
                               redis_startup_script = redis_startup_script,

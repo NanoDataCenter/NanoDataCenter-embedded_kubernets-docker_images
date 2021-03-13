@@ -19,6 +19,7 @@ class Start_Container(object):
         cd.add_hash("PROCESS_CONTROL")
         cd.add_hash("PROCESS_OP_STATUS")
         cd.add_hash("PROCESS_OP_LOG")
+        cd.add_redis_stream("POWER_UP_LOG")
         cd.close_package_contruction()
         
 class End_Container(object):

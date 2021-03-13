@@ -1,0 +1,11 @@
+
+while [ 1 ]
+do
+   echo "redis starting "
+   /pod_util/redis-server /pod_util/redis.conf 2> /data/redis_error.err
+   echo "redis server crashing" 
+   cp /data/redis_error.err /data/redis_error.errr
+   sleep 10
+
+
+done

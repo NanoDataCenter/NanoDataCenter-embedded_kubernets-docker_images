@@ -16,6 +16,7 @@ class Start_Service(object):
         cd.add_redis_stream("PROCESS_RSS")
         cd.add_redis_stream("PROCESS_CPU") 
         cd.add_hash("PROCESS_CONTROL")
+        cd.add_redis_stream("POWER_UP_LOG")
         cd.close_package_contruction()
         
         
