@@ -1,0 +1,4 @@
+
+#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+
+docker run -ti --rm  --network host  --privileged  --mount type=bind,source=/mnt/ssd/site_config,target=/data/    --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock nanodatacenter/node_control /bin/bash 

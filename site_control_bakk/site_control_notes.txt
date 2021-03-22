@@ -1,0 +1,54 @@
+site_control_py3.py 
+    Will support the running of the processes for site control
+	    docker_control_py3.py  -- controls site services
+		node_monitoring_py3.py -- monitor site nodes
+		redis_monitoring_py3.py -- monitor healt of redis data base
+    if sys_control_py3.py crashes then the error dump is stored in the file /mnt/ssd/site_control_py3.errr
+	   if ssh fails chrash results can be seen in the file on usb drive
+	   
+	   
+Redis data structures for site control
+   
+   
+    package("SITE_CONTROL")  -- used by site_control_py3 to control processes for site control
+       job_queue("WEB_COMMAND_QUEUE",1)  -- allow web to start stop individual processes ie like redis_monitoring
+       redis_stream("ERROR_STREAM")  -- records the crash record of the individual processes
+	                                 startup is labeled reboot
+       redis_hash('ERROR_HASH") -- stores the last error message
+       add_hash("WEB_DISPLAY_DICTIONARY")  -- displays the state of the running processes
+
+    
+    package("DOCKER_CONTROL")
+       job_queue("DOCKER_COMMAND_QUEUE",1)   starts stops containers and updates
+	      #"CONTAINER_START/STOP" start stop docker containers
+		  #"UPGRADE" upgrade docker containers
+		  "UPGRADE_ALL"  upgrade all docker containers
+
+	   hash("DOCKER_DISPLAY_DICTIONARY")  #displays state of docker container
+       
+    package("REDIS_MONITORING")  # redis monitoring
+        redis_stream("KEYS")
+        redis_stream("CLIENTS")
+        redis_stream("MEMORY")
+        redis_stream("REDIS_MONITOR_CALL_STREAM")
+        redis_stream("REDIS_MONITOR_CMD_TIME_STREAM")  
+        redis_stream("REDIS_MONITOR_SERVER_TIME")  
+  
+
+    
+    package("NODE_MONITORING")
+       job_queue("WEB_COMMAND_QUEUE",1)
+       hash("WEB_DISPLAY_DICTIONARY")
+       hash("NODE_STATUS")
+  
+   
+
+     
+   
+
+
+
+
+
+		
+		

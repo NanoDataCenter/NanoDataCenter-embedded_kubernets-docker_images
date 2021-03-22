@@ -1,0 +1,11 @@
+Check Site -- class iterator
+   Check Site Services -- class interator
+      < checking services>
+	Check IO
+	     Eithernet Switches
+		 Check IP Devices
+		 Modbus RTU
+		 Check Modbus Devices
+	Check Nodes
+	Check Containers
+	Check Applications

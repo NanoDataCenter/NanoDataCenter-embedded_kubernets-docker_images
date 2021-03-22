@@ -85,24 +85,27 @@ class Eto_Monitoring(object):
 
 def add_eto_chains(eto, cf):
 
-
+    #
+    #  New day rool
+    #
+    #
     cf.define_chain("Monitor_day_rollover", True)
-    cf.insert.wait_tod_le( hour =  6)
-    cf.insert.wait_tod_ge( hour =  5)
+    cf.insert.wait_tod_le( hour =  7)
+    cf.insert.wait_tod_ge( hour =  7)
     cf.insert.one_step(eto.check_new_day_rollover)
-    cf.insert.wait_tod_le( hour =  6)
+    cf.insert.wait_tod_ge( hour =  8)
     cf.insert.reset()
 
     cf.define_chain("monitor_eto_update", True)
-    cf.insert.wait_tod_le( hour =  14)
+    cf.insert.wait_tod_le( hour =  13)
     cf.insert.wait_tod_ge( hour =  13)
     cf.insert.one_step(eto.check_eto_bin_update)
-    cf.insert.wait_tod_le( hour =  14)
+    cf.insert.wait_tod_ge( hour =  14)
     cf.insert.reset()
 
     cf.define_chain("check_file", True)
     cf.insert.one_step(eto.check_required_files)
-    cf.insert.wait_event_count( event = "HOUR_TICK",count = 1)
+    cf.insert.wait_event_count( event = "HOUR_TICK",count = 15)
     cf.insert.reset()
 
 

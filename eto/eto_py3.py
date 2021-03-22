@@ -214,27 +214,35 @@ class Eto_Management(object):
 
 def add_eto_chains(eto, cf):
 
+    #
+    #
+    #  This chain is for diagnostic purposes
+    #
     cf.define_chain("test_generator",False)
-    cf.insert.log("send Day Tick")
-    cf.insert.send_event("DAY_TICK")
-    cf.insert.terminate()
-
-    cf.insert.wait_tod_le( hour =  4 )
-    cf.insert.send_event("DAY_TICK")
-    cf.insert.wait_tod_ge( hour =  5 )
-    cf.insert.reset()
-
-    cf.define_chain("eto_time_window", True)
-    cf.insert.log("Waiting for day tick")
-    cf.insert.wait_event_count( event = "DAY_TICK" )
-    cf.insert.log("Got Day Tick")
+    cf.insert.enable_chains(["eto_make_measurements"])
     cf.insert.one_step(eto.new_day_rollover)
-    cf.insert.reset()
+    cf.insert.enable_chains(["update_eto_bins"])
+    cf.insert.terminate()
+    
 
+    
     cf.define_chain("enable_measurement", True)
     cf.insert.log("starting enable_measurement")
-    cf.insert.wait_tod_le(hour=8)
-    cf.insert.wait_tod_ge( hour =  8 )
+    
+    cf.insert.wait_tod_le(hour=7)  ### Wait till time is less than 8
+   
+    cf.insert.wait_tod_ge( hour =  7 ) #### Then when time turns 8 act    
+    
+    cf.insert.one_step(eto.new_day_rollover)
+    
+    cf.insert.wait_tod_le(hour=8)  ### Wait till time is less than 8
+   
+    cf.insert.wait_tod_ge( hour =  8 ) #### Then when time turns 8 act
+    #
+    # We do the day tick here
+    #
+    #
+    
     cf.insert.enable_chains(["eto_make_measurements"])
     cf.insert.log("enabling making_measurement")
     cf.insert.wait_tod_ge(hour=11)

@@ -36,7 +36,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
    
     cd.construct_package("SITE_CONTROL")
 
-    cd.add_job_queue("WEB_COMMAND_QUEUE",1)
+    cd.add_job_queue("WEB_COMMAND_QUEUE",10)
     cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
@@ -44,9 +44,8 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     
     cd.construct_package("DOCKER_CONTROL")
 
-    cd.add_job_queue("DOCKER_COMMAND_QUEUE",1)
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",10)
     cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
-
     cd.close_package_contruction()
 
     cd.construct_package("NODE_MONITORING")
@@ -55,7 +54,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_hash("NODE_STATUS")
     cd.close_package_contruction()
    
-
+    '''
     cd.construct_package("DOCKER_MONITORING")
     cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
@@ -63,7 +62,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.add_hash("PROCESS_CONTROL")
     cd.close_package_contruction()
-    
+    '''
    
     cd.construct_package("REDIS_MONITORING")  # redis monitoring
     cd.add_redis_stream("KEYS")
@@ -78,7 +77,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     
     bc.add_header_node("FILE_SERVER")
     cd.construct_package("FILE_SERVER")
-    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":1,"queue":"FILE_RPC_SERVER"})
+    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":30,"queue":"FILE_RPC_SERVER"})
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER")
 
