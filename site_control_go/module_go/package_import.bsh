@@ -1,6 +1,0 @@
-go get github.com/msgpack/msgpack-go 
-go get github.com/go-redis/redis/v8 
-go get "github.com/docker/docker/api/types" 
-go get "github.com/docker/docker/api/types/container" 
-go get "github.com/docker/docker/client" 
-go get "github.com/docker/docker/pkg/stdcopy"
