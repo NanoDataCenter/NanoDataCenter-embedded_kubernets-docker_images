@@ -83,8 +83,11 @@ func Graph_support_init(sdata *map[string]interface{}) {
 												
 												 DB: 3,
                                                })
-	err := client.Ping(ctx).Err();
-    fmt.Println("ping",err)	
+	err := client.Ping(ctx).Err();     
+	if err != nil{
+	         panic("redis graph connection")
+	 }
+    fmt.Println("redis graph ping")	
 }	
 
 func Common_package_search( site *string, search_list *[]string) []map[string]string{

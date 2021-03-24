@@ -44,7 +44,7 @@ func Site_Control( config_file string ) {
    // cor_int Queue for Node and System Control
    // cor_int Queue for container update
    var search_path = []string{"SITE_CONTROL:SITE_CONTROL"}
-   docker_management.Initialize_Docker_Monitor(&search_path)
+   docker_management.Initialize_Docker_Monitor(&search_path,&site_data)
    
    
    go docker_management.Docker_Monitor()

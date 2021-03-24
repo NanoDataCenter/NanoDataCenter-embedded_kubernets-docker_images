@@ -43,7 +43,6 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.close_package_contruction()
     
     cd.construct_package("DOCKER_CONTROL")
-
     cd.add_job_queue("DOCKER_COMMAND_QUEUE",10)
     cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
