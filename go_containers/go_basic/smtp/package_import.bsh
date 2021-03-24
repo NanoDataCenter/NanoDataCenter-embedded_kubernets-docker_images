@@ -1,0 +1,4 @@
+go get github.com/msgpack/msgpack-go 
+go get github.com/go-redis/redis/v8 
+go get github.com/polydawn/gosh
+go get gopkg.in/mail.v2
