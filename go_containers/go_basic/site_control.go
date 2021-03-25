@@ -5,6 +5,7 @@ import "site_control.com/site_data"
 import "site_control.com/docker_management"
 import "site_control.com/redis_support/graph_query"
 import  "site_control.com/redis_support/generate_handlers"
+import  "site_control.com/redis_support/handlers"
 var site_data map[string]interface{}
 
 
@@ -35,6 +36,7 @@ func determine_master(site_file string) map[string]interface{} {
 
 
 func Site_Control( config_file string ) {
+   redis_mutex.Init_Redis_Mutex()
    site_data = determine_master(config_file)
    graph_query.Graph_support_init(&site_data)
    data_handler.Data_handler_init(&site_data)

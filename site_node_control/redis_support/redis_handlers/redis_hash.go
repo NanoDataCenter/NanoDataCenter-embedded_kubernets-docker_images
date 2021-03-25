@@ -79,9 +79,9 @@ func (v Redis_Hash_Struct) HLen() int64 {
 	return val
 }
 
-func (v Redis_Hash_Struct) HSet(value string)  {
+func (v Redis_Hash_Struct) HSet(field,value string)  {
 
-    v.client.HSet(v.ctx, v.key,value)
+    v.client.HSet(v.ctx, v.key,field,value)
  	
 	
 }

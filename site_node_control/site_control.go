@@ -5,6 +5,7 @@ import "site_control.com/site_data"
 import "site_control.com/docker_management"
 import "site_control.com/redis_support/graph_query"
 import  "site_control.com/redis_support/generate_handlers"
+import  "site_control.com/redis_support/redis_handlers"
 var site_data map[string]interface{}
 
 
@@ -35,6 +36,7 @@ func determine_master(site_file string) map[string]interface{} {
 
 
 func Site_Control( config_file string ) {
+   redis_handlers.Init_Redis_Mutex()
    site_data = determine_master(config_file)
    graph_query.Graph_support_init(&site_data)
    data_handler.Data_handler_init(&site_data)
@@ -44,7 +46,8 @@ func Site_Control( config_file string ) {
    // cor_int Queue for Node and System Control
    // cor_int Queue for container update
    var search_path = []string{"SITE_CONTROL:SITE_CONTROL"}
-   docker_management.Initialize_Docker_Monitor(&search_path,&site_data)
+   var search_path_data = []string{"SITE_CONTROL:SITE_CONTROL","DOCKER_CONTROL"}
+   docker_management.Initialize_Docker_Monitor(&search_path,&search_path_data,&site_data)
    
    
    go docker_management.Docker_Monitor()

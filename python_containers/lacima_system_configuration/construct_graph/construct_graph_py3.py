@@ -43,8 +43,9 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.close_package_contruction()
     
     cd.construct_package("DOCKER_CONTROL")
-    cd.add_job_queue("DOCKER_COMMAND_QUEUE",10)
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",10) #temp disable turning of containers
     cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
+    cd.add_redis_stream("ERROR_STREAM")
     cd.close_package_contruction()
 
     cd.construct_package("NODE_MONITORING")

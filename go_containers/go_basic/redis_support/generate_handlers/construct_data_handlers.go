@@ -98,13 +98,13 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    var type_def string
    var name string
    var key string
-   
+   var depth int64
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
 	  if type_def == "STREAM_REDIS" {
 	     key = v["key"].(string)
 		 name = v["name"].(string)
-		 var depth = int64(v["depth"].(float64))
+		 depth = int64(v["depth"].(float64))
 		 (*handlers)[name] = redis_handlers.Construct_Redis_Stream(ctx,client,key,depth)
 		 
 		 //var x redis_handlers.Redis_Stream_Struct
@@ -116,7 +116,17 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		 (*handlers)[name] = redis_handlers.Construct_Redis_Hash(  ctx, client, key )
 	     // add test code
 		 
-	  }else{
+	  }else  if type_def == "JOB_QUEUE" {
+	     key = v["key"].(string)
+		 name = v["name"].(string)
+		 depth = int64(v["depth"].(float64))
+		 (*handlers)[name] = redis_handlers.Construct_Redis_Job_Queue(  ctx ,client, key , depth  )
+		 
+		 //var x redis_handlers.Redis_Stream_Struct
+		 //x =(*handlers)[name].(redis_handlers.Redis_Stream_Struct)
+
+	  
+	   } else{
 	   panic("Key is not expected "+type_def)
 	 }
    }
@@ -124,7 +134,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 }
       
 
-
+"JOB_QUEUE"
 
 
 
