@@ -8,6 +8,9 @@ import (
 
 )
 
+/* code take from
+https://www.loginradius.com/blog/async/sending-emails-with-golang/
+*/
 var site_id string
 var node_id string
 var task_id string
@@ -16,14 +19,14 @@ var password string
 var target_account string
 var message_header string
 
-func Initialization( site_data map[string]interface{} , task_id_input string )   {
+func Initialization( site_data *map[string]interface{} , task_id_input string )   {
      
-	site_id = site_data["site"].(string)
-    node_id = site_data["local_node"].(string)
+	site_id = (*site_data)["site"].(string)
+    node_id = (*site_data)["local_node"].(string)
     task_id = task_id_input
-    home_account = site_data["home_account"].(string)
-    password = site_data["home_password"].(string)
-    target_account = site_data["target_account"].(string)
+    home_account = (*site_data)["home_account"].(string)
+    password = (*site_data)["home_password"].(string)
+    target_account = (*site_data)["target_account"].(string)
         
         
     var message_list = []string{ "site_id: "+ site_id+"\r\n",  "node_id:  " +node_id+"\r\n" , "task_id:  "+task_id+"\r\n"   }
@@ -32,9 +35,7 @@ func Initialization( site_data map[string]interface{} , task_id_input string )  
 	Send_Mail("System Rebooting")
 }	
 
-/* code take from
-https://www.loginradius.com/blog/async/sending-emails-with-golang/
-*/
+
 func Send_Mail(  subject string){
 
    m := gomail.NewMessage()

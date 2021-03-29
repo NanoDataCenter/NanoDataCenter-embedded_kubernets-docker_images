@@ -6,7 +6,7 @@ VOLUME [/data/]
 
 ENV CONTAINER_NAME "flask_web"
 COPY . .
-
+RUN /bin/bash -c "echo 'export EDITOR=nano' >> ~/.bashrc"
 RUN go get github.com/msgpack/msgpack-go 
 RUN go get github.com/go-redis/redis/v8 
 RUN go get github.com/polydawn/gosh
