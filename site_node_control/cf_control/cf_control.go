@@ -1,16 +1,15 @@
 package cf
 import "container/list"
+//import "fmt"
 
-type CF_RETURN int
 
-const (
-    CF_HALT = iota
-    CF_CONTINUE = iota
-    CF_DISABLE = iota
-    CF_RESET = iota
-    CF_TERMINATE = iota
+var CF_HALT       int = 0
+var CF_CONTINUE   int = 1
+var CF_DISABLE    int = 2
+var CF_RESET      int = 3
+var CF_TERMINATE  int= 4
 	
-)
+
 
 var CF_TIME_TICK string = "CF_TIME_TICK"
 var CF_INIT = "INIT"
@@ -22,6 +21,7 @@ type EVENT_TYPE struct{
 }
 
 
+
 type aux_function_type func( handle interface{},parameters map[string]interface{})int
 
 type CF_LINK struct {
@@ -30,7 +30,7 @@ type CF_LINK struct {
   active             bool
   parameters         map[string]interface{}
   opcode_type         string
-  aux_function aux_function_type 
+ 
 }
 
 type CF_CHAIN struct {
@@ -42,7 +42,7 @@ type CF_CHAIN struct {
 }
 
 type CF_SYSTEM struct {
-
+  name string
   op_code_map  map[string] CF_Function_type
   chain_map map[string]*CF_CHAIN
   chain_order []*CF_CHAIN
@@ -51,44 +51,58 @@ type CF_SYSTEM struct {
   current_event *map[string]interface{}
   event_queue *list.List
   init_event  map[string]interface{}
+  continue_map map[int]bool
 }
 
 
 
+func ( system *CF_SYSTEM ) initialize_continue_map(){
+  var temp =  make(map[int]bool)
+  temp[CF_HALT] = false
+  temp[CF_CONTINUE] = true
+  temp[CF_DISABLE] = true
+  temp[CF_RESET] = false
+  temp[CF_TERMINATE] = false
+  (*system).continue_map = temp
+}
 
 
 
-
-
-func Init( system *CF_SYSTEM ){
-
- 
+func (system *CF_SYSTEM )Init( name string ){
+  (*system).name = name
+  (*system).initialize_continue_map()
   (*system).chain_map = make(map[string]*CF_CHAIN)
   (*system).event_queue = list.New()
   (*system).init_event = make(map[string]interface{})
+   
   (*system).init_event["event_name"] = CF_INIT
   (*system).init_event["value"] = nil  // value is not used
-  cf_initialize_opcodes(system)
+  (*system).cf_initialize_opcodes()
   
 }
 
-func Add_Chain( system *CF_SYSTEM, chain_name string, state bool ){
+func ( system *CF_SYSTEM) Add_Chain(chain_name string, state bool ){
 
+
+   _,ok := (system).chain_map[chain_name]
+   if ok == true{
+     panic("duplicate chain name")
+	}
    var temp CF_CHAIN
    temp.name = chain_name
    temp.active = state
    temp.initialized = false
    
    (*system).chain_map[chain_name] = &temp
-   (*system).chain_order = append((*system).chain_order,&temp)
+   (*system).chain_order = append((system).chain_order,&temp)
    (*system).current_chain = &temp
    (*system).current_link = nil
-   
+  
 
 
 }
 
-func (cf_system CF_SYSTEM)Execute(){
+func (cf_system CF_SYSTEM) Execute(){
 
   (cf_system).Initialize_Chains()
   var loop_flag = true

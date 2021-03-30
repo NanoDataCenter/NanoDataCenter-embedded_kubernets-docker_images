@@ -1,16 +1,21 @@
 package cf
 
 import "time"
+//import "fmt"
 
 
 
 func (system *CF_SYSTEM)wait_for_event()*map[string]interface{}{
 
+  
    var return_value = make(map[string]interface{})
    if (*system).event_queue.Len() == 0 {
-     time.Sleep(time.Second*10)
+    
+     time.Sleep(time.Second)
 	 return_value["event_name"] = CF_TIME_TICK
 	 return_value["value"] = time.Now().UnixNano()
+	 //fmt.Println("time_tick")
+	 
    }else{
       var e = (*system).event_queue.Front().Value
 	  var temp = e.(map[string]interface{})

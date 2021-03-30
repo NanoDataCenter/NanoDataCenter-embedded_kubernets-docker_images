@@ -24,29 +24,33 @@ func main(){
 	}
 		
 */
-    var master_flag = false	
-	if master_flag == true {
-	   site_control.Site_Initialization(&site_data_store)
-	}else{
-	  graph_query.Graph_support_init(&site_data_store)
-	}
+ 	  
+
 	// do node_init
 	
-	
+	graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)
 	
     
 	
-	site_control.Site_control_startup(&site_data_store)
-    site_control.Initialize_CF()	
+	site_control.Site_Startup(&site_data_store)
+	/*
+	
+	   --- other initializations
+	   
+	   
+	*/
+	
+	go site_control.Execute()
+   
 
 	
 	
 	
    var loop_flag = true
    for loop_flag{
-      time.Sleep(time.Second*10)
+      time.Sleep(time.Second*100)
       fmt.Println("main is spinning")
    } 
 
