@@ -131,10 +131,9 @@ def construct_processor(name,containers):
     
     
     cd.construct_package("DOCKER_CONTROL")
-
-    cd.add_job_queue("DOCKER_COMMAND_QUEUE",1)
+    cd.add_job_queue("DOCKER_COMMAND_QUEUE",10) #temp disable turning of containers
     cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
-
+    cd.add_redis_stream("ERROR_STREAM")
     cd.close_package_contruction()
 
 

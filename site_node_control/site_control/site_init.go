@@ -133,7 +133,7 @@ func stop_running_containers() {
 
 
 	   
-func Site_Initialization(  site_data *map[string]interface{} ){ 
+func Site_Init(  site_data *map[string]interface{} ){ 
                          
 						 
 						 

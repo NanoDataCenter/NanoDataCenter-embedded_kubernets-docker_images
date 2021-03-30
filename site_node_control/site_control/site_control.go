@@ -48,7 +48,7 @@ func  initialize_CF(){
    var parameters = make(map[string]interface{})
   (cf_control).Cf_add_one_step(docker_monitor,parameters)
   
-   (cf_control).Cf_add_wait_interval(int64(time.Second*5)  )
+   (cf_control).Cf_add_wait_interval(int64(time.Second*15)  )
    (cf_control).Cf_add_reset()
   
    (cf_control).Add_Chain("container_performance_logs",true)
@@ -57,7 +57,7 @@ func  initialize_CF(){
    parameters = make(map[string]interface{}) 
    (cf_control).Cf_add_one_step(docker_performance_monitor,parameters)
    
-   (cf_control).Cf_add_wait_interval(int64(time.Second*15)  )
+   (cf_control).Cf_add_wait_interval(int64(time.Minute*15)  )
    (cf_control).Cf_add_reset()
    
    
