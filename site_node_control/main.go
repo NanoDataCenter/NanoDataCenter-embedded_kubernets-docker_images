@@ -5,7 +5,7 @@ import "time"
 import "strconv"
 import "context"
 import "site_control.com/site_data"
-import "site_control.com/smtp"
+//import "site_control.com/smtp"
 import "site_control.com/site_control"
 import "site_control.com/node_control"
 import "site_control.com/redis_support/graph_query"
@@ -19,7 +19,7 @@ func main(){
 	var site_data_store map[string]interface{}
 
 	site_data_store = get_site_data.Get_site_data(config_file)
-
+    /*
 	var master_flag = site_data_store["master"].(bool)
 	master_flag = false
 	if master_flag {
@@ -38,7 +38,8 @@ func main(){
 	
 	
 	node_control.Node_Init(&site_data_store)
-	panic("done")
+    */
+	graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)
 	
@@ -54,8 +55,8 @@ func main(){
 	*/
 	
 	go site_control.Execute()
-   
-
+    go node_control.Execute()
+    go node_control.Performance_Execute()
 	
 	
 	

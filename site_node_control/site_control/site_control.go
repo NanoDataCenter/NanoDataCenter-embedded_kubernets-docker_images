@@ -1,7 +1,7 @@
 package site_control
 
 
-import "fmt"
+//import "fmt"
 import "time"
 import "site_control.com/docker_management"
 import "site_control.com/cf_control"
@@ -70,7 +70,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 	
    
 
-     fmt.Println("Docker  Monitor")
+     
 	 (docker_handle).Monitor_Containers()
      return cf.CF_DISABLE
 }
@@ -78,7 +78,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 
 func docker_performance_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
 
-  fmt.Println("Docker Performance Monitor")
+  
   (docker_handle).Log_Container_Performance_Data()
   return cf.CF_DISABLE
 }

@@ -112,15 +112,12 @@ def construct_processor(name,containers):
     bc.add_header_node("NODE_SYSTEM",properties=properties)
     
     cd.construct_package("PROCESSOR_MONITORING")
-    cd.add_redis_stream("PROCESS_VSZ")  # for processes of node controller
-    cd.add_redis_stream("PROCESS_RSS")  # for processes of node controller
-    cd.add_redis_stream("PROCESS_CPU")  # for processes of node controller
 
     cd.add_redis_stream("FREE_CPU",forward = True) # for entire processor
     cd.add_redis_stream("RAM",forward = True)
     cd.add_redis_stream("DISK_SPACE",forward = True) 
     cd.add_redis_stream("TEMPERATURE",forward = True)
-    cd.add_redis_stream("CPU_CORE")
+    
     cd.add_redis_stream("SWAP_SPACE")
     cd.add_redis_stream("IO_SPACE")
     cd.add_redis_stream("BLOCK_DEV")

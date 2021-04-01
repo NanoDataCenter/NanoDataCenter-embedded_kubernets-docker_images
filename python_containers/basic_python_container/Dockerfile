@@ -1,23 +1,11 @@
-FROM arm32v7/python 
-ENV TZ America/Los_Angeles
-ENV INSTALL_PATH /pod_util
-RUN mkdir -p $INSTALL_PATH
-RUN apt-get update && apt-get install -qq -y \
-  build-essential libpq-dev --no-install-recommends
-RUN apt-get install -y  gcc python3-dev musl-dev --no-install-recommends
-WORKDIR $INSTALL_PATH
+FROM arm32v7/python
 
-RUN pip install --upgrade pip
-RUN pip install redis
-RUN pip install msgpack
-
-
-COPY . .
+Run pip install msgpack
+Run pip install redis
+       
 
 
 
-
-VOLUME [/data/]
-
-
+WORKDIR /Start
+ 
 
