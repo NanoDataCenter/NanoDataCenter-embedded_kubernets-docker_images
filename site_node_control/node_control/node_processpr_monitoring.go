@@ -1,5 +1,13 @@
 package node_control
 
+/*
+reference for sar function is
+
+https://www.thegeekstuff.com/2011/03/sar-examples/
+
+*/
+
+
 import "fmt"
 import "time"
 import "bytes"
@@ -97,6 +105,15 @@ func tokenize_line( text string ) [] string{
   return strings.Fields(text) 
 }
 
+func string_to_float64( text string ) float64 {
+   value,err := strconv.ParseFloat(text,64)
+   if err != nil {
+      fmt.Println("bad string ",text)
+	  panic("bad data")
+   }
+   return value
+}
+
 func tokens_to_dict(tokens []string, header []string, start_index int) map[string]interface{} {
 
     var return_value = make(map[string]interface{})
@@ -114,7 +131,7 @@ func tokens_to_dict(tokens []string, header []string, start_index int) map[strin
 }
 
 func assemble_free_cpu( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-    return cf.CF_DISABLE
+   
     fmt.Println("staring free cpu")
 
 	var output = docker_control.System("sar -u 60 1 ")
@@ -211,113 +228,140 @@ func assemble_disk_space( system interface{},chain interface{}, parameters map[s
 
 func assemble_swap_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
 
-  parse_one_line("sar -S 1 1","SWAP_SPACE")    
-  return cf.CF_DISABLE
-}
-
-func assemble_io_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-
-  parse_one_line("sar -w 1 1","IO_SPACE")  
-  return cf.CF_DISABLE
-}
-
-func assemble_block_io( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-
-  parse_multi_line("sar -d  3 1","BLOCK_DEV",-1)
-  return cf.CF_DISABLE
-}
-
-
-func assemble_context_switches( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-
-  parse_one_line("sar -w 1 1","CONTEXT_SWITCHES") 
-  return cf.CF_DISABLE
-}
-
-func assemble_run_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-
-  parse_one_line("sar -q 3 1","RUN_QUEUE")   
-  return cf.CF_DISABLE
-}
-
-func assemble_net_edev( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-
-  parse_multi_line("sar -n EDEV  3 1","EDEV",2)
-  return cf.CF_DISABLE
-}
-
-
-func parse_multi_line(sar_command,stream_key string,ref_index int){
-
-    var output = docker_control.System(sar_command)
-    var data = make(map[string]interface{})
-    var lines = split_lines(output)
-    for i,line := range lines{
-      fmt.Println(i,line)
-    }
-    panic("done")
-    print("data",stream_key,data)   
-   (processor_measurement).log_data(stream_key,data)
-	
-      
-/*       f = os.popen(sar_command)
-       data = f.read()
-       f.close()
-       lines = data.split("\n")
-       i = 3
-       data = {}
-       while True:
-          line = lines[i]
-          if line == "":
-             break
-          line = re.sub(' +',' ',line)
-          fields = line.split(" ")
-          
-          key = fields[1]
-          value = fields[ref_index]
-          data[key] = float(float(value))
-          i = i+1
-*/
-
-	   
-}
-
-
-func parse_one_line(sar_command, stream_key string){
-
-    var output = docker_control.System(sar_command)
+ 
+    var output = docker_control.System("sar -S 1 1")
     var data = make(map[string]interface{})
     var lines = split_lines(output)
     
 	var key_tokens =  tokenize_line(lines[2])
 	var value_tokens = tokenize_line(lines[4])
-	fmt.Println(key_tokens,value_tokens,value_tokens)
-    panic("done")
-    print("data",stream_key,data)   
-   (processor_measurement).log_data(stream_key,data)
+	
+	var free  = string_to_float64(value_tokens[1])
+	var used  = string_to_float64(value_tokens[2])
+	
+    data[key_tokens[1]] = free
+	data[key_tokens[2]] = used
+    fmt.Println("data",data)   
+	
+   (processor_measurement).log_data("SWAP_SPACE",data)
+   return cf.CF_DISABLE
 }
-/*	   
-   def parse_one_line(self, sar_command, stream_field ):
-        f = os.popen(sar_command)
-        data = f.read()
-        f.close()
 
-        lines = data.split("\n")
-        line = lines[2]
-        line = re.sub(' +',' ',line)
-        fields_keys = line.split(" ")
-        line = lines[3]
-        line = re.sub(' +',' ',line)
-        fields_data = line.split(" ")
-        fields_data.pop(0)
-        fields_keys.pop(0)
-        data = {}
-        for i in range(0,len(fields_keys)):
-           data[fields_keys[i]] = float(fields_data[i])
-       
-        print("data",data)
-          
-        self.ds_handlers[stream_field].push(data = data,local_node = self.site_node)
+func assemble_context_switches( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+
+   var output = docker_control.System("sar -w 1 1")
+      
+    var data = make(map[string]interface{})
+    var lines = split_lines(output)
+    
+	var key_tokens =  tokenize_line(lines[2])
+	var value_tokens = tokenize_line(lines[4])
+	
+	var proc_s  = string_to_float64(value_tokens[1])
+	var cswch_s  = string_to_float64(value_tokens[2])
+	
+    data[key_tokens[1]] = proc_s
+	data[key_tokens[2]] = cswch_s
+    fmt.Println("data",data)   
+	
+   (processor_measurement).log_data("CONTEXT_SWITCHES",data)
+   return cf.CF_DISABLE
+}
+
+func assemble_block_io( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+
+  
+   var output = docker_control.System("sar -d  3 1")
+   //fmt.Println(output)
+   var data = make(map[string]interface{})
+   var lines = split_lines(output)
+   var data_lines = lines[3:]
+   for _,line := range data_lines {
+     //fmt.Println("line",line)
+     if len(line) == 0{
+	   break
+	 }
+   var tokens = tokenize_line(line)
+   //fmt.Println(tokens)
+   var key = tokens[1]
+   var value = string_to_float64(tokens[len(tokens)-1])
+   data[key] = value
+   //fmt.Println("value",key,value)
+   }
+   
+   fmt.Println("data",data)
+   
+   (processor_measurement).log_data("BLOCK_DEV",data)
+   return cf.CF_DISABLE
+
+  
+}
+
+
+func assemble_io_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+
+  
+  var output = docker_control.System("sar -b 1 1")
+   
+  var data = make(map[string]interface{})
+  var lines = split_lines(output)
+  var key_line = lines[2]
+  var data_line = lines[3]
+  var key_tokens =  tokenize_line(key_line)
+  var data_tokens = tokenize_line(data_line)
+  for i :=1;i<len(key_tokens);i++{
+     data[key_tokens[i]]  = string_to_float64(data_tokens[i])
+  }
+  (processor_measurement).log_data("IO_SPACE",data)
+  return cf.CF_DISABLE
  
- 
-*/
+}
+
+func assemble_run_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+
+    
+   var output = docker_control.System("sar  -q 1 1")
+   
+  var data = make(map[string]interface{})
+  var lines = split_lines(output)
+  var key_line = lines[2]
+  var data_line = lines[3]
+  var key_tokens =  tokenize_line(key_line)
+  var data_tokens = tokenize_line(data_line)
+  for i :=1;i<len(key_tokens);i++{
+     data[key_tokens[i]]  = string_to_float64(data_tokens[i])
+  }
+  fmt.Println(data)
+
+  (processor_measurement).log_data("RUN_QUEUE",data)
+  return cf.CF_DISABLE
+}
+
+func assemble_net_edev( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+
+  
+  var output = docker_control.System("sar -n EDEV  3 1")
+  var data = make(map[string]interface{})
+  var lines = split_lines(output)
+  var data_lines = lines[3:]
+  for _,line := range data_lines {
+     //fmt.Println("line",line)
+     if len(line) == 0{
+	   break
+	 }
+   var tokens = tokenize_line(line)
+   //fmt.Println(tokens)
+   var key = tokens[1]
+   var value = string_to_float64(tokens[2])
+   data[key] = value
+   //fmt.Println("value",key,value)
+   }
+   
+   fmt.Println("data",data)
+   
+   
+   (processor_measurement).log_data("EDEV",data)
+   return cf.CF_DISABLE
+
+}
+
