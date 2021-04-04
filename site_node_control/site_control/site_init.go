@@ -23,8 +23,8 @@ var site_data map[string]interface{}
 //   Client *redis.Client
 //}
 var ctx    = context.TODO()
-var graph_container_script string
 var graph_container_image string
+var graph_container_script string
 var services_json string
 //var container []string
 var containers = make([]string,0)
@@ -69,15 +69,12 @@ func find_site_containers(){
 	//fmt.Println(site_containers)
 }
 
-func  determine_graph_container(){
+func  determine_system_containers(){
     var search_list = []string{ "SITE_CONTROL:SITE_CONTROL" }
     var site_nodes = graph_query.Common_qs_search(&search_list)
     var site_node = site_nodes[0]
+   
 
-
-	
-    graph_container_image = graph_query.Convert_json_string(site_node["graph_container_image"])
-	graph_container_script = graph_query.Convert_json_string(site_node["graph_container_script"])
     containers               = graph_query.Convert_json_string_array(	site_node["containers"] )
 
 
@@ -131,34 +128,55 @@ func stop_running_containers() {
    }      
 }
 
+func determine_hot_start() bool {
 
+  var running_containers = docker_control.Containers_ls_runing()
+  for _,name := range running_containers{
+    if name == "redis"{
+	  return true
+	}
+  }
+  return false
+  
+
+}
 	   
 func Site_Init(  site_data *map[string]interface{} ){ 
                          
-						 
+	graph_container_image = (*site_data)["graph_container_image"].(string)
+    graph_container_script = (*site_data)["graph_container_script"].(string)			 
 						 
     var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
 	
     var password_script ="python3 /mnt/ssd/site_config/passwords.py"
     //var redis_image = "nanodatacenter/redis" 
 
-    
-   stop_running_containers()
-   remove_redis_container()
-   startup_redis_container(redis_startup_script)
-   wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)) )
-   fmt.Println("redis is up")
-  
-   graph_query.Graph_support_init(site_data)
-   determine_graph_container()
-   docker_control.Pull(graph_container_image)
-   docker_control.Container_Run(graph_container_script)
-   docker_control.System(password_script)
-   find_site_containers()
-   start_system_containers()
-   docker_control.Prune()
-   smtp.Send_Mail("site is intialized")
+
+   var hot_start = determine_hot_start()
    
+   if hot_start == false {
+  
+      stop_running_containers()
+      remove_redis_container()
+      startup_redis_container(redis_startup_script)
+      wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)) )
+      fmt.Println("redis is up")
+  
+   
+   
+      docker_control.Pull(graph_container_image)
+      docker_control.Container_Run(graph_container_script)
+      docker_control.System(password_script)
+   
+      graph_query.Graph_support_init(site_data)
+      determine_system_containers()
+      find_site_containers()
+      start_system_containers()
+      docker_control.Prune()
+     smtp.Send_Mail("site is intialized")
+   }else {
+     graph_query.Graph_support_init(site_data)
+   }
 
 }	
 						 

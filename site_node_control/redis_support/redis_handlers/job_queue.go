@@ -30,18 +30,26 @@ func Construct_Redis_Job_Queue(  ctx context.Context, client *redis.Client, key 
 	
 func (v Redis_Job_Queue) Delete_all()   {
 
-    
-	v.client.Del(v.ctx, v.key )
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
+    
+	err :=v.client.Del(v.ctx, v.key )
+	 if err != nil {
+	   panic(err)
+	 }
    
 }
 
 func (v Redis_Job_Queue) Length() int64  {
 
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+
     result,err := v.client.LLen(v.ctx, v.key ).Result()
 
 	if err != nil {
-	  panic("Rddis Xadd failed")
+	  panic(err)
 	
    }
    return result
@@ -49,30 +57,55 @@ func (v Redis_Job_Queue) Length() int64  {
 
 func (v Redis_Job_Queue) Delete(index int64){
 
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+
      var remove_mark = "__#####__"
-     v.client.LSet(v.ctx,v.key, index,remove_mark)
-     v.client.LRem(v.ctx,v.key, 1, remove_mark) 
+     err := v.client.LSet(v.ctx,v.key, index,remove_mark)
+	 	 if err != nil {
+	   panic(err)
+	 }
+     v.client.LRem(v.ctx,v.key, 1, remove_mark)
+	 
 }
 
 func (v Redis_Job_Queue) List_Range(start int64, stop int64)[]string{
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
-     value ,_ := v.client.LRange(v.ctx, v.key , start, stop).Result()
+     value ,err := v.client.LRange(v.ctx, v.key , start, stop).Result()
+	 if err != nil {
+	   panic(err)
+	 }
 	 return value
 }
 
 func (v Redis_Job_Queue) Pop()string{
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
-     value ,_ := v.client.RPop(v.ctx ,v.key ).Result()
+     value ,err := v.client.RPop(v.ctx ,v.key ).Result()
+	 if err != nil {
+	   panic(err)
+	 }
 	 return value
 }
 
 func (v Redis_Job_Queue) Push( value string){
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
      v.client.LPush(v.ctx ,v.key,value )
-	 v.client.LTrim(v.ctx, v.key , 0, v.depth)
+
+	 err := v.client.LTrim(v.ctx, v.key , 0, v.depth)
+	 if err != nil {
+	   panic(err)
+	 }	 
 }
 
 func (v Redis_Job_Queue)Delete_jobs( jobs []int64){
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
      for _,job := range jobs{
 	   v.Delete(job)
@@ -81,10 +114,15 @@ func (v Redis_Job_Queue)Delete_jobs( jobs []int64){
 }
 
 func (v Redis_Job_Queue)Show_next_job( )string{
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
      var length = v.Length()
 	 if length > 0 {
-	   result,_ := v.client.LIndex(v.ctx,v.key,length-1).Result()
+	   result,err := v.client.LIndex(v.ctx,v.key,length-1).Result()
+	   if err != nil {
+	   panic(err)
+	    }
 	   return result
 	 }
 	 return ""
@@ -92,9 +130,15 @@ func (v Redis_Job_Queue)Show_next_job( )string{
 }
 
 func (v Redis_Job_Queue)Push_front(value string ){
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
 
      v.client.RPush(v.ctx ,v.key,value )
-	 v.client.LTrim(v.ctx, v.key , 0, v.depth)		 
+
+	 err := v.client.LTrim(v.ctx, v.key , 0, v.depth)
+	 if err != nil {
+	   panic(err)
+	 }	 
 }
 
 /*

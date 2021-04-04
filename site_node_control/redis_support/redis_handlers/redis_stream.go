@@ -26,19 +26,21 @@ func Construct_Redis_Stream(  ctx context.Context, client *redis.Client, key str
 }
 
 func (v Redis_Stream_Struct) Delete_all() {
-
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
    v.client.Del(v.ctx,v.key)
 
 }
 
 func (v Redis_Stream_Struct) Xadd(packed_data string) string  {
-
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
     var xdata = make(map[string]interface{})
 	xdata["data"]  = packed_data
 	var x_add_args = redis.XAddArgs{ v.key, v.depth, v.depth, "*" ,xdata}
 	result,err := v.client.XAdd(v.ctx, &x_add_args ).Result()
 	if err != nil {
-	  panic("Rddis Xadd failed")
+	  panic(err)
 	
    }
    return result
@@ -48,16 +50,24 @@ func (v Redis_Stream_Struct) Xadd(packed_data string) string  {
 
 
 func (v Redis_Stream_Struct) Xlen() int64  {
-
- 	val, _ := v.client.XLen(v.ctx, v.key ).Result()
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	val, err := v.client.XLen(v.ctx, v.key ).Result()
+	if err != nil {
+	  panic(err)
 	
+   }	
 	return val
 }
 
 func (v Redis_Stream_Struct) Xtrim( length int64)   {
-
- 	v.client.XTrimApprox(v.ctx, v.key,length )
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	err := v.client.XTrimApprox(v.ctx, v.key,length )
+	if err != nil {
+	  panic(err)
 	
+   }	
 	
 }
 
@@ -82,24 +92,4 @@ Example for stream github
 			}))
 			
 
-func (v Redis_Stream_Struct) Xtrim()  {
-
- 	cmd := redis.NewIntCmd("xtrim",v.key, "maxlen", maxLen)
-	v.client.process(v.ctx,cmd)
-	//return cmd.Result()
-}
-
-
-
-
-func (c *cmdable) XTrim(key string, maxLen int64) *IntCmd {
-	cmd := NewIntCmd("xtrim", key, "maxlen", maxLen)
-	c.process(cmd)
-	return cmd
-}
-func (c *cmdable) XLen(stream string) *IntCmd {
-	cmd := NewIntCmd("xlen", stream)
-	c.process(cmd)
-	return cmd
-}
-*/		
+*/

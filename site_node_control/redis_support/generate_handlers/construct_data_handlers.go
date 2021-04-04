@@ -18,7 +18,7 @@ func Data_handler_init( site_data *map[string]interface{}){
 
    site_ptr = site_data
    site = (*site_data)["site"].(string)
-   //fmt.Println("site",site)
+   fmt.Println("site",site)
    create_redis_data_handle()
    create_constructors(&constructor_table)
 
@@ -31,6 +31,7 @@ func create_redis_data_handle(){
     var port = 	int((*site_ptr)["port"].(float64))
 	var address_port = address+":"+strconv.Itoa(port)
 	var db = int((*site_ptr)["redis_table_db"].(float64))
+	fmt.Println("redis data",address_port,db)
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												
@@ -82,6 +83,7 @@ func construct_handler_definitions( search_list *[]string, handler_definitions *
    var namespace_json = packages[0]["namespace"]
    var namespace = graph_query.Convert_json_string( namespace_json)
    
+   //fmt.Println(len(data_structures),data_structures)
    
    
    for _,v := range data_structures{
@@ -101,7 +103,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    var depth int64
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
-	  //fmt.Println("type",type_def)
+	  //fmt.Println("key type",type_def)
 	  if type_def == "STREAM_REDIS" {
 	     key = v["key"].(string)
 		 name = v["name"].(string)
@@ -127,7 +129,12 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		 //x =(*handlers)[name].(redis_handlers.Redis_Stream_Struct)
 
 	  
-	   } else{
+	   } else if type_def == "SINGLE_ELEMENT" {
+	       key = v["key"].(string)
+		   name = v["name"].(string)
+		   (*handlers)[name] = redis_handlers.Construct_Redis_Single(  ctx ,client, key   )
+	   
+	   }else{
 	   panic("Key is not expected "+type_def)
 	 }
    }

@@ -81,18 +81,39 @@ func  find_node_containers(){
 
 }
 
+func match_containers(running_containers []string, match_element string )bool{
+  for _,value := range running_containers {
+     if value == match_element {
+	   return true
+	 }
+  }
+  return false
+}
 
+func determine_hot_start() bool {
+
+  var running_containers = docker_control.Containers_ls_runing()
+  for _,name := range running_containers{
+     if match_containers(running_containers,name) == false {
+	   return false
+	 }
+  }
+  return true
+  
+
+}
 
 
 	   
 func Node_Init(  site_map *map[string]interface{} ){ 
    site_data = site_map                 
    find_node_containers()
-   find_node_container_properties()
-   start_node_containers()
-   docker_control.Prune()
-   smtp.Send_Mail("node is intialized")
-   
+   if determine_hot_start() == false {
+      find_node_container_properties()
+      start_node_containers()
+      docker_control.Prune()
+      smtp.Send_Mail("node is intialized")
+   }
 
 }	
 						 

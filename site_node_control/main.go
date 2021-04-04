@@ -5,13 +5,16 @@ import "time"
 import "strconv"
 import "context"
 import "site_control.com/site_data"
-//import "site_control.com/smtp"
+import "site_control.com/smtp"
 import "site_control.com/site_control"
 import "site_control.com/node_control"
 import "site_control.com/redis_support/graph_query"
 import "site_control.com/redis_support/redis_handlers"
 import "site_control.com/redis_support/generate_handlers"
+import "site_control.com/cf_control"
 import "github.com/go-redis/redis/v8"
+
+var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
 
 func main(){
 
@@ -19,9 +22,9 @@ func main(){
 	var site_data_store map[string]interface{}
 
 	site_data_store = get_site_data.Get_site_data(config_file)
-    /*
+ 
 	var master_flag = site_data_store["master"].(bool)
-	master_flag = false
+	fmt.Println("master flag",master_flag)
 	if master_flag {
 	    smtp.Initialization( &site_data_store  , "System Control Startup")
     }else { 
@@ -34,19 +37,17 @@ func main(){
        graph_query.Graph_support_init(&site_data_store)
 	}
  	  
-
-	
-	
+ 
 	node_control.Node_Init(&site_data_store)
-    */
-	graph_query.Graph_support_init(&site_data_store)
+
+	//graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)
 	
     
-	
-	site_control.Site_Startup(&site_data_store)
-	node_control.Node_Startup(&site_data_store)
+	(CF_site_node_control_cluster).Cf_cluster_init("site_node_control",true)
+	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data_store)
+	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data_store)
 	/*
 	
 	   --- other initializations
@@ -54,9 +55,7 @@ func main(){
 	   
 	*/
 	
-	go site_control.Execute()
-    go node_control.Execute()
-    go node_control.Performance_Execute()
+	(CF_site_node_control_cluster).CF_Fork()
 	
 	
 	

@@ -59,8 +59,13 @@ func (processor_measure_type) log_data(key string, data map[string]interface{} )
 
 
 
+func initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
 
-func construct_processor_measurement_chains(cf_control *cf.CF_SYSTEM){
+
+   var cf_control  cf.CF_SYSTEM_TYPE
+
+  (cf_control).Init(cf_cluster , "node_control_processor_monitor" ,true, int64(time.Minute) )
+
 
 
 
@@ -89,7 +94,7 @@ func construct_processor_measurement_chains(cf_control *cf.CF_SYSTEM){
   var par15 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_net_edev,par15)
 
-  (cf_control).Cf_add_wait_interval(int64(time.Minute*15)  )
+  (cf_control).Cf_add_wait_interval(int64(time.Minute*9)  ) // first tick is not counted sar -u 300 1 takes 5 minutes
   (cf_control).Cf_add_reset()
 
 
@@ -130,11 +135,14 @@ func tokens_to_dict(tokens []string, header []string, start_index int) map[strin
 
 }
 
-func assemble_free_cpu( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
-   
+func assemble_free_cpu( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
+    
     fmt.Println("staring free cpu")
+	
 
-	var output = docker_control.System("sar -u 60 1 ")
+	var output = docker_control.System("sar -u 300 1 ")
+	fmt.Println("free cpu output",output)
+	
 	var lines = split_lines(output)
 	
 	var average_line = lines[len(lines)-2]
@@ -150,7 +158,7 @@ func assemble_free_cpu( system interface{},chain interface{}, parameters map[str
   return cf.CF_DISABLE
 }
 
-func assemble_ram( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_ram( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   var output = docker_control.System("cat /proc/meminfo ")
   var data = make(map[string]interface{})
@@ -173,7 +181,7 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
 
 }
 
-func assemble_temperature( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_temperature( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   var output = docker_control.System("vcgencmd measure_temp")
   var output1 = strings.Replace(output, "temp=", "", -1)
@@ -194,7 +202,7 @@ func assemble_temperature( system interface{},chain interface{}, parameters map[
   
 }
 
-func assemble_disk_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_disk_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   var output = docker_control.System("df")
  
@@ -226,7 +234,7 @@ func assemble_disk_space( system interface{},chain interface{}, parameters map[s
 
 
 
-func assemble_swap_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_swap_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
  
     var output = docker_control.System("sar -S 1 1")
@@ -247,7 +255,7 @@ func assemble_swap_space( system interface{},chain interface{}, parameters map[s
    return cf.CF_DISABLE
 }
 
-func assemble_context_switches( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_context_switches( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
    var output = docker_control.System("sar -w 1 1")
       
@@ -268,7 +276,7 @@ func assemble_context_switches( system interface{},chain interface{}, parameters
    return cf.CF_DISABLE
 }
 
-func assemble_block_io( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_block_io( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
    var output = docker_control.System("sar -d  3 1")
@@ -298,7 +306,7 @@ func assemble_block_io( system interface{},chain interface{}, parameters map[str
 }
 
 
-func assemble_io_space( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_io_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
   var output = docker_control.System("sar -b 1 1")
@@ -317,7 +325,7 @@ func assemble_io_space( system interface{},chain interface{}, parameters map[str
  
 }
 
-func assemble_run_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_run_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
     
    var output = docker_control.System("sar  -q 1 1")
@@ -337,7 +345,7 @@ func assemble_run_queue( system interface{},chain interface{}, parameters map[st
   return cf.CF_DISABLE
 }
 
-func assemble_net_edev( system interface{},chain interface{}, parameters map[string]interface{}, event *map[string]interface{}) int {
+func assemble_net_edev( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
   var output = docker_control.System("sar -n EDEV  3 1")

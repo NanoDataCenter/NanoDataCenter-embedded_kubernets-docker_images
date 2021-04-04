@@ -2,7 +2,7 @@
 
 package docker_management
 
-
+//import "fmt"
 import  "site_control.com/redis_support/generate_handlers"
 import  "site_control.com/redis_support/redis_handlers"
 import "site_control.com/redis_support/graph_query"
@@ -46,6 +46,7 @@ func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(
   (docker_handle).container_set = make(map[string]bool)
   var data_structures =  data_handler.Construct_Data_Structures(display_struct_search_list)
 
+   
   (docker_handle).hash_status = (*data_structures)["DOCKER_DISPLAY_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
   (docker_handle).error_stream = (*data_structures)["ERROR_STREAM"].(redis_handlers.Redis_Stream_Struct)
  

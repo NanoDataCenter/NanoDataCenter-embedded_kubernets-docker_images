@@ -6,6 +6,6 @@ Run pip install redis
 
 
 
-WORKDIR /Start
+WORKDIR /pod_util
  
 

@@ -5,34 +5,34 @@ import "time"
 
 
 
-func (system *CF_SYSTEM)wait_for_event()*map[string]interface{}{
+func (system *CF_SYSTEM_TYPE)wait_for_event()*CF_EVENT_TYPE{
 
   
-   var return_value = make(map[string]interface{})
-   if (*system).event_queue.Len() == 0 {
+   var return_value CF_EVENT_TYPE
+   if (system).event_queue.Len() == 0 {
     
-     time.Sleep(time.Second)
-	 return_value["event_name"] = CF_TIME_TICK
-	 return_value["value"] = time.Now().UnixNano()
+     time.Sleep(time.Duration( (system).time_tick_duration))
+	 return_value.name = CF_TIME_TICK
+	 return_value.value = time.Now().UnixNano()
 	 //fmt.Println("time_tick")
 	 
    }else{
-      var e = (*system).event_queue.Front().Value
-	  var temp = e.(map[string]interface{})
-      return_value["event_name"] = temp["event_name"]
-	  return_value["value"] = temp["value"]
+      var e = (system).event_queue.Front().Value
+	  return_value = e.(CF_EVENT_TYPE)
+      
    }
+   //fmt.Println("emitted event",return_value)
    return &return_value
 
 }
 
-func (system *CF_SYSTEM)Send_event( event_name string, value interface{} ){
+func (system *CF_SYSTEM_TYPE)Send_event( event_name string, value interface{} ){
 
-   var event = make(map[string]interface{})
-   event["evemt_name"] = event_name
-   event["value"] = value
+   var event  CF_EVENT_TYPE
+   event.name = event_name
+   event.value = value
 
-   (*system).event_queue.PushBack(&event)
+   (system).event_queue.PushBack(&event)
 }
 
 

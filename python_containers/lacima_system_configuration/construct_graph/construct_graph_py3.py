@@ -50,10 +50,14 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
 
     cd.construct_package("NODE_MONITORING")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
-    cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.add_hash("NODE_STATUS")
+    cd.add_hash("SYSTEM_CONTAINERS") # value list of nodes container is in
     cd.close_package_contruction()
    
+    cd.construct_package("SITE_REBOOT_LOG")
+    cd.add_redis_stream("SITE_REBOOT_LOG")
+    cd.close_package_contruction()
+  
     '''
     cd.construct_package("DOCKER_MONITORING")
     cd.add_redis_stream("ERROR_STREAM")
@@ -126,14 +130,26 @@ def construct_processor(name,containers):
     cd.add_redis_stream("EDEV") 
     cd.close_package_contruction()
     
-    
     cd.construct_package("DOCKER_CONTROL")
     cd.add_job_queue("DOCKER_COMMAND_QUEUE",10) #temp disable turning of containers
     cd.add_hash("DOCKER_DISPLAY_DICTIONARY")
     cd.add_redis_stream("ERROR_STREAM")
     cd.close_package_contruction()
+    
+    cd.construct_package("NODE_CONTROL")
+    cd.add_job_queue("NODE_COMMAND_QUEUE",10) #temp disable turning of containers
+    cd.add_single_element("NODE_WATCH_DOG")
+    cd.add_job_queue("NODE_UPGRADE_QUEUE",500)
+    cd.close_package_contruction()
+    
+    
+    cd.construct_package("NODE_REBOOT_LOG")
+    cd.add_redis_stream("NODE_REBOOT_LOG")
+    cd.close_package_contruction()
+  
+ 
 
-
+    '''
     cd.construct_package("DOCKER_MONITORING")
     cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
@@ -141,13 +157,13 @@ def construct_processor(name,containers):
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.add_hash("PROCESS_CONTROL")
     cd.close_package_contruction()
-    
+    '''
  
     
    
     bc.end_header_node("NODE_SYSTEM")
     
-    
+    '''
      
     bc.add_header_node("DOCKER_MONITOR",name,properties)
     cd.construct_package("DATA_STRUCTURES")
@@ -158,7 +174,7 @@ def construct_processor(name,containers):
     cd.add_hash("WEB_DISPLAY_DICTIONARY")
     cd.close_package_contruction()
     bc.end_header_node("DOCKER_MONITOR")
-    
+    '''
     
     Construct_Containers(bc,cd,containers)
     bc.end_header_node("PROCESSOR")    

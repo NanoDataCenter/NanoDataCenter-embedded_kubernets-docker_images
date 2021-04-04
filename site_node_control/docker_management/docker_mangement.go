@@ -1,6 +1,6 @@
 package docker_management
 
-import "fmt"
+//import "fmt"
 import "bytes"
 import "time"
 import "strings"
@@ -56,7 +56,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 	    check_map[running_container] = true
 	}
   }
-  fmt.Println("check_map",check_map)
+  //fmt.Println("check_map",check_map)
   for _,container := range( docker_handle).containers {
   
 	 var redis_container_status = (docker_handle).hget_status_value(container)
@@ -72,7 +72,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 	 }
 	
 	  if check_map[container] == false{
-	     fmt.Println("staritng container ",container)
+	     //fmt.Println("staritng container ",container)
 	     docker_control.Container_start(container)
 	  }
 		
