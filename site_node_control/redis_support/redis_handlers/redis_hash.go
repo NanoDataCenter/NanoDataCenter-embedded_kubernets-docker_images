@@ -36,10 +36,8 @@ func Construct_Redis_Hash(  ctx context.Context, client *redis.Client, key strin
 func (v Redis_Hash_Struct) Delete_All(field string)   {
      Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
- 	var err = v.client.Del(v.ctx, v.key ).Err()
-    if err != nil {
-	  panic(err)
-	}
+ 	v.client.Del(v.ctx, v.key ).Err()
+
 } 
 
 func (v Redis_Hash_Struct) HDel(field string)   {

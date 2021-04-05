@@ -12,8 +12,8 @@ func (system *CF_SYSTEM_TYPE)wait_for_event()*CF_EVENT_TYPE{
    if (system).event_queue.Len() == 0 {
     
      time.Sleep(time.Duration( (system).time_tick_duration))
-	 return_value.name = CF_TIME_TICK
-	 return_value.value = time.Now().UnixNano()
+	 return_value.Name = CF_TIME_TICK
+	 return_value.Value = time.Now().UnixNano()
 	 //fmt.Println("time_tick")
 	 
    }else{
@@ -29,8 +29,8 @@ func (system *CF_SYSTEM_TYPE)wait_for_event()*CF_EVENT_TYPE{
 func (system *CF_SYSTEM_TYPE)Send_event( event_name string, value interface{} ){
 
    var event  CF_EVENT_TYPE
-   event.name = event_name
-   event.value = value
+   event.Name = event_name
+   event.Value = value
 
    (system).event_queue.PushBack(&event)
 }

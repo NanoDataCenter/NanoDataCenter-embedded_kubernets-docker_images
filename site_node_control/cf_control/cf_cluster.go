@@ -2,8 +2,8 @@ package cf
 
 
 type CF_EVENT_TYPE struct{
-  name string
-  value interface{}
+  Name string
+  Value interface{}
 }
 
 var cf_link_init_event CF_EVENT_TYPE
@@ -52,16 +52,16 @@ func cf_init_chain_flow_structures(){
 
   cf_initialize_continue_map()
   //cf_link_init_event = make(map[string]interface{})
-  cf_link_init_event.name = CF_INIT_EVENT
-  cf_link_init_event.value =  nil
+  cf_link_init_event.Name = CF_INIT_EVENT
+  cf_link_init_event.Value =  nil
   
   //cf_system_start_event = make(map[string]interface{})
-  cf_system_start_event.name = CF_START_EVENT
-  cf_system_start_event.value = nil  // value is not used
+  cf_system_start_event.Name = CF_START_EVENT
+  cf_system_start_event.Value = nil  // value is not used
   
   //cf_system_terminate_event = make(map[string]interface{})
-  cf_system_terminate_event.name = CF_TERMINATE_EVENT
-  cf_system_terminate_event.value = nil  // value is not used
+  cf_system_terminate_event.Name = CF_TERMINATE_EVENT
+  cf_system_terminate_event.Value = nil  // value is not used
 
 }
 

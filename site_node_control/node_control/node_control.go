@@ -5,7 +5,8 @@ import "fmt"
 import "time"
 import "site_control.com/docker_management"
 import "site_control.com/cf_control"
-
+import "site_control.com/node_control/node_processor_monitoring"
+import "site_control.com/node_control/monitor_command_upgrade_queues"
 
 
 var docker_handle docker_management.Docker_Handle_Type
@@ -23,11 +24,11 @@ func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
     (docker_handle).Initialize_Docker_Monitor( &container_search_list, &display_struct_search_list,site_data)
     (docker_handle).Clean_Up_Data_Structures()
 	(docker_handle).Set_Initial_Hash_Values_Values()
-	init_processor_data_structures(site_data )
-	node_command_queue_structures(site_data)
+	node_perform.Init_processor_data_structures(site_data )
+	node_up.Node_command_queue_structures(site_data)
 	initialize_node_docker_monitoring(cf_cluster)
-	initialize_node_processor_performance(cf_cluster)
-	initialize_node_job_server_watch_dog_cf(cf_cluster)
+	node_perform.Initialize_node_processor_performance(cf_cluster)
+	node_up.Initialize_node_job_server_watch_dog_cf(cf_cluster)
 }
 
 

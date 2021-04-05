@@ -6,8 +6,8 @@ import "time"
 import "strings"
 import "strconv"
 import "site_control.com/docker_control"
+import  "site_control.com/Patterns/msgpack"
 import "github.com/msgpack/msgpack-go"
-
 
 // panic("dd") //(docker_handle).hdel_container_status_key(key)
 
@@ -114,11 +114,10 @@ func (docker_handle *Docker_Handle_Type) store_performance_data (container strin
   var driver_array = (docker_handle).docker_performance_drivers[container]
   var driver = driver_array[redis_key]
   
-  var b bytes.Buffer
-	
-  msgpack.Pack(&b, output_data)
+   var b bytes.Buffer	
+   msgpack.Pack(&b,output_data)
 
-  driver.Xadd(b.String() )
+  driver.Xadd(b.String())
 
 
 }
@@ -200,19 +199,14 @@ func (docker_handle Docker_Handle_Type) hget_status_value( field string ) *map[s
 
 
    var driver = (docker_handle).hash_status
-   var msgpack_data string
    
-   msgpack_data = driver.HGet(field)   
+   
+   var v = msgpack_utils.Unpack(driver.HGet(field) )  
 
-   var buf = bytes.NewBufferString(msgpack_data)
-   v, _, err := msgpack.Unpack(buf)
-   
-	if err != nil {
-		panic("bad msgpack data 1")
-	}
+ 
 	
 	var return_value = make(map[string]bool)
-	for key, value := range v.Interface().(map[interface{}]interface{}) {
+	for key, value := range v.(map[interface{}]interface{}) {
 	   return_value[key.(string)] = value.(bool)
 	}
 	return &return_value
@@ -226,12 +220,10 @@ func (docker_handle Docker_Handle_Type) hset_status_values( field string, value 
 
    // convert bool to msgpack
     var driver = (docker_handle).hash_status
-    var b bytes.Buffer
-	
-	msgpack.Pack(&b,*value)
-	var output = b.String()
-	
-    driver.HSet(field,output)
+ 
+    var b bytes.Buffer	
+    msgpack.Pack(&b,*value)	
+    driver.HSet(field, b.String())
 
 }
 
@@ -245,10 +237,8 @@ func (docker_handle Docker_Handle_Type) xadd_status_stream(container string ,red
    for key,value := range *redis_container_status{
       return_value[key] = value
   }
-  var b bytes.Buffer
-	
-  msgpack.Pack(&b,return_value)
-
+  var b bytes.Buffer	
+   msgpack.Pack(&b,return_value)	
   driver.Xadd(b.String())
 }
    

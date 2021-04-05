@@ -44,7 +44,7 @@ func (system *CF_SYSTEM_TYPE) add_opcode( op_code string, function CF_Function_t
 func cf_op_unfiltered_element( system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
 
    var helper_function = parameters["__helper_function__"].(CF_helper_function)
-   if (*event).name == CF_INIT_EVENT {
+   if (*event).Name == CF_INIT_EVENT {
       
      
 	  return helper_function(system,chain , parameters, event)
@@ -58,7 +58,7 @@ func cf_op_unfiltered_element( system interface{},chain interface{}, parameters 
 
 func cf_op_enable_chains(system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
 
-  if (*event).name == CF_INIT_EVENT {
+  if (*event).Name == CF_INIT_EVENT {
       var system = system.(*CF_SYSTEM_TYPE)
       var chain_list = parameters["chains"].([]string)
       (system).CF_enable_chains(chain_list)
@@ -69,7 +69,7 @@ func cf_op_enable_chains(system interface{},chain interface{}, parameters map[st
 func cf_op_disable_chains(system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
 
 
-  if (*event).name == CF_INIT_EVENT {
+  if (*event).Name == CF_INIT_EVENT {
       var system = system.(*CF_SYSTEM_TYPE)
       var chain_list = parameters["chains"].([]string)
       (system).CF_disable_chains(chain_list)
@@ -80,7 +80,7 @@ func cf_op_disable_chains(system interface{},chain interface{}, parameters map[s
 func cf_op_log_message(system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
 
    
-   if (*event).name == CF_INIT_EVENT {
+   if (*event).Name == CF_INIT_EVENT {
      var chain_name = parameters["chain_name"].(string)
 	 var system_name = parameters["system_name"].(string)
 	 var output = "system:  "+ system_name + "     chain:  "+chain_name +"  msg:  "+parameters["log_messge"].(string)
@@ -116,16 +116,16 @@ func cf_op_wait_interval(system interface{},chain interface{}, parameters map[st
    var return_code int = CF_HALT
   
 
-   if (*event).name == CF_INIT_EVENT {
+   if (*event).Name == CF_INIT_EVENT {
       //fmt.Println("only once")
       parameters["__count__"] = parameters["ref_time"].(int64) + time.Now().UnixNano()
 	  //fmt.Println("parameters",parameters)
 	  
    }
    
-   if (*event).name == CF_TIME_TICK {
+   if (*event).Name == CF_TIME_TICK {
       
-      if  (*event).value.(int64) >= parameters["__count__"].(int64){
+      if  (*event).Value.(int64) >= parameters["__count__"].(int64){
 	    
 	    return_code = CF_DISABLE
 	  }
@@ -146,7 +146,7 @@ func cf_op_one_step( system interface{},chain interface{}, parameters map[string
    
   
 
-   if (*event).name == CF_INIT_EVENT {
+   if (*event).Name == CF_INIT_EVENT {
       
       var helper_function = parameters["__helper_function__"].(CF_helper_function)
 	  helper_function(system,chain , parameters, event)

@@ -34,11 +34,8 @@ func (v Redis_Job_Queue) Delete_all()   {
 	defer UnLock_Redis_Mutex()
 
     
-	err :=v.client.Del(v.ctx, v.key )
-	 if err != nil {
-	   panic(err)
-	 }
-   
+	v.client.Del(v.ctx, v.key )
+  
 }
 
 func (v Redis_Job_Queue) Length() int64  {

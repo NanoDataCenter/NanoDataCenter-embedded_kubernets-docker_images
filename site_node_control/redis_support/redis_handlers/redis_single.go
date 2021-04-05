@@ -38,10 +38,19 @@ func (v Redis_Single_Structure) Get() string {
 func (v Redis_Single_Structure) Set( value string)  {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
-    err :=v.client.Set(v.ctx,v.key,value,0) // no expiration
-	if err != nil{
-	  panic(err)
-	}
+    v.client.Set(v.ctx,v.key,value,0) // no expiration
+	
 	
 
+}
+
+func (v Redis_Single_Structure) Delete_all()   {
+
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+
+    
+	v.client.Del(v.ctx, v.key )
+
+   
 }

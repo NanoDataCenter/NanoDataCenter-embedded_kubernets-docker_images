@@ -5,7 +5,7 @@ import "fmt"
 import "time"
 import "site_control.com/docker_management"
 import "site_control.com/cf_control"
-
+import "site_control.com/site_control/site_control_up_grade"
 
 var docker_handle docker_management.Docker_Handle_Type
 
@@ -22,11 +22,12 @@ func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
     (docker_handle).Initialize_Docker_Monitor( &container_search_list, &display_struct_search_list,site_data)
     (docker_handle).Clean_Up_Data_Structures()
 	(docker_handle).Set_Initial_Hash_Values_Values()
-	initialize_site_monitoring_data_structures( site_data)
+	site_control_upgrade.Initialize_site_monitoring_data_structures( site_data)
 	initialize_site_docker_monitoring(cf_cluster)
 	initialize_site_docker_performance_monitoring(cf_cluster)
-	initialize_site_monitoring_chains(cf_cluster)
+	site_control_upgrade.Initialize_site_monitoring_chains(cf_cluster)
 }
+
 
 
 

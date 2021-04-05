@@ -1,0 +1,131 @@
+import docker
+import os
+
+
+class Docker_Interface(object):
+
+   def __init__(self):
+       self.client = docker.from_env()
+
+   def containers_ls_runing(self): # tested
+       container_list = self.client.containers.list()
+       names = []
+       for i in container_list:
+           names.append(i.name)
+       return names
+       
+   def containers_ls_all(self): #tested
+       container_list = self.client.containers.list(all=True)
+       names = []
+       for i in container_list:
+           names.append(i.name)
+       return names
+
+       
+       
+   def container_start(self,container): #tested
+       i = self.client.containers.get(container)
+       i.start()
+       
+       
+   def container_stop(self,container): #tested
+       i = self.client.containers.get(container)
+       i.stop()
+       
+   def container_up(self,container,startup_script): #tested
+       container_object = self.get(container)
+       if container_object == None:
+          os.system(startup_script)
+       else:
+          self.container_start(container)
+       
+   def container_rm(self,container): # tested
+       if container in self.containers_ls_all():
+           container_object = self.client.containers.get(container)
+           if container_object != None:
+              container_object.remove()
+              
+   def prune(self):
+       return self.client.images.prune()
+       
+       
+   def push(self,image):
+        return self.client.images.push(image)
+        
+   def pull(self,image):
+       return self.client.images.pull(image)
+
+   def images(self): #tested
+       return_value = []
+       image_object_list = self.client.images.list()
+       for image_object in image_object_list:
+         try:
+              temp = image_object.attrs["RepoTags"][0]
+         except:
+              temp = "blank"  # place holder
+         string_list = temp.split(":")
+         if string_list[0] != "blank":
+            return_value.append(string_list[0])
+       return return_value
+                     
+   def images_raw(self): #tested
+       return_value = []
+       image_object_list = self.client.images.list()
+       for image_object in image_object_list:
+         try:
+              temp = image_object.attrs["RepoTags"][0]
+         except:
+              temp = "blank"  # place holder
+         string_list = temp.split(":")
+         if string_list[0] != "blank":
+            return_value.append(string_list)
+       return return_value
+   
+   def image_rmi(self,deleted_image): # tested
+       self.client.images.remove(image=deleted_image)
+
+   def look_up_containers(self,container_list): #tested
+       return_value = []
+       for container_name in container_list:
+           container_object =  self.get(container_name)
+           return_value.append(container_object) 
+       return return_value    
+
+       
+   def get(self,id): # tested
+       try:
+           i = self.client.containers.get(id)
+           temp = {}
+           temp["image"] = i.image
+           temp["name"]  = i.name
+           temp["status"] =i.status
+           return temp
+       except:
+           return None       
+
+   def upgrade_container(self,container,build_script):
+
+       if self.get(container) != None:
+           self.container_stop(container)
+           self.container_rm(container)
+       try:
+           self.image_rmi(container)
+       except:
+          pass
+       os.system(build_script)
+       
+ 
+          
+   
+if __name__ == "__main__":
+   docker_interface = Docker_Interface()
+   #print(docker_interface.containers_ls_runing())
+   #print(docker_interface.containers_ls_all())
+   #print(docker_interface.get("redis"))
+   #print(docker_interface.container_stop("redis"))
+   #print(docker_interface.container_start("redis"))
+   #print(docker_interface.images())
+   #print(docker_interface.look_up_containers(["redis"]))    
+   #print(docker_interface.container_rm("redis"))
+   print(docker_interface.upgrade_container("redis",'/home/pi/pod_control/docker_images/redis/docker_run.bsh'))
+   
