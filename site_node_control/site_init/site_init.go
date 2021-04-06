@@ -146,7 +146,7 @@ func Site_Init(  site_data *map[string]interface{} ){
 	graph_container_image = (*site_data)["graph_container_image"].(string)
     graph_container_script = (*site_data)["graph_container_script"].(string)			 
 						 
-    var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/mnt/ssd/redis,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
+    var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/home/pi/redis_data,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
 	
     var password_script ="python3 /mnt/ssd/site_config/passwords.py"
     //var redis_image = "nanodatacenter/redis" 

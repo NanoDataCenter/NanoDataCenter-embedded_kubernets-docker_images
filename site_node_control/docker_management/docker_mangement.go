@@ -1,6 +1,6 @@
 package docker_management
 
-//import "fmt"
+import "fmt"
 import "bytes"
 import "time"
 import "strings"
@@ -90,10 +90,12 @@ func (docker_handle *Docker_Handle_Type)Log_Container_Performance_Data(){
 
    for _,container := range (docker_handle).containers {
        var working_values = (docker_handle).generate_parsed_fields(container)
-	   (*docker_handle).store_performance_data(container, "cpu", "PROCESS_CPU",working_values)
-	   (*docker_handle).store_performance_data(container, "rsz", "PROCESS_RSS",working_values)
-	   (*docker_handle).store_performance_data(container, "vsz", "PROCESS_VSZ",working_values)
+	   if working_values != nil {
 	   
+	     (*docker_handle).store_performance_data(container, "cpu", "PROCESS_CPU",working_values)
+	     (*docker_handle).store_performance_data(container, "rsz", "PROCESS_RSS",working_values)
+	     (*docker_handle).store_performance_data(container, "vsz", "PROCESS_VSZ",working_values)
+	   }
    }	  
   
 
@@ -105,7 +107,7 @@ func (docker_handle *Docker_Handle_Type) store_performance_data (container strin
 
   var output_data = make(map[string]float64)
   
-  
+  fmt.Println("working_data",working_values)
   
   for process, data := range *working_values {
     output_data[process] = data[data_key]

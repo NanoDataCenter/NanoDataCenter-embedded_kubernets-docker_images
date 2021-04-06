@@ -93,11 +93,15 @@ func match_containers(running_containers []string, match_element string )bool{
 func determine_hot_start() bool {
 
   var running_containers = docker_control.Containers_ls_runing()
-  for _,name := range running_containers{
+  
+  for _,name := range node_init_containers{
      if match_containers(running_containers,name) == false {
+
 	   return false
 	 }
   }
+  fmt.Println("this should not happen")
+  
   return true
   
 

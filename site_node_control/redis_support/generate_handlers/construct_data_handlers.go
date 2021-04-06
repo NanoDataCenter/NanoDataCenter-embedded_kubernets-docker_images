@@ -2,6 +2,7 @@ package data_handler
 
 import "context"
 import "fmt"
+import "time"
 //import "reflect"
 import "strconv"
 import "site_control.com/redis_support/graph_query"
@@ -34,7 +35,8 @@ func create_redis_data_handle(){
 	fmt.Println("redis data",address_port,db)
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
-												
+												 ReadTimeout : time.Second*30,
+												 WriteTimeout : time.Second*30,
 												 DB: db,
                                                })
 	err := client.Ping(ctx).Err();
