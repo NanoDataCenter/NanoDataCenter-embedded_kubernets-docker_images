@@ -115,6 +115,11 @@ def construct_processor(name,containers):
     properties = {}
     properties["command_list"] = [{"file":"pi_monitoring_py3.py","restart":True},{"file":"docker_control_py3.py","restart":True}]
     bc.add_header_node("NODE_SYSTEM",properties=properties)
+
+
+    cd.construct_package("SITE_NODE_CONTROL_LOG")
+    cd.add_redis_stream("ERROR_STREAM") # for entire processor
+    cd.close_package_contruction()
     
     cd.construct_package("PROCESSOR_MONITORING")
 
