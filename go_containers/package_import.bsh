@@ -1,0 +1,6 @@
+go get github.com/badgerodon/collections 
+go get github.com/glycerine/zygomys 
+go get github.com/go-redis/redis/v8 
+go get github.com/golang-collections/collections 
+go get github.com/msgpack/msgpack-go 
+go get github.com/polydawn/gosh 
