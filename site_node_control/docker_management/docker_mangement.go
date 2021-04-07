@@ -1,6 +1,6 @@
 package docker_management
 
-import "fmt"
+//import "fmt"
 import "bytes"
 import "time"
 import "strings"
@@ -107,7 +107,7 @@ func (docker_handle *Docker_Handle_Type) store_performance_data (container strin
 
   var output_data = make(map[string]float64)
   
-  fmt.Println("working_data",working_values)
+  //fmt.Println("working_data",working_values)
   
   for process, data := range *working_values {
     output_data[process] = data[data_key]

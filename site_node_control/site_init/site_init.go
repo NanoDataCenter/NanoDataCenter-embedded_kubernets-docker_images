@@ -42,6 +42,7 @@ func start_system_containers(){
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
 	   fmt.Println("should not happen")
+	   //panic(value["container_image"])
 	   docker_control.Pull(value["container_image"])
 	}
 	docker_control.Container_rm(value["name"])

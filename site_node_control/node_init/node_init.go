@@ -41,6 +41,7 @@ func start_node_containers(){
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
 	   fmt.Println("should not happen")
+	   //panic(value["container_image"])
 	   docker_control.Pull(value["container_image"])
 	}
 	docker_control.Container_rm(value["name"])
@@ -100,7 +101,7 @@ func determine_hot_start() bool {
 	   return false
 	 }
   }
-  fmt.Println("this should not happen")
+  
   
   return true
   

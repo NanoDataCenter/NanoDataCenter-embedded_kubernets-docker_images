@@ -51,7 +51,8 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.construct_package("NODE_MONITORING")
     cd.add_job_queue("WEB_COMMAND_QUEUE",1)
     cd.add_hash("NODE_STATUS")
-    cd.add_hash("SYSTEM_CONTAINERS") # value list of nodes container is in
+    cd.add_redis_stream("ERROR_STREAM")
+    cd.add_hash("SYSTEM_CONTAINER_IMAGES") # value list of nodes container is in
     cd.close_package_contruction()
    
     cd.construct_package("SITE_REBOOT_LOG")
@@ -232,7 +233,7 @@ if __name__ == "__main__" :
 
    '''
    properties = {}
-   properties["services"] = [ "redis", "file_server" ]
+   properties["containers"] = [ "redis", "file_server" ]
    properties["address"] = "21005 Paseo Montana Murrieta, Ca 92562" 
   
    bc.add_header_node( "SITE","LACIMA_SITE",  properties = properties )

@@ -1,6 +1,6 @@
 package node_up
 
-import "fmt"
+//import "fmt"
 import "time"
 import "bytes"
 import "site_control.com/cf_control"
@@ -146,13 +146,13 @@ func  Initialize_node_job_server_watch_dog_cf(cf_cluster *cf.CF_CLUSTER_TYPE){
    (cf_control).Cf_add_reset()
   
    (cf_control).Add_Chain("monitor_node_command_queue",true) // monitor command from site_contol
-   (cf_control).Cf_add_log_link("monitor_node_command_queue")
+   
    parameters = make(map[string]interface{}) 
    (cf_control).Cf_add_unfiltered_element(node_process_job_queue,parameters)
    (cf_control).Cf_add_reset()
    
    (cf_control).Add_Chain("monitor_upgrade_queue",true) // monitor command from site_contol
-   (cf_control).Cf_add_log_link("monitor_node_command_queue")
+   
    parameters = make(map[string]interface{}) 
    (cf_control).Cf_add_unfiltered_element(node_process_upgrade_queue,parameters)
    (cf_control).Cf_add_reset()
@@ -161,9 +161,9 @@ func  Initialize_node_job_server_watch_dog_cf(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 func node_strobe_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-  fmt.Println("node stobe watch dog ")
+ 
   (node_upgrade_data_structures ).store_time_stamp()
-  fmt.Println("ts",(node_upgrade_data_structures ).get_time_stamp())
+ 
   return cf.CF_DISABLE
   
 }
@@ -172,7 +172,7 @@ func node_strobe_watch_dog( system interface{},chain interface{}, parameters map
   
 func node_process_job_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-  fmt.Println("monitor and process job queue ")
+  
   job_length, job_data := (node_upgrade_data_structures ).get_command_queue()
   
   if job_length != 0 {
@@ -189,7 +189,7 @@ func node_process_job_queue( system interface{},chain interface{}, parameters ma
 
 func node_process_upgrade_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-  fmt.Println("monitor upgrade queue ")
+  
     job_length, job_data := (node_upgrade_data_structures ).get_upgrade_queue()
   
   if job_length != 0 {
