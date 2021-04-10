@@ -1,7 +1,7 @@
 package site_control
 
 
-import "fmt"
+//import "fmt"
 import "time"
 import "site_control.com/docker_management"
 import "site_control.com/cf_control"
@@ -50,7 +50,7 @@ func  initialize_site_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
    var parameters = make(map[string]interface{})
   (cf_control).Cf_add_one_step(docker_monitor,parameters)
   
-   (cf_control).Cf_add_wait_interval(int64(time.Second*9)  )  // first time tick does not count aim for every 15 seconds
+   (cf_control).Cf_add_wait_interval(int64(time.Second*15)  )  // first time tick does not count aim for every 15 seconds
    (cf_control).Cf_add_reset()
   
    
@@ -78,7 +78,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 	
    
  
-     fmt.Println("site_control-docker_monitor")
+     //fmt.Println("site_control-docker_monitor")
 	 (docker_handle).Monitor_Containers()
      return cf.CF_DISABLE
 }
@@ -86,7 +86,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 
 func docker_performance_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-   fmt.Println("site+control docker_performance_monitor") 
+   //fmt.Println("site+control docker_performance_monitor") 
   (docker_handle).Log_Container_Performance_Data()
   return cf.CF_DISABLE
 }

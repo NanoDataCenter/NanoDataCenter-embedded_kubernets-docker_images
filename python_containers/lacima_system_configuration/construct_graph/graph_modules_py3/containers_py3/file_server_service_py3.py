@@ -5,7 +5,7 @@ from .container_utilities_py3 import End_Container
 class File_System_Service(object):
 
     def __init__(self,bc,cd,name):
-       container_run_script = "docker run   -d  --network host   --name file_server        --mount type=bind,source=/mnt/ssd/site_config,target=/data/   --mount type=bind,source=/mnt/ssd/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"   
+       container_run_script = "docker run   -d  --network host   --name file_server        --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/site_config,target=/data/   --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/files/,target=/files/  nanodatacenter/file_server /bin/bash file_server_control.bsh"   
          
               
        Start_Container(bc,cd,name,container_run_script,[],"nanodatacenter/file_server")             

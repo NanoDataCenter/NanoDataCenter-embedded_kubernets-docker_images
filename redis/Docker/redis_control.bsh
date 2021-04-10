@@ -1,6 +1,8 @@
 
 while [ 1 ]
 do
+   echo "checking redis append only file"
+   /pod_util/redis-check-aof --fix /data/appendonly.aof
    echo "redis starting "
    /pod_util/redis-server /pod_util/redis.conf 2> /data/redis_error.err
    echo "redis server crashing" 

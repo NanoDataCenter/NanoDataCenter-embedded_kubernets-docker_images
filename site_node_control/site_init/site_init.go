@@ -147,9 +147,9 @@ func Site_Init(  site_data *map[string]interface{} ){
 	graph_container_image = (*site_data)["graph_container_image"].(string)
     graph_container_script = (*site_data)["graph_container_script"].(string)			 
 						 
-    var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/home/pi/redis_data,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
+    var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/redis,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
 	
-    var password_script ="python3 /mnt/ssd/site_config/passwords.py"
+    var password_script ="python3 /home/pi/passwords.py"
     //var redis_image = "nanodatacenter/redis" 
 
 
@@ -167,7 +167,8 @@ func Site_Init(  site_data *map[string]interface{} ){
    
       docker_control.Pull(graph_container_image)
       docker_control.Container_Run(graph_container_script)
-      docker_control.System(password_script)
+	  
+      fmt.Println(docker_control.System_shell(password_script))
    
       graph_query.Graph_support_init(site_data)
       determine_system_containers()

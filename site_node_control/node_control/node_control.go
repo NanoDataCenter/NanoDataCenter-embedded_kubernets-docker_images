@@ -1,7 +1,7 @@
 package node_control
 
 
-import "fmt"
+//import "fmt"
 import "time"
 import "site_control.com/docker_management"
 import "site_control.com/cf_control"
@@ -60,29 +60,7 @@ func  initialize_node_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
    
    (cf_control).Cf_add_wait_interval(int64(time.Minute*15)  )
    (cf_control).Cf_add_reset()
-/*  
-   (cf_control).Add_Chain("node_watch_dog",true)
-   //(cf_control).Cf_add_log_link("container_performance_loop")
-   // send watch_dog 
-   
-   (cf_control).Cf_add_wait_interval(int64(time.Decond*15)  )
-   (cf_control).Cf_add_reset()
-   
-    (cf_control).Add_Chain("node_command_queue",true)
-   //(cf_control).Cf_add_log_link("container_performance_loop")
-   // send watch_dog 
-   
-   (cf_control).Cf_add_wait_interval(int64(time.Second)  )
-   (cf_control).Cf_add_reset()
-    
-   (cf_control).Add_Chain("node_docker_upgrade_queue",true)
-   //(cf_control).Cf_add_log_link("container_performance_loop")
-   // send watch_dog 
-   
-   (cf_control).Cf_add_wait_interval(int64(time.Second)  )
-   (cf_control).Cf_add_reset()
-*/  
-     
+
    
    
    
@@ -96,7 +74,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 	
    
 
-     fmt.Println("node_control_docker_monitor")
+     //fmt.Println("node_control_docker_monitor")
 	 (docker_handle).Monitor_Containers()
      return cf.CF_DISABLE
 }
@@ -104,7 +82,7 @@ func docker_monitor( system interface{},chain interface{}, parameters map[string
 
 func docker_performance_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-  fmt.Println("node_control_performance_monitor")
+  //fmt.Println("node_control_performance_monitor")
   (docker_handle).Log_Container_Performance_Data()
   return cf.CF_DISABLE
 }

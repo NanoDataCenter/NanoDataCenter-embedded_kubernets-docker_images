@@ -1,5 +1,6 @@
 package main
 
+
 import "fmt"
 import "time"
 import "strconv"
@@ -14,13 +15,31 @@ import "site_control.com/redis_support/graph_query"
 import "site_control.com/redis_support/redis_handlers"
 import "site_control.com/redis_support/generate_handlers"
 import "site_control.com/cf_control"
+import "site_control.com/docker_control"
 import "github.com/go-redis/redis/v8"
 
 var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
 
+func handle_mount_panic() {
+  
+    if a := recover(); a != nil {
+        fmt.Println("RECOVER", a)
+    }
+}
+
+func mount_usb_drive(){
+  defer handle_mount_panic()
+  fmt.Println(docker_control.System_shell("mount /dev/sda1 /home/pi/mountpoint"))
+
+}
+
+
 func main(){
 
-	var config_file = "/mnt/ssd/site_config/redis_server.json"
+    mount_usb_drive()
+      
+		
+	var config_file = "/home/pi/mountpoint/lacuma_conf/site_config/redis_server.json"
 	var site_data_store map[string]interface{}
 
 	site_data_store = get_site_data.Get_site_data(config_file)
