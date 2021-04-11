@@ -134,7 +134,7 @@ func  Initialize_node_job_server_watch_dog_cf(cf_cluster *cf.CF_CLUSTER_TYPE){
 
    var cf_control  cf.CF_SYSTEM_TYPE
 
-   (cf_control).Init(cf_cluster ,"node_command_queue_watch_dog",true, int64(time.Second))
+   (cf_control).Init(cf_cluster, "node_command_queue_watch_dog",true, time.Second)
    
    
    
@@ -142,7 +142,7 @@ func  Initialize_node_job_server_watch_dog_cf(cf_cluster *cf.CF_CLUSTER_TYPE){
    
    var parameters = make(map[string]interface{})
    ( cf_control).Cf_add_one_step(node_strobe_watch_dog,parameters)
-   (cf_control).Cf_add_wait_interval(int64(time.Second*14)  ) // every 15 seconds
+   (cf_control).Cf_add_wait_interval(time.Second*15  ) // every 15 seconds
    (cf_control).Cf_add_reset()
   
    (cf_control).Add_Chain("monitor_node_command_queue",true) // monitor command from site_contol
@@ -174,7 +174,7 @@ func node_process_job_queue( system interface{},chain interface{}, parameters ma
 
   
   job_length, job_data := (node_upgrade_data_structures ).get_command_queue()
-  
+  //fmt.Println("node job queue")
   if job_length != 0 {
       var job_name = (*job_data).Name
       if   _,flag := job_table[(*job_data).Name]; flag == false {
@@ -191,7 +191,7 @@ func node_process_upgrade_queue( system interface{},chain interface{}, parameter
 
   
     job_length, job_data := (node_upgrade_data_structures ).get_upgrade_queue()
-  
+  //fmt.Println("node upgrade queue")
   if job_length != 0 {
     var container_image = (*job_data).Name
     docker_control.Pull(container_image)

@@ -1,4 +1,5 @@
 package cf
+import "time"
 
 func (system *CF_SYSTEM_TYPE) CF_add_generic_link( link_data *CF_LINK_TYPE){
 
@@ -48,14 +49,14 @@ func (system *CF_SYSTEM_TYPE) Cf_add_terminate( ){
 
    (system).CF_add_generic_link( &temp) 
 }
-func (system *CF_SYSTEM_TYPE) Cf_add_wait_interval( delta_duration int64 ){
+func (system *CF_SYSTEM_TYPE) Cf_add_wait_interval( delta_duration time.Duration ){
 
    var temp CF_LINK_TYPE
 
    temp.initialized = false
    temp.active = false
    temp.parameters = make(map[string]interface{})
-   temp.parameters["ref_time"] = delta_duration
+   temp.parameters["ref_time"] = int64(delta_duration)
    temp.opcode_type = "Wait_Interval"
 
    (system).CF_add_generic_link( &temp)

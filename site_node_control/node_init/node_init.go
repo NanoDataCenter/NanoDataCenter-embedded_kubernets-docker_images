@@ -4,7 +4,7 @@ package node_init
 import ( 
 "fmt"
 "context"
-
+"time"
 
 
 
@@ -108,6 +108,14 @@ func determine_hot_start() bool {
 
 }
 
+func verify_node_containers(){
+
+ for _,value := range node_init_containers{
+   if docker_control.Container_is_running(value )== false{
+     panic("container "+value+"is not running")
+   }
+ }
+}
 
 	   
 func Node_Init(  site_map *map[string]interface{} ){ 
@@ -116,6 +124,8 @@ func Node_Init(  site_map *map[string]interface{} ){
    if determine_hot_start() == false {
       find_node_container_properties()
       start_node_containers()
+	  time.Sleep(time.Second*5)
+	  verify_node_containers()
       docker_control.Prune()
       smtp.Send_Mail("node is intialized")
    }

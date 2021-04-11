@@ -1,6 +1,7 @@
 package cf
 
 //import "fmt"
+
 func (cf_system *CF_SYSTEM_TYPE) cf_initialize_chain( chain_data  *CF_CHAIN_TYPE){
      (*chain_data).initialized = true
 	 
@@ -14,8 +15,11 @@ func (cf_system *CF_SYSTEM_TYPE) cf_execute_chain( chain_data  *CF_CHAIN_TYPE, e
 	 var return_value int
 	 var count int
 	 count = 0
+
 	 for _, link := range (*chain_data).links {
+	      
 	      if link.active == true {
+
 		  count = count +1
 	       return_value = (cf_system).cf_execute_link(chain_data, link, event_data )
 		   if (cf_system).analyize_return_code( chain_data, link,return_value) == false{
@@ -41,8 +45,9 @@ func (cf_system *CF_SYSTEM_TYPE) cf_disable_link( link_data  *CF_LINK_TYPE){
 }
 
 func (cf_system *CF_SYSTEM_TYPE) cf_execute_link(chain_data *CF_CHAIN_TYPE, link_data  *CF_LINK_TYPE, event_data *CF_EVENT_TYPE)int {
-  
+    
     if (*link_data).initialized == false{
+	    
 	    cf_system.op_code_map[(*link_data).opcode_type](cf_system,chain_data,(*link_data).parameters, &cf_link_init_event ) 
 		(*link_data).initialized = true
      }

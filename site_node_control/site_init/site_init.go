@@ -31,7 +31,32 @@ var containers = make([]string,0)
 var site_containers = make([]map[string]string,0)
 
 
+func verify_system_containers(){
 
+ for _,value := range site_containers{
+   if docker_control.Container_is_running(value["name"] )== false{
+     panic("container "+value["name"]+"is not running")
+   }
+ }
+}
+
+func start_stopped_system_containers(){
+  for _,value := range site_containers{
+    if value["name"] == "redis" {
+	  fmt.Println("found redis")
+	  continue
+	}
+	 if docker_control.Container_is_running(value["name"]) == false{
+	     if docker_control.Image_Exists(value["container_image"]) == false{
+	       fmt.Println("should not happen")
+	       //panic(value["container_image"])
+	       docker_control.Pull(value["container_image"])
+	      }
+	      docker_control.Container_rm(value["name"])
+	     docker_control.Container_up(value["name"],value["startup_command"])
+	}
+  }
+}
 
 
 func start_system_containers(){
@@ -112,6 +137,11 @@ func wait_for_redis_connection(address string, port int ) {
 func  startup_redis_container(redis_startup_script string){
       fmt.Println("start redis container")
 	  docker_control.Container_up("redis",redis_startup_script)
+	  time.Sleep(time.Second*4)
+	  if docker_control.Container_is_running("redis") == false{
+	     panic("redis container did not start")
+	  }
+	 
 }	 
 
 
@@ -164,8 +194,9 @@ func Site_Init(  site_data *map[string]interface{} ){
       fmt.Println("redis is up")
   
    
-   
-      docker_control.Pull(graph_container_image)
+      if docker_control.Image_Exists(graph_container_image)== false {
+          docker_control.Pull(graph_container_image)
+	  }
       docker_control.Container_Run(graph_container_script)
 	  
       fmt.Println(docker_control.System_shell(password_script))
@@ -177,11 +208,18 @@ func Site_Init(  site_data *map[string]interface{} ){
       docker_control.Prune()
      smtp.Send_Mail("site is intialized")
    }else {
-     graph_query.Graph_support_init(site_data)
+         graph_query.Graph_support_init(site_data)  // only start containers that are not running
+		 find_site_containers()
+		 start_stopped_system_containers()
+		 docker_control.Prune()
+		 
    }
+   time.Sleep(time.Second*5) // allow containers to startup_command
+   verify_system_containers()
 
 }	
 						 
+
 
 
 

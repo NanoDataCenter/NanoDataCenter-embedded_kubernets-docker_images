@@ -13,26 +13,19 @@ var cf_continue_map map[int]bool
 
 
 type CF_CLUSTER_TYPE struct {
-  name string   // extensions to higher order
-  active bool   // extensions to hiher order
-  value interface{}
   
-  // in future map want to add a special opcode map
-  // in future add channel
-  system_map   map[string]*CF_SYSTEM_TYPE
-  system_order []*CF_SYSTEM_TYPE
+  system_map   map[string]map[string]*CF_SYSTEM_TYPE
   current_system *CF_SYSTEM_TYPE
+  current_row string
 
 }
          
-func (cf_cluster *CF_CLUSTER_TYPE) Cf_cluster_init(name string , active bool){
+func (cf_cluster *CF_CLUSTER_TYPE) Cf_cluster_init(){
 
    cf_init_chain_flow_structures()
-   (cf_cluster).active = active
-   (cf_cluster).name   = name
-   (cf_cluster).value = nil
-   (cf_cluster).system_map = make(map[string]*CF_SYSTEM_TYPE)
+   (cf_cluster).system_map = make(map[string]map[string]*CF_SYSTEM_TYPE)
    (cf_cluster).current_system = nil
+   (cf_cluster).current_row = ""
 
 }
 
@@ -65,18 +58,30 @@ func cf_init_chain_flow_structures(){
 
 }
 
-func (cf_cluster *CF_CLUSTER_TYPE) CF_add_cf_system(cf_system *CF_SYSTEM_TYPE, active bool){
+func (cf_cluster *CF_CLUSTER_TYPE) Cf_set_current_row( row string){
+  (*cf_cluster).current_row = row
+}
 
-  (*cf_system).active = active
-  var name = (*cf_system).name
 
-  _,err := (cf_cluster).system_map[name] 
+func (cf_cluster *CF_CLUSTER_TYPE) CF_add_cf_system(cf_system *CF_SYSTEM_TYPE,name string){
+
+  var row = (cf_cluster ).current_row
+  if row == "" {
+    panic("need to set current row") 
+  }
+  
+
+  if _,ok := (cf_cluster).system_map[row ];ok==false{
+        (cf_cluster).system_map[row ] = make(map[string]*CF_SYSTEM_TYPE)
+   }
+
+  _,err := (cf_cluster).system_map[row ][name] 
   if err == true  {
     panic("cf_system is already defined")
   }
-
- (cf_cluster).system_map[name] = cf_system
- (cf_cluster).system_order = append(cf_cluster.system_order,cf_system)
+  
+ (cf_cluster).system_map[row ][name] = cf_system
+ (cf_cluster).current_system = cf_system
 
 
 
@@ -84,10 +89,9 @@ func (cf_cluster *CF_CLUSTER_TYPE) CF_add_cf_system(cf_system *CF_SYSTEM_TYPE, a
 
 
 func (cf_cluster *CF_CLUSTER_TYPE) CF_Fork(){
-
-  for _,system := range cf_cluster.system_order{
-     if (*system).active == true {
-        go (*system).Execute()
+  for _, column_data := range cf_cluster.system_map {
+     for _, cf_system := range column_data {
+	     go (*cf_system).Execute()
      }
   }  
 

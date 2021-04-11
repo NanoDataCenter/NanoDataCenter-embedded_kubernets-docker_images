@@ -20,6 +20,8 @@ import "github.com/go-redis/redis/v8"
 
 var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
 
+
+
 func handle_mount_panic() {
   
     if a := recover(); a != nil {
@@ -36,7 +38,7 @@ func mount_usb_drive(){
 
 func main(){
 
-    mount_usb_drive()
+    //mount_usb_drive()
       
 		
 	var config_file = "/home/pi/mountpoint/lacuma_conf/site_config/redis_server.json"
@@ -66,7 +68,8 @@ func main(){
 	data_handler.Data_handler_init(&site_data_store)
 	
     
-	(CF_site_node_control_cluster).Cf_cluster_init("site_node_control",true)
+	(CF_site_node_control_cluster).Cf_cluster_init()
+	(CF_site_node_control_cluster).Cf_set_current_row("site_node_control")
 	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data_store)
 	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data_store)
 	/*

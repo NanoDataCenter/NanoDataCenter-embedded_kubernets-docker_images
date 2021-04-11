@@ -40,7 +40,7 @@ func  initialize_site_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
 
    var cf_control  cf.CF_SYSTEM_TYPE
 
-   (cf_control).Init(cf_cluster ,"site_control_docker_monitoring",true, int64(time.Second*5))
+   (cf_control).Init(cf_cluster ,"site_control_docker_monitoring",true, time.Second*5)
 
    
    
@@ -50,7 +50,7 @@ func  initialize_site_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
    var parameters = make(map[string]interface{})
   (cf_control).Cf_add_one_step(docker_monitor,parameters)
   
-   (cf_control).Cf_add_wait_interval(int64(time.Second*15)  )  // first time tick does not count aim for every 15 seconds
+   (cf_control).Cf_add_wait_interval(time.Second*15  )  // first time tick does not count aim for every 15 seconds
    (cf_control).Cf_add_reset()
   
    
@@ -60,14 +60,14 @@ func  initialize_site_docker_performance_monitoring(cf_cluster *cf.CF_CLUSTER_TY
 
    var cf_control  cf.CF_SYSTEM_TYPE
 
-   (cf_control).Init(cf_cluster ,"site_control_docker_performance_monitoring",true, int64(time.Minute))
+   (cf_control).Init(cf_cluster ,"site_control_docker_performance_monitoring",true, time.Minute)
    (cf_control).Add_Chain("container_performance_logs",true)
    //(cf_control).Cf_add_log_link("container_performance_loop")
    
    var  parameters = make(map[string]interface{}) 
    (cf_control).Cf_add_one_step(docker_performance_monitor,parameters)
    
-   (cf_control).Cf_add_wait_interval(int64(time.Minute*15)  )
+   (cf_control).Cf_add_wait_interval(time.Minute*15  )
    (cf_control).Cf_add_reset()
 
 }

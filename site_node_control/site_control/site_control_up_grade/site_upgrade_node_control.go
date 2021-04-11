@@ -147,10 +147,10 @@ func find_container_image(container string) string{
 func Initialize_site_monitoring_chains(cf_cluster *cf.CF_CLUSTER_TYPE){
 
     var cf_control  cf.CF_SYSTEM_TYPE
-   (cf_control).Init(cf_cluster ,"site_control_monitor_nodes",true, int64(time.Second))
+   (cf_control).Init(cf_cluster ,"site_control_monitor_nodes",true, time.Second)
    
    (cf_control).Add_Chain("start_up_wait",true)   // watch dog strobe
-   (cf_control).Cf_add_wait_interval(int64(time.Second*14)  ) // every 15 seconds
+   (cf_control).Cf_add_wait_interval(time.Second*14  ) // every 15 seconds
    ( cf_control).Cf_add_enable_chains_links( []string{"site_control_monitor_watch_dogs","monitor_site_command_queue"}  )
    (cf_control).Cf_add_terminate()  
    
@@ -159,7 +159,7 @@ func Initialize_site_monitoring_chains(cf_cluster *cf.CF_CLUSTER_TYPE){
    (cf_control).Add_Chain("site_control_monitor_watch_dogs",false)   // watch dog strobe
     var parameters = make(map[string]interface{})
    ( cf_control).Cf_add_one_step(site_control_monitor_watch_dog,parameters)
-   (cf_control).Cf_add_wait_interval(int64(time.Second*14)  ) // every 15 seconds
+   (cf_control).Cf_add_wait_interval(time.Second*14  ) // every 15 seconds
    (cf_control).Cf_add_reset()
   
    (cf_control).Add_Chain("monitor_site_command_queue",false) // monitor command from site_contol

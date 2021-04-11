@@ -1,6 +1,6 @@
 package docker_management
 
-//import "fmt"
+import "fmt"
 import "bytes"
 import "time"
 import "strings"
@@ -61,7 +61,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   
 	 var redis_container_status = (docker_handle).hget_status_value(container)
 	 
-	
+	 // update status values
 	 if (*redis_container_status)["active"] != check_map[container] {
 	   
 	     (*redis_container_status)["active"] = check_map[container]
@@ -72,8 +72,10 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 	 }
 	
 	  if check_map[container] == false{
-	     //fmt.Println("staritng container ",container)
+	     fmt.Println("bad starting staritng container ",container)
 	     docker_control.Container_start(container)
+		
+		 
 	  }
 		
 	 

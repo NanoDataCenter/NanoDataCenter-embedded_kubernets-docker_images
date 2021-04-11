@@ -63,14 +63,14 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
    var cf_control  cf.CF_SYSTEM_TYPE
-
-  (cf_control).Init(cf_cluster , "node_control_processor_monitor" ,true, int64(time.Minute) )
+  
+  (cf_control).Init(cf_cluster , "node_control_processor_monitor" ,true, time.Minute )
 
 
 
 
   (cf_control).Add_Chain("processor_monitoring",true)
-   
+  (cf_control).Cf_add_log_link("processor monitoring started")
   
    var par1 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_free_cpu,par1)
@@ -94,7 +94,7 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
   var par15 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_net_edev,par15)
 
-  (cf_control).Cf_add_wait_interval(int64(time.Minute*9)  ) // first tick is not counted sar -u 300 1 takes 5 minutes
+  (cf_control).Cf_add_wait_interval(time.Minute*9  ) // first tick is not counted sar -u 300 1 takes 5 minutes
   (cf_control).Cf_add_reset()
 
 
@@ -161,6 +161,7 @@ func assemble_free_cpu( system interface{},chain interface{}, parameters map[str
 func assemble_ram( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   var output = docker_control.System("cat /proc/meminfo ")
+  fmt.Println(output)
   var data = make(map[string]interface{})
   var lines = split_lines(output)
   for _,line := range lines{

@@ -147,7 +147,7 @@ func cf_op_one_step( system interface{},chain interface{}, parameters map[string
   
 
    if (*event).Name == CF_INIT_EVENT {
-      
+      //fmt.Println("made it here")
       var helper_function = parameters["__helper_function__"].(CF_helper_function)
 	  helper_function(system,chain , parameters, event)
 	  

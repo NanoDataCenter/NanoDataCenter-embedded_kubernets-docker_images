@@ -116,6 +116,18 @@ func Containers_ls_runing() []string {
 	return Filter_last(1,output)
    
 }
+
+func Container_is_running( match_container string) bool {
+
+  var running_containers = Containers_ls_runing()
+  for _,container := range running_containers{
+    if match_container == container {
+	  return true
+	}
+  }
+  return false
+}
+
          
 func Containers_ls_all() []string {
 
