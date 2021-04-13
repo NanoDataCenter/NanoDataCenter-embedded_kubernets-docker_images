@@ -8,7 +8,9 @@ class Start_Container(object):
         properties["command_list"] = command_list
         properties["startup_command"] = startup_command
         bc.add_header_node("CONTAINER",name,properties=properties)
+    
         cd.construct_package("DATA_STRUCTURES")
+        cd.add_redis_stream("Process_Failure")
         cd.add_redis_stream("ERROR_STREAM")   
         cd.add_redis_stream("PROCESS_VSZ")
         cd.add_redis_stream("PROCESS_RSS")

@@ -9,4 +9,5 @@ require (
 	github.com/golang-collections/collections v0.0.0-20130729185459-604e922904d3 // indirect
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect
+	github.com/satori/go.uuid v1.2.0 // indirect
 )
