@@ -82,15 +82,11 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     
     bc.add_header_node("FILE_SERVER")
     cd.construct_package("FILE_SERVER")
-    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"timeout":30,"queue":"FILE_RPC_SERVER"})
+    cd.add_rpc_server("FILE_SERVER_RPC_SERVER",{"depth":10,"timeout":30})
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER")
 
-    bc.add_header_node("FILE_SERVER_CLIENT")
-    cd.construct_package("FILE_SERVER_CLIENT")
-    cd.add_rpc_client("FILE_SERVER_RPC_SERVER",{"timeout":30,"queue":"FILE_RPC_SERVER"})
-    cd.close_package_contruction()
-    bc.end_header_node("FILE_SERVER_CLIENT")
+
     
     
     
