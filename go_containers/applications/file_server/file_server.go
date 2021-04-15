@@ -15,8 +15,7 @@ import "lacima.com/redis_support/generate_handlers"
 
 func main(){
 
-    //mount_usb_drive()
-      
+    
 		
 	//var config_file = "/data/redis_server.json"
 	var config_file = "/home/pi/mountpoint/lacuma_conf/site_config/redis_server.json"

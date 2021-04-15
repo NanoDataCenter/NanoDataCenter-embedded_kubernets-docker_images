@@ -136,7 +136,7 @@ func (v Redis_RPC_Struct)start() {
 
 
    
-func (v Redis_RPC_Struct)send_rpc_message( method string, parameters map[string]interface{})*map[string]interface{} {
+func (v Redis_RPC_Struct)Send_rpc_message( method string, parameters map[string]interface{})*map[string]interface{} {
 
    var request = make(map[string]interface{})
    request["method"] = method
