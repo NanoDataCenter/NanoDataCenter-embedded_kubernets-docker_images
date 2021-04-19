@@ -86,7 +86,7 @@ func (cf_system *CF_SYSTEM_TYPE)  cf_enable_chain( chain_data *CF_CHAIN_TYPE ){
 }
 
 func (cf_system *CF_SYSTEM_TYPE) cf_disable_chain( chain_data *CF_CHAIN_TYPE ){
-   (*chain_data).active = true
+   (*chain_data).active = false
    (cf_system).cf_initialize_chain(chain_data)
 
 }

@@ -1,0 +1,10 @@
+
+while [ 1 ]
+do
+   echo "executing container"
+   ./process_control 2>  /tmp/process_control.err
+   ./error_logger /tmp/process_control.err 
+   sleep 10
+
+
+done

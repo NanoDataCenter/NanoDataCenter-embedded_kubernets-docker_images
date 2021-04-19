@@ -94,10 +94,8 @@ func (v Redis_Job_Queue) Push( value string){
 
      v.client.LPush(v.ctx ,v.key,value )
 
-	 err := v.client.LTrim(v.ctx, v.key , 0, v.depth)
-	 if err != nil {
-	   panic(err)
-	 }	 
+	 v.client.LTrim(v.ctx, v.key , 0, v.depth)
+		 
 }
 
 func (v Redis_Job_Queue)Delete_jobs( jobs []int64){

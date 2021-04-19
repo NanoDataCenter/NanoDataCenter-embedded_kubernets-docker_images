@@ -39,7 +39,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_job_queue("WEB_COMMAND_QUEUE",10)
     cd.add_redis_stream("ERROR_STREAM")
     cd.add_hash("ERROR_HASH")
-    cd.add_hash("WEB_DISPLAY_DICTIONARY")
+    cd.add_hash("WEB_DISPLAY_DICTIONARY")  # for displaying node status
     cd.close_package_contruction()
     
     cd.construct_package("DOCKER_CONTROL")
@@ -86,8 +86,27 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER")
 
-
+    bc.add_header_node("TP_MONITOR_SWITCHES")
     
+    properties = {}
+    properties["ip"] = "192.168.1.45"
+    properties["id"] = "Gr1234gfd"
+    bc.add_header_node("TP_SWITCH","switch_office",properties)
+    cd.construct_package("LOG_DATA")
+    cd.add_redis_stream("SWITCH_LOG")
+    cd.close_package_contruction()
+    bc.end_header_node("TP_SWITCH")
+
+    properties = {}
+    properties["ip"] = "192.168.1.56"
+    properties["id"] = "Gr1234gfd"
+    bc.add_header_node("TP_SWITCH","switch_garage",properties)
+    cd.construct_package("LOG_DATA")
+    cd.add_redis_stream("SWITCH_LOG")
+    cd.close_package_contruction()
+    bc.end_header_node("TP_SWITCH")
+    
+    bc.end_header_node("TP_MONITOR_SWITCHES")
     
     
     bc.add_header_node("SYSTEM_MONITOR")

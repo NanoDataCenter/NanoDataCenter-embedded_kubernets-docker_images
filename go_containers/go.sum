@@ -1,5 +1,7 @@
 github.com/badgerodon/collections v0.0.0-20130729185459-604e922904d3 h1:ooC26VNhy3ronBnebGlYPPMJOdYnp+ePnbOrgSddoPQ=
 github.com/badgerodon/collections v0.0.0-20130729185459-604e922904d3/go.mod h1:9iqE3TMnuFhHQI3OoJXBDOKj4bDZAuujavGYkpS3CI0=
+github.com/bobziuchkovski/digest v0.0.0-20160204210651-26857231d60c h1:oW9/rN2CXHBql6Gwqg4v1qhdDu8RrHAR835sV7zkSNc=
+github.com/bobziuchkovski/digest v0.0.0-20160204210651-26857231d60c/go.mod h1:ywjd9SVSEeBGxYVpvNYTMc/2KcEtvA29+9PegYh9ysM=
 github.com/cespare/xxhash/v2 v2.1.1 h1:6MnRN8NT7+YBpUIWxHtefFZOKTAPgGjpQSxqLNn0+qY=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

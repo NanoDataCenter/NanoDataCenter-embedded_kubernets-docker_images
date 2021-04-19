@@ -99,10 +99,8 @@ func (v Redis_RPC_Struct) Push( value string){
 
      v.client.LPush(v.ctx ,v.key,value )
 
-	 err := v.client.LTrim(v.ctx, v.key , 0, v.depth)
-	 if err != nil {
-	   panic(err)
-	 }	 
+	 v.client.LTrim(v.ctx, v.key , 0, v.depth)
+
 }
 
 func (v Redis_RPC_Struct)Rpc_start() {
@@ -115,16 +113,26 @@ func (v Redis_RPC_Struct)start() {
    for true {
      if v.Length() != 0 {
         defer recover()
-		var input    = msgpack_utils.Unpack(v.Pop()).(map[string]interface{})
-		var key      = input["key"].(string)
-		var method   = input["method"].(string)
-		var params   = input["params"].(map[string]interface{})
+		
+		var input    = msgpack_utils.Unpack(v.Pop()).([]interface{})
+		var method = string(input[0].([]byte))
+		var key    = string(input[2].([]byte))
+		var params_interface = input[1].(map[interface{}]interface{})
+		var params = make(map[string]interface{})
+		for p_key, p_value := range params_interface{
+		    params[p_key.(string)] = p_value
+		}
+		
+
 		if _,ok := v.rpc_handlers[method]; ok == true {
 		    var response = v.rpc_handlers[method](&params)
 			var b bytes.Buffer	
             msgpack.Pack(&b,*response)
             v.Push_Response(key,b.String())  
+		}else{
+		  panic("bad "+method)
 		}
+	
      }else{
 
 	   time.Sleep(time.Second/10)
@@ -136,14 +144,15 @@ func (v Redis_RPC_Struct)start() {
 
 
    
-func (v Redis_RPC_Struct)Send_rpc_message( method string, parameters map[string]interface{})*map[string]interface{} {
+func (v Redis_RPC_Struct)Send_rpc_message( method string, parameters *map[string]interface{})*map[interface{}]interface{} {
 
-   var request = make(map[string]interface{})
-   request["method"] = method
-   request["parameters"] = parameters
+   var request = make([]interface{},0)
+   
+   
    u2 := uuid.NewV4().String()
-
-   request["key"] = u2
+  
+   request = append(request,method,(*parameters),u2)
+ 
    var b bytes.Buffer	
    msgpack.Pack(&b,request)
    v.Push(b.String())
@@ -154,7 +163,7 @@ func (v Redis_RPC_Struct)Send_rpc_message( method string, parameters map[string]
 	     if err != nil {
 	         panic(err)
 	     }
-	   var temp =  msgpack_utils.Unpack(result).(map[string]interface{})
+	   var temp =  msgpack_utils.Unpack(result).(map[interface{}]interface{})
 	   return &temp
 	 }else{
 	  time.Sleep(time.Second/10)

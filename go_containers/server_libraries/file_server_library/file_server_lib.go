@@ -2,90 +2,100 @@ package file_server_lib
 
 
 
-
+//import "fmt"
 
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 
-var driver redis_handlers.Redis_RPC_Struct
+type File_Server_Client_Type struct{
 
-func File_Server_Init(){
+   driver redis_handlers.Redis_RPC_Struct
+}
 
-  var search_list = []string{"FILE_SERVER","FILE_SERVER"}
-  var handlers = data_handler.Construct_Data_Structures(&search_list)  
-  driver = (*handlers)["FILE_SERVER_RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
 
+
+
+func File_Server_Init(search_list *[]string)File_Server_Client_Type{
+
+  var return_value File_Server_Client_Type
+  var handlers = data_handler.Construct_Data_Structures(search_list)  
+  return_value.driver = (*handlers)["FILE_SERVER_RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
+  return return_value
 }  
 
-func ping(path,file_name string)bool{
+func (v File_Server_Client_Type)Ping()bool{
   
 
        var parameters = make(map[string]interface{})
-       var result = (driver).Send_rpc_message( "ping", parameters )  
+       var result = v.driver.Send_rpc_message( "ping", &parameters ) 
+       //fmt.Println("ping",result)
+       //fmt.Println(	(*result)["status"].(bool))   
        return (*result)["status"].(bool)
 }
 
-func load_file(path,file_name string)(bool,string){
+func (v File_Server_Client_Type)Read_file(file_name string)(string,bool) {
   
 
        var parameters = make(map[string]interface{})
-       parameters["path"] = path
+       
        parameters["file_name"] = file_name
-       var result = (driver).Send_rpc_message( "load", parameters )  
-       return (*result)["status"].(bool),(*result)["result"].(string)
+       var result = v.driver.Send_rpc_message( "read", &parameters )  
+       return string((*result)["results"].([]byte)),(*result)["status"].(bool)
 }
 
-func save_file(path,file_name,data string)bool{
-       /*
-       parameters = {}
-       parameters["path"] = path
+func (v File_Server_Client_Type)Write_file(file_name,data string)bool{
+     
+	   var parameters = make(map[string]interface{})
        parameters["file_name"] = file_name
-       parameters["data"] = data
-       return_value = self.rpc_client.send_rpc_message( method="save",parameters=parameters,timeout=3 )
-       return self.check_file(file_name,return_value)
-       */
-	   return false
+	   parameters["data"] = data
+       var result = v.driver.Send_rpc_message( "write", &parameters )  
+       return (*result)["status"].(bool)
 }
-func file_exists(path,file_name string) bool {
-      
-	   /*
-       parameters = {}
-       parameters["path"] = path
+
+func (v File_Server_Client_Type)Delete_file(file_name string)bool {
+
+       var parameters = make(map[string]interface{})
        parameters["file_name"] = file_name
-       return_value = self.rpc_client.send_rpc_message( method="file_exists",parameters=parameters,timeout=3 )
-       return return_value[0]
-	   */
-	   return false
+	   var result = v.driver.Send_rpc_message( "delete_file",&parameters)
+       return (*result)["status"].(bool)
+  
+}
+
+func (v File_Server_Client_Type)File_exists(file_name string)( bool,bool) {
+      
+	   var parameters = make(map[string]interface{})
+       parameters["file_name"] = file_name
+	   var result = v.driver.Send_rpc_message( "file_exists",&parameters)
+       return (*result)["status"].(bool),(*result)["directory"].(bool)
 }
         
-func file_directory(path,file string){}string {
-       /*     
-       parameters = {}
+func (v File_Server_Client_Type)File_directory(path string)([]string , bool){
+   
+       var parameters = make(map[string]interface{})
        parameters["path"] = path
-       return_value = self.rpc_client.send_rpc_message( method="file_directory",parameters=parameters,timeout=3 )
-       return self.check_file(path,return_value)
-	   */
+	   
+       var return_value_interface = v.driver.Send_rpc_message( "file_directory" ,&parameters)
+       var status = (*return_value_interface)["status"].(bool)
+	   var results_map = (*return_value_interface)["results"].([]interface{})
+	   
+	   var results =  make([]string,0)
+       for _,item := range results_map{
+	      results = append(results, string(item.([]byte)))
+	   }
+	   
+	   return  results , status
 }           
 
-func delete_file(self, path,file_name)bool {
-       
-       parameters = {}
-       parameters["path"] = path
-       parameters["file_name"] = file_name
-       return_value = self.rpc_client.send_rpc_message( method="delete_file",parameters=parameters,timeout=3 )
-       return return_value[0]
-}
+
    
-func  mkdir(self,path,file)bool{
+func  (v File_Server_Client_Type)Mkdir(path string)bool{
       
-       parameters = {}
+	   var parameters = make(map[string]interface{})
        parameters["path"] = path
-       return_value = self.rpc_client.send_rpc_message( method="make_dir",parameters=parameters,timeout=3 )
-       return return_value[0]
-   
+	   var result = v.driver.Send_rpc_message( "make_dir",&parameters)
+       return (*result)["status"].(bool)
  }
 
 
 
 
-*/

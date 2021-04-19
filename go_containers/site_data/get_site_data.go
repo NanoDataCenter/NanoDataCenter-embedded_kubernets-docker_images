@@ -13,7 +13,7 @@ import (
 
 func Get_site_data(file_name string) map[string]interface{} {
 
-         
+    
     var data, err = ioutil.ReadFile(file_name)
     if err != nil {
         panic("no configuration file")

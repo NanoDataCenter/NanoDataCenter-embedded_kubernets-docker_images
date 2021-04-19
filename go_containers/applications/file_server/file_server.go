@@ -1,8 +1,9 @@
 package main
 
-import "fmt"
+
 import "time"
 import "io/ioutil"
+import "io/fs"
 
 import "os"
 import "lacima.com/site_data"
@@ -10,15 +11,15 @@ import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 
-
+const file_base = "/files/"
 
 
 func main(){
 
     
-		
-	//var config_file = "/data/redis_server.json"
-	var config_file = "/home/pi/mountpoint/lacuma_conf/site_config/redis_server.json"
+    
+	var config_file = "/data/redis_server.json"
+	
 	var site_data_store map[string]interface{}
 
 	site_data_store = get_site_data.Get_site_data(config_file)
@@ -34,8 +35,8 @@ func main(){
 	
 	driver.Add_handler("ping",ping)
 	
-	driver.Add_handler( "load",load_file)
-	driver.Add_handler( "save",save_file)
+	driver.Add_handler( "read",load_file)
+	driver.Add_handler( "write",save_file)
 	driver.Add_handler( "file_exists",file_exists)
 	driver.Add_handler( "delete_file",delete_file)
 	driver.Add_handler( "file_directory",file_directory)
@@ -43,7 +44,7 @@ func main(){
 	driver.Rpc_start()
 	
 	for true {
-	  fmt.Println("main spining")
+	  //fmt.Println("main spining")
 	  time.Sleep(time.Second*10)
 	}
    
@@ -58,10 +59,12 @@ func ping( parameters *map[string]interface{} ) *map[string]interface{}{
 }
 	
 func load_file( parameters *map[string]interface{} ) *map[string]interface{}{
-
-  var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
-  var data, err = ioutil.ReadFile(path)
-  if err != nil {
+  var p_file_name = string((*parameters)["file_name"].([]byte))
+  
+  var file_name = file_base+p_file_name
+  var data, err = ioutil.ReadFile(file_name)
+  
+  if err == nil {
         (*parameters)["status"] = true
 		(*parameters)["results"] = data
   } else {
@@ -75,47 +78,30 @@ func load_file( parameters *map[string]interface{} ) *map[string]interface{}{
 func save_file( parameters *map[string]interface{} ) *map[string]interface{}{
   
  
-  var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
-  
-  var err = ioutil.WriteFile(path,[]byte((*parameters)["data"].(string)),0666)
-  if err != nil {
+  var p_file_name = string((*parameters)["file_name"].([]byte))
+  var p_data = (*parameters)["data"].([]byte)
+  var file_name = file_base+p_file_name
+  //fmt.Println("save_file",file_name,p_data)
+  var err = ioutil.WriteFile(file_name,p_data,0666)
+  //fmt.Println(err)
+  if err == nil {
        (*parameters)["status"] = true
-		(*parameters)["results"] = ""
+		
   } else {
         (*parameters)["status"] = false
-		(*parameters)["results"] = ""
+		
   }
   return parameters
 }
-
-func fileExists(filename string) bool {
-    info, err := os.Stat(filename)
-    if os.IsNotExist(err) {
-        return false
-    }
-    return !info.IsDir()
-}
-func file_exists( parameters *map[string]interface{} ) *map[string]interface{}{
- 
- 
-  var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
-  if  fileExists(path) == true{
- 
-       (*parameters)["status"] = true
-		(*parameters)["results"] = ""
-  } else {
-        (*parameters)["status"] = false
-		(*parameters)["results"] = ""
-  }
-  return parameters
-}
-  
 
 func delete_file( parameters *map[string]interface{} ) *map[string]interface{}{
   
- var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
-  err := os.Remove(path)
-  if err != nil {
+  var p_file_name = string((*parameters)["file_name"].([]byte))
+  var file_name = file_base+p_file_name
+  //mt.Println("file_name",file_name)
+  err := os.Remove(file_name)
+  //fmt.Println("err",err)
+  if err == nil {
        (*parameters)["status"] = true
 		(*parameters)["results"] = ""
   } else {
@@ -124,13 +110,43 @@ func delete_file( parameters *map[string]interface{} ) *map[string]interface{}{
   }
   return parameters
 }
+
+
+
+func fileExists(filename string) (bool,bool) {
+    info, err := os.Stat(filename)
+    if os.IsNotExist(err) {
+        return false,false
+    }
+    return true, info.IsDir()
+}
+
+
+func file_exists( parameters *map[string]interface{} ) *map[string]interface{}{
+
+  var p_file_name = string((*parameters)["file_name"].([]byte))
+  
+  var file_name = file_base+p_file_name
+  exists , directory := fileExists(file_name)
+  (*parameters)["status"] = exists
+  (*parameters)["directory"] = directory
+  
+  return parameters
+}
+  
+
+
  
   
 func mkdir( parameters *map[string]interface{} ) *map[string]interface{}{
    
-  var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
+  var p_path = string((*parameters)["path"].([]byte))
+  
+  var path = file_base+p_path
+  //fmt.Println("path",path)
   err := os.MkdirAll(path,0666)
-  if err != nil {
+ 
+  if err == nil {
        (*parameters)["status"] = true
 		(*parameters)["results"] = ""
   } else {
@@ -140,16 +156,27 @@ func mkdir( parameters *map[string]interface{} ) *map[string]interface{}{
   return parameters
 }
 
+func convert_to_file_names( input []fs.FileInfo )[]string {
+
+  var return_value = []string{}
+  for _ , file_info := range input{
+     return_value = append(return_value,file_info.Name())
+  }
+  return return_value
+}
 
 func file_directory( parameters *map[string]interface{} ) *map[string]interface{}{
-var path = "/files/"+(*parameters)["path"].(string)+"/"+(*parameters)["file_name"].(string)
+  var p_path = string((*parameters)["path"].([]byte))
+  
+  var path = file_base+p_path
+  //fmt.Println("path",path)
   c, err := ioutil.ReadDir(path)
   if err != nil {
         (*parameters)["status"] = false
 		(*parameters)["results"] = ""
   } else {
       (*parameters)["status"] = true
-		(*parameters)["results"] = c
+		(*parameters)["results"] = convert_to_file_names(c)
   }
    return parameters
 
