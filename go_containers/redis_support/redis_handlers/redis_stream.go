@@ -25,6 +25,17 @@ func Construct_Redis_Stream(  ctx context.Context, client *redis.Client, key str
 
 }
 
+
+func (v Redis_Stream_Struct)Get_client() *redis.Client{
+  return v.client
+}
+
+func (v Redis_Stream_Struct)Get_context() context.Context{
+  return v.ctx
+}
+
+
+
 func (v Redis_Stream_Struct) Delete_all() {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()

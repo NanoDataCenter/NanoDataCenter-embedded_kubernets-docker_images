@@ -31,7 +31,12 @@ type switch_record_type  struct  {
   ip       string
   username string
   password string
-  driver   redis_handlers.Redis_Stream_Struct  
+  status         redis_handlers.Redis_Single_Structure
+  current_state  redis_handlers.Redis_Single_Structure
+  last_error     redis_handlers.Redis_Single_Structure
+  error_log      redis_handlers.Redis_Stream_Struct  
+  
+
 
 }
 
@@ -78,14 +83,17 @@ func Monitor_TP_Setup(){
 	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
 	  data_search_list := []string{ "TP_MONITOR_SWITCHES","TP_SWITCH:"+temp.name,"LOG_DATA"}
 	  data_element := data_handler.Construct_Data_Structures(&data_search_list)
-	  temp.driver = (*data_element)["SWITCH_LOG"].(redis_handlers.Redis_Stream_Struct)
-	  
+	  temp.status = (*data_element)["STATUS"].(redis_handlers.Redis_Single_Structure)
+	  temp.current_state = (*data_element)["CURRENT_STATE"].(redis_handlers.Redis_Single_Structure)
+	  temp.last_error = (*data_element)["LAST_ERROR"].(redis_handlers.Redis_Single_Structure)
+	  temp.error_log = (*data_element)["ERROR_LOG"].(redis_handlers.Redis_Stream_Struct)
       switch_array = append( switch_array,temp)
+	  //fmt.Println(temp)
+	 
    }
    
 
 }
-
 
 
 
@@ -197,19 +205,57 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
   
   }
   log_data:= make(map[string]interface{})
-  log_data["time"] =  time.Now().UnixNano()
-  log_data["pkt_tx_good"] =  pkt_tx_good
+  
   log_data["pkt_tx_bad"]  =  pkt_tx_bad
-  log_data["pkt_rx_good"] =  pkt_rx_good
   log_data["pkt_rx_bad"]  = pkt_rx_bad
   log_data["valid_links"] = valid_links
+  //fmt.Println("log_data",log_data)
+  
   var b bytes.Buffer	
   msgpack.Pack(&b,log_data)
+  current_value := b.String()
+  
+   
+ 
+  
+  var log_flag = true  
+  element_tx := log_data["pkt_tx_bad"].([]int)
+  element_rx := log_data["pkt_rx_bad"].([]int)
+  switch_links := log_data["valid_links"].([]int)
+  for _,i := range switch_links{
+    switch i{
+	   case 5,6: {
+         //fmt.Println("i",i,element_tx[i],element_rx[i])
+	     if (element_tx[i] > 0 ) || (element_rx[i] > 0 ) {
+		    log_flag = false
+		} // if
+		}// case
+		}// switch
+   }// for
+   var b1 bytes.Buffer	
+  msgpack.Pack(&b1,log_flag)
+  logical_value := b.String()
 
-  (*element).driver.Xadd(b.String())
+   (*element).current_state.Set(logical_value)
+   if log_flag == true {
+      current_error :=   (*element).last_error.Get()
+      if current_error != current_value{
+	 
+          fmt.Println("updating error status",len(current_error),len(current_value))
+		 
+          (*element).last_error.Set(current_value)
+          (*element).error_log.Xadd(current_value)
+	  }  
+   }	
+	
+	
+
   fmt.Println("Message logged")
 
 }
+
+
+
 
 
 func extract_balance_element( input_string, start_delem, end_delem string, target_element int) string {

@@ -28,8 +28,9 @@ func (v Redis_Single_Structure) Get() string {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
     value,err :=  v.client.Get(v.ctx,v.key).Result()
-	if err != nil{
-	  panic(err)
+	if (err !=  redis.Nil) && (err != nil){
+	   
+	   panic(err)
 	}
 	return value	
 }

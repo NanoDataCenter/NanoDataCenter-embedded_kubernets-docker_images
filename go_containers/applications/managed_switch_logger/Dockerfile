@@ -3,4 +3,4 @@ ENV CONTAINER_NAME "managed_switch_logger"
 
 VOLUME [/data/] 
 
-COPY . .
+COPY ./manage_switch_logger .

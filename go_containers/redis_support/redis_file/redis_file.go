@@ -4,7 +4,7 @@ package redis_file
 
 
 import "context"
-//import "fmt"
+import "fmt"
 import "strconv"
 import "time"
 import "sort"
@@ -26,7 +26,7 @@ const file_db  int = 13
 var ctx    = context.TODO()
 var client *redis.Client
 
-func create_redis_data_handle( address string, port int ){
+func Create_redis_data_handle( address string, port int ){
   
 
     Init_Redis_Mutex()
@@ -70,9 +70,11 @@ func ( v *Redis_File_Struct)Get(path string) string {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
     value,err :=  v.client.Get(v.ctx,path).Result()
-	if err != nil{
-	  panic(err)
+	if (err !=  redis.Nil) && (err != nil){
+	   
+	   panic(err)
 	}
+	
 	return value	
 
 
@@ -83,11 +85,15 @@ func ( v *Redis_File_Struct)Ls(pattern string)[]string{
     var return_value []string
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
-    result := v.client.Keys(v.ctx,pattern).Args() 
-    for _,key := range result{
-	   return_value = append(return_value,key.(string))
+	fmt.Println("pattern",pattern)
+    result ,err:= v.client.Keys(v.ctx,pattern).Result() 
+	if err == nil {
+	   return_value = result
+
+	   
 	}
 	sort.Strings(return_value)
+	
     return return_value
 }
 
@@ -103,7 +109,7 @@ func ( v *Redis_File_Struct)Rm(pattern string){
    
 }
 
-func ( v *Redis_File_Struct)Flush(pattern string){
+func ( v *Redis_File_Struct)FlushDB(){
  
     Lock_Redis_Mutex()
    defer UnLock_Redis_Mutex()

@@ -73,9 +73,10 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.add_redis_stream("KEYS")
     cd.add_redis_stream("CLIENTS")
     cd.add_redis_stream("MEMORY")
-    cd.add_redis_stream("REDIS_MONITOR_CALL_STREAM")
+    
     cd.add_redis_stream("REDIS_MONITOR_CMD_TIME_STREAM")  
-    cd.add_redis_stream("REDIS_MONITOR_SERVER_TIME")  
+    #cd.add_redis_stream("REDIS_MONITOR_SERVER_TIME") 
+    #cd.add_redis_stream("REDIS_MONITOR_CALL_STREAM")    
     cd.close_package_contruction()
     bc.end_header_node("SITE_CONTROL")
    
@@ -93,7 +94,10 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     properties["id"] = "Gr1234gfd"
     bc.add_header_node("TP_SWITCH","switch_office",properties)
     cd.construct_package("LOG_DATA")
-    cd.add_redis_stream("SWITCH_LOG")
+    cd.add_single_element("STATUS")
+    cd.add_single_element("CURRENT_STATE")
+    cd.add_single_element("LAST_ERROR")
+    cd.add_redis_stream("ERROR_LOG")
     cd.close_package_contruction()
     bc.end_header_node("TP_SWITCH")
 
@@ -102,7 +106,10 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     properties["id"] = "Gr1234gfd"
     bc.add_header_node("TP_SWITCH","switch_garage",properties)
     cd.construct_package("LOG_DATA")
-    cd.add_redis_stream("SWITCH_LOG")
+    cd.add_single_element("STATUS")
+    cd.add_single_element("CURRENT_STATE")
+    cd.add_single_element("LAST_ERROR")
+    cd.add_redis_stream("ERROR_LOG")
     cd.close_package_contruction()
     bc.end_header_node("TP_SWITCH")
     
