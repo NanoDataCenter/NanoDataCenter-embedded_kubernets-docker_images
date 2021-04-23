@@ -34,7 +34,7 @@ func( v *Process_Manager_Type)run(){
          defer recover()
          command_list :=  strings.Fields(v.cmd_line)
 	     //fmt.Println("command_list",command_list)
-		 args := command_list[:1]
+		 args := command_list[1:]
 		 command :=command_list[0]
          cmd := exec.Command(command,args...)
         

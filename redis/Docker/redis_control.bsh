@@ -4,7 +4,7 @@ do
    echo "checking redis append only file"
    /pod_util/redis-check-aof --fix /data/appendonly.aof
    echo "redis starting "
-   /pod_util/redis-server /pod_util/redis.conf 2> /data/redis_error.err
+   /usr/local/bin/redis-server /pod_util/redis.conf 2> /data/redis_error.err
    echo "redis server crashing" 
    cp /data/redis_error.err /data/redis_error.errr
    sleep 10

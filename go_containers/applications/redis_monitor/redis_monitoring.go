@@ -69,7 +69,7 @@ func (v *Redis_Monitor_Type)Exec(){
 
     for true {
 	   v.log_data()
-	   time.Sleep(time.Minute)
+	   time.Sleep(time.Minute*15)
 	 }
 }
 

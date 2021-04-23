@@ -276,7 +276,7 @@ if __name__ == "__main__" :
 
 
    
-   containers = ["eto","irrigation_scheduling"  ]
+   containers = ["redis_monitoring" ]
    
    construct_processor(name="irrigation_controller",containers = containers)
                      

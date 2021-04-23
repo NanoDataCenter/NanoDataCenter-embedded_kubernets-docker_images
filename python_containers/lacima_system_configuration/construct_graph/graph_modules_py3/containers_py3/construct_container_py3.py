@@ -20,8 +20,8 @@ class Construct_Containers(object):
    def __init__(self,bc,cd,container_list):
       for i in container_list:
  
-         if i == "monitor_redis":
-             #print(i)
+         if i == "redis_monitoring":
+             print(i)
              Redis_Monitor_Container(bc,cd,i)
          elif i == "stream_events_to_log":
              #print(i)
