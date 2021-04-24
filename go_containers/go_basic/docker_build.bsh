@@ -1,6 +1,0 @@
-
-
-cp error_logger_directory/error_logger .
-docker build --tag  nanodatacenter/bash_basic . 
-
-
