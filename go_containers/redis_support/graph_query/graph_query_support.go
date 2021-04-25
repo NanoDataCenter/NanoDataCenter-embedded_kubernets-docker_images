@@ -104,6 +104,7 @@ func Graph_support_init(sdata *map[string]interface{}) {
 func Common_package_search( site *string, search_list *[]string) []map[string]string{
    var query_list = make([]query_element,0)
    //fmt.Println("len search list",len(*search_list))
+   //fmt.Println("SITE",site_data["site"])
    add_match_relationship(&query_list,"SITE",site_data["site"].(string))
    //fmt.Println("building query list",len(query_list))
    for i :=0; i <len(*search_list)-1;i++{
@@ -115,7 +116,7 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
    }
    
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
-   
+   //fmt.Println(search_list_term)
    add_match_terminal(&query_list, "PACKAGE",search_list_term[0])
    //fmt.Println("read to match query list",len(query_list))
    return match_list(&query_list)
@@ -225,11 +226,12 @@ func match_relationship( relationship, label string , starting_set  map[string]s
                 if flag1,_:=client.Exists(ctx,  "#"+relationship+rel_sep+label).Result();flag1!=0{
 				    //fmt.Println("pass exists")
                     return_value,_ = client.SMembersMap(ctx ,"#"+relationship+rel_sep+label).Result()
-					//fmt.Println("member length",len(return_value))
+					fmt.Println("member length",len(return_value))
                     return_value = intersection(return_value,starting_set)
 			    }
 			}
-	   }		
+	   }	
+       //fmt.Println("match relationship",relationship,label, return_value)	   
        return return_value
 
 }

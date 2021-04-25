@@ -1,6 +1,6 @@
 package main
 
-
+import "fmt"
 import "time"
 import "io/ioutil"
 import "io/fs"
@@ -22,12 +22,13 @@ func main(){
 	
 	var site_data_store map[string]interface{}
 
+    fmt.Println(site_data_store)
 	site_data_store = get_site_data.Get_site_data(config_file)
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)	
  	  
-    var search_list = []string{"FILE_SERVER","FILE_SERVER"}
+    var search_list = []string{"FILE_SERVER"}
 
     var handlers = data_handler.Construct_Data_Structures(&search_list)
     

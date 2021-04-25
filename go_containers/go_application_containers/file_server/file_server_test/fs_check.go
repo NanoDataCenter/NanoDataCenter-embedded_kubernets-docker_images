@@ -23,7 +23,7 @@ func main(){
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)	
- 	var fs_handle = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER","FILE_SERVER"})
+ 	var fs_handle = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
     fmt.Println((fs_handle).Ping())	
 
 	fmt.Println((fs_handle).File_directory(""))

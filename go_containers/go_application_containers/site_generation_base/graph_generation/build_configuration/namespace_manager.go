@@ -65,9 +65,11 @@ func (v *name_space_type)get_last() (string, string) {
 func (v *Build_Configuration) convert_namespace()string{
      
        var temp_value  []string
-       namespace_list := (*v.namespace).namespace
-       for _,i := range namespace_list{
-          temp_value= append(temp_value,v.make_string_key( i[0],i[1] ))
+       
+       for i:=0;i<(*v.namespace).namespace_len;i++{
+	      temp := (*v.namespace).namespace[i]
+		  
+          temp_value= append(temp_value,v.make_string_key( temp[0],temp[1] ))
 	   }
        key_string := v.sep + strings.Join( temp_value, v.sep )
        return  key_string

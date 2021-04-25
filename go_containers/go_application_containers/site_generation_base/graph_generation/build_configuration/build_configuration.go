@@ -83,7 +83,7 @@ func (v *Build_Configuration)  Add_info_node( relation,label string, properties 
 func (v *Build_Configuration) End_header_node( assert_relation,assert_label string ){
 
        last_relation,last_label := (*v.namespace).pop_namespace()
-	   fmt.Println(last_relation,last_label,assert_relation,assert_label)
+	   
 	   
 	   if (last_relation != assert_relation)||(last_label != assert_label) {
 	      panic("unmatched namespace ")
@@ -97,8 +97,9 @@ func (v *Build_Configuration)construct_node( push_namespace bool,relationship ,l
        redis_key := v.construct_basic_node( push_namespace, relationship,label  ) 
 	   
        if v.keys.Has(redis_key ) == true {
-           panic("Duplicate Key")
+           panic("Duplicate Key "+redis_key)
 	   }
+	  
       v.keys.Insert(redis_key)
 	  for key,value := range properties {
 	      	b, err := json.Marshal(value)
@@ -167,7 +168,7 @@ func (v *Build_Configuration)update_terminals( relationship ,label, redis_string
 }
 
  
-func (v *Build_Configuration)  store_keys( ){
+func (v *Build_Configuration)  Store_keys( ){
     for i,_ := range (*(*v.keys).Get_hash_map()) {
        client.SAdd(ctx,"@GRAPH_KEYS", i )
 	}

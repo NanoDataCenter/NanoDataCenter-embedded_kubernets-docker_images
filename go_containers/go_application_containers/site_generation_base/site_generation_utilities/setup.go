@@ -30,4 +30,11 @@ func Setup_graph_generation(){
 
 
 }
- 
+
+func Done(){
+
+ Bc_Rec.Check_namespace()
+ Bc_Rec.Store_keys() 
+
+
+}

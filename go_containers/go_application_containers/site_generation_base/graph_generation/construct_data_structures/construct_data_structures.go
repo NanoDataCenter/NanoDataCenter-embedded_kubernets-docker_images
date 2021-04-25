@@ -22,7 +22,7 @@ func Construct_Data_Structures(  bc *bc.Build_Configuration)*Package_Constructor
 
 }
 
-func ( v *Package_Constructor)construct_package( package_name string ){
+func ( v *Package_Constructor)Construct_package( package_name string ){
      if v.package_active == true {
 	     panic("current package not closed")
 	 }
@@ -33,7 +33,7 @@ func ( v *Package_Constructor)construct_package( package_name string ){
 }
 
 
-func ( v *Package_Constructor)close_package_contruction(){
+func ( v *Package_Constructor)Close_package_contruction(){
         v.package_active = false
         v.bc.Add_info_node("PACKAGE",v.name,v.package_properties)
 }
@@ -54,7 +54,7 @@ func ( v *Package_Constructor)update_entry( name string,properties *map[string]i
 
 }
 
-func ( v *Package_Constructor)create_sql_table( name,database_name,table_name string,field_names []string){
+func ( v *Package_Constructor)Create_sql_table( name,database_name,table_name string,field_names []string){
        v.check_for_duplicates( name)
 	   
 	   properties := make(map[string]interface{})
@@ -67,7 +67,7 @@ func ( v *Package_Constructor)create_sql_table( name,database_name,table_name st
 }
         
         
-func ( v *Package_Constructor) create_sql_text_search_table(name,database_name,table_name string,field_names []string){
+func ( v *Package_Constructor) Create_sql_text_search_table(name,database_name,table_name string,field_names []string){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -79,7 +79,7 @@ func ( v *Package_Constructor) create_sql_text_search_table(name,database_name,t
        v.update_entry(name,&properties) 
 }
        
-func ( v *Package_Constructor) add_single_element(name string){
+func ( v *Package_Constructor) Add_single_element(name string){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -87,7 +87,7 @@ func ( v *Package_Constructor) add_single_element(name string){
        properties["type"]  = "SINGLE_ELEMENT"
         v.update_entry(name,&properties) 
 }       
-func ( v *Package_Constructor) add_managed_hash(name string,fields []string){
+func ( v *Package_Constructor) Add_managed_hash(name string,fields []string){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -98,7 +98,7 @@ func ( v *Package_Constructor) add_managed_hash(name string,fields []string){
       v.update_entry(name,&properties) 
 }
       
-func ( v *Package_Constructor) add_hash(name string){
+func ( v *Package_Constructor) Add_hash(name string){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -110,7 +110,7 @@ func ( v *Package_Constructor) add_hash(name string){
 }
 
 
-func ( v *Package_Constructor) add_redis_stream(name string,depth int64){
+func ( v *Package_Constructor) Add_redis_stream(name string,depth int64){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -123,7 +123,7 @@ func ( v *Package_Constructor) add_redis_stream(name string,depth int64){
        
 
        
-func ( v *Package_Constructor)add_job_queue(name string,depth int64){
+func ( v *Package_Constructor)Add_job_queue(name string,depth int64){
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
@@ -135,7 +135,7 @@ func ( v *Package_Constructor)add_job_queue(name string,depth int64){
 }
       
       
-func ( v *Package_Constructor)add_rpc_server(name string ,depth,timeout int64 ){
+func ( v *Package_Constructor)Add_rpc_server(name string ,depth,timeout int64 ){
        v.check_for_duplicates( name)
        properties:= make(map[string]interface{})
        properties["name"]     = name
