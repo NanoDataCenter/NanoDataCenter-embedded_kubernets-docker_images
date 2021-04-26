@@ -35,3 +35,20 @@ func construct_streaming_logs(command_code string,keys []string){
   
   Bc_Rec.End_header_node("STREAMING_LOG",command_code)
 }
+
+
+
+
+
+
+func construct_watchdog_logging(command_code string){
+ properties := make(map[string]interface{})
+ 
+  Bc_Rec.Add_header_node("WATCH_DOG",command_code,properties)
+ 
+  Cd_Rec.Construct_package("WATCH_DOG")
+  Cd_Rec.Add_single_element("WATCH_DOG") 
+  Cd_Rec.Close_package_contruction()
+  Bc_Rec.End_header_node("WATCH_DOG",command_code)
+
+}

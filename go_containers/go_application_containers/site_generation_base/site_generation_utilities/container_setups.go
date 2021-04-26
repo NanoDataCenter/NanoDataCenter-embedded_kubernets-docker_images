@@ -6,7 +6,7 @@ import "strings"
 type container_descriptor struct {
     docker_image   string
     command_string string
-
+    command_map map[string]string
 
 }
 
@@ -37,7 +37,7 @@ func Add_mount( mount_name string , mount_path string ){
 
 }
 
-func Add_container( temp_flag bool, container_name, docker_image, command_string string , mounts []string){
+func Add_container( temp_flag bool, container_name, docker_image, command_string string ,command_map map[string]string, mounts []string){
    
    if _,ok := container_map[container_name]; ok == true {
      panic("duplicate container name "+container_name)
@@ -45,7 +45,7 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
 
    var temp container_descriptor
    
-   
+   temp.command_map = command_map
    temp.docker_image = docker_image
    if temp_flag == false {
         temp.command_string = command_string_first_part+"  "+container_name+"  "+strings.Join(mounts,"  ")+" "+docker_image+" "+command_string
@@ -77,20 +77,12 @@ func register_container( container_name string){
    properties := make(map[string]interface{})
    properties["container_image"] = container_map[container_name].docker_image
    properties["startup_command"] = container_map[container_name].command_string
+   properties["command_map"] = container_map[container_name].command_map
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
-  
-   Cd_Rec.Construct_package("DATA_STRUCTURES")
-   Cd_Rec.Add_single_element("controller_watchdog")
-   Cd_Rec.Add_redis_stream("CONTROLLER_FAILURE",1024)  // container process_control failure
-   Cd_Rec.Add_hash("WEB_DISPLAY_DICTIONARY") // state of process
-   Cd_Rec.Add_hash("Process_Status")  // last error
-   Cd_Rec.Add_redis_stream("Process_Failure",1024) // error stream of different errors
-   Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)  //not sure of what this is 
-   Cd_Rec.Add_redis_stream("PROCESS_VSZ",1024)
-   Cd_Rec.Add_redis_stream("PROCESS_RSS",1024)
-   Cd_Rec.Add_redis_stream("PROCESS_CPU",1024) 
-   Cd_Rec.Close_package_contruction()
- 
+   construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
+   construct_incident_logging("process_control_failure")
+   construct_incident_logging("managed_process_failure")
+   construct_watchdog_logging("process_control")
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }
 

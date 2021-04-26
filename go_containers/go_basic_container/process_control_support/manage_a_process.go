@@ -28,7 +28,7 @@ func construct_process_manager( key, cmd_line string) *Process_Manager_Type {
 func( v *Process_Manager_Type)run(){
 
    v.failed = false
-  
+   v.error_log = ""
  
       for true {
          defer recover()

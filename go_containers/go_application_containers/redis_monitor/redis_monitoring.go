@@ -52,7 +52,7 @@ func ( v *Redis_Monitor_Type)Init(){
 
 
 	v.streams = make(map[string]redis_handlers.Redis_Stream_Struct)
-  	data_search_list := []string{ "REDIS_MONITORING"}
+  	data_search_list := []string{ "REDIS_MONITORING","STREAMING_LOG","STREAMING_LOG"}
 	data_element := data_handler.Construct_Data_Structures(&data_search_list)
 	
 	v.streams["KEYS"]                           = (*data_element)["KEYS"].(redis_handlers.Redis_Stream_Struct)

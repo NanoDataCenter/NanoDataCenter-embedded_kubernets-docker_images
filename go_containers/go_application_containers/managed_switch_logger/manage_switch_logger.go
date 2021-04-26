@@ -73,15 +73,16 @@ func Monitor_TP_Setup(){
    //switch_array = append( switch_array, switch_record_type{ "192.168.1.45",user,pass})
    
     
-   search_list := []string{ "TP_MONITOR_SWITCHES","TP_SWITCH"}
+   search_list := []string{ "TP_SWITCH"}
    switches := graph_query.Common_qs_search(&search_list)
+   
    for _,element := range switches {
       var temp switch_record_type
 	  temp.ip       =  graph_query.Convert_json_string(	element["ip"] ) 
 	  temp.username =  "admin"
 	  temp.password =  graph_query.Convert_json_string(	element["id"] ) 
 	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
-	  data_search_list := []string{ "TP_MONITOR_SWITCHES","TP_SWITCH:"+temp.name,"LOG_DATA"}
+	  data_search_list := []string{ "TP_SWITCH:"+temp.name,"INCIDENT_LOG"}
 	  data_element := data_handler.Construct_Data_Structures(&data_search_list)
 	  temp.status = (*data_element)["STATUS"].(redis_handlers.Redis_Single_Structure)
 	  temp.current_state = (*data_element)["CURRENT_STATE"].(redis_handlers.Redis_Single_Structure)
@@ -91,7 +92,7 @@ func Monitor_TP_Setup(){
 	  //fmt.Println(temp)
 	 
    }
-   
+
 
 }
 
@@ -214,11 +215,11 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
   var b bytes.Buffer	
   msgpack.Pack(&b,log_data)
   current_value := b.String()
-  
+  (*element).current_state.Set(current_value)
    
  
   
-  var log_flag = true  
+  var ok_flag = true 
   element_tx := log_data["pkt_tx_bad"].([]int)
   element_rx := log_data["pkt_rx_bad"].([]int)
   switch_links := log_data["valid_links"].([]int)
@@ -227,26 +228,27 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
 	   case 5,6: {
          //fmt.Println("i",i,element_tx[i],element_rx[i])
 	     if (element_tx[i] > 0 ) || (element_rx[i] > 0 ) {
-		    log_flag = false
+		    ok_flag = false
 		} // if
 		}// case
 		}// switch
    }// for
    var b1 bytes.Buffer	
-  msgpack.Pack(&b1,log_flag)
+  msgpack.Pack(&b1,ok_flag)
   logical_value := b.String()
 
-   (*element).current_state.Set(logical_value)
-   if log_flag == true {
+   (*element).status.Set(logical_value)
+   if ok_flag == false {
+      //fmt.Println("false")
       current_error :=   (*element).last_error.Get()
       if current_error != current_value{
-	 
-          fmt.Println("updating error status",len(current_error),len(current_value))
+	      //log_differences(len(current_error),current_error,current_value)
+          //fmt.Println("updating error status",len(current_error),len(current_value))
 		 
           (*element).last_error.Set(current_value)
           (*element).error_log.Xadd(current_value)
 	  }  
-   }	
+   } 
 	
 	
 
@@ -254,9 +256,14 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
 
 }
 
+func log_differences( number int, a,b string){
 
-
-
+  for i:= 0;i<number;i++{
+    if a[i] != b[i]{
+	  fmt.Println("bad",a[i],b[i])
+	}
+  }
+}
 
 func extract_balance_element( input_string, start_delem, end_delem string, target_element int) string {
 

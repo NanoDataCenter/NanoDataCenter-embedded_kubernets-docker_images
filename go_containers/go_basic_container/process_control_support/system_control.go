@@ -3,82 +3,68 @@ package system_control
 import "fmt"
 import "time"
 import "bytes"
-import "lacima.com/redis_support/redis_handlers"
-import "lacima.com/redis_support/generate_handlers"
-import "lacima.com/system_error_logging"
+//import "lacima.com/redis_support/redis_handlers"
+//import "lacima.com/redis_support/generate_handlers"
+//import "lacima.com/system_error_logging"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/cf_control"
 import "github.com/msgpack/msgpack-go"
-
+import "lacima.com/Patterns/logging_support"
 
 type System_Control_Type struct {
-  system_log              *system_log.SYSTEM_LOGGING_RECORD
-  site                     string
-  local_node               string
+  status                   bool
   container_name           string
-  file_name                string
-  web_display              redis_handlers.Redis_Hash_Struct
-  process_failure_status   redis_handlers.Redis_Hash_Struct
-  process_failure_logs     redis_handlers.Redis_Stream_Struct
-  watchdog_strobe          redis_handlers.Redis_Single_Structure
+  incident_log             *logging_support.Incident_Log_Type
   process_map              map[string]string
   process_ctrl             []*Process_Manager_Type
-  
+  process_status           map[string]bool
+  error_status             map[string]string
+  good_count               map[string]int
 }
 
 
 
-func Construct_System_Control( sys_log *system_log.SYSTEM_LOGGING_RECORD,site, local_node,container_name,file_name string ) *System_Control_Type {
+func Construct_System_Control(  container_name string ) *System_Control_Type {
 
    var return_value  System_Control_Type
-   return_value.site = site
-   return_value.local_node = local_node
    return_value.container_name = container_name
-   return_value.file_name = file_name
-   return_value.system_log = sys_log
    return_value.process_map = make(map[string]string)
+   return_value.process_status  = make(map[string]bool)
+   return_value.error_status  = make(map[string]string)
+   return_value.good_count = make(map[string]int)
    return &return_value
 }   
 
 func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
 
-   search_list :=[]string{ "CONTAINER:"+v.container_name ,"DATA_STRUCTURES" }
-   handlers := data_handler.Construct_Data_Structures(&search_list)
-   v.web_display = (*handlers)["WEB_DISPLAY_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
-   v.process_failure_status = (*handlers)["Process_Status"].(redis_handlers.Redis_Hash_Struct)
-   v.process_failure_logs = (*handlers)["Process_Failure"].(redis_handlers.Redis_Stream_Struct)
-   v.watchdog_strobe = (*handlers)["controller_watchdog"].(redis_handlers.Redis_Single_Structure)
+   v.incident_log = logging_support.Construct_incident_log([]string{"CONTAINER:"+v.container_name,"INCIDENT_LOG:managed_process_failure","INCIDENT_LOG"} )
+    
+   search_list := []string{ "CONTAINER:"+v.container_name  }
    
-   v.web_display.Delete_All()  // remove elements which may not belong
-   
-   search_list = []string{ "CONTAINER:"+v.container_name  }
-   //fmt.Println("site",v.site)
-   //fmt.Println(search_list)
    nodes := graph_query.Common_qs_search( &search_list)
    node:= nodes[0]
-   process_list := node["command_list"]
-   v.verify_process_map(process_list)
-   //fmt.Println("process_map",process_list)
+   fmt.Println("node",node) 
+   process_map_json := node["command_map"]
+   process_map := graph_query.Convert_json_dict(process_map_json)
+   fmt.Println("process_map",process_map) 
+   
+   v.verify_process_map(process_map)
    v.construct_chains(cf_cluster)
    
   
 }
 
 
-func ( v *System_Control_Type ) verify_process_map( process_list string ) {
 
-   data := graph_query.Convert_json_dict_array(process_list)
-   for _,element := range data { 
-     
-	 key,ok := element["key"] 
-	 if ok != true {
-	    panic("bad key")
-	 }
-	 command,ok1 := element["command"]
-	 if ok1 != true {
-	    panic("bad command")
-	 }
+func ( v *System_Control_Type ) verify_process_map( process_map map[string]string ) {
+
    
+   
+   for key,command := range process_map { 
+ 
+	v.good_count[key] = 10
+    v.process_status[key] = true
+	v.error_status[key]   = ""
     v.process_map[key] = command
 	v.process_ctrl = append(v.process_ctrl,construct_process_manager( key,command) )
    
@@ -135,64 +121,59 @@ func ( v *System_Control_Type )launch_processes( system interface{},chain interf
 }
 
 func ( v *System_Control_Type )strobe_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-
+/*
    var data = time.Now().UnixNano()
    var b bytes.Buffer	
    msgpack.Pack(&b,data)
    v.watchdog_strobe.Set(b.String())
 
-
+*/
    return cf.CF_DISABLE
 }
 
 func ( v *System_Control_Type )monitor_process( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+   v.status = true
    for _,element := range v.process_ctrl {
-       v.update_web_display(element)
-       v.log_error_message(element)
+       v.monitor_element(element)
+      
    }
+   v.summarize_data()
    return cf.CF_DISABLE
 }
 
-func ( v *System_Control_Type )update_web_display( element  *Process_Manager_Type){
+func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
 
    key := (*element).key
-   state := true
-   if (*element).failed == true {
-      state = false
+   if v.good_count[key] == 10 {
+        v.process_status[key] = true
+   }else{
+      v.process_status[key] = false
    }
-   var b bytes.Buffer	
-   msgpack.Pack(&b,state)
+   v.error_status[key] = ""
+   if (*element).failed == true {
+      v.status = false
+      v.process_status[key] = false
+	  v.error_status[key] = (*element).error_log
+	  v.good_count[key] = 0
+   }else{
+     v.good_count[key] +=1
+   }
    
-
-   v.web_display.HSet(key,b.String())
 }
 
 
 
-func ( v *System_Control_Type )log_error_message( element  *Process_Manager_Type){
-
-  key := (*element).key
-  if (*element).failed == false {
-     return
-  }else{
-    error_message := (*element).error_log
-	(*element).failed = false
-	 var b bytes.Buffer	
-    msgpack.Pack(&b,error_message)
-	new_message := b.String()
-	ref_message := v.process_failure_status.HGet(key)
-	
-	if ref_message != new_message {
-	   v.process_failure_status.HSet(key,new_message)
-	   v.process_failure_logs.Xadd(new_message)
-	   fmt.Println("error_message is differenet ####################")
-	}else{
-	   fmt.Println("error_message is the same --------------------------")
-	}
-  }
-
-
+func ( v *System_Control_Type )summarize_data(){
+  
+     var b bytes.Buffer	
+     msgpack.Pack(&b,v.error_status)
+	 current_error := b.String()
+	 
+     var b1 bytes.Buffer	
+     msgpack.Pack(&b1,v.process_status)
+	 new_value := b1.String()	 
+	 v.incident_log.Log_data( v.status, new_value, current_error)
+  
 }
-
   
 

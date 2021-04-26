@@ -50,6 +50,18 @@ func Convert_json_dictionary_interface( json_string string) map[string]interface
 
 }
 
+func Convert_json_dict( json_string string)map[string]string{
+
+     var return_value = make(map[string]string)
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value  
+
+}
+
+
 func Convert_json_dict_array( json_string string)[]map[string]string{
 
      var return_value = make([]map[string]string,0)

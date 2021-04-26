@@ -1,5 +1,0 @@
-
-
-docker build --tag  nanodatacenter/system_configuration_basic . 
-
-

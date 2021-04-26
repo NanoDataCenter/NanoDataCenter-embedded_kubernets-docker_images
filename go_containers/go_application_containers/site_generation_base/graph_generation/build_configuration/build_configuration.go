@@ -104,7 +104,7 @@ func (v *Build_Configuration)construct_node( push_namespace bool,relationship ,l
 	  for key,value := range properties {
 	      	b, err := json.Marshal(value)
 	        if err != nil {
-		       fmt.Println("json marshall error", err)
+		       panic("json marshall error ")
 	        }
 	        client.HSet(ctx,redis_key,key,b)
 	  }
