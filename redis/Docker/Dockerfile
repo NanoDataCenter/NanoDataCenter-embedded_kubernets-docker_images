@@ -14,4 +14,3 @@ COPY redis-check-rdb .
 COPY redis-check-aof .
 COPY redis_control.bsh .
 
-

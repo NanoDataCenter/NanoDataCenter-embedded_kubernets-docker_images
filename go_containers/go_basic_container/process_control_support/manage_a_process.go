@@ -1,5 +1,5 @@
 package system_control
-//import "fmt"
+import "fmt"
 import "strings"
 import "io"
 import "os/exec"
@@ -29,34 +29,58 @@ func( v *Process_Manager_Type)run(){
 
    v.failed = false
    v.error_log = ""
- 
-      for true {
-         defer recover()
-         command_list :=  strings.Fields(v.cmd_line)
-	     //fmt.Println("command_list",command_list)
-		 args := command_list[1:]
-		 command :=command_list[0]
-         cmd := exec.Command(command,args...)
-        
-	     stderr, err := cmd.StderrPipe()
-	     if err != nil {
-		    panic("bad pipe")
-		 }
-	    // fmt.Println("error pipe is ok")
-		// fmt.Println("going to start")
-		 if err := cmd.Start(); err != nil {
-		     panic("start is failure")
-	     }
-		 //fmt.Println("start is ok")
-         working_buffer , _ := io.ReadAll(stderr)
-
-         cmd.Wait()
-		 //fmt.Println("process stopped")
-		 if v.failed == false{
-		     v.error_log = string(working_buffer)
-		 }
-	     v.failed = true
-      }
+      
+   for true {
+      v.loop_element_recover()
+   }	  
   
 }
+
+
+func ( v *Process_Manager_Type)recovery(){
+   if r := recover(); r != nil {
+           v.error_log = fmt.Sprint(r)
+		   fmt.Println(v.error_log)
+		   
+    }
+
+}
+
+func ( v *Process_Manager_Type)loop_element_recover(){
+    defer v.recovery()
+    v.loop_element()
+}
+
+func ( v *Process_Manager_Type)loop_element(){
+       
+	fmt.Println("starting loop")
+    command_list :=  strings.Fields(v.cmd_line)
+	fmt.Println("command_list",command_list)
+	args := command_list[1:]
+    command :=command_list[0]
+    cmd := exec.Command(command,args...)
+        
+	 stderr, err := cmd.StderrPipe()
+	 if err != nil {
+		    panic("bad pipe")
+     }
+	 // fmt.Println("error pipe is ok")
+     // fmt.Println("going to start")
+     if err := cmd.Start(); err != nil {
+		     panic("start is failure")
+	 }
+	 //fmt.Println("start is ok")
+     working_buffer , _ := io.ReadAll(stderr)
+     cmd.Wait()
+     //fmt.Println("process stopped")
+     if v.failed == false{
+	   v.error_log = string(working_buffer)
+	 }
+	 v.failed = true
+}
+
+
+
+
+
 

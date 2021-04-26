@@ -16,6 +16,7 @@ import (
     "lacima.com/redis_support/redis_handlers"
     "lacima.com/redis_support/generate_handlers"
 	"github.com/msgpack/msgpack-go"
+	"lacima.com/Patterns/logging_support"
 )
 
 
@@ -31,10 +32,7 @@ type switch_record_type  struct  {
   ip       string
   username string
   password string
-  status         redis_handlers.Redis_Single_Structure
-  current_state  redis_handlers.Redis_Single_Structure
-  last_error     redis_handlers.Redis_Single_Structure
-  error_log      redis_handlers.Redis_Stream_Struct  
+  incident_log             *logging_support.Incident_Log_Type
   
 
 
@@ -82,12 +80,8 @@ func Monitor_TP_Setup(){
 	  temp.username =  "admin"
 	  temp.password =  graph_query.Convert_json_string(	element["id"] ) 
 	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
-	  data_search_list := []string{ "TP_SWITCH:"+temp.name,"INCIDENT_LOG"}
-	  data_element := data_handler.Construct_Data_Structures(&data_search_list)
-	  temp.status = (*data_element)["STATUS"].(redis_handlers.Redis_Single_Structure)
-	  temp.current_state = (*data_element)["CURRENT_STATE"].(redis_handlers.Redis_Single_Structure)
-	  temp.last_error = (*data_element)["LAST_ERROR"].(redis_handlers.Redis_Single_Structure)
-	  temp.error_log = (*data_element)["ERROR_LOG"].(redis_handlers.Redis_Stream_Struct)
+	  
+	  temp.incident_log  = logging_support.Construct_incident_log([]string{"TP_SWITCH:"+temp.name,"INCIDENT_LOG"} )
       switch_array = append( switch_array,temp)
 	  //fmt.Println(temp)
 	 
@@ -215,7 +209,7 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
   var b bytes.Buffer	
   msgpack.Pack(&b,log_data)
   current_value := b.String()
-  (*element).current_state.Set(current_value)
+  
    
  
   
@@ -233,26 +227,9 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
 		}// case
 		}// switch
    }// for
-   var b1 bytes.Buffer	
-  msgpack.Pack(&b1,ok_flag)
-  logical_value := b.String()
 
-   (*element).status.Set(logical_value)
-   if ok_flag == false {
-      //fmt.Println("false")
-      current_error :=   (*element).last_error.Get()
-      if current_error != current_value{
-	      //log_differences(len(current_error),current_error,current_value)
-          //fmt.Println("updating error status",len(current_error),len(current_value))
-		 
-          (*element).last_error.Set(current_value)
-          (*element).error_log.Xadd(current_value)
-	  }  
-   } 
-	
-	
-
-  fmt.Println("Message logged")
+  (*element).incident_log.Log_data( ok_flag,  current_value, current_value )
+  fmt.Println("Message logged",ok_flag)
 
 }
 

@@ -1,6 +1,6 @@
 package su
 
-//import "fmt"
+import "fmt"
 import "strings"
 
 type container_descriptor struct {
@@ -39,6 +39,12 @@ func Add_mount( mount_name string , mount_path string ){
 
 func Add_container( temp_flag bool, container_name, docker_image, command_string string ,command_map map[string]string, mounts []string){
    
+   var expanded_mount []string
+   for _,name := range mounts {
+      expanded_mount = append( expanded_mount,  drive_mounts[name] )
+   
+   }
+   
    if _,ok := container_map[container_name]; ok == true {
      panic("duplicate container name "+container_name)
    }
@@ -48,10 +54,11 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
    temp.command_map = command_map
    temp.docker_image = docker_image
    if temp_flag == false {
-        temp.command_string = command_string_first_part+"  "+container_name+"  "+strings.Join(mounts,"  ")+" "+docker_image+" "+command_string
+        temp.command_string = command_string_first_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }else{
-      temp.command_string = command_string_run_part+"  "+container_name+"  "+strings.Join(mounts,"  ")+" "+docker_image+" "+command_string
+      temp.command_string = command_string_run_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }
+   fmt.Println("temp",temp)
    container_map[container_name] = temp
    
 }
