@@ -6,6 +6,7 @@ func construct_incident_logging(command_code string){
     Bc_Rec.Add_header_node("INCIDENT_LOG",command_code,properties)
 	
     Cd_Rec.Construct_package("INCIDENT_LOG")
+	Cd_Rec.Add_single_element("TIME_STAMP") // unix time stamp
     Cd_Rec.Add_single_element("STATUS") // true or false
     Cd_Rec.Add_single_element("CURRENT_STATE") // current value of total data
     Cd_Rec.Add_single_element("LAST_ERROR") // current value of error data

@@ -238,7 +238,7 @@ func match_relationship( relationship, label string , starting_set  map[string]s
                 if flag1,_:=client.Exists(ctx,  "#"+relationship+rel_sep+label).Result();flag1!=0{
 				    //fmt.Println("pass exists")
                     return_value,_ = client.SMembersMap(ctx ,"#"+relationship+rel_sep+label).Result()
-					fmt.Println("member length",len(return_value))
+					//fmt.Println("member length",len(return_value))
                     return_value = intersection(return_value,starting_set)
 			    }
 			}

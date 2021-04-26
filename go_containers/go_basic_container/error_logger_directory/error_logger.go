@@ -4,12 +4,14 @@ import "fmt"
 import "os"
 import "bytes"
 import "io/ioutil"
-import "time"
-import "lacima.com/site_data"
+import "syscall"
 import "lacima.com/redis_support/graph_query"
+import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
-import  "lacima.com/redis_support/redis_handlers"
+import "lacima.com/site_data"
+import "lacima.com/Patterns/logging_support"
 import "github.com/msgpack/msgpack-go"
+import ps "github.com/mitchellh/go-ps"
 
 
 func main(){
@@ -22,7 +24,7 @@ func main(){
   if err != nil {
         panic("no error data file ")
   }
-  //fmt.Println("file_data",file_data)
+  fmt.Println("file_data",file_data)
   site_data_store = get_site_data.Get_site_data(config_file)
  
   
@@ -32,20 +34,34 @@ func main(){
   container_name := os.Getenv("CONTAINER_NAME")
   fmt.Println("container_name",container_name)
   
-  search_list := []string{"CONTAINER"+":"+container_name,"DATA_STRUCTURES"}
-  //fmt.Println("search_list",search_list)
-  data_element := data_handler.Construct_Data_Structures(&search_list)  
-  //fmt.Println(data_element)
-  driver := (*data_element)["CONTROLLER_FAILURE"].(redis_handlers.Redis_Stream_Struct)
- 
-  data := make(map[string]interface{})
-  data["time"] = time.Now().UnixNano()
-  data["error_trace_back"] = file_data
+  
+  incident_log := logging_support.Construct_incident_log([]string{"CONTAINER:"+container_name,"INCIDENT_LOG:process_control_failure","INCIDENT_LOG"} )
+  
   var b bytes.Buffer	
-  msgpack.Pack(&b,data)
-  fmt.Println(data)
-  driver.Xadd(b.String())  
- 
+  msgpack.Pack(&b,file_data)
+  new_value := b.String()
+  (*incident_log).Log_data( false, new_value, new_value )
+  /*
+     At this point there may be zombie spawn processes
+	 this section of code will remove any processes that
+	 are not either the error_logger or bash program
+  */
+  
+   processList, _ := ps.Processes()
+   for x := range processList {
+        var process ps.Process
+        process = processList[x]
+		name := process.Executable()
+		fmt.Println("name",name)
+		if ( name != "bash")&&(name != "error_logger"){
+		   fmt.Println("killing ",name)
+		   syscall.Kill(process.Pid(),syscall.SIGINT)
+		}
+        fmt.Printf("%d\t%s\n",process.Pid(),process.Executable())
+
+        // do os.* stuff on the pid
+    }
+  
 
 }
 

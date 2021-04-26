@@ -1,11 +1,9 @@
 package system_control
 
-import "fmt"
+//import "fmt"
 import "time"
 import "bytes"
-//import "lacima.com/redis_support/redis_handlers"
-//import "lacima.com/redis_support/generate_handlers"
-//import "lacima.com/system_error_logging"
+
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/cf_control"
 import "github.com/msgpack/msgpack-go"
@@ -15,6 +13,7 @@ type System_Control_Type struct {
   status                   bool
   container_name           string
   incident_log             *logging_support.Incident_Log_Type
+  watch_dog_log            *logging_support.Watch_Dog_Log_Type
   process_map              map[string]string
   process_ctrl             []*Process_Manager_Type
   process_status           map[string]bool
@@ -38,15 +37,15 @@ func Construct_System_Control(  container_name string ) *System_Control_Type {
 func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
 
    v.incident_log = logging_support.Construct_incident_log([]string{"CONTAINER:"+v.container_name,"INCIDENT_LOG:managed_process_failure","INCIDENT_LOG"} )
-    
+   v.watch_dog_log = logging_support.Construct_watch_data_log([]string{"CONTAINER:"+v.container_name,"WATCH_DOG:process_control","WATCH_DOG"})
    search_list := []string{ "CONTAINER:"+v.container_name  }
    
    nodes := graph_query.Common_qs_search( &search_list)
    node:= nodes[0]
-   fmt.Println("node",node) 
+   //fmt.Println("node",node) 
    process_map_json := node["command_map"]
    process_map := graph_query.Convert_json_dict(process_map_json)
-   fmt.Println("process_map",process_map) 
+   //fmt.Println("process_map",process_map) 
    
    v.verify_process_map(process_map)
    v.construct_chains(cf_cluster)
@@ -61,7 +60,7 @@ func ( v *System_Control_Type ) verify_process_map( process_map map[string]strin
    
    
    for key,command := range process_map { 
- 
+    //fmt.Println("key",key,"command",command)
 	v.good_count[key] = 10
     v.process_status[key] = true
 	v.error_status[key]   = ""
@@ -121,13 +120,7 @@ func ( v *System_Control_Type )launch_processes( system interface{},chain interf
 }
 
 func ( v *System_Control_Type )strobe_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-/*
-   var data = time.Now().UnixNano()
-   var b bytes.Buffer	
-   msgpack.Pack(&b,data)
-   v.watchdog_strobe.Set(b.String())
-
-*/
+   v.watch_dog_log.Strobe_Watch_Dog(  )
    return cf.CF_DISABLE
 }
 
@@ -149,7 +142,7 @@ func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
    }else{
       v.process_status[key] = false
    }
-   v.error_status[key] = ""
+  
    if (*element).failed == true {
       v.status = false
       v.process_status[key] = false
@@ -157,6 +150,7 @@ func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
 	  v.good_count[key] = 0
    }else{
      v.good_count[key] +=1
+	 v.error_status[key] = "-"
    }
    
 }
@@ -164,11 +158,11 @@ func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
 
 
 func ( v *System_Control_Type )summarize_data(){
-  
+     //fmt.Println("status",v.process_status,v.error_status)
      var b bytes.Buffer	
      msgpack.Pack(&b,v.error_status)
 	 current_error := b.String()
-	 
+	 //fmt.Println("new_value",v.process_status)
      var b1 bytes.Buffer	
      msgpack.Pack(&b1,v.process_status)
 	 new_value := b1.String()	 

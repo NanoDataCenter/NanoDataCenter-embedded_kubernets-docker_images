@@ -33,7 +33,9 @@ func main(){
 
 	cf_control_cluster.Cf_cluster_init()
 	cf_control_cluster.Cf_set_current_row("container_process_monitor")
+	
     (system_ctrl).Init(&cf_control_cluster)
+	
 	(cf_control_cluster).CF_Fork()	
 	
     loop_flag := true
