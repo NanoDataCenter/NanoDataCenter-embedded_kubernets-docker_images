@@ -1,2 +1,0 @@
-cp -r ../redis_support_py3 .
-docker build --tag nanodatacenter/pod_utility_function .

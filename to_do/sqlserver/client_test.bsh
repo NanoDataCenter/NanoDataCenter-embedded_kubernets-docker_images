@@ -1,2 +1,0 @@
-python -m sqlite_library.sqlite_sql_support_py3
-exit	

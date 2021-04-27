@@ -1,0 +1,10 @@
+docker stop node_control
+docker rm node_control
+cp -r ../common_tools .
+cp ../common_tools/process_control_py3.py .
+cp ../common_tools/process_control.bsh .
+docker build --tag nanodatacenter/node_control .
+../docker_cmds/docker_clean_up
+rm -r common_tools
+rm process_control_py3.py
+rm process_control.bsh

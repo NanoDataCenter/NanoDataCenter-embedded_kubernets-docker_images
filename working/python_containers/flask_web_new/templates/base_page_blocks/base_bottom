@@ -1,0 +1,10 @@
+
+ 
+
+<script>
+        $(function () {
+            $('#main_navbar').bootnavbar();
+        })
+</script>
+</body>
+</html>

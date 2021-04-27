@@ -26,7 +26,7 @@ const file_db  int = 13
 var ctx    = context.TODO()
 var client *redis.Client
 
-func Create_redis_data_handle( address string, port int, file_db ){
+func Create_redis_data_handle( address string, port , file_db int){
   
 
     Init_Redis_Mutex()

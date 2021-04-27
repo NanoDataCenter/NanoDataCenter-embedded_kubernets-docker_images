@@ -17,13 +17,11 @@ import (
     "lacima.com/redis_support/generate_handlers"
 	"github.com/msgpack/msgpack-go"
 	"lacima.com/Patterns/logging_support"
+	"lacima.com/Patterns/secrets"
 )
 
 
-var (
-	user = "admin"
-	pass = "Gr1234gfd"
-)
+
 
 
 
@@ -42,7 +40,7 @@ type switch_record_type  struct  {
 var switch_array []switch_record_type
 
 
-
+var passwords map[string]map[string]string
 
 func main() {
     
@@ -53,6 +51,9 @@ func main() {
   graph_query.Graph_support_init(&site_data_store)
   redis_handlers.Init_Redis_Mutex()
   data_handler.Data_handler_init(&site_data_store)
+  secrets.Init_file_handler(site_data_store)
+  passwords = secrets.Get_Secret("TP_MANAGED_SWITCHES")
+  //fmt.Println("secrets",passwords)
   Monitor_TP_Setup()
   Monitior_TP_Switch()
 
@@ -67,7 +68,7 @@ func Monitor_TP_Setup(){
    // find switches
    // for each switch find data structures
    
-
+   
    
     
    search_list := []string{ "TP_SWITCH"}
@@ -76,9 +77,10 @@ func Monitor_TP_Setup(){
    for _,element := range switches {
       var temp switch_record_type
 	  temp.ip       =  graph_query.Convert_json_string(	element["ip"] ) 
-	
-	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
 	  
+	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
+	  temp.username = passwords[temp.name]["user"]
+	  temp.password = passwords[temp.name]["password"]
 	  temp.incident_log  = logging_support.Construct_incident_log([]string{"TP_SWITCH:"+temp.name,"INCIDENT_LOG"} )
       switch_array = append( switch_array,temp)
 	  //fmt.Println(temp)
@@ -103,11 +105,18 @@ func Monitior_TP_Switch() {
 
 }
 
-
+func handlepanic() {
+  
+    if a := recover(); a != nil {
+      
+        fmt.Println("RECOVER", a)
+    }
+}
 func make_measurement( element *switch_record_type ){
-   
+     defer handlepanic()
      make_login_post(element)
 	 raw_data,err := make_collect_data_get(element)
+	
 	 if err == true {
 	   parse_raw_data(element,raw_data)
 	 }

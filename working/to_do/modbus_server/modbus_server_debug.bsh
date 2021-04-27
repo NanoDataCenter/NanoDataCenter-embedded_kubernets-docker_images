@@ -1,0 +1,4 @@
+
+#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+docker run   -it --network host --rm -v /dev:/dev   --mount type=bind,source=/mnt/ssd/site_config,target=/data/ nanodatacenter/modbus_server  /bin/bash
+

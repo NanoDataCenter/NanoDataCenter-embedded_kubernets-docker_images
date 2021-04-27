@@ -1,4 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-docker run   -it --network host --rm  --name lacima_system_configuration  --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/site_config,target=/data/ nanodatacenter/lacima_system_configuration /bin/bash construct_graph.bsh
-

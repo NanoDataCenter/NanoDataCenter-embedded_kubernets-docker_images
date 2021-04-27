@@ -1,0 +1,6 @@
+docker stop file_server
+docker rm file_server
+cp -r ../common_tools/ .
+docker build --tag nanodatacenter/file_server . 
+../docker_cmds/docker_clean_up 
+

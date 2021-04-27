@@ -1,4 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-
-docker run -ti --rm  --network host  --mount type=bind,source=/home/pi/react_source_code,target=/data/     nanodatacenter/react_dev /bin/bash 

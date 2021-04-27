@@ -1,9 +1,0 @@
-
-while [ 1 ]
-do
-   echo "sqlite server"
-   python file_server_py3.py 2>  /tmp/file_server_py3.err 
-   sleep 10
-
-
-done

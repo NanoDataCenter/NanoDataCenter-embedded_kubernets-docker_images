@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"> 
+<link rel="icon" href="/favicon.ico">
+
+
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<link href="/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/static/css/animate.min.css">
+<link rel="stylesheet" href="/static/css/bootnavbar.css">
+
+<script src="/static/js/jquery-3.3.1.min.js"></script>
+<script src="/static/js/popper.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/bootnavbar.js" ></script>
+<script type="text/javascript" >
+~~(self.include "templates/base_page_blocks/js/ajax_functions.js" )--
+~~(self.include "templates/base_page_blocks/js/redis_functions.js" )-- 
+~~(self.include "templates/base_page_blocks/js/modal_functions.js" )-- 
+
+
+</script>
+
+<style>
+input[type="range"] {
+  width: 100%;
+  margin-bottom: 3rem;
+}
+
+.auto {
+  -ms-touch-action: auto;
+  touch-action: auto;
+} 
+body {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top:   20px;
+  padding-bottom 20px;
+ 
+}
+
+</style>
+
+
+<title><<self.title>></title>
+
+
+
+</head>
+<body>
+
+
+~~(self.include "templates/menu/menu")--
+
+
+    

@@ -1,0 +1,39 @@
+OW TO ACCESS SERIAL DEVICES IN DOCKER
+Brandon Cannaday
+BRANDON CANNADAY 3 MINUTE READ
+SHARE
+Serial is a popular southbound communication option for many IoT sensors and peripherals. When combined with the rising popularity of Docker as a distribution method for edge and gateway computing, things can get complicated. Gaining access to serial devices across the Docker boundary involves navigating some of the more complex areas of Linux and Docker permissions.
+
+The Losant Edge Agent is shipped as a Docker container. It also includes built-in support for reading from serial and writing to serial devices. Because of this, we've had to solve the problem of how to access serial devices from Docker many times. This article outlines the steps we've taken to successfully and reliably gain access to serial devices from inside Docker using Debian-based Linux distributions like Ubuntu or Raspbian.
+
+1. SET UDEV RULE
+By default, serial devices are mounted so that only root users can access the device. We need to add a udev rule to make them readable by non-root users. udev is the device manager for the Linux kernel and handles what happens when something like a serial device is plugged in. For security reasons, most Docker containers execute their processes under a non-root user. This means we need to change some permissions to give that user access to the serial device. We can do this by defining a new udev rule.
+
+Create a file named /etc/udev/rules.d/99-serial.rules. Add the following line to that file:
+
+KERNEL=="ttyUSB[0-9]*",MODE="0666"
+All of the default udev rules are located in /lib/udev/rules.d. You can't change the default files, but you can add new rules in /etc/udev/rules.d, which is what we've done above. All of the rules, from all directories, are sorted and processed in alphabetical order. By naming our new rule starting with "99", we ensure any built-in rules are run first, then our rules are run after.
+
+MODE="0666" will give all users read/write (but not execute) permissions to any ttyUSB devices. When using USB-to-Serial converters, you'll typically see them mounted with this name. If your device is being mounted with a different name, you may need to change this rule to match.
+
+2. MOUNT /DEV FOLDER FROM HOST TO CONTAINER
+Serial devices are often ephemeral (can be plugged and unplugged at any time). Because of this, we have to provide our container the entire /dev directory. If your serial device is permanently attached, you can utilize a more specific volume mount or even the --device option.
+
+We have to mount the entire /dev directory because the device file disappears when the serial device is unplugged. Even if you plug it back in and the device shows up again, its technically a different file, so Docker wont see it. You can mount the /dev directory by adding the following volume command to your Docker run command:
+
+-v /dev:/dev
+3. RUN CONTAINER IN PRIVILEGED MODE
+If your serial device is permanently attached and you're able to use the --device option, this step is not required. If you mounted in the /dev folder, you will also have to run the container in privileged mode in order for it to access devices. You can do this by adding the --privileged flag to your Docker run command.
+
+--privileged
+4. ACCESS DEVICE FROM THE /DEV/SERIAL/BY-ID FOLDER
+This step only applies if you mounted in the /dev folder. If your device can be plugged and unplugged, Linux does not guarantee it will always be mounted at the same ttyUSBxxx location (especially if you have multiple devices). Fortunately, Linux will make a symlink automatically in the /dev/serial/by-id folder. The file in this folder will always be named the same and is based on the underlying unique ID of the serial device itself. Using this location can save you a lot of future headaches.
+
+5. IOT ENABLE YOUR SERIAL DATA
+Now that your serial devices are accessible inside Docker, you can use the Losant Edge Agent to easily read from and write to those devices. The Edge Agent provides a powerful bridge between your local environment and Losant's cloud platform. Edge Workflows are designed in the cloud using an intuitive drag-and-drop editor and then remotely deployed to any number of fielded gateways. Data is read, processed, and securely transmitted to Losant's platform for cloud-based dashboarding, alerting, and fully custom end-user experiences.
+
+Losant Dashboard with Device Details
+
+Losant provides a full-featured and no-cost Developer Sandbox where you can begin exploring the features yourself. If you'd like to learn more about Losant or talk to one of our team members, please contact us!
+
+TAGGED

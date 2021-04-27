@@ -1,0 +1,10 @@
+{% extends "base_template" %}
+
+{% block application %}
+
+<h4>List of End Points</h4>
+
+{% for i in endpoints %}
+<h5>{{i}}</h5>
+{% endfor %}
+{% endblock %}
