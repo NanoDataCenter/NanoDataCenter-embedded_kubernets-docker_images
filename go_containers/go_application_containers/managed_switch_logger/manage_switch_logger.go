@@ -67,8 +67,7 @@ func Monitor_TP_Setup(){
    // find switches
    // for each switch find data structures
    
-   //switch_array = append( switch_array, switch_record_type{ "192.168.1.56",user,pass})
-   //switch_array = append( switch_array, switch_record_type{ "192.168.1.45",user,pass})
+
    
     
    search_list := []string{ "TP_SWITCH"}
@@ -77,8 +76,7 @@ func Monitor_TP_Setup(){
    for _,element := range switches {
       var temp switch_record_type
 	  temp.ip       =  graph_query.Convert_json_string(	element["ip"] ) 
-	  temp.username =  "admin"
-	  temp.password =  graph_query.Convert_json_string(	element["id"] ) 
+	
 	  temp.name =       graph_query.Convert_json_string(	element["name"] ) 
 	  
 	  temp.incident_log  = logging_support.Construct_incident_log([]string{"TP_SWITCH:"+temp.name,"INCIDENT_LOG"} )

@@ -37,9 +37,7 @@ func setup_containers(){
   command_map["redis"] = "./redis_server ./redis.conf"
   su.Add_container( true,"redis","nanodatacenter/redis","./redis_control.bsh",command_map, []string{"REDIS_DATA"})
   
-  command_map = make(map[string]string)
-  command_map["generate_site"] = "./generate_site"  
-  su.Add_container( false,"lacima_configuration", "nanodatacenter/lacima_configuration","./generate_site",command_map, []string{"DATA"})
+  
 
   command_map = make(map[string]string)
   command_map["file_server"] = "./file_server"
@@ -57,10 +55,33 @@ func setup_containers(){
 
 
 func setup_configuration(){
-
- su.Start_site_definitions("LACIMA_SITE",[]string{"redis","lacima_configuration","file_server"})
- su.Construct_processor("irrigation_controller",[]string{"managed_switch_logger","redis_monitoring"})
+ startup_containers := []string{ "nanodatacenter/lacima_configuratiion","nanodatacenter/lacima_setups"}
+ irrigation_containers := []string{"managed_switch_logger","redis_monitoring"}
+ system_containers := []string{"redis","file_server"}
+ su.Start_site_definitions("LACIMA_SITE",system_containers,startup_containers)
+ construct_site_specific_definitions()
+ su.Construct_processor("irrigation_controller", irrigation_containers)
+ 
  su.End_site_definitions()
  su.Done()
  
 }
+
+
+
+func construct_site_specific_definitions(){ 
+   
+    properties := make(map[string]interface{})
+    properties["ip"] = "192.168.1.45"
+ 
+    su.Bc_Rec.Add_header_node("TP_SWITCH","switch_office",properties)
+	su.Construct_incident_logging("switch_office")
+    su.Bc_Rec.End_header_node("TP_SWITCH","switch_office")
+
+    properties = make(map[string]interface{})
+    properties["ip"] = "192.168.1.56"
+    su.Bc_Rec.Add_header_node("TP_SWITCH","switch_garage",properties)
+    su.Construct_incident_logging("switch_garage")
+    su.Bc_Rec.End_header_node("TP_SWITCH","switch_garage")
+    
+}    

@@ -11,7 +11,7 @@ func Construct_processor(name string, containers []string){
     properties = make(map[string]interface{})
     Bc_Rec.Add_header_node("PROCESSOR_MONITORING","PROCESSOR_MONITORING",properties)
 	stream_list := []string{"FREE_CPU","RAM","DISK_SPACE","TEMPERATURE","SWAP_SPACE","IO_SPACE","BLOCK_DEV","CONTEXT_SWITCHES","RUN_QUEUE","EDEV"}
-	construct_streaming_logs("processor_monitor",stream_list)
+	Construct_streaming_logs("processor_monitor",stream_list)
 	Bc_Rec.End_header_node("PROCESSOR_MONITORING","PROCESSOR_MONITORING")
     
 

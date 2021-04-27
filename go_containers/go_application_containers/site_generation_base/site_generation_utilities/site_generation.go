@@ -12,10 +12,11 @@ func End_site_definitions(){
 
 
 
-func Start_site_definitions(site_name string, system_containers []string){
+func Start_site_definitions(site_name string, system_containers, startup_containers   []string){
     
     working_site = site_name
     properties := make(map[string]interface{})
+	properties["startup_containers"] = startup_containers
 	properties["containers"] = system_containers
     Bc_Rec.Add_header_node( "SITE",site_name,  properties  )
     
@@ -74,7 +75,7 @@ func Start_site_definitions(site_name string, system_containers []string){
     
      properties = make(map[string]interface{})
     Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",properties)
-	construct_streaming_logs("redis_monitor",[]string{"STREAMING_LOG","KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})
+	Construct_streaming_logs("redis_monitor",[]string{"STREAMING_LOG","KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})
 
     Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
@@ -85,23 +86,7 @@ func Start_site_definitions(site_name string, system_containers []string){
     Cd_Rec.Close_package_contruction()
  
 
-   
-   
-    properties = make(map[string]interface{})
-    properties["ip"] = "192.168.1.45"
-    properties["id"] = "Gr1234gfd"
-    Bc_Rec.Add_header_node("TP_SWITCH","switch_office",properties)
-	construct_incident_logging("switch_office")
-    Bc_Rec.End_header_node("TP_SWITCH","switch_office")
 
-    properties = make(map[string]interface{})
-    properties["ip"] = "192.168.1.56"
-    properties["id"] = "Gr1234gfd"
-    Bc_Rec.Add_header_node("TP_SWITCH","switch_garage",properties)
-    construct_incident_logging("switch_garage")
-    Bc_Rec.End_header_node("TP_SWITCH","switch_garage")
-    
-    
     
 }
 

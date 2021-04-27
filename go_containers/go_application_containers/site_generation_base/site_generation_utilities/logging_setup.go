@@ -1,7 +1,7 @@
 package su
 
 
-func construct_incident_logging(command_code string){
+func Construct_incident_logging(command_code string){
     properties := make(map[string]interface{})
     Bc_Rec.Add_header_node("INCIDENT_LOG",command_code,properties)
 	
@@ -18,7 +18,7 @@ func construct_incident_logging(command_code string){
 }
 
 
-func construct_streaming_logs(command_code string,keys []string){
+func Construct_streaming_logs(command_code string,keys []string){
 
   properties := make(map[string]interface{})
   Bc_Rec.Add_header_node("STREAMING_LOG",command_code,properties)
@@ -42,7 +42,7 @@ func construct_streaming_logs(command_code string,keys []string){
 
 
 
-func construct_watchdog_logging(command_code string){
+func Construct_watchdog_logging(command_code string){
  properties := make(map[string]interface{})
  
   Bc_Rec.Add_header_node("WATCH_DOG",command_code,properties)

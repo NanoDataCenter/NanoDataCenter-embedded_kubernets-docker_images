@@ -1,6 +1,6 @@
 package su
 
-import "fmt"
+//import "fmt"
 import "strings"
 
 type container_descriptor struct {
@@ -58,7 +58,7 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
    }else{
       temp.command_string = command_string_run_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }
-   fmt.Println("temp",temp)
+   //fmt.Println("temp",temp)
    container_map[container_name] = temp
    
 }
@@ -86,10 +86,10 @@ func register_container( container_name string){
    properties["startup_command"] = container_map[container_name].command_string
    properties["command_map"] = container_map[container_name].command_map
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
-   construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
-   construct_incident_logging("process_control_failure")
-   construct_incident_logging("managed_process_failure")
-   construct_watchdog_logging("process_control")
+   Construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
+   Construct_incident_logging("process_control_failure")
+   Construct_incident_logging("managed_process_failure")
+   Construct_watchdog_logging("process_control")
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }
 
