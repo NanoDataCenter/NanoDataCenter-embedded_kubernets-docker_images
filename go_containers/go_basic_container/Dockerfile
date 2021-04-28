@@ -1,6 +1,6 @@
 FROM arm32v7/bash 
 
-
+ENV TZ=US/Pacific
 RUN apk add --no-cache libc6-compat
 WORKDIR /pod_util
 

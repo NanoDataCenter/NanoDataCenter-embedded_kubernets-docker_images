@@ -11,28 +11,28 @@ import (
     "lacima.com/redis_support/redis_handlers"
     "lacima.com/redis_support/generate_handlers"
     "lacima.com/server_libraries/file_server_library"
+	"lacima.com/server_libraries/irrigation_rpc_libary"
 	"lacima.com/cf_control"
 )
 
 type Irrigation_Scheduling_Type struct {
 
-    irrigation_hash    redis_handlers.Redis_Hash_Struct
-    completion_file       redis_handlers.Redis_Hash_Struct
+    completion_hash       redis_handlers.Redis_Hash_Struct
     base_file             string
 
 }
 
 type System_Scheduling_Type struct {
 
-    completion_file       redis_handlers.Redis_Hash_Struct
+    completion_hash       redis_handlers.Redis_Hash_Struct
     base_file             string
 
 }
 
 
 type Scheduling_Type struct {
-
-  job_queue           redis_handlers.Redis_Job_Queue
+  fs                 file_server_lib.File_Server_Client_Type 
+  iq                 irrigation_rpc.Irrigation_Client_Type
   system_control      System_Scheduling_Type
   irrigation_control  Irrigation_Scheduling_Type
       
@@ -52,46 +52,51 @@ func main() {
   graph_query.Graph_support_init(&site_data_store)
   redis_handlers.Init_Redis_Mutex()
   data_handler.Data_handler_init(&site_data_store)
-  fs = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
-  fmt.Println((fs).Ping())	
-  var fs_handle = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
-    fmt.Println((fs_handle).Ping())	
+  
+  
  (CF_site_node_control_cluster).Cf_cluster_init()
  (CF_site_node_control_cluster).Cf_set_current_row("irrigation_scheduling")
   
   (&return_value).irrigation_initialize_setup()
   (&return_value).irrigation_schedule_exec()
-
+   for true {
+     time.Sleep(time.Minute)
+   }
 
 }
 
 
 func ( v* Scheduling_Type ) irrigation_initialize_setup(){
 
+    v.fs = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
+    fmt.Println((v.fs).Ping())	
+    v.iq = irrigation_rpc.Irrigation_RPC_Client_Init(&[]string{"IRRIGIGATION_CONTROL"})
+  
+  
+  
+
     search_path := []string{"IRRIGIGATION_SCHEDULING:IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING"}
     handlers := data_handler.Construct_Data_Structures(&search_path)
     
-	v.irrigation_control.completion_file = (*handlers)["IRRIGATION_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
-	v.system_control.completion_file     = (*handlers)["SYSTEM_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
+	v.irrigation_control.completion_hash = (*handlers)["IRRIGATION_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
+	v.system_control.completion_hash     = (*handlers)["SYSTEM_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
 	
     search_path = []string{"IRRIGIGATION_CONTROL:IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL"}
     handlers = data_handler.Construct_Data_Structures(&search_path)
     
-	v.irrigation_control.irrigation_hash  = (*handlers)["IRRIGATION_CONTROL"].(redis_handlers.Redis_Hash_Struct)
-	v.job_queue                   = (*handlers)["IRRIGATION_JOB_SCHEDULING"].(redis_handlers.Redis_Job_Queue)
 
     v.irrigation_control.base_file = "sprinkler_ctrl.json"
 	v.system_control.base_file     = "system_actions.json"
 
 
-
+    v.construct_chain()
 }
 
 
 func ( v* Scheduling_Type )irrigation_schedule_exec(){
 
-  panic("done")
-  //(CF_site_node_control_cluster).CF_Fork()
+ 
+    (CF_site_node_control_cluster).CF_Fork()
 
 
 }
@@ -159,7 +164,7 @@ func (v *Scheduling_Type) sched_check_for_schedule_activity( system interface{},
  
 func (v *Scheduling_Type)action_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-
+    v.clear_done_flag("system_actions.json")
 
     return cf.CF_DISABLE
 }  
@@ -167,7 +172,7 @@ func (v *Scheduling_Type)action_clear_done_flag( system interface{},chain interf
    
 func (v *Scheduling_Type) sched_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-
+   v.clear_done_flag("sprinkler_ctrl.json")
 
    return cf.CF_DISABLE
 }
@@ -175,23 +180,66 @@ func (v *Scheduling_Type) sched_clear_done_flag( system interface{},chain interf
  
 func (v *Scheduling_Type) action_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
+    if file_exists,dir_flag := (v.fs).File_exists("application_files/system_actions.json");dir_flag == true{
 
-
+	  panic("file is a directory")
+	  
+	}else{
+	
+    fmt.Println("file_exists",file_exists)
+    }
     return cf.CF_DISABLE
 } 
  
  
 func (v *Scheduling_Type) sched_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
+    if file_exists,dir_flag := (v.fs).File_exists("application_files/sprinkler_ctrl.json");dir_flag == true{
 
-
-   return cf.CF_DISABLE
+	  panic("file is a directory")
+	  
+	}else{
+	
+    fmt.Println("file_exists",file_exists)
+    }
+    return cf.CF_DISABLE
 }
   
 
-	
+func recovery(){
+   if r := recover(); r != nil {
+        
+		   fmt.Println(r)
+		   panic("done")   
+    }
 
+}
 
+func ( v *Scheduling_Type)clear_done_flag( file_name string){
+    defer recovery()
+    v.clear_done_flag_element(file_name)
+}	
+
+func (v *Scheduling_Type)clear_done_flag_element(file_name string){
+   dow_array := []int{1,2,3,4,5,6,0}
+   dow_new := int(time.Now().Weekday())
+   dow := dow_array[dow_new]
+   fmt.Println("dow",dow)   
+   /*
+   
+   item_control = json.loads(self.file_server_library.load_file("application_files",self.file_name))
+          for  j in  item_control:
+              name = j["name"]
+              if self.determine_start_time( j["start_time"],j["end_time"]) == False: 
+                 temp_1 = json.dumps( [0,-1] )
+                 temp_check = self.completion_dictionary.hget(name)
+                 if temp_1 != temp_check:
+                     self.completion_dictionary.hset(name,temp_1)
+      except:
+          print("bad file")
+   */    
+
+}
 
 
 
