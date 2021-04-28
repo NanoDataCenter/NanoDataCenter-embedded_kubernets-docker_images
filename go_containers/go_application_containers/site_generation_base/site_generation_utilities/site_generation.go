@@ -79,13 +79,13 @@ func Start_site_definitions(site_name string, system_containers, startup_contain
 
     Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
-    
-
+   
+    Bc_Rec.Add_header_node("FILE_SERVER","FILE_SERVER",properties)
     Cd_Rec.Construct_package("FILE_SERVER")
     Cd_Rec.Add_rpc_server("FILE_SERVER_RPC_SERVER",30,10)
     Cd_Rec.Close_package_contruction()
- 
-
+    Bc_Rec.End_header_node("FILE_SERVER","FILE_SERVER")
+    
 
     
 }

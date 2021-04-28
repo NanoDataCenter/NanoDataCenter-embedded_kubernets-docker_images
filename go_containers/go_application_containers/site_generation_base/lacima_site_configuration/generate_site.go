@@ -19,8 +19,12 @@ func main(){
   fmt.Println(su.Site)
   su.Setup_graph_generation()
   setup_containers()
-  setup_configuration()
-   
+  
+  su.Start_site_definitions("LACIMA_SITE",[]string{"redis","file_server"},   []string{"dummy1","dummy2"})  // fill in startup containiners later
+  construct_site_specific_definitions()
+  su.Construct_processor("irrigation_controller",[]string{"managed_switch_logger","redis_monitoring"})
+  su.End_site_definitions() 
+  su.Done()
 }
 
 
@@ -54,22 +58,17 @@ func setup_containers(){
 }
 
 
-func setup_configuration(){
- startup_containers := []string{ "nanodatacenter/lacima_configuratiion","nanodatacenter/lacima_setups"}
- irrigation_containers := []string{"managed_switch_logger","redis_monitoring"}
- system_containers := []string{"redis","file_server"}
- su.Start_site_definitions("LACIMA_SITE",system_containers,startup_containers)
- construct_site_specific_definitions()
- su.Construct_processor("irrigation_controller", irrigation_containers)
- 
- su.End_site_definitions()
- su.Done()
- 
+
+
+func construct_site_specific_definitions(){
+
+  construct_monitored_switches()
+  construct_irrigation()
+
+
 }
 
-
-
-func construct_site_specific_definitions(){ 
+func construct_monitored_switches(){ 
    
     properties := make(map[string]interface{})
     properties["ip"] = "192.168.1.45"
@@ -85,3 +84,33 @@ func construct_site_specific_definitions(){
     su.Bc_Rec.End_header_node("TP_SWITCH","switch_garage")
     
 }    
+
+func construct_irrigation(){
+    properties := make(map[string]interface{})
+    su.Bc_Rec.Add_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING",properties)
+        
+    su.Cd_Rec.Construct_package("IRRIGIGATION_SCHEDULING")
+    su.Cd_Rec.Add_hash("IRRIGATION_COMPLETION_DICTIONARY") 
+    su.Cd_Rec.Add_hash("SYSTEM_COMPLETION_DICTIONARY")
+	su.Cd_Rec.Close_package_contruction()
+	su.Bc_Rec.End_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING")
+	
+	properties = make(map[string]interface{})
+	su.Bc_Rec.Add_header_node("IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL",properties)
+	su.Cd_Rec.Construct_package("IRRIGIGATION_CONTROL")
+    su.Cd_Rec.Add_job_queue("IRRIGATION_JOB_SCHEDULING",10)
+	su.Cd_Rec.Add_hash("IRRIGATION_CONTROL")
+    su.Cd_Rec.Close_package_contruction()
+    su.Bc_Rec.End_header_node("IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL")
+
+
+      
+}   
+  
+
+      
+
+      
+      
+
+      

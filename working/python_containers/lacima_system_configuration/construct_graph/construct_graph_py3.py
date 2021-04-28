@@ -87,33 +87,7 @@ def construct_site_definitions(bc,cd,graph_container_image,graph_container_scrip
     cd.close_package_contruction()
     bc.end_header_node("FILE_SERVER")
 
-    bc.add_header_node("TP_MONITOR_SWITCHES")
-    
-    properties = {}
-    properties["ip"] = "192.168.1.45"
-    properties["id"] = "Gr1234gfd"
-    bc.add_header_node("TP_SWITCH","switch_office",properties)
-    cd.construct_package("LOG_DATA")
-    cd.add_single_element("STATUS")
-    cd.add_single_element("CURRENT_STATE")
-    cd.add_single_element("LAST_ERROR")
-    cd.add_redis_stream("ERROR_LOG")
-    cd.close_package_contruction()
-    bc.end_header_node("TP_SWITCH")
 
-    properties = {}
-    properties["ip"] = "192.168.1.56"
-    properties["id"] = "Gr1234gfd"
-    bc.add_header_node("TP_SWITCH","switch_garage",properties)
-    cd.construct_package("LOG_DATA")
-    cd.add_single_element("STATUS")
-    cd.add_single_element("CURRENT_STATE")
-    cd.add_single_element("LAST_ERROR")
-    cd.add_redis_stream("ERROR_LOG")
-    cd.close_package_contruction()
-    bc.end_header_node("TP_SWITCH")
-    
-    bc.end_header_node("TP_MONITOR_SWITCHES")
     
     
     bc.add_header_node("SYSTEM_MONITOR")

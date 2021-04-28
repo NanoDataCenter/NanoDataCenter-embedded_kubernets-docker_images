@@ -3,50 +3,48 @@ package main
 import (
     
     "fmt"
-    "net/http"
-    "net/url"
-	"io/ioutil"
+    
 	"time"
-    "strings"
-	"strconv"
-	//"reflect"
-	"bytes"
+ 
     "lacima.com/site_data"
     "lacima.com/redis_support/graph_query"
     "lacima.com/redis_support/redis_handlers"
     "lacima.com/redis_support/generate_handlers"
-	"github.com/msgpack/msgpack-go"
-	"lacima.com/Patterns/logging_support"
-	"lacima.com/Patterns/secrets"
+    "lacima.com/server_libraries/file_server_library"
+	"lacima.com/cf_control"
 )
 
+type Irrigation_Scheduling_Type struct {
 
-var (
-	user = "admin"
-	pass = "Gr1234gfd"
-)
+    irrigation_hash    redis_handlers.Redis_Hash_Struct
+    completion_file       redis_handlers.Redis_Hash_Struct
+    base_file             string
 
+}
 
+type System_Scheduling_Type struct {
 
-type switch_record_type  struct  {
-  name     string
-  ip       string
-  username string
-  password string
-  incident_log             *logging_support.Incident_Log_Type
-  
-
+    completion_file       redis_handlers.Redis_Hash_Struct
+    base_file             string
 
 }
 
 
-var switch_array []switch_record_type
+type Scheduling_Type struct {
 
+  job_queue           redis_handlers.Redis_Job_Queue
+  system_control      System_Scheduling_Type
+  irrigation_control  Irrigation_Scheduling_Type
+      
 
-var passwords map[string]map[string]string
+}
+
+var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
+var fs  file_server_lib.File_Server_Client_Type
 
 func main() {
-    
+  
+  var return_value Scheduling_Type
   var config_file = "/data/redis_server.json"
   var site_data_store map[string]interface{}
 
@@ -54,18 +52,144 @@ func main() {
   graph_query.Graph_support_init(&site_data_store)
   redis_handlers.Init_Redis_Mutex()
   data_handler.Data_handler_init(&site_data_store)
-  secrets.Init_file_handler(site_data_store)
-  passwords = secrets.Get_Secret("TP_MANAGED_SWITCHES")
-  //fmt.Println("secrets",passwords)
-  Monitor_TP_Setup()
-  Monitior_TP_Switch()
+  fs = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
+  fmt.Println((fs).Ping())	
+  var fs_handle = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
+    fmt.Println((fs_handle).Ping())	
+ (CF_site_node_control_cluster).Cf_cluster_init()
+ (CF_site_node_control_cluster).Cf_set_current_row("irrigation_scheduling")
+  
+  (&return_value).irrigation_initialize_setup()
+  (&return_value).irrigation_schedule_exec()
+
+
+}
+
+
+func ( v* Scheduling_Type ) irrigation_initialize_setup(){
+
+    search_path := []string{"IRRIGIGATION_SCHEDULING:IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING"}
+    handlers := data_handler.Construct_Data_Structures(&search_path)
+    
+	v.irrigation_control.completion_file = (*handlers)["IRRIGATION_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
+	v.system_control.completion_file     = (*handlers)["SYSTEM_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
+	
+    search_path = []string{"IRRIGIGATION_CONTROL:IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL"}
+    handlers = data_handler.Construct_Data_Structures(&search_path)
+    
+	v.irrigation_control.irrigation_hash  = (*handlers)["IRRIGATION_CONTROL"].(redis_handlers.Redis_Hash_Struct)
+	v.job_queue                   = (*handlers)["IRRIGATION_JOB_SCHEDULING"].(redis_handlers.Redis_Job_Queue)
+
+    v.irrigation_control.base_file = "sprinkler_ctrl.json"
+	v.system_control.base_file     = "system_actions.json"
+
+
+
+}
+
+
+func ( v* Scheduling_Type )irrigation_schedule_exec(){
+
+  panic("done")
+  //(CF_site_node_control_cluster).CF_Fork()
 
 
 }
 
 
 
+func (v* Scheduling_Type)construct_chain(){
+  
+   var cf_control  cf.CF_SYSTEM_TYPE
+  (cf_control).Init(&CF_site_node_control_cluster , "irrigation_scheduling" ,true, time.Minute )
 
+
+
+
+  (cf_control).Add_Chain("irrigation_scheduling",true)
+  (cf_control).Cf_add_log_link("irrigation_scheduling")
+   
+   
+  (cf_control).Cf_add_one_step(v.action_check_for_system_activity, make(map[string]interface{}))  
+  (cf_control).Cf_add_one_step(v.sched_check_for_schedule_activity, make(map[string]interface{})) 
+  
+  (cf_control).Cf_add_wait_interval(time.Minute )
+  (cf_control).Cf_add_reset()
+  
+  (cf_control).Add_Chain("clear_done_flag",true)
+  (cf_control).Cf_add_log_link("clear_done_flag")
+
+  (cf_control).Cf_add_one_step(v.action_clear_done_flag, make(map[string]interface{})) 
+  (cf_control).Cf_add_one_step(v.sched_clear_done_flag, make(map[string]interface{})) 
+  
+  (cf_control).Cf_add_wait_interval(time.Minute )
+  (cf_control).Cf_add_reset()
+    
+  (cf_control).Add_Chain("check_required_file",true)
+  (cf_control).Cf_add_log_link("check_required_file")
+  
+  (cf_control).Cf_add_one_step(v.action_check_for_required_files , make(map[string]interface{})) 
+  (cf_control).Cf_add_one_step(v.sched_check_for_required_files , make(map[string]interface{}))
+  
+  (cf_control).Cf_add_wait_interval(time.Minute )
+  (cf_control).Cf_add_reset()	
+	
+	
+
+}
+
+
+
+func (v *Scheduling_Type)action_check_for_system_activity( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+
+   return cf.CF_DISABLE
+}
+ 
+
+func (v *Scheduling_Type) sched_check_for_schedule_activity( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+    return cf.CF_DISABLE
+}  
+  
+ 
+func (v *Scheduling_Type)action_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+    return cf.CF_DISABLE
+}  
+ 
+   
+func (v *Scheduling_Type) sched_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+   return cf.CF_DISABLE
+}
+  
+ 
+func (v *Scheduling_Type) action_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+    return cf.CF_DISABLE
+} 
+ 
+ 
+func (v *Scheduling_Type) sched_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+
+
+
+   return cf.CF_DISABLE
+}
+  
+
+	
 
 
 

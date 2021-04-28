@@ -1,4 +1,4 @@
-FROM nanodatacenter/basic_python_container
+FROM nanodatacenter/bash_basic
 ENV CONTAINER_NAME "irrigation_scheduling"
        
 VOLUME [/data/]
