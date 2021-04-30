@@ -3,9 +3,9 @@ package main
 import (
     
     "fmt"
-    
+    //"reflect"
 	"time"
- 
+    "encoding/json"
     "lacima.com/site_data"
     "lacima.com/redis_support/graph_query"
     "lacima.com/redis_support/redis_handlers"
@@ -14,6 +14,17 @@ import (
 	"lacima.com/server_libraries/irrigation_rpc_libary"
 	"lacima.com/cf_control"
 )
+
+
+type Action_File_Type struct {
+  enable string 
+  end_time         [2]int
+  start_time       [2]int
+  dow              [7]int
+  command_string   string
+  name             string
+}
+
 
 type Irrigation_Scheduling_Type struct {
 
@@ -24,6 +35,7 @@ type Irrigation_Scheduling_Type struct {
 
 type System_Scheduling_Type struct {
 
+    sched_array           []Action_File_Type
     completion_hash       redis_handlers.Redis_Hash_Struct
     base_file             string
 
@@ -69,10 +81,12 @@ func main() {
 func ( v* Scheduling_Type ) irrigation_initialize_setup(){
 
     v.fs = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
-    fmt.Println((v.fs).Ping())	
+    //fmt.Println((v.fs).Ping())	
     v.iq = irrigation_rpc.Irrigation_RPC_Client_Init(&[]string{"IRRIGIGATION_CONTROL"})
+	
   
-  
+    v.system_control.base_file     =  "application_files/system_actions.json"
+	v.irrigation_control.base_file =  "application_files/sprinkler_ctrl.json"
   
 
     search_path := []string{"IRRIGIGATION_SCHEDULING:IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING"}
@@ -84,11 +98,6 @@ func ( v* Scheduling_Type ) irrigation_initialize_setup(){
     search_path = []string{"IRRIGIGATION_CONTROL:IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL"}
     handlers = data_handler.Construct_Data_Structures(&search_path)
     
-
-    v.irrigation_control.base_file = "sprinkler_ctrl.json"
-	v.system_control.base_file     = "system_actions.json"
-
-
     v.construct_chain()
 }
 
@@ -112,99 +121,153 @@ func (v* Scheduling_Type)construct_chain(){
 
 
   (cf_control).Add_Chain("irrigation_scheduling",true)
-  (cf_control).Cf_add_log_link("irrigation_scheduling")
+  (cf_control).Cf_add_log_link("scheduling")
    
    
-  (cf_control).Cf_add_one_step(v.action_check_for_system_activity, make(map[string]interface{}))  
+  (cf_control).Cf_add_one_step(v.action_check_for_system_activity,  make(map[string]interface{}))
   (cf_control).Cf_add_one_step(v.sched_check_for_schedule_activity, make(map[string]interface{})) 
   
   (cf_control).Cf_add_wait_interval(time.Minute )
   (cf_control).Cf_add_reset()
   
-  (cf_control).Add_Chain("clear_done_flag",true)
-  (cf_control).Cf_add_log_link("clear_done_flag")
 
-  (cf_control).Cf_add_one_step(v.action_clear_done_flag, make(map[string]interface{})) 
-  (cf_control).Cf_add_one_step(v.sched_clear_done_flag, make(map[string]interface{})) 
-  
-  (cf_control).Cf_add_wait_interval(time.Minute )
-  (cf_control).Cf_add_reset()
-    
-  (cf_control).Add_Chain("check_required_file",true)
-  (cf_control).Cf_add_log_link("check_required_file")
-  
-  (cf_control).Cf_add_one_step(v.action_check_for_required_files , make(map[string]interface{})) 
-  (cf_control).Cf_add_one_step(v.sched_check_for_required_files , make(map[string]interface{}))
-  
-  (cf_control).Cf_add_wait_interval(time.Minute )
-  (cf_control).Cf_add_reset()	
 	
 	
 
 }
 
 
+
+func (v *Scheduling_Type)sched_check_for_schedule_activity( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
+/*
+   fmt.Println("enterring")
+   if v.check_file(v.irrigation_control.base_file)==true {
+     fmt.Println("file ok")
+     if v.iq.Get_Rain_Flag() == false {
+	   fmt.Println("rain flag ok")
+	   if v.load_json_file(v.irrigation_control.base_file) != true {
+	      fmt.Println("json loaded")
+	      if v.check_schedules() != true{
+		     v.check_done()
+	   	  }
+	   }
+	 }   
+   }
+*/  
+   return cf.CF_DISABLE
+	  
+}
 
 func (v *Scheduling_Type)action_check_for_system_activity( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-
-
-
-   return cf.CF_DISABLE
-}
- 
-
-func (v *Scheduling_Type) sched_check_for_schedule_activity( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-
-
-
-    return cf.CF_DISABLE
-}  
-  
- 
-func (v *Scheduling_Type)action_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-
-    v.clear_done_flag("system_actions.json")
-
-    return cf.CF_DISABLE
-}  
- 
-   
-func (v *Scheduling_Type) sched_clear_done_flag( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-
-   v.clear_done_flag("sprinkler_ctrl.json")
-
-   return cf.CF_DISABLE
-}
-  
- 
-func (v *Scheduling_Type) action_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-
-    if file_exists,dir_flag := (v.fs).File_exists("application_files/system_actions.json");dir_flag == true{
-
-	  panic("file is a directory")
-	  
-	}else{
-	
-    fmt.Println("file_exists",file_exists)
+   if v.check_file(v.system_control.base_file)==true {
+     if v.load_system_json_file() != true {
+	    if v.check_schedules() != true{
+		   v.check_done()
+	  }
     }
-    return cf.CF_DISABLE
+  }
+  return cf.CF_DISABLE  
+}
+
+func (v *Scheduling_Type)check_file( file_name string ) bool {
+  /*
+  file_exists,directory_flag := v.fs.File_exists(file_name)
+ 
+  if file_exists == false {
+     return false
+  } else if directory_flag == true {
+     return false
+  }
+  */
+  return true
+
+}
+
+func (v *Scheduling_Type)load_system_json_file( )bool{
+   file_data , flag := v.fs.Read_file(v.system_control.base_file )
+   if flag == false {
+      return flag
+   }
+   fmt.Println("file data",len(file_data),string(file_data))
+   v.unmarshal_action_files(file_data)
+   return true
+	
+}
+
+func (v *Scheduling_Type)check_schedules()bool{
+
+   return false
+
+}
+
+
+func (v *Scheduling_Type)check_done(){
+
+
+
+}
+
+
+
+func (v *Scheduling_Type)unmarshal_action_files( input string ){
+
+  var input_unmarshall []map[string]interface{}
+  byte_array := []byte(input)
+  if err := json.Unmarshal( byte_array, &input_unmarshall); err != nil {
+         panic(err)
+  }
+  fmt.Println("input_unmarshall",input_unmarshall)
+  v.system_control.sched_array = make([]Action_File_Type,0)
+  for _,value := range input_unmarshall {
+     var temp Action_File_Type
+     temp.enable          = value["enable"].(string)
+     temp.end_time        = v.convert_two_element_array(value["end_time"])
+     temp.start_time      = v.convert_two_element_array(value["start_time"])
+	 temp.dow             = v.convert_seven_element_array(value["dow"])
+     temp.command_string  = value["command_string"].(string)
+     temp.name            = value["name"].(string)
+     v.system_control.sched_array = append( v.system_control.sched_array,temp) 	 
+  
+  }
+  fmt.Println(v.system_control.sched_array)
+  	   
+  panic("done")
+
+
+}
+
+func( v *Scheduling_Type)convert_two_element_array( input interface{})[2]int{
+  var return_value [2]int
+  
+  temp := input.([]interface{})
+  for i:=0;i<2;i++ {
+     return_value[i] = int(temp[i].(float64))
+  }
+  
+  return return_value
+}
+ 
+func( v *Scheduling_Type)convert_seven_element_array(  input interface{})[7]int{
+  var return_value [7]int
+  
+  temp := input.([]interface{})
+  for i:=0;i<7;i++ {
+     return_value[i] = int(temp[i].(float64))
+  }
+ 
+  return return_value
 } 
- 
- 
-func (v *Scheduling_Type) sched_check_for_required_files( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
-    if file_exists,dir_flag := (v.fs).File_exists("application_files/sprinkler_ctrl.json");dir_flag == true{
+/*
+# 
+#
+# File: utilities.py
+#
+#
+#
+#
 
-	  panic("file is a directory")
-	  
-	}else{
-	
-    fmt.Println("file_exists",file_exists)
-    }
-    return cf.CF_DISABLE
-}
-  
 
 func recovery(){
    if r := recover(); r != nil {
@@ -225,7 +288,7 @@ func (v *Scheduling_Type)clear_done_flag_element(file_name string){
    dow_new := int(time.Now().Weekday())
    dow := dow_array[dow_new]
    fmt.Println("dow",dow)   
-   /*
+  
    
    item_control = json.loads(self.file_server_library.load_file("application_files",self.file_name))
           for  j in  item_control:
@@ -237,23 +300,9 @@ func (v *Scheduling_Type)clear_done_flag_element(file_name string){
                      self.completion_dictionary.hset(name,temp_1)
       except:
           print("bad file")
-   */    
+      
 
 }
-
-
-
-
-/*
-# 
-#
-# File: utilities.py
-#
-#
-#
-#
-
-
 
 
 

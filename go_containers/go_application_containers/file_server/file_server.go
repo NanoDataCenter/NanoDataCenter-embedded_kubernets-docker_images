@@ -42,7 +42,7 @@ func main(){
 	driver.Add_handler( "delete_file",delete_file)
 	driver.Add_handler( "file_directory",file_directory)
 	driver.Add_handler( "make_dir",mkdir)
-	driver.Rpc_start()
+	driver.Json_Rpc_start()
 	
 	for true {
 	  //fmt.Println("main spining")
@@ -52,32 +52,34 @@ func main(){
 }
 
 
-func ping( parameters *map[string]interface{} ) *map[string]interface{}{
+func ping( parameters map[string]interface{} ) map[string]interface{}{
 
-   (*parameters)["status"] = true
+   parameters["status"] = true
    return parameters
 
 }
 	
-func load_file( parameters *map[string]interface{} ) *map[string]interface{}{
-  var p_file_name = string((*parameters)["file_name"].([]byte))
+func load_file( parameters map[string]interface{} ) map[string]interface{}{
+  var p_file_name = parameters["file_name"].(string)
   
   var file_name = file_base+p_file_name
   var data, err = ioutil.ReadFile(file_name)
   
   if err == nil {
-        (*parameters)["status"] = true
-		(*parameters)["results"] = data
+        parameters["status"] = true
+		parameters["results"] = string(data)
   } else {
-        (*parameters)["status"] = false
-		(*parameters)["results"] = ""
+        parameters["status"] = false
+		parameters["results"] = ""
   }
+  
   return parameters
 
 }
 
-func save_file( parameters *map[string]interface{} ) *map[string]interface{}{
-  
+func save_file( parameters map[string]interface{} ) map[string]interface{}{
+/*  
+  var p_file_name = parameters["file_name"].(string)
  
   var p_file_name = string((*parameters)["file_name"].([]byte))
   var p_data = (*parameters)["data"].([]byte)
@@ -92,11 +94,12 @@ func save_file( parameters *map[string]interface{} ) *map[string]interface{}{
         (*parameters)["status"] = false
 		
   }
+*/
   return parameters
 }
 
-func delete_file( parameters *map[string]interface{} ) *map[string]interface{}{
-  
+func delete_file( parameters map[string]interface{} ) map[string]interface{}{
+/*  
   var p_file_name = string((*parameters)["file_name"].([]byte))
   var file_name = file_base+p_file_name
   //mt.Println("file_name",file_name)
@@ -109,6 +112,7 @@ func delete_file( parameters *map[string]interface{} ) *map[string]interface{}{
         (*parameters)["status"] = false
 		(*parameters)["results"] = ""
   }
+*/
   return parameters
 }
 
@@ -123,15 +127,15 @@ func fileExists(filename string) (bool,bool) {
 }
 
 
-func file_exists( parameters *map[string]interface{} ) *map[string]interface{}{
-
+func file_exists( parameters map[string]interface{} ) map[string]interface{}{
+/*
   var p_file_name = string((*parameters)["file_name"].([]byte))
   
   var file_name = file_base+p_file_name
   exists , directory := fileExists(file_name)
   (*parameters)["status"] = exists
   (*parameters)["directory"] = directory
-  
+*/  
   return parameters
 }
   
@@ -139,8 +143,8 @@ func file_exists( parameters *map[string]interface{} ) *map[string]interface{}{
 
  
   
-func mkdir( parameters *map[string]interface{} ) *map[string]interface{}{
-   
+func mkdir( parameters map[string]interface{} ) map[string]interface{}{
+/*   
   var p_path = string((*parameters)["path"].([]byte))
   
   var path = file_base+p_path
@@ -154,6 +158,7 @@ func mkdir( parameters *map[string]interface{} ) *map[string]interface{}{
         (*parameters)["status"] = false
 		(*parameters)["results"] = ""
   }
+*/
   return parameters
 }
 
@@ -166,7 +171,8 @@ func convert_to_file_names( input []fs.FileInfo )[]string {
   return return_value
 }
 
-func file_directory( parameters *map[string]interface{} ) *map[string]interface{}{
+func file_directory( parameters map[string]interface{} ) map[string]interface{}{
+/*
   var p_path = string((*parameters)["path"].([]byte))
   
   var path = file_base+p_path
@@ -179,6 +185,7 @@ func file_directory( parameters *map[string]interface{} ) *map[string]interface{
       (*parameters)["status"] = true
 		(*parameters)["results"] = convert_to_file_names(c)
   }
+*/
    return parameters
 
 }

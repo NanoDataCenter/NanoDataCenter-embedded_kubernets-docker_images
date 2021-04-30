@@ -22,31 +22,37 @@ func Irrigation_RPC_Client_Init(search_list *[]string)Irrigation_Client_Type{
 
 func (v Irrigation_Client_Type)Ping()bool{
   
-
+/*
        var parameters = make(map[string]interface{})
        var result = v.driver.Send_rpc_message( "ping", &parameters ) 
        //fmt.Println("ping",result)
-       //fmt.Println(	(*result)["status"].(bool))   
+       //fmt.Println(	(*result)["status"].(bool)) 
+	   
        return (*result)["status"].(bool)
+*/
+   return true
 }
 
 func (v Irrigation_Client_Type)Queue_Schedule(schedule_name string)bool {
   
-
+/*
        var parameters = make(map[string]interface{})
        
        parameters["schedule_name"] = schedule_name
        var result = v.driver.Send_rpc_message( "queue_schedule", &parameters )  
         return (*result)["status"].(bool)
+*/
+      return true
 }
 
 func (v Irrigation_Client_Type)Get_Rain_Flag()bool {
   
-
-       var parameters = make(map[string]interface{})
+      
+       //var parameters = make(map[string]interface{})
        
     
-       var result = v.driver.Send_rpc_message( "rain_flag", &parameters )  
-        return (*result)["status"].(bool)
+       //var result = v.driver.Send_rpc_message( "rain_flag", &parameters )  
+       // return (*result)["status"].(bool)
+	   return false
 }
 
