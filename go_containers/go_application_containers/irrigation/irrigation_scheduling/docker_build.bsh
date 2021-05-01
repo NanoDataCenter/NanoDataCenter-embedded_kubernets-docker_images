@@ -1,0 +1,4 @@
+docker stop irrigation_scheduling
+docker rm irrigation_scheduling
+
+docker build --tag nanodatacenter/irrigation_scheduling .

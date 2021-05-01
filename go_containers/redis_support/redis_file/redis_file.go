@@ -20,7 +20,7 @@ type Redis_File_Struct struct {
 }
 
 
-const file_db  int = 13 
+
 
 
 var ctx    = context.TODO()
@@ -65,17 +65,17 @@ func ( v *Redis_File_Struct)Set(path,value string){
 
 }
 
-func ( v *Redis_File_Struct)Get(path string) string {
+func ( v *Redis_File_Struct)Get(path string)(string,bool) {
 
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
     value,err :=  v.client.Get(v.ctx,path).Result()
 	if (err !=  redis.Nil) && (err != nil){
 	   
-	   panic(err)
+	   return "",false
 	}
 	
-	return value	
+	return value , true	
 
 
 }

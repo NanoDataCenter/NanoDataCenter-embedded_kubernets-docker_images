@@ -107,7 +107,7 @@ func recovery(){
    if r := recover(); r != nil {
         
 		   fmt.Println(r)
-		   panic("done")   
+		   //panic("done")   
     }
 
 }

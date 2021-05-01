@@ -1,7 +1,7 @@
 package redis_handlers
 
 
-import "fmt"
+//import "fmt"
 import "time"
 import "encoding/json"
 
@@ -36,7 +36,7 @@ func (v Redis_RPC_Struct)json_start() {
 func (v Redis_RPC_Struct)json_handler_request(){
   defer recovery()
   input := v.Pop()
-  fmt.Println(input)
+  //fmt.Println(input)
   input_unmarshall := make([]interface{},0)
   byte_array := []byte(input)
   if err := json.Unmarshal( byte_array, &input_unmarshall); err != nil {
@@ -75,7 +75,7 @@ func (v Redis_RPC_Struct)Send_json_rpc_message( method string, parameters map[st
    if err != nil{
      panic("json marshall error")
    }
-   fmt.Println("request",err,string(request_json))
+   //fmt.Println("request",err,string(request_json))
    
    v.Push(string(request_json))
    for i:=int64(0);i<v.timeout;i++{
@@ -90,7 +90,7 @@ func (v Redis_RPC_Struct)Send_json_rpc_message( method string, parameters map[st
          if err := json.Unmarshal( byte_array, &input_unmarshall); err != nil {
             panic(err)
          }
-		 fmt.Println("input_unmarshall",input_unmarshall)
+		 //fmt.Println("input_unmarshall",input_unmarshall)
 	     
  	     return input_unmarshall
 	 }else{

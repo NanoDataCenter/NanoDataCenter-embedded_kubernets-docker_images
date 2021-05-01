@@ -1,17 +1,18 @@
 package main
 
 
-//import "fmt"
+import "fmt"
 import "io/ioutil"
 import "io/fs"
 import "os"
+import "strconv"
 import "lacima.com/site_data"
 import "lacima.com/redis_support/graph_query"
 
 import "lacima.com/redis_support/redis_file"
 
 
-const file_base = "files"
+var file_base string
 
 var driver *redis_file.Redis_File_Struct
 
@@ -19,36 +20,62 @@ func main(){
     var config_file = "/data/redis_server.json"
 	var site_data map[string]interface{}
 	
-	
+	file_base = os.Args[1]
+	file_db, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+	   panic("bad db number")
+	}
 	site_data = get_site_data.Get_site_data(config_file)
     graph_query.Graph_support_init(&site_data)
 	address  :=  site_data["host"].(string)
     port  := 	int(site_data["port"].(float64))
-    redis_file.Create_redis_data_handle(address,port)
+    redis_file.Create_redis_data_handle(address, port , file_db )
 	driver = redis_file.Construct_File_Struct(  ) 
 	(driver).FlushDB()
-	load_files(file_base)
+	load_files_initial(file_base)
 	
 }
 
 
 
-
-
-func load_files( path string ){
+func load_files_initial( path  string ){
 
   
+  
   files := file_directory( path  )
- 
+  //fmt.Println("files",files)
   for _,filename := range files {
     path_filename := path+"/"+filename
+	target_filename :=  filename
     info, err := os.Stat(path_filename)
 	if err == nil {
       if info.IsDir() == true {
-	    create_marker(path_filename)
-	    load_files(path_filename)
+	    create_marker(target_filename)
+	    load_files(path_filename,target_filename)
 	  }else{
-         process_file(path_filename)	
+         process_file(path_filename,target_filename)	
+	  }	
+	}
+  }
+
+}
+
+func load_files( path ,target_path string ){
+
+  fmt.Println("path",path,target_path)
+  
+  files := file_directory( path  )
+  //fmt.Println("files",files)
+  for _,filename := range files {
+    path_filename := path+"/"+filename
+	target_filename := target_path +"/"+ filename
+    info, err := os.Stat(path_filename)
+	if err == nil {
+      if info.IsDir() == true {
+	    create_marker(target_filename)
+	    load_files(path_filename,target_filename)
+	  }else{
+         process_file(path_filename,target_filename)	
 	  }	
 	}
   }
@@ -62,13 +89,13 @@ func create_marker(path string){
 }
 
 
-func process_file( path_file_name string) {
+func process_file( path_file_name,target_name string) {
 
   //fmt.Println("process_file   ",path_file_name)
   var data, err = ioutil.ReadFile(path_file_name)
   
   if err == nil {
-    driver.Set(path_file_name,string(data))
+    driver.Set(target_name,string(data))
      
   }
 
