@@ -2,6 +2,8 @@ package irr_files
 import "lacima.com/server_libraries/file_server_library"
 import "lacima.com/redis_support/redis_file"
 
+
+
 type Irrigation_File_Manager_Type struct {
 
    fs                 file_server_lib.File_Server_Client_Type
@@ -113,39 +115,6 @@ func( v *Irrigation_File_Manager_Type)Sys_Ls( file_name string )[]string{
 
   path := v.system_path
   return v.redis_file_driver.Ls(path)
-  
-
-}
-
-/*
-**
-**
-**
-*/
-
-type Time_Type struct {
-  Hour    int
-  Minute  int
-}
-
-type Action_File_Type struct {
-  Enable               string 
-  End_time             Time_Type
-  Start_time           Time_Type
-  Dow                  [7]int
-  Web_command_string   string
-  Name                 string
-}
-
-type Action_File_Array_Type struct {
-
-   Array_Element []Action_File_Type
-
-}
-
-func( v *Irrigation_File_Manager_Type)Load_Action_File( ) Action_File_Array_Type {
-
-  
   
 
 }
