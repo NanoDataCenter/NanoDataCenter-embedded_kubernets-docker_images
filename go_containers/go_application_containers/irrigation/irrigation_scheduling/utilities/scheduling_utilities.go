@@ -1,8 +1,9 @@
 package scheduling_utilities
 
-import "time"
+import      "time"
 //import "os"
-import "fmt"
+import      "fmt"
+import      "strconv"
 
 
 func generate_comparison_time( input interface{} )[]int{
@@ -66,7 +67,11 @@ func check_for_proper_date( element map[string]interface{} ) bool {
    }
    day_flag,ok1 := element["day_flag"]
    if ok1 == true {
-      if day_flag.(int) != 0 {
+      value,err := strconv.Atoi(day_flag.(string))
+	  if err != nil{
+	     panic("bad day flag")
+	  }
+      if value != 0 {
 	    return schedule_doy(element)
 	  }
    
@@ -95,8 +100,14 @@ func schedule_dow( element map[string]interface{} )bool{
 
 func schedule_doy(element map[string]interface{}) bool {
       doy     := get_doy()
-      divisor := element["day_div"].(int)
-      modulus := element["day_mod"].(int)
+      divisor,err:= strconv.Atoi(element["day_div"].(string))
+      modulus,err1 := strconv.Atoi(element["day_mod"].(string))
+	  if err != nil {
+	    panic("bad day div")
+	  }
+	  if err1 != nil{
+	    panic("bad day mod")
+	  }
       result  := doy % divisor
      
       if result == modulus {

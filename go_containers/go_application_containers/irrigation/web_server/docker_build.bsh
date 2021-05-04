@@ -1,6 +1,4 @@
+docker stop irrigation_web
+docker rm irrigation_web
 
-
-cp ../error_logger_directory/error_logger .
-docker build --tag  nanodatacenter/web_server . 
-
-
+docker build --tag nanodatacenter/irrigation_web .

@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
-
+import "lacima.com/go_setup_containers/site_generation_base/system_definitions"
 
 const drive_path string = "--mount type=bind,source=/home/pi/mountpoint/lacuma_conf/site_config,target=/data/"
 const file_path  string = "--mount type=bind,source=/home/pi/mountpoint/lacuma_conf/files/,target=/files/"
@@ -62,55 +62,11 @@ func setup_containers(){
 
 func construct_site_specific_definitions(){
 
-  construct_monitored_switches()
-  construct_irrigation()
+  sys_defs.Construct_monitored_switches()
+  sys_defs.Construct_irrigation()
+  sys_defs.Construct_web_services()
 
 
 }
 
-func construct_monitored_switches(){ 
-   
-    properties := make(map[string]interface{})
-    properties["ip"] = "192.168.1.45"
- 
-    su.Bc_Rec.Add_header_node("TP_SWITCH","switch_office",properties)
-	su.Construct_incident_logging("switch_office")
-    su.Bc_Rec.End_header_node("TP_SWITCH","switch_office")
 
-    properties = make(map[string]interface{})
-    properties["ip"] = "192.168.1.56"
-    su.Bc_Rec.Add_header_node("TP_SWITCH","switch_garage",properties)
-    su.Construct_incident_logging("switch_garage")
-    su.Bc_Rec.End_header_node("TP_SWITCH","switch_garage")
-    
-}    
-
-func construct_irrigation(){
-    properties := make(map[string]interface{})
-    su.Bc_Rec.Add_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING",properties)
-        
-    su.Cd_Rec.Construct_package("IRRIGIGATION_SCHEDULING")
-    su.Cd_Rec.Add_hash("IRRIGATION_COMPLETION_DICTIONARY") 
-    su.Cd_Rec.Add_hash("SYSTEM_COMPLETION_DICTIONARY")
-	su.Cd_Rec.Close_package_contruction()
-	su.Bc_Rec.End_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING")
-	
-	properties = make(map[string]interface{})
-	su.Bc_Rec.Add_header_node("IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL",properties)
-	su.Cd_Rec.Construct_package("IRRIGIGATION_CONTROL")
-    su.Cd_Rec.Add_rpc_server("IRRIGATION_JOB_SERVER",30,10)
-	su.Cd_Rec.Add_hash("IRRIGATION_CONTROL")
-    su.Cd_Rec.Close_package_contruction()
-    su.Bc_Rec.End_header_node("IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL")
-
-
-      
-}   
-  
-
-      
-
-      
-      
-
-      

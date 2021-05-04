@@ -5,7 +5,7 @@ import "fmt"
 
 func (v *Scheduling_Type)check_for_system_activity_recovery(){
 
-   ; // TBD
+   v.system_error_logger()
 }
 
 func (v *Scheduling_Type)check_for_system_activity(){
@@ -23,8 +23,7 @@ func (v *Scheduling_Type)check_for_system_activity(){
 func (v *Scheduling_Type)check_for_system_activity_loop_element( element map[string]interface{}){
 
      name    := element["name"].(string)
-	 command := element["name"].(string)
-	 fmt.Println("name",name,"command",command)
+
 	 if v.check_system_resumit_flag(name) == false {
 	    return 
 	 }
@@ -33,7 +32,7 @@ func (v *Scheduling_Type)check_for_system_activity_loop_element( element map[str
 	    start_time := generate_comparison_time( element["start_time"] )
 		end_time   := generate_comparison_time( element["end_time"] )
 		if determine_start_time( start_time,end_time ) == true {
-	        fmt.Println("schedule event")
+	        v.iq.Queue_Command(name)
 			v.set_system_resumit_flag(name)
 		}
 	 }else{
@@ -49,9 +48,10 @@ func (v *Scheduling_Type)check_system_resumit_flag( name string )bool {
    data := (v.system_control).completion_hash.HGet(name)
    fmt.Println("data",data)
    if data != "true" {
-       fmt.Println("schedule has already been queued")
+       
        return true
    }
+   fmt.Println("schedule has already been queued")
    return false
    
 

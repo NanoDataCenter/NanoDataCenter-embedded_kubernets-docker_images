@@ -3,13 +3,16 @@ package scheduling_utilities
 import      "fmt"
 import      "time"
 //import      "reflect"
+import     "bytes"
 import      "encoding/json"
+
+import "github.com/msgpack/msgpack-go"
+
 import	    "lacima.com/go_application_containers/irrigation/irrigation_queue_library"
 import		"lacima.com/go_application_containers/irrigation/irrigation_files_library"
 import		"lacima.com/cf_control"
 import      "lacima.com/redis_support/redis_handlers"
-
-
+import      "lacima.com/Patterns/logging_support"
 import      "lacima.com/redis_support/generate_handlers"
 
 var  CF_site_node_control_cluster *cf.CF_CLUSTER_TYPE
@@ -18,7 +21,8 @@ type system_scheduling_type struct {
     scheduling_file       string
     completion_hash       redis_handlers.Redis_Hash_Struct
     scheduling_array     []map[string]interface{}
-   
+	incident_log          *logging_support.Incident_Log_Type
+    iq                   irrigation_rpc.Irrigation_Client_Type
 }
 
 
@@ -28,7 +32,7 @@ type Scheduling_Type struct {
   iq                  irrigation_rpc.Irrigation_Client_Type
   system_control      system_scheduling_type
   irrigation_control  system_scheduling_type
-      
+  scheduling_control  redis_handlers.Redis_Hash_Struct  
 
 }
 
@@ -50,27 +54,82 @@ func execute(){
   
   (CF_site_node_control_cluster).CF_Fork()
 } 
+
  
  
 func ( v* Scheduling_Type ) irrigation_initialize_setup(ip string, port,file_db int){
 
     v.fs = irr_files.Initialization( ip , port,file_db )
-    //v.iq = irrigation_rpc.Irrigation_RPC_Client_Init(&[]string{"IRRIGIGATION_CONTROL"})
+    v.iq = irrigation_rpc.Irrigation_RPC_Client_Init(&[]string{"IRRIGIGATION_CONTROL"})
+	v.system_control.iq = v.iq
+	v.irrigation_control.iq = v.iq
+	v.iq.Ping()
 	
     search_path := []string{"IRRIGIGATION_SCHEDULING:IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING"}
     handlers := data_handler.Construct_Data_Structures(&search_path)
     
 	v.irrigation_control.completion_hash = (*handlers)["IRRIGATION_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
 	v.system_control.completion_hash     = (*handlers)["SYSTEM_COMPLETION_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
-
+    v.scheduling_control                 = (*handlers)["SCHEDULING_CONTROL"].(redis_handlers.Redis_Hash_Struct)
     v.irrigation_control.scheduling_file = "sprinkler_ctrl.json"
     v.system_control.scheduling_file     = "system_actions.json"
 	
+	
+	v.irrigation_control.incident_log  = logging_support.Construct_incident_log([]string{"IRRIGIGATION_SCHEDULING","IRRIGATION_ERROR_LOG","INCIDENT_LOG"} )
+	v.system_control.incident_log  = logging_support.Construct_incident_log([]string{"IRRIGIGATION_SCHEDULING","SYSTEM_ERROR_LOG","INCIDENT_LOG"} )
     v.construct_chain()
 	
 }
 
+func (v *system_scheduling_type) error_logger(){
 
+    if r := recover(); r != nil {
+	     fmt.Println("Done flag in f", r)
+         value := fmt.Sprint(r)  
+		 var b bytes.Buffer	
+         msgpack.Pack(&b,value)
+         current_value := b.String()
+ 
+		 v.incident_log.Log_data( false,  current_value, current_value )
+    }
+
+
+
+} 
+	
+func (v *Scheduling_Type)system_error_logger(){
+
+    if r := recover(); r != nil {
+	     fmt.Println("System Recovered in f", r)
+         value := fmt.Sprint(r)  
+		 var b bytes.Buffer	
+         msgpack.Pack(&b,value)
+         current_value := b.String()
+ 
+		 v.system_control.incident_log.Log_data( false,  current_value, current_value )
+    }
+
+
+
+}
+
+
+func (v *Scheduling_Type)irrigation_error_logger(){
+
+    if r := recover(); r != nil {
+	     fmt.Println("Irrigation Recovered in f", r)
+         value := fmt.Sprint(r)  
+		 var b bytes.Buffer	
+         msgpack.Pack(&b,value)
+         current_value := b.String()
+ 
+		 v.irrigation_control.incident_log.Log_data( false,  current_value, current_value )
+    }
+
+
+
+}
+	
 func (v* Scheduling_Type)construct_chain(){
   
    var cf_control  cf.CF_SYSTEM_TYPE
@@ -84,7 +143,7 @@ func (v* Scheduling_Type)construct_chain(){
    
    
     (cf_control).Cf_add_one_step(v.action_check_for_system_activity,  make(map[string]interface{}))
-  //(cf_control).Cf_add_one_step(v.sched_check_for_schedule_activity, make(map[string]interface{})) 
+   (cf_control).Cf_add_one_step(v.sched_check_for_schedule_activity, make(map[string]interface{})) 
   
   (cf_control).Cf_add_wait_interval(time.Minute )
   (cf_control).Cf_add_reset()
@@ -126,10 +185,13 @@ func (v *Scheduling_Type)check_for_rain_flag(){
       return
    }
 
-   // get rain flag from irrigation rpc
-   rain_result := true
-   v.ok_flag = rain_result
-   
+   data := v.scheduling_control.HGet("RAIN_FLAG")
+   if data != "true" {
+      v.ok_flag = true
+	  v.scheduling_control.HSet("RAIN_FLAG","false")
+   }else{
+       v.ok_flag = false
+   }
 }
 
 
@@ -137,10 +199,8 @@ func (v *Scheduling_Type)retrieve_irrigation_data(){
    if v.ok_flag == false{
       return
    }
-
-   // get rain flag from irrigation rpc
-   rain_result := true
-   v.ok_flag = rain_result
+  defer v.irrigation_error_logger()
+  v.irrigation_control.scheduling_array, v.ok_flag =  v.decode_json_scheduling_files(v.irrigation_control.scheduling_file)
    
 }
 
@@ -148,7 +208,7 @@ func (v *Scheduling_Type)irrigation_schedule(){
    if v.ok_flag == false{
       return
    }
-   fmt.Println("made it here")
+   v.check_for_irrigation_activity()
  
    
 }
@@ -157,10 +217,9 @@ func (v *Scheduling_Type)irrigation_check_for_done_flag(){
    if v.ok_flag == false{
       return
    }
+ 
 
-   // get rain flag from irrigation rpc
-   rain_result := true
-   v.ok_flag = rain_result
+   (v.irrigation_control).irrigation_clear_done_flag()
    
 }
 
@@ -169,6 +228,7 @@ func (v *Scheduling_Type)retrieve_system_data(){
    if v.ok_flag == false{
       return
    }
+   defer v.system_error_logger()
    v.system_control.scheduling_array, v.ok_flag =  v.decode_json_scheduling_files(v.system_control.scheduling_file)
    
    
@@ -189,7 +249,7 @@ func (v *Scheduling_Type)system_check_for_done_flag(){
       return
    }
 
-   (v.system_control).clear_done_flag()
+   (v.system_control).system_clear_done_flag()
    
 }
 

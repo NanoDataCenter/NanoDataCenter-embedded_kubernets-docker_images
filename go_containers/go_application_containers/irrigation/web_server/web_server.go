@@ -2,10 +2,64 @@ package main
 
 
 import (
-    "fmt"
-    "log"
+    //"fmt"
+	"strconv"
     "net/http"
+	"lacima.com/Patterns/web_server"
+	"lacima.com/site_data"
+    "lacima.com/redis_support/graph_query"
+    "lacima.com/redis_support/redis_handlers"
+    "lacima.com/redis_support/generate_handlers"
 )
+
+
+
+
+func main() {
+
+ var config_file = "/data/redis_server.json"
+  var site_data_store map[string]interface{}
+
+  site_data_store = get_site_data.Get_site_data(config_file)
+  graph_query.Graph_support_init(&site_data_store)
+  redis_handlers.Init_Redis_Mutex()
+  data_handler.Data_handler_init(&site_data_store)
+  
+  
+  port, ok_flag := web_support.Setup_Web_Server( "irrigation")
+  if ok_flag != true {
+     panic("web server not registered")
+  }
+  initialize_handlers()
+ 
+  if err := http.ListenAndServe(":"+strconv.Itoa(int(port)), nil); err != nil {
+        panic(err)
+  }
+}
+
+func initialize_handlers(){
+
+ fileServer := http.FileServer(http.Dir("./static"))
+ http.Handle("/", fileServer)
+
+
+
+
+
+
+}
+
+
+/*
+  if err = http.ListenAndServe(":80", nil); err != nil {
+        panic(err)
+  }
+   //fileServer := http.FileServer(http.Dir("./static"))
+    //http.Handle("/", fileServer)
+ 
+   http.HandleFunc("/form", formHandler)
+    http.HandleFunc("/hello", helloHandler)
+
 
 func formHandler(w http.ResponseWriter, r *http.Request) {
     if err := r.ParseForm(); err != nil {
@@ -33,17 +87,4 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 
     fmt.Fprintf(w, "Hello!")
 }
-
-
-func main() {
-    fileServer := http.FileServer(http.Dir("./static"))
-    http.Handle("/", fileServer)
-    http.HandleFunc("/form", formHandler)
-    http.HandleFunc("/hello", helloHandler)
-
-
-    fmt.Printf("Starting server at port 80\n")
-    if err := http.ListenAndServe(":80", nil); err != nil {
-        log.Fatal(err)
-    }
-}
+*/

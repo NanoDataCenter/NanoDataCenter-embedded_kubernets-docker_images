@@ -1,0 +1,4 @@
+docker stop irrigation_controller
+docker rm irrigation_controller
+
+docker build --tag nanodatacenter/irrigation_controller .

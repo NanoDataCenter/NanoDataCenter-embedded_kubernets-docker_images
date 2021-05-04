@@ -52,7 +52,7 @@ func (v Redis_Job_Queue) Length() int64  {
    return result
 }
 
-func (v Redis_Job_Queue) Delete(index int64){
+func (v Redis_Job_Queue)Mark_Job(index int64){
 
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
@@ -99,12 +99,14 @@ func (v Redis_Job_Queue) Push( value string){
 }
 
 func (v Redis_Job_Queue)Delete_jobs( jobs []int64){
+    var remove_mark = "__#####__"
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
 
      for _,job := range jobs{
-	   v.Delete(job)
+	   v.Mark_Job(job)
 	 }
+	 v.client.LRem(v.ctx,v.key, 0, remove_mark)
 		 
 }
 
