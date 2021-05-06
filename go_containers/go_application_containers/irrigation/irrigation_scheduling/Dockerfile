@@ -6,6 +6,6 @@ VOLUME [/data/]
 
 
 
-COPY ./irrigation_scheduling .
+COPY ./irrig_sched/irrigation_scheduling .
  
 
