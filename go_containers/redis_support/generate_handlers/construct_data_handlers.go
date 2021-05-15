@@ -31,7 +31,7 @@ func create_redis_data_handle(){
     var address =  (*site_ptr)["host"].(string)
     var port = 	int((*site_ptr)["port"].(float64))
 	var address_port = address+":"+strconv.Itoa(port)
-	var db = int((*site_ptr)["redis_table_db"].(float64))
+	var db = int((*site_ptr)["redis_table"].(float64))
 	fmt.Println("redis data",address_port,db)
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,

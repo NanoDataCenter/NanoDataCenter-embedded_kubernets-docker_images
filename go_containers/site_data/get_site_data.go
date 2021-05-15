@@ -1,7 +1,7 @@
 package get_site_data
 
 import ( 
-//"fmt"
+"fmt"
 "io/ioutil"
 //"time"
 "encoding/json"
@@ -27,6 +27,18 @@ func Get_site_data(file_name string) map[string]interface{} {
 	return site_data
 }
 
+func Save_site_data(file_name string, data map[string]interface{})  {
+
+    fmt.Println("file_name",file_name)
+    json_data, _ := json.MarshalIndent(data,"","")
+ 
+	err := ioutil.WriteFile(file_name, json_data, 0644)
+    if err != nil{
+        fmt.Println(err)
+        panic("bad  json write")
+    }
+
+}
 
 
 	  

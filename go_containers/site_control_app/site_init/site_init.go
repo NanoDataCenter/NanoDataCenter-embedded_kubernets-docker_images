@@ -9,10 +9,10 @@ import (
 
 
 
-"site_control.com/smtp"
+"lacima.com/smtp"
 
-"site_control.com/docker_control"
-"site_control.com/redis_support/graph_query"
+"lacima.com/site_control_app/docker_control"
+"lacima.com/redis_support/graph_query"
 "github.com/go-redis/redis/v8"
 
 )
@@ -177,10 +177,9 @@ func Site_Init(  site_data *map[string]interface{} ){
 	graph_container_image = (*site_data)["graph_container_image"].(string)
     graph_container_script = (*site_data)["graph_container_script"].(string)			 
 						 
-    var redis_startup_script = "docker run -d  --network host   --name redis    --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/redis,target=/data    nanodatacenter/redis /bin/bash /pod_util/redis_control.bsh"
+    var redis_startup_script = (*site_data)["redis_start_script"].(string)		
 	
-    var password_script ="python3 /home/pi/passwords.py"
-    //var redis_image = "nanodatacenter/redis" 
+
 
 
    var hot_start = determine_hot_start()
@@ -190,18 +189,19 @@ func Site_Init(  site_data *map[string]interface{} ){
       stop_running_containers()
       remove_redis_container()
       startup_redis_container(redis_startup_script)
-      wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)) )
+      wait_for_redis_connection((*site_data)["host"].(string), (*site_data)["port"].(int))
       fmt.Println("redis is up")
-  
+      panic("done")
    
       if docker_control.Image_Exists(graph_container_image)== false {
           docker_control.Pull(graph_container_image)
 	  }
       docker_control.Container_Run(graph_container_script)
 	  
-      fmt.Println(docker_control.System_shell(password_script))
+      //fmt.Println(docker_control.System_shell(password_script))
    
       graph_query.Graph_support_init(site_data)
+      panic("done")
       determine_system_containers()
       find_site_containers()
       start_system_containers()

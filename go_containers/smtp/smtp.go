@@ -32,7 +32,7 @@ func Initialization( site_data *map[string]interface{} , task_id_input string ) 
     var message_list = []string{ "site_id: "+ site_id+"\r\n",  "node_id:  " +node_id+"\r\n" , "task_id:  "+task_id+"\r\n"   }
 	message_header = strings.Join(message_list,"  ")
     //fmt.Println(message_header)
-	//Send_Mail("System Rebooting")
+	Send_Mail("System Rebooting")
 }	
 
 

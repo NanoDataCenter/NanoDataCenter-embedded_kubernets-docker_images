@@ -3,9 +3,9 @@ package site_control
 
 //import "fmt"
 import "time"
-import "site_control.com/docker_management"
-import "site_control.com/cf_control"
-import "site_control.com/site_control/site_control_up_grade"
+import  "lacima.com/site_control_app/docker_management"
+import "lacima.com/cf_control"
+import  "lacima.com/site_control_app/site_control/site_control_upgrade"
 
 var docker_handle docker_management.Docker_Handle_Type
 

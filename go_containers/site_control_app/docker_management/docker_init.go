@@ -3,9 +3,9 @@
 package docker_management
 
 //import "fmt"
-import  "site_control.com/redis_support/generate_handlers"
-import  "site_control.com/redis_support/redis_handlers"
-import "site_control.com/redis_support/graph_query"
+import  "lacima.com/redis_support/generate_handlers"
+import  "lacima.com/redis_support/redis_handlers"
+import "lacima.com/redis_support/graph_query"
 
 
 

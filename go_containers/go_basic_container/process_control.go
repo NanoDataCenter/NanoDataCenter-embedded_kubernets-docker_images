@@ -13,7 +13,7 @@ import "lacima.com/go_basic_container/process_control_support"
 
 var  cf_control_cluster cf.CF_CLUSTER_TYPE
 var site_data_store map[string]interface{}
-const config_file = "/data/redis_server.json"
+const config_file = "/data/redis_configuration.json"
 
 func main(){
 

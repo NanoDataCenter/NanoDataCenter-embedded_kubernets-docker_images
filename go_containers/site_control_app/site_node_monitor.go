@@ -1,23 +1,25 @@
 package main
 
-
+import "os"
 import "fmt"
 import "time"
 import "strconv"
 import "context"
-import "site_control.com/site_data"
-import "site_control.com/smtp"
-import "site_control.com/site_init"
-import "site_control.com/node_init"
-import "site_control.com/site_control"
-import "site_control.com/node_control"
-import "site_control.com/redis_support/graph_query"
-import "site_control.com/redis_support/redis_handlers"
-import "site_control.com/redis_support/generate_handlers"
-import "site_control.com/cf_control"
-import "site_control.com/docker_control"
+import "lacima.com/site_data"
+
+import "lacima.com/site_control_app/site_init"
+import "lacima.com/site_control_app/node_init"
+import "lacima.com/site_control_app/site_control"
+import "lacima.com/site_control_app/node_control"
+import "lacima.com/redis_support/graph_query"
+import "lacima.com/redis_support/redis_handlers"
+import "lacima.com/redis_support/generate_handlers"
+import "lacima.com/cf_control"
+import "lacima.com/site_control_app/docker_control"
 import "github.com/go-redis/redis/v8"
 
+
+const config_file string = "/home/pi/system_config/redis_configuration.json"
 var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
 
 
@@ -31,47 +33,89 @@ func handle_mount_panic() {
 
 func mount_usb_drive(){
   defer handle_mount_panic()
-  fmt.Println(docker_control.System_shell("mount /dev/sda1 /home/pi/mountpoint"))
+  fmt.Println(docker_control.System_shell("mount /dev/sda /home/pi/mountpoint"))
 
 }
 
 
-func main(){
 
-    //mount_usb_drive()
-      
-		
-	var config_file = "/home/pi/mountpoint/lacuma_conf/site_config/redis_server.json"
-	var site_data_store map[string]interface{}
+var site_data map[string]interface{}
 
-	site_data_store = get_site_data.Get_site_data(config_file)
+func fill_in_site_data(){
  
-	var master_flag = site_data_store["master"].(bool)
+   
+  site_data= make(map[string]interface{})
+  
+  site_data["master_flag"]  = os.Getenv("master_flag")
+  site_data["site"]  = os.Getenv("site")
+  site_data["local_node"]  = os.Getenv("local_node")
+  port,_ := strconv.Atoi(os.Getenv("port"))
+  site_data["port"]  = port
+  
+  graph_db, _  := strconv.Atoi(os.Getenv("graph_db"))
+  site_data["graph_db"]  = graph_db
+  
+  
+  
+  redis_table, _  := strconv.Atoi(os.Getenv("redis_table"))
+  site_data["redis_table"] = redis_table
+  
+  password_table, _  := strconv.Atoi(os.Getenv("password_table"))
+  site_data["password_table"] = password_table
+  
+  
+  // necessary for a new installation or corrupted installation
+  site_data["graph_container_image"]   = os.Getenv("graph_container_image")
+  site_data["graph_container_script"]    = os.Getenv("graph_container_script")		
+  site_data["redis_start_script"]              = os.Getenv("redis_start_script")
+  site_data["host"]                                    =   os.Getenv("host")
+  site_data["config_file"]              =  os.Getenv("config_file")
+  
+  fmt.Println("config_file",site_data["config_file"])
+  /*
+   *   store site file
+   *
+   */
+  get_site_data.Save_site_data(site_data["config_file"].(string)  ,site_data)
+  fmt.Println(site_data)
+  panic("done")
+  
+}
+
+
+
+
+
+func main(){
+    
+    fill_in_site_data()
+  
+ 
+	var master_flag = site_data["master_flag"].(string)
 	fmt.Println("master flag",master_flag)
-	if master_flag {
-	    smtp.Initialization( &site_data_store  , "System Control Startup")
-    }else { 
-        smtp.Initialization( &site_data_store, "Node Control Startup" )
-	}
-	if master_flag == true{
-	   site_init.Site_Init(&site_data_store)
+    
+
+	
+	if master_flag == "true"{
+      
+	   site_init.Site_Init(&site_data)
 	} else {
-	   wait_for_redis_connection(site_data_store["host"].(string), int(site_data_store["port"].(float64)) )
-       graph_query.Graph_support_init(&site_data_store)
+	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
+       graph_query.Graph_support_init(&site_data)
 	}
  	  
  
-	node_init.Node_Init(&site_data_store)
+	node_init.Node_Init(&site_data)
 
-	//graph_query.Graph_support_init(&site_data_store)
+	//graph_query.Graph_support_init(&site_data)
 	redis_handlers.Init_Redis_Mutex()
-	data_handler.Data_handler_init(&site_data_store)
+	data_handler.Data_handler_init(&site_data)
 	
     
 	(CF_site_node_control_cluster).Cf_cluster_init()
 	(CF_site_node_control_cluster).Cf_set_current_row("site_node_control")
-	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data_store)
-	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data_store)
+	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
+	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
 	/*
 	
 	   --- other initializations

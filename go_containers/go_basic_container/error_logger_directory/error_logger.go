@@ -16,7 +16,7 @@ import ps "github.com/mitchellh/go-ps"
 
 func main(){
 
-  var config_file = "/data/redis_server.json"
+  const config_file = "/data/redis_configuration.json"
   var site_data_store map[string]interface{}
   
   var file_name = os.Args[1] // location of error file

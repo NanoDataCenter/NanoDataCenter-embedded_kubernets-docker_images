@@ -99,7 +99,8 @@ func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
 	site = site_data["site"].(string)
     var address =  site_data["host"].(string)
-    var port = 	int(site_data["port"].(float64))
+    var port = 	      int(site_data["port"].(float64)) //float 64 because of json
+    //fmt.Println(address,port)
 	var address_port = address+":"+strconv.Itoa(port)
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
@@ -115,7 +116,7 @@ func Graph_support_init(sdata *map[string]interface{}) {
 
 func Common_package_search( site *string, search_list *[]string) []map[string]string{
    var query_list = make([]query_element,0)
-   //fmt.Println("len search list",len(*search_list))
+   //fmt.Println("len search list",len(*search_list),search_list)
    //fmt.Println("SITE",site_data["site"])
    add_match_relationship(&query_list,"SITE",site_data["site"].(string))
    //fmt.Println("building query list",len(query_list))

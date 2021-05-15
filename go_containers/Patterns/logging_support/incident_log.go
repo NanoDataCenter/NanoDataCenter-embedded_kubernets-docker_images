@@ -1,6 +1,6 @@
 
 package logging_support
-//import  "fmt"
+import  "fmt"
 import  "time"
 import "bytes"
 import "lacima.com/redis_support/redis_handlers"
@@ -22,6 +22,7 @@ type Incident_Log_Type struct {
 func Construct_incident_log( search_path []string ) *Incident_Log_Type{
 
    var return_value Incident_Log_Type
+   fmt.Println("search_path",search_path)
    handlers := data_handler.Construct_Data_Structures(&search_path)
    return_value.time          = (*handlers)["TIME_STAMP"].(redis_handlers.Redis_Single_Structure)
    return_value.status        = (*handlers)["STATUS"].(redis_handlers.Redis_Single_Structure)

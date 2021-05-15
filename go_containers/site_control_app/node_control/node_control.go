@@ -3,10 +3,10 @@ package node_control
 
 //import "fmt"
 import "time"
-import "site_control.com/docker_management"
-import "site_control.com/cf_control"
-import "site_control.com/node_control/node_processor_monitoring"
-import "site_control.com/node_control/monitor_command_upgrade_queues"
+import "lacima.com/site_control_app/docker_management"
+import"lacima.com/cf_control"
+import "lacima.com/site_control_app/node_control/node_processor_monitoring"
+import "lacima.com/site_control_app/node_control/monitor_command_upgrade_queues"
 
 
 var docker_handle docker_management.Docker_Handle_Type

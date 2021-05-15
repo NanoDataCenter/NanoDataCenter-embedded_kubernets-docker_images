@@ -8,10 +8,10 @@ import (
 
 
 
-"site_control.com/smtp"
+"lacima.com/smtp"
 
-"site_control.com/docker_control"
-"site_control.com/redis_support/graph_query"
+"lacima.com/site_control_app/docker_control"
+"lacima.com/redis_support/graph_query"
 
 
 )

@@ -3,12 +3,12 @@ package node_up
 //import "fmt"
 import "time"
 import "bytes"
-import "site_control.com/cf_control"
-import "site_control.com/docker_control"
-import  "site_control.com/redis_support/generate_handlers"
-import  "site_control.com/redis_support/redis_handlers"
-import  "site_control.com/Patterns/msgpack"
-import  "site_control.com/Patterns/shell_utils"
+import "lacima.com/cf_control"
+import "lacima.com/site_control_app/docker_control"
+import  "lacima.com/redis_support/generate_handlers"
+import  "lacima.com/redis_support/redis_handlers"
+import  "lacima.com/Patterns/msgpack"
+import  "lacima.com/Patterns/shell_utils"
 import "github.com/msgpack/msgpack-go"
 
 

@@ -1,9 +1,10 @@
 package su
 
-//import "fmt"
+import "fmt"
 import "strings"
 
 type container_descriptor struct {
+    temporary      bool
     docker_image   string
     command_string string
     command_map map[string]string
@@ -26,6 +27,21 @@ func Initialialize_container_data_structures(start_part,run_part string){
 }
 
 
+func Setup_Mounts(){
+    
+  drive_mounts = make(map[string]string)    
+    
+}
+
+
+/*
+ * 
+ *  All mount points have to be registers
+ *  This is important as there will be many container configurations
+ *  Registering the mount points will allow changing mountpoints to be done without changing each script
+ * 
+ */
+
 func Add_mount( mount_name string , mount_path string ){
  
    if _,ok := drive_mounts[mount_name]; ok == true {
@@ -36,6 +52,20 @@ func Add_mount( mount_name string , mount_path string ){
 
 
 }
+
+/*
+ *  temp_flag bool  -- true container runs continually
+ *                  -- false container executes a function and terminates
+ *                  -- container_name  -- name of constructed container
+ *                                        note at system boot all containers are created from their images
+ *                                        this allow updates to be applied on system startup_command
+ *                  -- command_string --- name of the container controller.
+ *                                        container controller allows multiple processes to run within the container
+ *                  -- command_map    --- is the command_string for each of the processes which run inside the container
+ * 
+ * 
+ * 
+ */
 
 func Add_container( temp_flag bool, container_name, docker_image, command_string string ,command_map map[string]string, mounts []string){
    
@@ -54,8 +84,10 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
    temp.command_map = command_map
    temp.docker_image = docker_image
    if temp_flag == false {
+        temp.temporary = false
         temp.command_string = command_string_first_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }else{
+      temp.temporary = true
       temp.command_string = command_string_run_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }
    //fmt.Println("temp",temp)
@@ -63,11 +95,22 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
    
 }
 
+/*
+ * 
+ *  register containers writes containers to configuration graph
+ *  this call can be done in two places.  At the system level where the
+ *  specified containers run on the master node.  At the processor level
+ *  where the containers run on the specified processor.  The master node can
+ *  have containers allocated at the system and processor level
+ * 
+ * 
+ */
+
 
 func register_containers( container_list []string ){
  
    for _,container_name := range container_list {
-      
+       fmt.Println("container name",container_name)
        register_container(container_name)
    
    
@@ -81,14 +124,20 @@ func register_container( container_name string){
       panic("container does not exist  "+container_name)
    }
 
+   // properties of the container
    properties := make(map[string]interface{})
    properties["container_image"] = container_map[container_name].docker_image
    properties["startup_command"] = container_map[container_name].command_string
    properties["command_map"] = container_map[container_name].command_map
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
+   // data structures allocated per container
+   // these streams contain performance data for the container
    Construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
+   // this is a log of the container controller failure
    Construct_incident_logging("process_control_failure")
+   // this is a log of failures for processes that container controller manages
    Construct_incident_logging("managed_process_failure")
+   // this is a watchdog failure log for this processor
    Construct_watchdog_logging("process_control")
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }

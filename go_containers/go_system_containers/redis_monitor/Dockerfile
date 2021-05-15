@@ -1,6 +1,6 @@
 FROM nanodatacenter/bash_basic 
-ENV CONTAINER_NAME "redis_monitoring" 
+ENV CONTAINER_NAME "redis_monitor" 
 
 VOLUME [/data/] 
 
-COPY ./redis_monitoring .
+COPY ./redis_monitor .
