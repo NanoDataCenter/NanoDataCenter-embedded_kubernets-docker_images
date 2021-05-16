@@ -8,6 +8,7 @@ export port=6379
 export graph_db=3
 export redis_table=4
 export password_table=5
+export irrigation_files=6
 export host=192.168.1.103
 export graph_container_image="nanodatacenter/lacima_configuration"  
 export graph_container_script="docker run    -ti --rm --network host      --mount type=bind,source=/home/pi/system_config,target=/data/     nanodatacenter/lacima_configuration  /usr/local/bin/bash"	 

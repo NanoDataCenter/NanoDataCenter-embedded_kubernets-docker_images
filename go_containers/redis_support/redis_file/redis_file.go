@@ -80,6 +80,34 @@ func ( v *Redis_File_Struct)Get(path string)(string,bool) {
 
 }
 
+
+func ( v *Redis_File_Struct)HSet(path,field,value string){
+
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+    v.client.HSet(v.ctx,path,field,value) 
+
+
+
+}
+
+func ( v *Redis_File_Struct)HGet(path,field string)(string,bool) {
+
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+    value,err :=  v.client.HGet(v.ctx,path,field).Result()
+	if (err !=  redis.Nil) && (err != nil){
+	   
+	   return "",false
+	}
+	
+	return value , true	
+
+
+}
+
+
+
 func ( v *Redis_File_Struct)Ls(pattern string)[]string{
 
     var return_value []string

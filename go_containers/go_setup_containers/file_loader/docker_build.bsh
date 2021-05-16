@@ -1,6 +1,6 @@
 
 
 
-docker build --tag  nanodatacenter/lacima_file_loader . 
+docker build --tag  nanodatacenter/file_loader . 
 
 

@@ -80,8 +80,9 @@ func generate_system_component_graph(){
     su.Construct_streaming_logs("redis_monitor",[]string{"STREAMING_LOG","KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})    
     su.Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
-   
-    su.Bc_Rec.Add_header_node("FILE_SERVER","FILE_SERVER",make(map[string]interface{}))
+    file_server_properties := make(map[string]interface{})
+    file_server_properties["directory"] = "/files"
+    su.Bc_Rec.Add_header_node("FILE_SERVER","FILE_SERVER",file_server_properties)
     su.Cd_Rec.Construct_package("FILE_SERVER")
     su.Cd_Rec.Add_rpc_server("FILE_SERVER_RPC_SERVER",30,10)
     su.Cd_Rec.Close_package_contruction()

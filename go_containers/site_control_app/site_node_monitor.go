@@ -63,6 +63,9 @@ func fill_in_site_data(){
   password_table, _  := strconv.Atoi(os.Getenv("password_table"))
   site_data["password_table"] = password_table
   
+  irrigation_files, _  := strconv.Atoi(os.Getenv("irrigation_files"))
+  site_data["irrigation_files"] = irrigation_files
+  
   
   // necessary for a new installation or corrupted installation
   site_data["graph_container_image"]   = os.Getenv("graph_container_image")
@@ -76,6 +79,7 @@ func fill_in_site_data(){
    *   store site file
    *
    */
+  fmt.Println(site_data)
   get_site_data.Save_site_data(site_data["config_file"].(string)  ,site_data)
   fmt.Println(site_data)
   panic("done")

@@ -1,6 +1,6 @@
 package main
 
-//import "fmt"
+import "fmt"
 import "time"
 import "io/ioutil"
 import "io/fs"
@@ -11,21 +11,26 @@ import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 
-const file_base = "/files/"
+var file_base string
 
 
 func main(){
 
     
     
-	config_file := "/data/redis_server.json"
+	var config_file ="/data/redis_configuration.json"
 	
 	var site_data_store map[string]interface{}
 
-    //fmt.Println(site_data_store)
+    fmt.Println(site_data_store)
 	site_data_store = get_site_data.Get_site_data(config_file)
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
+    properties := graph_query.Common_qs_search(&[]string{"FILE_SERVER:FILE_SERVER"})
+    fmt.Println("properties",properties)
+    property := properties[0]
+    file_base = graph_query.Convert_json_string(property["directory"])
+    fmt.Println("file_base",file_base)
 	data_handler.Data_handler_init(&site_data_store)	
  	  
      search_list := []string{"FILE_SERVER"}
@@ -176,7 +181,7 @@ func file_directory( parameters map[string]interface{} ) map[string]interface{}{
    p_path := parameters["path"].(string)
   
    path := file_base+p_path
-  //fmt.Println("path",path)
+  fmt.Println("path",path)
   c, err := ioutil.ReadDir(path)
   if err != nil {
         parameters["status"] = false

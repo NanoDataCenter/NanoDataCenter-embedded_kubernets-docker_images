@@ -15,7 +15,7 @@ func main(){
 
     
 		
-	var config_file = "/data/redis_server.json"
+	var config_file = "/data/redis_configuration.json"
 	
 	var site_data_store map[string]interface{}
 
