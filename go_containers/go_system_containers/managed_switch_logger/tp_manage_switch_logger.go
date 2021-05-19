@@ -228,11 +228,12 @@ func parse_raw_data(element *switch_record_type,raw_data string ) {
   element_tx := log_data["pkt_tx_bad"].([]int)
   element_rx := log_data["pkt_rx_bad"].([]int)
   switch_links := log_data["valid_links"].([]int)
-  for _,i := range switch_links{
+  for j :=0;j<len(switch_links);j++{
+    i := switch_links[j]
     switch i{
 	   case 5,6: {
-         fmt.Println("i",i,element_tx[i],element_rx[i])
-	     if (element_tx[i] > 0 ) || (element_rx[i] > 0 ) {
+         fmt.Println("i",i,element_tx[j],element_rx[j])
+	     if (element_tx[j] > 0 ) || (element_rx[j] > 0 ) {
 		    ok_flag = false
 		} // if
 		}// case
