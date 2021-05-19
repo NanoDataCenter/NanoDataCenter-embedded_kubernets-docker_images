@@ -1,6 +1,6 @@
 package su
 
-import "fmt"
+//import "fmt"
 import "strings"
 
 type container_descriptor struct {
@@ -110,7 +110,7 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
 func register_containers( container_list []string ){
  
    for _,container_name := range container_list {
-       fmt.Println("container name",container_name)
+       //fmt.Println("container name",container_name)
        register_container(container_name)
    
    

@@ -1,7 +1,8 @@
 package secrets
 
+import "strings"
 import "lacima.com/redis_support/redis_file"
-import "lacima.com/Patterns/msgpack"
+
 
 var driver *redis_file.Redis_File_Struct
 
@@ -17,23 +18,25 @@ func Init_file_handler(site_data map[string]interface{} ){
 
 }
 
-func Get_Secret( file_name string) map[string]map[string]string {
+func Get_Secret( name,field string) string {
+     
+     var return_value string
+     var ok           bool
+     
+     if return_value,ok = driver.HGet(name,field);ok == false {
+	     panic("non existant password")
+     }
+     return return_value
+}
 
-    return_value := make(map[string]map[string]string)
-    path := "/PASSWORDS/"+file_name
+func Extract_User_Password( input string )(string,string){
+    
+    lines := strings.Split(input,":")
+    if len (lines) < 2 {
+      panic("bad format")
+    }
+    return lines[0],lines[1]   
 
-    msgpack_data := (*driver).Get(path)
-    unpacked_data := msgpack_utils.Unpack(msgpack_data)
-	
-	for up_key,up_value := range unpacked_data.(map[interface{}]interface{}) {
-	   key := up_key.(string)
-	   return_value[key] = make(map[string]string)
-	   for up_key1,up_value1 := range up_value.(map[interface{}]interface{}){
-	      key1 := up_key1.(string)
-		  value1 := string(up_value1.([]uint8))
-		  return_value[key][key1] = value1
-	   }
-	 }
-	 return return_value
-	
+    
+    
 }

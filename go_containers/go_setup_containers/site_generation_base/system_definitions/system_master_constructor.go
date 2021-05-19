@@ -17,6 +17,7 @@ func Build_System_Catalog() {
     
     system_dict                     = make(map[string]system_dict_type)
     system_dict["system_component"] = generate_system_components 
+    system_dict["tp_managed_switch"] = generate_tp_monitored_switches
     // other components will come
     
     

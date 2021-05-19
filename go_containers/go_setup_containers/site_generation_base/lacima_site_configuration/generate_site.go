@@ -73,47 +73,6 @@ func add_processors(){
 func add_components(){
     
     sys_defs.Add_Component(true,"","system_component") 
+    sys_defs.Add_Component(false,"irrigation_controller", "tp_managed_switch")
     
 }    
-/*
-
-func setup_containers(){
-
- 
-  
-  //Add_container( temp_flag bool, container_name, docker_image, command_string string ,command_map map[string]string, mounts []string)
-  
-  command_map := make(map[string]string)
-  command_map["redis"] = "./redis_server ./redis.conf"
-  su.Add_container( true,"redis","nanodatacenter/redis","./redis_control.bsh",command_map, []string{"REDIS_DATA"})
-  
-  
-
-  command_map = make(map[string]string)
-  command_map["file_server"] = "./file_server"
-  su.Add_container( true,"file_server","nanodatacenter/file_server","./process_control",command_map, []string{"DATA","FILE"})
-
-  command_map = make(map[string]string)
-  command_map["manage_switch_logger"] = "./manage_switch_logger"
-  su.Add_container( true,"managed_switch_logger","nanodatacenter/managed_switch_logger","./process_control",command_map, []string{"DATA"})
-
-  command_map = make(map[string]string)
-  command_map["redis_monitoring"] = "./redis_monitoring"
-  su.Add_container( true,"redis_monitoring","nanodatacenter/redis_monitoring","./process_control",command_map, []string{"DATA"})
-
-}
-
-
-
-
-func construct_site_specific_definitions(){
-
-  sys_defs.Construct_monitored_switches()
-  sys_defs.Construct_irrigation()
-  sys_defs.Construct_web_services()
-
-
-}
-
-
-*/

@@ -1,6 +1,4 @@
 
-
-
-docker build --tag  nanodatacenter/managed_switch_logger  . 
+docker build --tag  nanodatacenter/tp_managed_switch_logger  . 
 
 

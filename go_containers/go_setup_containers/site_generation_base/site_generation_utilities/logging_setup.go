@@ -1,8 +1,8 @@
 package su
-import "fmt"
+//import "fmt"
 
 func Construct_incident_logging(command_code string){
-    fmt.Println("command_code",command_code)
+    //fmt.Println("command_code",command_code)
     properties := make(map[string]interface{})
     Bc_Rec.Add_header_node("INCIDENT_LOG",command_code,properties)
 	
