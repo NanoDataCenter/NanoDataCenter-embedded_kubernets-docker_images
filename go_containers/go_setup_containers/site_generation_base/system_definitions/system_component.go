@@ -34,7 +34,7 @@ func generate_system_components(system_flag bool, processor_name string ){
    su.Add_container( false, "file_server",file_server_image, su.Managed_run ,file_server_command_map ,file_server_mount)
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
    
-   containers := []string{"redis","lacima_site_generation","lacima_secrets","file_server","redis_monitor"}
+   containers := []string{"redis","lacima_secrets","file_server","redis_monitor"}
    su.Construct_system_def("system_monitoring",true,"", containers, generate_system_component_graph) 
     
     
@@ -42,6 +42,9 @@ func generate_system_components(system_flag bool, processor_name string ){
 
 
 func generate_system_component_graph(){
+    su.Cd_Rec.Construct_package("DATA_MAP")
+    su.Cd_Rec.Add_hash("DATA_MAP") // map of node ip's
+    su.Cd_Rec.Close_package_contruction()
     
     su.Cd_Rec.Construct_package("NODE_MAP")
     su.Cd_Rec.Add_hash("NODE_MAP") // map of node ip's

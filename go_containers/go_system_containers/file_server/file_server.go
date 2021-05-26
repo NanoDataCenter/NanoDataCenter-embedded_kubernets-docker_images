@@ -13,7 +13,6 @@ import "lacima.com/redis_support/generate_handlers"
 
 var file_base string
 
-
 func main(){
 
     
@@ -22,8 +21,9 @@ func main(){
 	
 	var site_data_store map[string]interface{}
 
-    fmt.Println(site_data_store)
+    
 	site_data_store = get_site_data.Get_site_data(config_file)
+    fmt.Println(site_data_store)
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
     properties := graph_query.Common_qs_search(&[]string{"FILE_SERVER:FILE_SERVER"})

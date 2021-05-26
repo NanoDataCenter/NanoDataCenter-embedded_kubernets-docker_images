@@ -1,5 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-
-docker run -d --name redis  --network host    --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/redis,target=/data,target=/data/    nanodatacenter/redis /bin/sh /pod_util/redis_control.bsh
- 

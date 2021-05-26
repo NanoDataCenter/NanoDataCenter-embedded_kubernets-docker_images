@@ -153,9 +153,10 @@ func Container_Run(startup_script string)string{
 	 
 func Container_up(container,startup_script string) {
      if Exists(container){
+        
 	    Container_start(container)
 	 } else {
-	   System(startup_script)
+	   fmt.Println(System(startup_script))
      }
 }	 
  

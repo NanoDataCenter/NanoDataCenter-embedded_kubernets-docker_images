@@ -9,7 +9,6 @@ import (
 
 
 
-"lacima.com/smtp"
 
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
@@ -28,6 +27,8 @@ var graph_container_script string
 var services_json string
 //var container []string
 var containers = make([]string,0)
+var startup_containers = make([]string,0)
+var site_run_once_containers = make([]map[string]string,0)
 var site_containers = make([]map[string]string,0)
 
 
@@ -58,6 +59,21 @@ func start_stopped_system_containers(){
   }
 }
 
+func start_run_once_containers(){
+  for _,value := range site_run_once_containers{
+    if value["name"] == "redis" {
+	  fmt.Println("found redis")
+	  continue
+	}
+	if docker_control.Image_Exists(value["container_image"]) == false{
+	   fmt.Println("should not happen")
+	   panic(value["container_image"])
+	   docker_control.Pull(value["container_image"])
+	}
+	docker_control.Container_rm(value["name"])
+	docker_control.Container_up(value["name"],value["startup_command"])
+  }
+}
 
 func start_system_containers(){
   for _,value := range site_containers{
@@ -67,7 +83,7 @@ func start_system_containers(){
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
 	   fmt.Println("should not happen")
-	   //panic(value["container_image"])
+	   panic(value["container_image"])
 	   docker_control.Pull(value["container_image"])
 	}
 	docker_control.Container_rm(value["name"])
@@ -75,7 +91,26 @@ func start_system_containers(){
   }
 }  
 	
-   
+ 
+func find_startup_conatiners(){
+    
+    for _,service := range containers{
+	     var item = make(map[string]string,0)
+	     var search_list = []string{"CONTAINER"+":"+service}
+		 var container_nodes = graph_query.Common_qs_search(&search_list)
+         var container_node = container_nodes[0]
+		 //fmt.Println(container_node)
+		 item["name"] =  graph_query.Convert_json_string(container_node["name"])
+ 		 item["container_image"] =graph_query.Convert_json_string(container_node["container_image"])
+		 item["startup_command"] = graph_query.Convert_json_string(container_node["startup_command"])
+
+		 site_run_once_containers = append(site_run_once_containers,item)
+		 
+	}
+	
+	//fmt.Println(site_containers)
+} 
+ 
 
 func find_site_containers(){
     
@@ -92,24 +127,26 @@ func find_site_containers(){
 		 site_containers = append(site_containers,item)
 		 
 	}
+	
 	//fmt.Println(site_containers)
 }
 
-func  determine_system_containers(){
-    var search_list = []string{ "SITE_CONTROL:SITE_CONTROL" }
+func  determine_system_containers(site string){
+    var search_list = []string{ "SITE:"+site }
+    fmt.Println(search_list)
     var site_nodes = graph_query.Common_qs_search(&search_list)
     var site_node = site_nodes[0]
-   
-
+    fmt.Println("site_node",site_node)
+    
     containers               = graph_query.Convert_json_string_array(	site_node["containers"] )
-
+    startup_containers       = graph_query.Convert_json_string_array(	site_node["startup_containers"] )
 
 }
 
 
 func wait_for_redis_connection(address string, port int ) {
    var address_port = address+":"+strconv.Itoa(port)
-   //fmt.Println("address",address_port)
+   fmt.Println("address",address_port)
    fmt.Println("wait_for_redis_connection",port)
    var loop_flag = true
    for loop_flag == true {
@@ -128,7 +165,7 @@ func wait_for_redis_connection(address string, port int ) {
       		
 		client.Close() 
    }		
-     
+   fmt.Println("redis up")  
 }
 
 
@@ -179,34 +216,41 @@ func Site_Init(  site_data *map[string]interface{} ){
 						 
     var redis_startup_script = (*site_data)["redis_start_script"].(string)		
 	
-
-
+    fmt.Println((*site_data)["graph_container_image"].(string))
+    fmt.Println((*site_data)["graph_container_script"].(string))
+    fmt.Println((*site_data)["redis_start_script"].(string))
+    
 
    var hot_start = determine_hot_start()
    
    if hot_start == false {
-  
+      
       stop_running_containers()
       remove_redis_container()
+      
       startup_redis_container(redis_startup_script)
-      wait_for_redis_connection((*site_data)["host"].(string), (*site_data)["port"].(int))
-      fmt.Println("redis is up")
-      panic("done")
+      
+      wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
+      
    
       if docker_control.Image_Exists(graph_container_image)== false {
+          
           docker_control.Pull(graph_container_image)
 	  }
+	  
       docker_control.Container_Run(graph_container_script)
 	  
       //fmt.Println(docker_control.System_shell(password_script))
    
       graph_query.Graph_support_init(site_data)
-      panic("done")
-      determine_system_containers()
+      
+      determine_system_containers((*site_data)["site"].(string))
       find_site_containers()
+      start_run_once_containers()
+      panic("done")
       start_system_containers()
       docker_control.Prune()
-     smtp.Send_Mail("site is intialized")
+     
    }else {
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
 		 find_site_containers()

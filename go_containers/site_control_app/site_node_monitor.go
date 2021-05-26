@@ -50,21 +50,21 @@ func fill_in_site_data(){
   site_data["site"]  = os.Getenv("site")
   site_data["local_node"]  = os.Getenv("local_node")
   port,_ := strconv.Atoi(os.Getenv("port"))
-  site_data["port"]  = port
+  site_data["port"]  = float64(port)
   
   graph_db, _  := strconv.Atoi(os.Getenv("graph_db"))
-  site_data["graph_db"]  = graph_db
+  site_data["graph_db"]  = float64(graph_db)
   
   
   
   redis_table, _  := strconv.Atoi(os.Getenv("redis_table"))
-  site_data["redis_table"] = redis_table
+  site_data["redis_table"] = float64(redis_table)
   
   password_table, _  := strconv.Atoi(os.Getenv("password_table"))
-  site_data["password_table"] = password_table
+  site_data["password_table"] = float64(password_table)
   
   irrigation_files, _  := strconv.Atoi(os.Getenv("irrigation_files"))
-  site_data["irrigation_files"] = irrigation_files
+  site_data["irrigation_files"] = float64(irrigation_files)
   
   
   // necessary for a new installation or corrupted installation
@@ -79,10 +79,10 @@ func fill_in_site_data(){
    *   store site file
    *
    */
-  fmt.Println(site_data)
+
   get_site_data.Save_site_data(site_data["config_file"].(string)  ,site_data)
-  fmt.Println(site_data)
-  panic("done")
+  mount_usb_drive()
+  
   
 }
 
@@ -101,9 +101,10 @@ func main(){
 
 	
 	if master_flag == "true"{
-      
+       
 	   site_init.Site_Init(&site_data)
 	} else {
+       
 	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
        graph_query.Graph_support_init(&site_data)
 	}
