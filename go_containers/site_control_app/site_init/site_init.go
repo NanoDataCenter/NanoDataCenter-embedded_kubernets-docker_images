@@ -60,17 +60,21 @@ func start_stopped_system_containers(){
 }
 
 func start_run_once_containers(){
+  //fmt.Println("run once ",site_run_once_containers)
   for _,value := range site_run_once_containers{
     if value["name"] == "redis" {
 	  fmt.Println("found redis")
 	  continue
 	}
+
 	if docker_control.Image_Exists(value["container_image"]) == false{
-	   fmt.Println("should not happen")
-	   panic(value["container_image"])
+	   
+	   
 	   docker_control.Pull(value["container_image"])
 	}
+	
 	docker_control.Container_rm(value["name"])
+    
 	docker_control.Container_up(value["name"],value["startup_command"])
   }
 }
@@ -82,10 +86,10 @@ func start_system_containers(){
 	  continue
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
-	   fmt.Println("should not happen")
-	   panic(value["container_image"])
+	   
 	   docker_control.Pull(value["container_image"])
 	}
+	
 	docker_control.Container_rm(value["name"])
 	docker_control.Container_up(value["name"],value["startup_command"])
   }
@@ -94,7 +98,8 @@ func start_system_containers(){
  
 func find_startup_conatiners(){
     
-    for _,service := range containers{
+    for _,service := range startup_containers{
+         //fmt.Println("service",service)
 	     var item = make(map[string]string,0)
 	     var search_list = []string{"CONTAINER"+":"+service}
 		 var container_nodes = graph_query.Common_qs_search(&search_list)
@@ -108,13 +113,14 @@ func find_startup_conatiners(){
 		 
 	}
 	
-	//fmt.Println(site_containers)
+	//fmt.Println("run_once", site_run_once_containers)
 } 
  
 
 func find_site_containers(){
     
     for _,service := range containers{
+         //fmt.Println("service",service)
 	     var item = make(map[string]string,0)
 	     var search_list = []string{"CONTAINER"+":"+service}
 		 var container_nodes = graph_query.Common_qs_search(&search_list)
@@ -128,7 +134,7 @@ func find_site_containers(){
 		 
 	}
 	
-	//fmt.Println(site_containers)
+	//fmt.Println("site", site_containers)
 }
 
 func  determine_system_containers(site string){
@@ -140,7 +146,7 @@ func  determine_system_containers(site string){
     
     containers               = graph_query.Convert_json_string_array(	site_node["containers"] )
     startup_containers       = graph_query.Convert_json_string_array(	site_node["startup_containers"] )
-
+    fmt.Println("startup_containers",startup_containers)
 }
 
 
@@ -240,17 +246,19 @@ func Site_Init(  site_data *map[string]interface{} ){
 	  
       docker_control.Container_Run(graph_container_script)
 	  
-      //fmt.Println(docker_control.System_shell(password_script))
+      
    
       graph_query.Graph_support_init(site_data)
       
       determine_system_containers((*site_data)["site"].(string))
       find_site_containers()
+      find_startup_conatiners()
       start_run_once_containers()
-      panic("done")
+
       start_system_containers()
+      
       docker_control.Prune()
-     
+      
    }else {
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
 		 find_site_containers()

@@ -1,6 +1,0 @@
-
-
-
-docker build --tag  nanodatacenter/password_loader . 
-
-

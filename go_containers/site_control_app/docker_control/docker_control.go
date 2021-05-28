@@ -156,7 +156,8 @@ func Container_up(container,startup_script string) {
         
 	    Container_start(container)
 	 } else {
-	   fmt.Println(System(startup_script))
+        
+	   fmt.Println(System_shell(startup_script))
      }
 }	 
  

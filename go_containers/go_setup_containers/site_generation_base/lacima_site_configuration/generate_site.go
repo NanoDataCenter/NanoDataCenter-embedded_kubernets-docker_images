@@ -58,8 +58,8 @@ func setup_container_drives(){
   su.Add_mount("DATA",drive_path)
   su.Add_mount("FILE",file_path)
   su.Add_mount("REDIS_DATA",redis_path)    
-  su.Add_mount("SECRETs",secret_path)
-    
+  su.Add_mount("SECRETS",secret_path)
+
     
 }
 

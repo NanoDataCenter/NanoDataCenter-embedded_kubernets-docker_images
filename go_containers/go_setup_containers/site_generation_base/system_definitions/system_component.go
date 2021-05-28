@@ -5,7 +5,7 @@ const redis_image             string   = "nanodatacenter/redis"
 const lacima_site_image       string   = "nanodatacenter/lacima_site_generation"
 const lacima_secrets_image    string   = "nanodatacenter/lacima_secrets"
 const file_server_image       string   = "nanodatacenter/file_server"
-const redis_monitor_image     string   = "nanodatacenter/redis_monitor"
+const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 
 
 
@@ -14,9 +14,9 @@ const redis_monitor_image     string   = "nanodatacenter/redis_monitor"
 
 func generate_system_components(system_flag bool, processor_name string ){
    file_server_mount := []string {"DATA","FILE"}
-   redis_mount       := []string{"REDIS"}
+   redis_mount       := []string{"REDIS_DATA"}
    secrets_mount     := []string{"DATA","SECRETS"}
-   
+
    
    redis_monitor_command_map  := make(map[string]string)
    redis_monitor_command_map["redis_monitor"] = "./redis_monitor"

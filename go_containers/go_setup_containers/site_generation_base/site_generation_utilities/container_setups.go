@@ -20,7 +20,7 @@ var command_string_first_part string  // continually execute container
 var command_string_run_part string   // container executes a script and terminates
 
 func Initialialize_container_data_structures(start_part,run_part string){
-   drive_mounts =  make(map[string]string)
+   
    container_map = make(map[string]container_descriptor)
    command_string_first_part = start_part
    command_string_run_part =  run_part
@@ -70,11 +70,14 @@ func Add_mount( mount_name string , mount_path string ){
 func Add_container( temp_flag bool, container_name, docker_image, command_string string ,command_map map[string]string, mounts []string){
    
    var expanded_mount []string
+   //fmt.Println("################################          "+container_name+"                @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+   //fmt.Println(" mounts   ",mounts)
    for _,name := range mounts {
+      //fmt.Println("name-mount",name,"",drive_mounts[name])
       expanded_mount = append( expanded_mount,  drive_mounts[name] )
    
    }
-   
+   //fmt.Println("expanded_mount----------------------------",expanded_mount)
    if _,ok := container_map[container_name]; ok == true {
      panic("duplicate container name "+container_name)
    }
@@ -90,7 +93,7 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
       temp.temporary = true
       temp.command_string = command_string_run_part+"  "+container_name+"  "+strings.Join(expanded_mount,"  ")+" "+docker_image+" "+command_string
    }
-   //fmt.Println("temp",temp)
+   //fmt.Println("temp++++++++++++++++++++++++++++++++++++",temp)
    container_map[container_name] = temp
    
 }
