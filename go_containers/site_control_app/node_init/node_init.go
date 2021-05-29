@@ -8,7 +8,7 @@ import (
 
 
 
-"lacima.com/smtp"
+
 
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
@@ -75,8 +75,9 @@ func  find_node_containers(){
     var search_list = []string{ "PROCESSOR:"+(*site_data)["local_node"].(string) }
     var site_nodes = graph_query.Common_qs_search(&search_list)
     var site_node = site_nodes[0]
-
+ 
     node_init_containers = graph_query.Convert_json_string_array(	site_node["containers"] ) 
+    fmt.Println("nodoe containers ",node_init_containers)
 
 
 
@@ -121,13 +122,14 @@ func verify_node_containers(){
 func Node_Init(  site_map *map[string]interface{} ){ 
    site_data = site_map                 
    find_node_containers()
+ 
    if determine_hot_start() == false {
       find_node_container_properties()
       start_node_containers()
 	  time.Sleep(time.Second*5)
 	  verify_node_containers()
       docker_control.Prune()
-      smtp.Send_Mail("node is intialized")
+      
    }
 
 }	

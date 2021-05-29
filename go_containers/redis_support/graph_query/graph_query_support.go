@@ -129,7 +129,7 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
    }
    
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
-   //fmt.Println(search_list_term)
+   fmt.Println(search_list_term)
    add_match_terminal(&query_list, "PACKAGE",search_list_term[0])
    //fmt.Println("read to match query list",len(query_list))
    return match_list(&query_list)
@@ -194,29 +194,29 @@ func add_match_terminal(query_list *[]query_element, relationship string, label 
 
 func match_list( query_list  *[]query_element)[]map[string]string{
   
-  //fmt.Println("start match")
+  fmt.Println("start match")
   var starting_set,_ =  client.SMembersMap(ctx , "@GRAPH_KEYS").Result() 
-  //fmt.Println("initial set", len(starting_set))
-  //fmt.Println("query_list",len(*query_list))
+  fmt.Println("initial set", len(starting_set))
+  fmt.Println("query_list",len(*query_list))
   for _,value := range *query_list{
-     //fmt.Println("iteration",value)
+     fmt.Println("iteration",value)
      if value["type"] == "MATCH_TERMINAL"{
-	   //fmt.Println("termainal path")
+	   fmt.Println("termainal path")
        starting_set = match_terminal_relationship( value["relationship"], value["label"] , starting_set)
-	   //fmt.Println(len(starting_set))
+	   fmt.Println(len(starting_set))
       }else{
-	     //fmt.Println("relation path")
+	     fmt.Println("relation path")
 	     starting_set = match_relationship(value["relationship"], value["label"] , starting_set )
-		 //fmt.Println(len(starting_set))
+		 fmt.Println(len(starting_set))
          } 
       if len(starting_set) == 0 {
-	       //fmt.Println("early exit")
+	       fmt.Println("early exit")
            return make([]map[string]string,0)
 	   }
   		 
      }            
-  //fmt.Println("done",len(starting_set))        
-  var return_value = return_data(starting_set)
+  fmt.Println("done",len(starting_set))        
+  return_value := return_data(starting_set)
   return return_value
 }
 

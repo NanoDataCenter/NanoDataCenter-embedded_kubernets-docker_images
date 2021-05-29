@@ -133,7 +133,7 @@ func (docker_handle *Docker_Handle_Type) generate_parsed_fields( container_name 
   // ps headers headers = [ "USER","PID","%CPU","%MEM","VSZ","RSS","TTY","STAT","START","TIME","COMMAND", "PARAMETER1", "PARAMETER2" ]
   var return_value = make(map[string]map[string]float64)
   var cmd_string = "docker top "+container_name+ "  -aux "
-  var output = docker_control.System(cmd_string)
+  var output = docker_control.System_shell(cmd_string)
   var skip_lines = 1
   var split_lines = strings.Split(output,"\n")
   

@@ -140,7 +140,7 @@ func assemble_free_cpu( system interface{},chain interface{}, parameters map[str
     fmt.Println("staring free cpu")
 	
 
-	var output = docker_control.System("sar -u 300 1 ")
+	var output = docker_control.System_shell("sar -u 300 1 ")
 	fmt.Println("free cpu output",output)
 	
 	var lines = split_lines(output)
@@ -160,7 +160,7 @@ func assemble_free_cpu( system interface{},chain interface{}, parameters map[str
 
 func assemble_ram( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-  var output = docker_control.System("cat /proc/meminfo ")
+  var output = docker_control.System_shell("cat /proc/meminfo ")
   fmt.Println(output)
   var data = make(map[string]interface{})
   var lines = split_lines(output)
@@ -184,7 +184,7 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
 
 func assemble_temperature( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-  var output = docker_control.System("vcgencmd measure_temp")
+  var output = docker_control.System_shell("vcgencmd measure_temp")
   var output1 = strings.Replace(output, "temp=", "", -1)
   var output2 = strings.Replace(output1, "'C\n", "", -1)
   fmt.Println(output2)
@@ -205,7 +205,7 @@ func assemble_temperature( system interface{},chain interface{}, parameters map[
 
 func assemble_disk_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-  var output = docker_control.System("df")
+  var output = docker_control.System_shell("df")
  
   var data = make(map[string]interface{})
   var lines = split_lines(output)
@@ -238,7 +238,7 @@ func assemble_disk_space( system interface{},chain interface{}, parameters map[s
 func assemble_swap_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
  
-    var output = docker_control.System("sar -S 1 1")
+    var output = docker_control.System_shell("sar -S 1 1")
     var data = make(map[string]interface{})
     var lines = split_lines(output)
     
@@ -258,7 +258,7 @@ func assemble_swap_space( system interface{},chain interface{}, parameters map[s
 
 func assemble_context_switches( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
-   var output = docker_control.System("sar -w 1 1")
+   var output = docker_control.System_shell("sar -w 1 1")
       
     var data = make(map[string]interface{})
     var lines = split_lines(output)
@@ -280,7 +280,7 @@ func assemble_context_switches( system interface{},chain interface{}, parameters
 func assemble_block_io( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
-   var output = docker_control.System("sar -d  3 1")
+   var output = docker_control.System_shell("sar -d  3 1")
    //fmt.Println(output)
    var data = make(map[string]interface{})
    var lines = split_lines(output)
@@ -310,7 +310,7 @@ func assemble_block_io( system interface{},chain interface{}, parameters map[str
 func assemble_io_space( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
-  var output = docker_control.System("sar -b 1 1")
+  var output = docker_control.System_shell("sar -b 1 1")
    
   var data = make(map[string]interface{})
   var lines = split_lines(output)
@@ -329,7 +329,7 @@ func assemble_io_space( system interface{},chain interface{}, parameters map[str
 func assemble_run_queue( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
     
-   var output = docker_control.System("sar  -q 1 1")
+   var output = docker_control.System_shell("sar  -q 1 1")
    
   var data = make(map[string]interface{})
   var lines = split_lines(output)
@@ -349,7 +349,7 @@ func assemble_run_queue( system interface{},chain interface{}, parameters map[st
 func assemble_net_edev( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 
   
-  var output = docker_control.System("sar -n EDEV  3 1")
+  var output = docker_control.System_shell("sar -n EDEV  3 1")
   var data = make(map[string]interface{})
   var lines = split_lines(output)
   var data_lines = lines[3:]

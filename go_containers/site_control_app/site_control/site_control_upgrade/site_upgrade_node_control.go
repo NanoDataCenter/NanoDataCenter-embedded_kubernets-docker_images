@@ -1,7 +1,7 @@
 package site_control_upgrade
 
 
-//import "fmt"
+import "fmt"
 import "time"
 import "bytes"
 
@@ -21,17 +21,17 @@ var processors map[string]bool
 
 var processor_data_handlers map[string]*map[string]interface{}
 var site_data_handlers *map[string]interface{}
-
+var node_data_handlers *map[string]interface{}
 
 
 var site_container_control_structs map[string]map[string]interface{}
 
 
-func store_node_status(processor string, value bool ){
+func store_node_initial_status(processor string, value bool ){
 
    var b bytes.Buffer	
    msgpack.Pack(&b,value)
-   var driver = (*site_data_handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)
+   driver := (*node_data_handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)
    driver.HSet(processor,b.String())
 }
 
@@ -42,11 +42,11 @@ func Initialize_site_monitoring_data_structures(site_data *map[string]interface{
    find_container_images(site_data)
    find_data_structures(site_data)
    for processor,_ := range processors{
-      store_node_status(processor,true)
+      store_node_initial_status(processor,true)
    }
-    var driver = (*site_data_handlers)["WEB_COMMAND_QUEUE"].(redis_handlers.Redis_Job_Queue)
+    driver := (*node_data_handlers)["WEB_COMMAND_QUEUE"].(redis_handlers.Redis_Job_Queue)
 	driver.Delete_all()
-	var driver1 = (*site_data_handlers)["SYSTEM_CONTAINER_IMAGES"].(redis_handlers.Redis_Hash_Struct)
+	driver1 := (*node_data_handlers)["SYSTEM_CONTAINER_IMAGES"].(redis_handlers.Redis_Hash_Struct)
 	driver1.Delete_All()
 	for image,_ := range image_map{
 	   driver1.HSet(image,"")
@@ -58,11 +58,13 @@ func Initialize_site_monitoring_data_structures(site_data *map[string]interface{
 func find_data_structures(site_data *map[string]interface{}){
 
    processor_data_handlers = make( map[string]*map[string]interface{})
-   var site_search_list = []string{"SITE_CONTROL:SITE_CONTROL","NODE_MONITORING"}
+   var site_search_list = []string{"SITE_CONTROL"}
    site_data_handlers = data_handler.Construct_Data_Structures( &site_search_list )
+   var node_search_list = []string{"NODE_MONITORING"}
+   node_data_handlers = data_handler.Construct_Data_Structures( &node_search_list )
    //fmt.Println("site_data",site_data_handlers)
    for processor,_ := range processors {
-     var node_search_list = []string{"PROCESSOR:"+processor,"NODE_SYSTEM","NODE_CONTROL"}
+     node_search_list := []string{"PROCESSOR:"+processor,"NODE_WATCH_DOG"}
 	 processor_data_handlers[processor] = data_handler.Construct_Data_Structures( &node_search_list ) 
      //fmt.Println("processor",processor_data_handlers[processor])
    }
@@ -93,36 +95,39 @@ func find_container_images(site_data *map[string]interface{}) {
 
    
    
-   var site_search_list = []string{"SITE_CONTROL:SITE_CONTROL"}
-   var processor_search_list = []string{"PROCESSOR"}
+   site_search_list := []string{"SITE:"+(*site_data)["site"].(string)}
+   processor_search_list := []string{"PROCESSOR"}
    
-   var site_nodes = graph_query.Common_qs_search(&site_search_list)
-   var site_node = site_nodes[0]  
-   var site_containers = graph_query.Convert_json_string_array(	site_node["containers"] )
-   var graph_container_image =graph_query.Convert_json_string(site_node["graph_container_image"])
-   add_image_map( (*site_data)["local_node"].(string),graph_container_image)
+   site_nodes := graph_query.Common_qs_search(&site_search_list)
+   site_node := site_nodes[0]  
+   site_containers := graph_query.Convert_json_string_array(	site_node["containers"] )
+   startup_containers := graph_query.Convert_json_string_array(	site_node["startup_containers"] )
    
    for _,container := range site_containers {
-      var container_image = find_container_image(container)
+      container_image := find_container_image(container)
       add_image_map((*site_data)["local_node"].(string),container_image)
    }	  
-	
+   for _,container := range startup_containers {
+      container_image := find_container_image(container)
+      add_image_map((*site_data)["local_node"].(string),container_image)
+   }		
  
-   var processor_nodes = graph_query.Common_qs_search(&processor_search_list)
+   processor_nodes := graph_query.Common_qs_search(&processor_search_list)
    for _,processor_node := range processor_nodes {
-      var name = graph_query.Convert_json_string(processor_node["name"])
+      name := graph_query.Convert_json_string(processor_node["name"])
 	  
-      var containers = graph_query.Convert_json_string_array(processor_node["containers"])
+      containers := graph_query.Convert_json_string_array(processor_node["containers"])
       processors[name] = true
 	  for _,container := range containers {
-	     var container_image = find_container_image(container)
+	     container_image := find_container_image(container)
 		 add_image_map(name,container_image)
 	  
 	  }
 
    }   
-   //fmt.Println("image_map",image_map)
-   //fmt.Println("processors",processors)
+   fmt.Println("image_map",image_map)
+   fmt.Println("processors",processors)
+   
 
 
 }
@@ -181,7 +186,7 @@ func abs(x int64) int64 {
 func log_processor_status(processor string,status bool){
 
   
-  var driver = (*site_data_handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)
+  var driver = (*node_data_handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)
   var value =   msgpack_utils.Unpack(driver.HGet(processor)).(bool)
   if value != status {
      var b bytes.Buffer	
@@ -192,7 +197,7 @@ func log_processor_status(processor string,status bool){
 	 log_map["time"] =  time.Now().UnixNano()
 	 var b1 bytes.Buffer	
      msgpack.Pack(&b,log_map)
-     var driver1 = (*site_data_handlers)["ERROR_STREAM"].(redis_handlers.Redis_Stream_Struct)	
+     var driver1 = (*node_data_handlers)["ERROR_STREAM"].(redis_handlers.Redis_Stream_Struct)	
      driver1.Xadd(b1.String())	 
 	 
   }
@@ -200,14 +205,32 @@ func log_processor_status(processor string,status bool){
 }
 
 
+var watch_dog_value_xxx int64
+
+func unpack_time_recovery() {
+    if a := recover(); a != nil {
+        fmt.Println("RECOVER", a)
+    }
+    watch_dog_value_xxx = 0
+}
+
+func unpack_time( driver redis_handlers.Redis_Single_Structure ) {
+ 
+    defer unpack_time_recovery()
+    watch_dog_value_xxx  =  msgpack_utils.Unpack(driver.Get()).(int64)
+   
+    
+    
+}    
+
 func lacima_monitor_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
 
   var processor_state bool
-  var time_stamp = time.Now().UnixNano()
+  time_stamp := time.Now().UnixNano()
   for processor,_ := range processors{
-    var driver = (*processor_data_handlers[processor])["NODE_WATCH_DOG"].(redis_handlers.Redis_Single_Structure)
-	var value =  msgpack_utils.Unpack(driver.Get()).(int64)
-	if abs(time_stamp-value) > int64(time.Minute) {
+    driver := (*processor_data_handlers[processor])["NODE_WATCH_DOG"].(redis_handlers.Redis_Single_Structure)
+    unpack_time(driver)
+	if abs(time_stamp-watch_dog_value_xxx) > int64(time.Minute) {
 	  processor_state = false
 	}else  {
 	   processor_state = true

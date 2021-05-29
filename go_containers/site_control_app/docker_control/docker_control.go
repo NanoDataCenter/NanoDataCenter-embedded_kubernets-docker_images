@@ -2,7 +2,7 @@ package docker_control
 import "fmt"
 import "strings"
 //import "os"
-import "os/exec"
+//import "os/exec"
 //import "log"
 import "github.com/polydawn/gosh"
 
@@ -82,17 +82,22 @@ func Image_Exists( container string ) bool {
     
 }
 
-
+func handlepanic() {
+  
+    if a := recover(); a != nil {
+        fmt.Println("RECOVER", a)
+    }
+}
 
 
 func System_shell( script string )string{
    var script_list = strings.Fields(script) 
-
+   defer handlepanic()
    out := gosh.Gosh(script_list).Output()
-   fmt.Println(out)
+   
    return string(out)
 }
-		
+/*
 func System( script string )string{
 
    //fmt.Println("script",script)
@@ -108,11 +113,12 @@ func System( script string )string{
    
    return string(out)
 }
+*/
 
 
 func Containers_ls_runing() []string {
     
-	output := System("docker container ls ")
+	output := System_shell("docker container ls ")
 	return Filter_last(1,output)
    
 }
@@ -132,18 +138,18 @@ func Container_is_running( match_container string) bool {
 func Containers_ls_all() []string {
 
     
-	output := System("docker container ls -a")
+	output := System_shell("docker container ls -a")
 	return Filter_last(1,output)
    
 }
        
        
 func Container_start(container string) {
-      System("docker start "+container)
+      System_shell("docker start "+container)
 }	  
        
 func Container_stop(container string) {
-       System("docker stop "+container)
+       System_shell("docker stop "+container)
 }
      
 func Container_Run(startup_script string)string{
@@ -163,7 +169,7 @@ func Container_up(container,startup_script string) {
  
 func Container_rm(container string) string {
        if Exists(container) {
-	     return System("docker rm "+container)
+	     return System_shell("docker rm "+container)
 		} else {
 		  return "OK"
 		}
@@ -172,7 +178,7 @@ func Container_rm(container string) string {
 
              
 func  Prune(){
-       return_value := System("docker images -qf dangling=true ")
+       return_value := System_shell("docker images -qf dangling=true ")
        var return2 = Filter_first(1,return_value)
 	   for _, name := range return2 {
 	     //fmt.Println(i,name)
@@ -183,22 +189,22 @@ func  Prune(){
 }      
        
 func Push(image string){
-        System("docker push "+image)
+        System_shell("docker push "+image)
 }
       
 func  Pull(image string ){
-       System("docker pull "+image)
+       System_shell("docker pull "+image)
 }
 
 func  Images()[]string{
-      return_value := System("docker images ")
+      return_value := System_shell("docker images ")
 	  var return2 = Filter_first(1,return_value)
 	  
 	  return return2
 }
    
 func  Image_rmi(deleted_image string)string {
-      return System("docker rmi "+deleted_image)
+      return System_shell("docker rmi "+deleted_image)
 }     
 	  
  
@@ -209,7 +215,7 @@ func Upgrade_container(container,container_image, build_script string)string{
      }
 	 Image_rmi(container_image)
 	 Pull(container_image)
-	 return System(build_script)
+	 return System_shell(build_script)
 }   
   
  

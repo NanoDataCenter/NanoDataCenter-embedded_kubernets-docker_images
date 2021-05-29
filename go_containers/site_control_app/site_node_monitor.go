@@ -10,7 +10,7 @@ import "lacima.com/site_data"
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
 import "lacima.com/site_control_app/site_control"
-import "lacima.com/site_control_app/node_control"
+//import "lacima.com/site_control_app/node_control"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
@@ -108,10 +108,10 @@ func main(){
 	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
        graph_query.Graph_support_init(&site_data)
 	}
- 	  
- 
+ 	
+    
 	node_init.Node_Init(&site_data)
-
+   
 	//graph_query.Graph_support_init(&site_data)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data)
@@ -120,7 +120,7 @@ func main(){
 	(CF_site_node_control_cluster).Cf_cluster_init()
 	(CF_site_node_control_cluster).Cf_set_current_row("site_node_control")
 	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
-	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
+	//node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
 	/*
 	
 	   --- other initializations

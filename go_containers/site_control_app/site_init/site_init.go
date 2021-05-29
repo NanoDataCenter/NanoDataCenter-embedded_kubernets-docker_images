@@ -47,10 +47,11 @@ func start_stopped_system_containers(){
 	  fmt.Println("found redis")
 	  continue
 	}
+	
 	 if docker_control.Container_is_running(value["name"]) == false{
+         
 	     if docker_control.Image_Exists(value["container_image"]) == false{
-	       fmt.Println("should not happen")
-	       //panic(value["container_image"])
+	       
 	       docker_control.Pull(value["container_image"])
 	      }
 	      docker_control.Container_rm(value["name"])
@@ -138,15 +139,15 @@ func find_site_containers(){
 }
 
 func  determine_system_containers(site string){
-    var search_list = []string{ "SITE:"+site }
-    fmt.Println(search_list)
-    var site_nodes = graph_query.Common_qs_search(&search_list)
-    var site_node = site_nodes[0]
-    fmt.Println("site_node",site_node)
+    search_list := []string{ "SITE:"+site }
+    //mt.Println(search_list)
+    site_nodes := graph_query.Common_qs_search(&search_list)
+    site_node  := site_nodes[0]
+    //fmt.Println("site_node",site_node)
     
     containers               = graph_query.Convert_json_string_array(	site_node["containers"] )
     startup_containers       = graph_query.Convert_json_string_array(	site_node["startup_containers"] )
-    fmt.Println("startup_containers",startup_containers)
+    //fmt.Println("startup_containers",startup_containers)
 }
 
 
@@ -178,7 +179,7 @@ func wait_for_redis_connection(address string, port int ) {
 
 
 func  startup_redis_container(redis_startup_script string){
-      fmt.Println("start redis container")
+      //mt.Println("start redis container")
 	  docker_control.Container_up("redis",redis_startup_script)
 	  time.Sleep(time.Second*4)
 	  if docker_control.Container_is_running("redis") == false{
@@ -222,12 +223,13 @@ func Site_Init(  site_data *map[string]interface{} ){
 						 
     var redis_startup_script = (*site_data)["redis_start_script"].(string)		
 	
-    fmt.Println((*site_data)["graph_container_image"].(string))
-    fmt.Println((*site_data)["graph_container_script"].(string))
-    fmt.Println((*site_data)["redis_start_script"].(string))
+    //fmt.Println((*site_data)["graph_container_image"].(string))
+    //fmt.Println((*site_data)["graph_container_script"].(string))
+    //fmt.Println((*site_data)["redis_start_script"].(string))
     
 
-   var hot_start = determine_hot_start()
+     hot_start := determine_hot_start()
+     fmt.Println("hot start",hot_start)
    
    if hot_start == false {
       
@@ -261,11 +263,18 @@ func Site_Init(  site_data *map[string]interface{} ){
       
    }else {
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
+         fmt.Println("madie it here ")
+         determine_system_containers((*site_data)["site"].(string))
 		 find_site_containers()
+         //fmt.Println("containers",site_containers)
+         
 		 start_stopped_system_containers()
 		 docker_control.Prune()
+        
 		 
    }
+   
+   fmt.Println("allowing system containers to get started")
    time.Sleep(time.Second*5) // allow containers to startup_command
    verify_system_containers()
 

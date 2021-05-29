@@ -48,8 +48,8 @@ func Construct_watchdog_logging(command_code string){
  
   Bc_Rec.Add_header_node("WATCH_DOG",command_code,properties)
  
-  Cd_Rec.Construct_package("WATCH_DOG")
-  Cd_Rec.Add_single_element("WATCH_DOG") 
+  Cd_Rec.Construct_package("NODE_WATCH_DOG")
+  Cd_Rec.Add_single_element("NODE_WATCH_DOG") 
   Cd_Rec.Close_package_contruction()
   Bc_Rec.End_header_node("WATCH_DOG",command_code)
 
