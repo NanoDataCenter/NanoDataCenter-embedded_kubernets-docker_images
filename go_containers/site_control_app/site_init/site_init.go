@@ -7,11 +7,11 @@ import (
 "time"
 "strconv"
 
-
-
-
+"lacima.com/redis_support/generate_handlers"
+"lacima.com/redis_support/redis_handlers"
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
+"lacima.com/Patterns/logging_support"
 "github.com/go-redis/redis/v8"
 
 )
@@ -211,6 +211,8 @@ func determine_hot_start() bool {
 	  return true
 	}
   }
+
+  
   return false
   
 
@@ -251,6 +253,17 @@ func Site_Init(  site_data *map[string]interface{} ){
       
    
       graph_query.Graph_support_init(site_data)
+      data_handler.Data_handler_init(site_data)
+      
+     
+      reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
+      reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
+      reboot_flag_driver.Set("ACTIVE")
+      
+      incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
+      incident_log.Post_event(true,"reboot","reboot")
+
+      
       
       determine_system_containers((*site_data)["site"].(string))
       find_site_containers()
@@ -258,22 +271,28 @@ func Site_Init(  site_data *map[string]interface{} ){
       start_run_once_containers()
 
       start_system_containers()
-      
+      reboot_flag_driver.Set("NOT_ACTIVE")
       docker_control.Prune()
       
    }else {
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
-         fmt.Println("madie it here ")
+         data_handler.Data_handler_init(site_data)
+         
+         
          determine_system_containers((*site_data)["site"].(string))
 		 find_site_containers()
          //fmt.Println("containers",site_containers)
          
 		 start_stopped_system_containers()
+         
+         reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
+         reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
+         reboot_flag_driver.Set("NOT_ACTIVE")
 		 docker_control.Prune()
         
 		 
    }
-   
+ 
    fmt.Println("allowing system containers to get started")
    time.Sleep(time.Second*5) // allow containers to startup_command
    verify_system_containers()

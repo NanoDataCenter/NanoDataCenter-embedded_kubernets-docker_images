@@ -133,15 +133,19 @@ func register_container( container_name string){
    properties["startup_command"] = container_map[container_name].command_string
    properties["command_map"] = container_map[container_name].command_map
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
-   // data structures allocated per container
+   
    // these streams contain performance data for the container
    Construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
+   
    // this is a log of the container controller failure
    Construct_incident_logging("process_control_failure")
+   
    // this is a log of failures for processes that container controller manages
    Construct_incident_logging("managed_process_failure")
-   // this is a watchdog failure log for this processor
+   
+   // this is a watchdog failure log for this container
    Construct_watchdog_logging("process_control")
+   
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }
 

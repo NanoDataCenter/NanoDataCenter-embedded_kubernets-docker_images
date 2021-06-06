@@ -65,7 +65,7 @@ func setup_container_drives(){
 
 func add_processors(){
     
-   su.Add_processor("irrigation_controller") 
+   su.Add_processor("site_controller") 
     
     
 }    

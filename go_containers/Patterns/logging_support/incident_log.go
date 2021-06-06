@@ -1,6 +1,6 @@
 
 package logging_support
-import  "fmt"
+//import  "fmt"
 import  "time"
 import "bytes"
 import "lacima.com/redis_support/redis_handlers"
@@ -22,7 +22,7 @@ type Incident_Log_Type struct {
 func Construct_incident_log( search_path []string ) *Incident_Log_Type{
 
    var return_value Incident_Log_Type
-   fmt.Println("search_path",search_path)
+  
    handlers := data_handler.Construct_Data_Structures(&search_path)
    return_value.time          = (*handlers)["TIME_STAMP"].(redis_handlers.Redis_Single_Structure)
    return_value.status        = (*handlers)["STATUS"].(redis_handlers.Redis_Single_Structure)
@@ -58,3 +58,27 @@ func (v *Incident_Log_Type)Log_data( status bool, new_value, current_error strin
       }
   } 
 }
+
+func (v *Incident_Log_Type)Post_event( status bool,new_value , current_error string,){
+   
+  var b bytes.Buffer	
+  msgpack.Pack(&b,status)
+  v.status.Set(b.String())
+
+  
+  v.current_state.Set(new_value)
+
+  time_stamp := time.Now().UnixNano()
+  var b1 bytes.Buffer	
+  msgpack.Pack(&b1,time_stamp)
+  v.time.Set(b1.String())
+  //fmt.Println("new_value",status,time_stamp,new_value,current_error) 
+  if status == false {
+     //fmt.Println("status is false")
+     //fmt.Println("updating error status")
+     v.last_error.Set(current_error)
+    v.error_log.Xadd(current_error)
+    
+  } 
+}
+

@@ -1,0 +1,4 @@
+
+
+add log ip address
+add reboot waiting flag

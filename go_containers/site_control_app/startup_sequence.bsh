@@ -3,7 +3,7 @@ sudo  mount /dev/sda /home/pi/mountpoint
 mkdir /home/pi/system_config
 export master_flag=true
 export site=LACIMA_SITE
-export local_node=irrigation_controller
+export local_node=site_controller
 export port=6379
 export graph_db=3
 export redis_table=4

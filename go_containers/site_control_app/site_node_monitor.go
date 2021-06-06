@@ -5,19 +5,21 @@ import "fmt"
 import "time"
 import "strconv"
 import "context"
+import "net"
+import "strings"
+
 import "lacima.com/site_data"
 
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
 import "lacima.com/site_control_app/site_control"
-//import "lacima.com/site_control_app/node_control"
+import "lacima.com/site_control_app/node_control"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/cf_control"
 import "lacima.com/site_control_app/docker_control"
 import "github.com/go-redis/redis/v8"
-
 
 const config_file string = "/home/pi/system_config/redis_configuration.json"
 var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
@@ -97,30 +99,41 @@ func main(){
  
 	var master_flag = site_data["master_flag"].(string)
 	fmt.Println("master flag",master_flag)
-    
+    redis_handlers.Init_Redis_Mutex()
 
-	
 	if master_flag == "true"{
        
 	   site_init.Site_Init(&site_data)
+       data_handler.Data_handler_init(&site_data)
+       ip_table := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
+       ip_driver := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
+       ip_address := find_local_address()
+       ip_driver.HSet("SITE",ip_address )
+       
+       
 	} else {
        
 	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
        graph_query.Graph_support_init(&site_data)
+       data_handler.Data_handler_init(&site_data)
 	}
+	
+	
+	
  	
-    
+    ip_table := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
+    ip_driver := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
+    ip_address := find_local_address()
+    ip_driver.HSet(site_data["local_node"].(string),ip_address )    
 	node_init.Node_Init(&site_data)
    
-	//graph_query.Graph_support_init(&site_data)
-	redis_handlers.Init_Redis_Mutex()
-	data_handler.Data_handler_init(&site_data)
+	
 	
     
 	(CF_site_node_control_cluster).Cf_cluster_init()
 	(CF_site_node_control_cluster).Cf_set_current_row("site_node_control")
 	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
-	//node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
+	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
 	/*
 	
 	   --- other initializations
@@ -171,4 +184,24 @@ func wait_for_redis_connection(address string, port int ) {
    }		
      
 }
+
+func find_local_address()string{
+    
+   conn, error := net.Dial("udp", "8.8.8.8:80")  
+   if error != nil {  
+      fmt.Println(error)  
+  
+    }  
+  
+    defer conn.Close()  
+    ipAddress_port := conn.LocalAddr().(*net.UDPAddr).String()
+    temp := strings.Split(ipAddress_port,":")
+    ip_address := temp[0]
+  
+    return ip_address
+}      
+    
+    
+    
+
 

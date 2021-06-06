@@ -46,6 +46,13 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("DATA_MAP") // map of site data
     su.Cd_Rec.Close_package_contruction()
     
+    su.Construct_incident_logging("SITE_REBOOT")
+    
+    su.Cd_Rec.Construct_package("REBOOT_FLAG")
+    su.Cd_Rec.Add_single_element("REBOOT_FLAG") // determine if site has done all initialization
+    su.Cd_Rec.Close_package_contruction()
+    
+    
     su.Cd_Rec.Construct_package("NODE_MAP")
     su.Cd_Rec.Add_hash("NODE_MAP") // map of node ip's
     su.Cd_Rec.Close_package_contruction()
@@ -70,13 +77,13 @@ func generate_system_component_graph(){
     su.Cd_Rec.Construct_package("NODE_MONITORING")
     su.Cd_Rec.Add_job_queue("WEB_COMMAND_QUEUE",1)
     su.Cd_Rec.Add_hash("NODE_STATUS")
-    su.Cd_Rec.Add_redis_stream("ERROR_ STREAM",1024)
+    su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
     su.Cd_Rec.Add_hash("SYSTEM_CONTAINER_IMAGES") //value list of nodes container is in
     su.Cd_Rec.Close_package_contruction()
    
-    su.Cd_Rec.Construct_package("SITE_REBOOT_LOG")
-    su.Cd_Rec.Add_redis_stream("SITE_REBOOT_LOG",1024)
-    su.Cd_Rec.Close_package_contruction()
+    //su.Cd_Rec.Construct_package("SITE_REBOOT_LOG")
+    //su.Cd_Rec.Add_redis_stream("SITE_REBOOT_LOG",1024)
+    //su.Cd_Rec.Close_package_contruction()
     
     
     su.Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",make(map[string]interface{}))

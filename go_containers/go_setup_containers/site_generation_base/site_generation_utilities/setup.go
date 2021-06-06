@@ -41,6 +41,7 @@ func Done(){
 
  Bc_Rec.Check_namespace()
  Bc_Rec.Store_keys() 
+ Bc_Rec.Store_dictionary()
 
 
 }

@@ -62,7 +62,7 @@ func find_data_structures(site_data *map[string]interface{}){
    site_data_handlers = data_handler.Construct_Data_Structures( &site_search_list )
    var node_search_list = []string{"NODE_MONITORING"}
    node_data_handlers = data_handler.Construct_Data_Structures( &node_search_list )
-   //fmt.Println("site_data",site_data_handlers)
+   
    for processor,_ := range processors {
      node_search_list := []string{"PROCESSOR:"+processor,"NODE_WATCH_DOG"}
 	 processor_data_handlers[processor] = data_handler.Construct_Data_Structures( &node_search_list ) 
@@ -125,8 +125,8 @@ func find_container_images(site_data *map[string]interface{}) {
 	  }
 
    }   
-   fmt.Println("image_map",image_map)
-   fmt.Println("processors",processors)
+   //fmt.Println("image_map",image_map)
+   //fmt.Println("processors",processors)
    
 
 
@@ -263,6 +263,7 @@ func lacima_input_queue( system interface{},chain interface{}, parameters map[st
 		}
 	 
 	 }
+	 /*  handled by an ansilbe like facility
 	 if  data.Name == "upgrade" {
 	    var image_list = data.Value.([]string)
 	    for _,image := range image_list {
@@ -279,6 +280,7 @@ func lacima_input_queue( system interface{},chain interface{}, parameters map[st
 		
 		
 	}
+	*/
   
   
   }

@@ -4,6 +4,7 @@ import "fmt"
 import "context"
 import "encoding/json"
 import "strconv"
+import "sort"
 //import "strings"
 //import "import "container/list"
 import "github.com/go-redis/redis/v8"
@@ -79,7 +80,30 @@ func (v *Build_Configuration)  Add_info_node( relation,label string, properties 
    v.construct_node( false, relation, label, properties )
 }
 
+func (v *Build_Configuration)  Add_info_node_and_data_keys( relation,label string, properties map[string]interface{}  ){
+     
+   properties["name"] = label
+   v.construct_node( false, relation, label, properties )
+   v.construct_data_structure_keys(relation,label,properties)
+}
 
+func (v *Build_Configuration)construct_data_structure_keys( relation,label string, properties map[string]interface{}  ){
+    data_structures := properties["data_structures"].(map[string]interface{})
+    v.namespace.push_namespace( relation,label)
+    name_space:=  v.convert_namespace()
+    (*v.namespace).pop_namespace()
+    
+     
+    for _,v := range data_structures{
+        k := v.(map[string]interface{}) 
+        key := name_space +"["+k["type"].(string)+":"+k["name"].(string) +"]"
+        client.HSet(ctx,"data_set",key,k["type"]) // used a a set later by remove superious key
+        client.RPush(ctx,"data_list",key)
+   }
+    
+    
+}    
+    
 func (v *Build_Configuration) End_header_node( assert_relation,assert_label string ){
 
        last_relation,last_label := (*v.namespace).pop_namespace()
@@ -172,4 +196,16 @@ func (v *Build_Configuration)  Store_keys( ){
     for i,_ := range (*(*v.keys).Get_hash_map()) {
        client.SAdd(ctx,"@GRAPH_KEYS", i )
 	}
-}       
+}  
+
+func (v *Build_Configuration)      Store_dictionary(){
+  keys, _ := client.Keys(ctx,"*").Result()
+  sort.Strings(keys)
+  for _,key := range keys {
+     client.HSet(ctx,"key_set",key,"true")
+     client.RPush(ctx,"key_list",key)
+      
+  }
+       
+    
+}

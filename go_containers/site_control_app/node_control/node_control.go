@@ -20,7 +20,7 @@ func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
 
    
    	var container_search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string)}
-    var display_struct_search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"DOCKER_CONTROL"}
+    var display_struct_search_list = []string{"DOCKER_CONTROL"}
     (docker_handle).Initialize_Docker_Monitor( &container_search_list, &display_struct_search_list,site_data)
     (docker_handle).Clean_Up_Data_Structures()
 	(docker_handle).Set_Initial_Hash_Values_Values()
