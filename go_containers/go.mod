@@ -4,6 +4,8 @@ go 1.16
 
 require (
 	github.com/go-redis/redis/v8 v8.8.2 // indirect
+	github.com/influxdata/influxdb-client-go v1.4.0 // indirect
+	github.com/influxdata/influxdb-client-go/v2 v2.4.0 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect

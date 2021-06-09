@@ -10,7 +10,6 @@ WORKDIR  /pod_util
 COPY redis-cli  .
 COPY redis.conf .
 COPY dbx.so .
-COPY redistimeseries.so .
 COPY redis-check-rdb .
 COPY redis-check-aof .
 COPY redis_control.bsh .
