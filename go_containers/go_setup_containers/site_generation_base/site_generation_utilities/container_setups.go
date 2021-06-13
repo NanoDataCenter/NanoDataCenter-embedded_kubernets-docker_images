@@ -135,8 +135,9 @@ func register_container( container_name string){
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
    
    // these streams contain performance data for the container
-   Construct_streaming_logs("container_resource",[]string{"PROCESS_VSZ","PROCESS_RSS","PROCESS_CPU"})
-   
+   Construct_streaming_logs("container_resource_vsz")
+   Construct_streaming_logs("container_resource_rss")
+   Construct_streaming_logs("container_resource_cpu")
    // this is a log of the container controller failure
    Construct_incident_logging("process_control_failure")
    
@@ -144,7 +145,7 @@ func register_container( container_name string){
    Construct_incident_logging("managed_process_failure")
    
    // this is a watchdog failure log for this container
-   Construct_watchdog_logging("process_control")
+   Construct_watchdog_logging("process_control",20)
    
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }

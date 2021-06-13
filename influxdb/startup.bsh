@@ -1,0 +1,12 @@
+
+#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
+
+docker run \
+ -e DOCKER_INFLUXDB_INIT_MODE=setup \
+      -e DOCKER_INFLUXDB_INIT_USERNAME=admin \
+      -e DOCKER_INFLUXDB_INIT_PASSWORD=test \
+      -e DOCKER_INFLUXDB_INIT_ORG=lacima \
+       -e DOCKER_INFLUXDB_INIT_BUCKET=my-bucket \
+      -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
+      -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=lacima_ranch \
+-ti --rm  --network host    --mount type=bind,source=/home/pi/mountpoint/influx_db,target=/var/lib/influxdb2  --mount type=bind,source=/home/pi/mountpoint/influx_secrets,target=/etc/influxdb2   nanodatacenter/influxdb /bin/bash

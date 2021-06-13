@@ -29,6 +29,18 @@ var site          string  = ""
 var ctx    = context.TODO()
 var client *redis.Client
 
+func Get_valid_keys()map[string]string{
+    
+    data,err := client.HGetAll(ctx,"data_set").Result()
+    if err != nil {
+       panic("no key dictionary")   
+    }    
+    return data
+    
+}
+
+
+
 func Convert_json_interface_array( json_string string) []map[string]interface{}  {
 
      var return_value = make([]map[string]interface{},0)

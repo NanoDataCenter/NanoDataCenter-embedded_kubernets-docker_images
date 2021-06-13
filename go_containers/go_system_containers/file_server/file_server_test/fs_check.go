@@ -23,9 +23,10 @@ func main(){
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)	
- 	var fs_handle = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
+    search_list := []string{"RPC_SERVER:SITE_FILE_SERVER","RPC_SERVER"}
+ 	var fs_handle = file_server_lib.File_Server_Init(&search_list)
     fmt.Println(fs_handle.Ping())	
-   
+    fmt.Println((fs_handle).Ping())
 	fmt.Println((fs_handle).File_directory(""))
 	fmt.Println((fs_handle).Mkdir("test_path"))
 	fmt.Println((fs_handle).Mkdir("test_path_1"))

@@ -25,6 +25,33 @@ func Data_handler_init( site_data *map[string]interface{}){
 
 }
 
+func Remove_key(key string ){
+ 
+    client.Del(ctx,key)
+}
+
+
+func Get_data_keys()[]string{
+    
+    keys,_ := client.Keys(ctx,"*").Result()   
+    return keys
+    
+}    
+
+func Store_Valid_Set(dict_key string,valid_set map[string]string){
+    
+  for key,value := range valid_set {
+      
+     client.HSet(ctx,dict_key,key,value)   
+      
+      
+  }
+    
+    
+    
+}
+
+
 func create_redis_data_handle(){
   
 	site = (*site_ptr)["site"].(string)

@@ -25,7 +25,7 @@ func (v Redis_RPC_Struct)json_start() {
 		v.json_handler_request()
 	   
      }else{
-
+       //fmt.Println("made it here")
 	   time.Sleep(time.Second/10)
 	 }
 	 

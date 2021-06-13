@@ -11,7 +11,8 @@ import (
 
 var client     influxdb2.Client
 var ctx        context.Context
-var org        string
+var org_name   string
+
 var valid_buckets map[string]string  // used as a set
 
 //const valid_buckets const []string{"one_hour","one_day","one_week","one_month","three_month","six_month","one_year"}
@@ -28,7 +29,14 @@ type Influxdb_handle struct {
    
 }
 
-
+/*
+ * This function is called by the main functions of the application
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 
 
 func Construct_influxdb_client( host_port,  token, org_input string, buckets_used []string){
@@ -39,12 +47,12 @@ func Construct_influxdb_client( host_port,  token, org_input string, buckets_use
     client     = influxdb2.NewClientWithOptions(host_port,token,influxdb2.DefaultOptions().SetPrecision(time.Second))
 
     ctx        = context.Background()
-    org        = org_input
-    valid_buckets = make(map[string]string)
-     for _,bucket := range buckets_used  {
-         valid_buckets[bucket] = "" 
-     }
-
+    org_name   = org_input
+    valid_buckets := make(map[string]string)
+    for _,bucket_name := range buckets_used {
+        valid_buckets[bucket_name] = "" // used as a set
+    
+    }
 }
 
 
@@ -79,16 +87,19 @@ func ( v Influxdb_handle )Write( tags map[string]string, fields map[string]float
        input_data[key] = data   
         
     }
+    
+
+    
    
     p := influxdb2.NewPoint(v.measurement,tags,input_data,time.Now()   ) 
-    write_api :=client.WriteAPIBlocking(org,v.bucket) 
+    write_api :=client.WriteAPIBlocking(org_name,v.bucket) 
     write_api.WritePoint(ctx, p)
     
 }  
    
    
 func (v Influxdb_handle)internal_queury (query_string string ) {
-     query_api := client.QueryAPI(org)
+     query_api := client.QueryAPI(org_name)
      result, err := query_api.Query(ctx,query_string)
 	 if err != nil {
         panic(err)

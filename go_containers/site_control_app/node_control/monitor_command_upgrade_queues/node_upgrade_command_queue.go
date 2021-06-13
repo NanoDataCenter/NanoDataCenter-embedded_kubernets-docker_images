@@ -41,9 +41,7 @@ func reboot_system( input interface{}){
   
 
 }
-Bc_Rec.Add_header_node("PROCESSOR_WATCHDOG","PROCESSOR_WATCHDOG", make(map[string]interface{}))
-      Construct_watchdog_logging("PROCESSOR_WATCHDOG")   
-	  Bc_Rec.End_header_node("PROCESSOR_WATCHDOG","PROCESSOR_WATCHDOG")
+
 func Node_command_queue_structures(site_data *map[string]interface{}){
 
    var job_table = make( map[string]job_function_type )

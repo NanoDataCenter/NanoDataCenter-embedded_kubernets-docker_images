@@ -6,7 +6,7 @@ import (
 "context"
 "time"
 "strconv"
-
+"encoding/json"
 "lacima.com/redis_support/generate_handlers"
 "lacima.com/redis_support/redis_handlers"
 "lacima.com/site_control_app/docker_control"
@@ -30,6 +30,40 @@ var containers = make([]string,0)
 var startup_containers = make([]string,0)
 var site_run_once_containers = make([]map[string]string,0)
 var site_containers = make([]map[string]string,0)
+
+
+
+
+func remove_obsolete_data_structures(){
+ 
+    current_keys      := data_handler.Get_data_keys()
+    valid_set        := graph_query.Get_valid_keys()
+    valid_set["data_set"] = "key_dictionary"
+    data_handler.Store_Valid_Set("data_set",valid_set)
+    for _,key := range current_keys{
+        if _,ok := valid_set[key]; ok == false {
+            fmt.Println("remove invalid key ",key)
+            data_handler.Remove_key(key)
+        }
+    }
+            
+}
+
+
+
+func store_site_data(site_data *map[string]interface{}){
+
+
+   
+    json_data, _ := json.MarshalIndent(site_data,"","")
+    site_data_package := data_handler.Construct_Data_Structures(&[]string{"DATA_MAP"})
+    site_data_driver := (*site_data_package)["DATA_MAP"].(redis_handlers.Redis_Single_Structure)
+    site_data_driver.Set(string(json_data))
+
+}
+    
+    
+    
 
 
 func verify_system_containers(){
@@ -260,14 +294,25 @@ func Site_Init(  site_data *map[string]interface{} ){
       reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
       reboot_flag_driver.Set("ACTIVE")
       
+      // remove obselete data Construct_Data_Structures
+      
+      remove_obsolete_data_structures()
+      
+      store_site_data(site_data)
+      
+      
       incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
       incident_log.Post_event(true,"reboot","reboot")
 
       
       
+      
       determine_system_containers((*site_data)["site"].(string))
+    
+      
       find_site_containers()
       find_startup_conatiners()
+      panic("done")
       start_run_once_containers()
 
       start_system_containers()
@@ -275,6 +320,7 @@ func Site_Init(  site_data *map[string]interface{} ){
       docker_control.Prune()
       
    }else {
+         panic("not ready for hot start")
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
          data_handler.Data_handler_init(site_data)
          

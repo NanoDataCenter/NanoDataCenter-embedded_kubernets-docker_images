@@ -43,7 +43,7 @@ func generate_system_components(system_flag bool, processor_name string ){
 
 func generate_system_component_graph(){
     su.Cd_Rec.Construct_package("DATA_MAP")
-    su.Cd_Rec.Add_hash("DATA_MAP") // map of site data
+    su.Cd_Rec.Add_single_element("DATA_MAP") // map of site data
     su.Cd_Rec.Close_package_contruction()
     
     su.Construct_incident_logging("SITE_REBOOT")
@@ -87,16 +87,15 @@ func generate_system_component_graph(){
     
     
     su.Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",make(map[string]interface{}))
-    su.Construct_streaming_logs("redis_monitor",[]string{"STREAMING_LOG","KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})    
+    su.Construct_streaming_logs("redis_monitor")    
     su.Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
     file_server_properties := make(map[string]interface{})
     file_server_properties["directory"] = "/files"
-    su.Bc_Rec.Add_header_node("FILE_SERVER","FILE_SERVER",file_server_properties)
-    su.Cd_Rec.Construct_package("FILE_SERVER")
-    su.Cd_Rec.Add_rpc_server("FILE_SERVER_RPC_SERVER",30,10)
-    su.Cd_Rec.Close_package_contruction()
-    su.Bc_Rec.End_header_node("FILE_SERVER","FILE_SERVER")    
+    su.Construct_RPC_Server( "SITE_FILE_SERVER", 30,10,file_server_properties)
+    
+    
+ 
     
     
 }

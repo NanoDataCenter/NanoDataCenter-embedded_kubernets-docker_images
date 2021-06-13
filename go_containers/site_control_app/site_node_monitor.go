@@ -104,7 +104,11 @@ func main(){
 	if master_flag == "true"{
        
 	   site_init.Site_Init(&site_data)
-       data_handler.Data_handler_init(&site_data)
+       //data_handler.Data_handler_init(&site_data)
+    
+       
+       
+       
        ip_table := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
        ip_driver := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
        ip_address := find_local_address()

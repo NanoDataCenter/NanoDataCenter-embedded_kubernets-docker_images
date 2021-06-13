@@ -59,6 +59,8 @@ func (v *Incident_Log_Type)Log_data( status bool, new_value, current_error strin
   } 
 }
 
+
+
 func (v *Incident_Log_Type)Post_event( status bool,new_value , current_error string,){
    
   var b bytes.Buffer	

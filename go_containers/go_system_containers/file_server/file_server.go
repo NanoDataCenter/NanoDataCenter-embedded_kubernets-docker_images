@@ -26,20 +26,20 @@ func main(){
     fmt.Println(site_data_store)
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
-    properties := graph_query.Common_qs_search(&[]string{"FILE_SERVER:FILE_SERVER"})
+    properties := graph_query.Common_qs_search(&[]string{"RPC_SERVER:SITE_FILE_SERVER","RPC_SERVER"})
     fmt.Println("properties",properties)
     property := properties[0]
     file_base = graph_query.Convert_json_string(property["directory"])
     fmt.Println("file_base",file_base)
 	data_handler.Data_handler_init(&site_data_store)	
  	  
-     search_list := []string{"FILE_SERVER"}
+     search_list := []string{"RPC_SERVER:SITE_FILE_SERVER","RPC_SERVER"}
 
      handlers := data_handler.Construct_Data_Structures(&search_list)
     
-     driver := (*handlers)["FILE_SERVER_RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
+     driver := (*handlers)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
 	
-	driver.Add_handler("ping",ping)
+	//driver.Add_handler("ping",ping)
 	
 	driver.Add_handler( "read",load_file)
 	driver.Add_handler( "write",save_file)
@@ -56,13 +56,14 @@ func main(){
    
 }
 
-
+/*
 func ping( parameters map[string]interface{} ) map[string]interface{}{
 
    parameters["status"] = true
    return parameters
 
 }
+*/
 	
 func load_file( parameters map[string]interface{} ) map[string]interface{}{
    p_file_name := parameters["file_name"].(string)

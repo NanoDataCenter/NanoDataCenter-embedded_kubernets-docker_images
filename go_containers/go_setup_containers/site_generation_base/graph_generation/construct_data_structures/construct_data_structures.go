@@ -124,47 +124,13 @@ func ( v *Package_Constructor) Add_redis_stream(name string,depth int64){
 }
 
 
-func ( v *Package_Constructor) Add_Influxdb_Unmonitored_Stream(name string,keys [] string){
-       v.check_for_duplicates( name)
-
-       properties := make(map[string]interface{})
-       properties["name"] = name
-       properties["type"]  = "INFLUX_UNMONITORED_STREAMS"
-       properties["stream_keys"]  = keys
-       v.update_entry(name,&properties) 
-}
-
-/*
-   This stream allows multiple users to share a common stream
-   The common stream allows a central monitoring unit to monitor the stream
-*/
-
-
-func ( v *Package_Constructor) Add_Influxdb_Shared_Stream(name , user_tag, stream_key, redis_key string ){
-       v.check_for_duplicates( name)
-
-       properties := make(map[string]interface{})
-       properties["name"] = name
-       properties["type"]  = "INFLUX_SHARED_STREAMS"
-       properties["stream_tag"]  = tag
-       properties["stream_key"]  = stream_key
-       properties["redis_key"] = redis_key
-       v.update_entry(name,&properties) 
-}
 
 
 
 
-func ( v *Package_Constructor) Add_Influxdb_Monitored_Stream(name string,tags,keys [] string){
-       v.check_for_duplicates( name)
 
-       properties := make(map[string]interface{})
-       properties["name"] = name
-       properties["type"]  = "INFLUX_MONITORED_STREAMS"
-       properties["tags"]  = tags
-       properties["keys"]  = keys
-       v.update_entry(name,&properties) 
-}
+
+
        
 
        

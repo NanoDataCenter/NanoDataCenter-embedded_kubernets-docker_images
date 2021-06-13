@@ -37,10 +37,22 @@ func Construct_Redis_RPC(  ctx context.Context, client *redis.Client, key string
    return_value.timeout = timeout*10 // timout is in seconds sampling is in .1 seconds
 
    return_value.rpc_handlers = make(map[string]Message_Handler_Type)
+   return_value.Add_handler("ping",return_value.ping)  // method used for status testing
    return return_value
 
 
 }
+
+func (v Redis_RPC_Struct)ping( parameters map[string]interface{} ) map[string]interface{} {
+
+
+   parameters["status"] = true
+   parameters["length"] = v.Length()
+   return parameters
+
+}
+
+
 
 func (v Redis_RPC_Struct) Delete_all() {
     Lock_Redis_Mutex()

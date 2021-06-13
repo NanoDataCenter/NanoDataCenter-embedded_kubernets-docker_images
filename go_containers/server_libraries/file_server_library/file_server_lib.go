@@ -20,7 +20,7 @@ func File_Server_Init(search_list *[]string)File_Server_Client_Type{
 
   var return_value File_Server_Client_Type
   handlers := data_handler.Construct_Data_Structures(search_list)  
-  return_value.driver = (*handlers)["FILE_SERVER_RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
+  return_value.driver = (*handlers)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
   return return_value
 }  
 

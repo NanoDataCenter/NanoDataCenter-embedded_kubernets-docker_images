@@ -1,0 +1,6 @@
+docker stop influxdb
+docker rm influxdb
+
+docker build --tag nanodatacenter/influxdb .
+
+
