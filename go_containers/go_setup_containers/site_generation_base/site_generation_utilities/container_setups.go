@@ -126,7 +126,7 @@ func register_container( container_name string){
    if _,ok := container_map[container_name]; ok == false{
       panic("container does not exist  "+container_name)
    }
-
+   var description string
    // properties of the container
    properties := make(map[string]interface{})
    properties["container_image"] = container_map[container_name].docker_image
@@ -135,17 +135,20 @@ func register_container( container_name string){
    Bc_Rec.Add_header_node("CONTAINER",container_name,properties)
    
    // these streams contain performance data for the container
-   Construct_streaming_logs("container_resource_vsz")
-   Construct_streaming_logs("container_resource_rss")
-   Construct_streaming_logs("container_resource_cpu")
+   description = container_name+" container resource"
+   Construct_streaming_logs("container_resource",description,[]string{"vsz","rss","cpu"})
+
    // this is a log of the container controller failure
-   Construct_incident_logging("process_control_failure")
+   description = container_name+" process_control_failure"
+   Construct_incident_logging("process_control_failure",description)
    
    // this is a log of failures for processes that container controller manages
-   Construct_incident_logging("managed_process_failure")
+   description = container_name+" managed_process_failure"
+   Construct_incident_logging("managed_process_failure",description)
    
    // this is a watchdog failure log for this container
-   Construct_watchdog_logging("process_control",20)
+   description = container_name+" container controller watchdog"
+   Construct_watchdog_logging("process_control",description,20)
    
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }

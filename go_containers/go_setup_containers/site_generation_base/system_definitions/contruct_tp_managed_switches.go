@@ -28,13 +28,13 @@ func tp_construct_monitored_switches_graph(){
     properties["ip"] = "192.168.1.45"
  
     su.Bc_Rec.Add_header_node("TP_SWITCH","switch_office",properties)
-	su.Construct_incident_logging("switch_office")
+	su.Construct_incident_logging("switch_office","office_switch")
     su.Bc_Rec.End_header_node("TP_SWITCH","switch_office")
 
     properties = make(map[string]interface{})
     properties["ip"] = "192.168.1.56"
     su.Bc_Rec.Add_header_node("TP_SWITCH","switch_garage",properties)
-    su.Construct_incident_logging("switch_garage")
+    su.Construct_incident_logging("switch_garage","garage_switch")
     su.Bc_Rec.End_header_node("TP_SWITCH","switch_garage")
     
 }    

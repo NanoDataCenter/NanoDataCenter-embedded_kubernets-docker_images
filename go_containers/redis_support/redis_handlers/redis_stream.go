@@ -1,7 +1,7 @@
 package redis_handlers
 
 import "context"
-//import "fmt"
+
 import "github.com/go-redis/redis/v8"
 
 type Redis_Stream_Struct struct {
@@ -48,6 +48,7 @@ func (v Redis_Stream_Struct) Xadd(packed_data string) string  {
 	defer UnLock_Redis_Mutex()
     var xdata = make(map[string]interface{})
 	xdata["data"]  = packed_data
+	
 	var x_add_args = redis.XAddArgs{ v.key, v.depth, v.depth, "*" ,xdata}
 	result,err := v.client.XAdd(v.ctx, &x_add_args ).Result()
 	if err != nil {

@@ -1,0 +1,6 @@
+install sar
+
+sudo apt-get install sysstat
+nano /eto/default/systatus set data collection enabled
+
+to do set up automatic data collection

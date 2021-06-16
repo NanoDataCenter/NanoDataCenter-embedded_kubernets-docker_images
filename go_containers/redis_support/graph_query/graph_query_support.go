@@ -2,7 +2,7 @@
 
 
 
-import "fmt"
+
 import "context"
 import "encoding/json"
 import "strconv"
@@ -112,7 +112,7 @@ func Graph_support_init(sdata *map[string]interface{}) {
 	site = site_data["site"].(string)
     var address =  site_data["host"].(string)
     var port = 	      int(site_data["port"].(float64)) //float 64 because of json
-    //fmt.Println(address,port)
+   
 	var address_port = address+":"+strconv.Itoa(port)
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
@@ -123,48 +123,47 @@ func Graph_support_init(sdata *map[string]interface{}) {
 	if err != nil{
 	         panic("redis graph connection")
 	 }
-    fmt.Println("redis graph ping")	
+   
 }	
 
 func Common_package_search( site *string, search_list *[]string) []map[string]string{
    var query_list = make([]query_element,0)
-   //fmt.Println("len search list",len(*search_list),search_list)
-   //fmt.Println("SITE",site_data["site"])
+ 
    add_match_relationship(&query_list,"SITE",site_data["site"].(string))
-   //fmt.Println("building query list",len(query_list))
+   
    for i :=0; i <len(*search_list)-1;i++{
       var search_term = (*search_list)[i]
 
 	  var search_list = parse_search_list(search_term)
 	  add_match_relationship(&query_list,search_list[0],search_list[1])
-	  //fmt.Println("building query list",len(query_list))
+	  
    }
    
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
-   fmt.Println(search_list_term)
+   
    add_match_terminal(&query_list, "PACKAGE",search_list_term[0])
-   //fmt.Println("read to match query list",len(query_list))
+  
    return match_list(&query_list)
 }
 
 func Common_qs_search(search_list *[]string)[]map[string]string{
 
    var query_list = make([]query_element,0)
-   //fmt.Println("len search list",len(*search_list))
+   
    add_match_relationship(&query_list,"SITE",site_data["site"].(string))
-   //fmt.Println("building query list",len(query_list))
+   
    for i :=0; i <len(*search_list)-1;i++{
       var search_term = (*search_list)[i]
 
 	  var search_list = parse_search_list(search_term)
 	  add_match_relationship(&query_list,search_list[0],search_list[1])
-	  //fmt.Println("building query list",len(query_list))
+	  
    }
    
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
    
    add_match_terminal(&query_list,search_list_term[0],search_list_term[1])
-   //fmt.Println("read to match query list",len(query_list))
+   
    return match_list(&query_list)
 }
  
@@ -178,13 +177,13 @@ func parse_search_list(search_term string)[2]string{
 	  return_value[0] = result[0]
 	  return_value[1] = result[1]
 	}
-	//fmt.Println(return_value)
+	
 	return return_value
     
 }
 
 func add_match_relationship(query_list *[]query_element, relationship string, label string){
-       //fmt.Println("match terminal",relationship,label)
+       
        var temp = make(map[string]string)
        temp["relationship"] = relationship
        temp["label"]        = label
@@ -194,7 +193,7 @@ func add_match_relationship(query_list *[]query_element, relationship string, la
 }
 
 func add_match_terminal(query_list *[]query_element, relationship string, label string){
-       //fmt.Println("match terminal",relationship,label)
+       
        var temp = make(map[string]string)
        temp["relationship"] = relationship
        temp["label"]        = label
@@ -206,28 +205,27 @@ func add_match_terminal(query_list *[]query_element, relationship string, label 
 
 func match_list( query_list  *[]query_element)[]map[string]string{
   
-  fmt.Println("start match")
+  
   var starting_set,_ =  client.SMembersMap(ctx , "@GRAPH_KEYS").Result() 
-  fmt.Println("initial set", len(starting_set))
-  fmt.Println("query_list",len(*query_list))
+  
   for _,value := range *query_list{
-     fmt.Println("iteration",value)
+     
      if value["type"] == "MATCH_TERMINAL"{
-	   fmt.Println("termainal path")
+	   
        starting_set = match_terminal_relationship( value["relationship"], value["label"] , starting_set)
-	   fmt.Println(len(starting_set))
+	   
       }else{
-	     fmt.Println("relation path")
+	     
 	     starting_set = match_relationship(value["relationship"], value["label"] , starting_set )
-		 fmt.Println(len(starting_set))
+		 
          } 
       if len(starting_set) == 0 {
-	       fmt.Println("early exit")
+	       
            return make([]map[string]string,0)
 	   }
   		 
      }            
-  fmt.Println("done",len(starting_set))        
+    
   return_value := return_data(starting_set)
   return return_value
 }
@@ -247,16 +245,16 @@ func match_relationship( relationship, label string , starting_set  map[string]s
 			}
        }else{   
              if flag,_:=client.SIsMember(ctx , "@RELATIONSHIPS", relationship).Result();flag==true{
-			    //fmt.Println("pass relationships")
+			   
                 if flag1,_:=client.Exists(ctx,  "#"+relationship+rel_sep+label).Result();flag1!=0{
-				    //fmt.Println("pass exists")
+				   
                     return_value,_ = client.SMembersMap(ctx ,"#"+relationship+rel_sep+label).Result()
-					//fmt.Println("member length",len(return_value))
+					
                     return_value = intersection(return_value,starting_set)
 			    }
 			}
 	   }	
-       //fmt.Println("match relationship",relationship,label, return_value)	   
+      
        return return_value
 
 }
@@ -274,9 +272,9 @@ func match_terminal_relationship( relationship, label string , starting_set  map
 			}
        }else{   
              if flag,_ :=client.SIsMember(ctx ,  "@TERMINALS", relationship).Result();flag==true{
-			     //fmt.Println("terminal")
+			     
                 if flag1,_:=client.Exists(ctx,  "$"+relationship+rel_sep+label).Result();flag1 != 0{
-				    //fmt.Println("pass exists")
+				    
                     return_value,_ = client.SMembersMap(ctx ,"$"+relationship+rel_sep+label).Result()
                     return_value = intersection(return_value,starting_set)
 			    }

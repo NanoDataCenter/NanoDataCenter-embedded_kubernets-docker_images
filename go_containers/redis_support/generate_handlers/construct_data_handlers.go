@@ -1,7 +1,7 @@
 package data_handler
 
 import "context"
-import "fmt"
+
 import "time"
 //import "reflect"
 import "strconv"
@@ -19,7 +19,7 @@ func Data_handler_init( site_data *map[string]interface{}){
 
    site_ptr = site_data
    site = (*site_data)["site"].(string)
-   fmt.Println("site",site)
+   
    create_redis_data_handle()
    create_constructors(&constructor_table)
 
@@ -59,7 +59,7 @@ func create_redis_data_handle(){
     var port = 	int((*site_ptr)["port"].(float64))
 	var address_port = address+":"+strconv.Itoa(port)
 	var db = int((*site_ptr)["redis_table"].(float64))
-	fmt.Println("redis data",address_port,db)
+	
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												 ReadTimeout : time.Second*30,
@@ -70,7 +70,7 @@ func create_redis_data_handle(){
 	if err != nil{
 	         panic("redis data connect")
 	  }
-    fmt.Println(" redis data connection ping")	
+    
 }	
 
 func create_constructors( constructor_table *map[string]interface{}){
@@ -104,15 +104,15 @@ func construct_handler_definitions( search_list *[]string, handler_definitions *
    
    
    var packages = graph_query.Common_package_search(&site,search_list)
-   ///fmt.Println("packages",len(packages),packages) 
+   
    var data_structures_json = packages[0]["data_structures"]
-   //fmt.Println(data_structures_json)
+  
    var data_structures = graph_query.Convert_json_dictionary_interface(  data_structures_json)
    
    var namespace_json = packages[0]["namespace"]
    var namespace = graph_query.Convert_json_string( namespace_json)
    
-   //fmt.Println(len(data_structures),data_structures)
+   
    
    
    for _,v := range data_structures{
@@ -134,7 +134,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
 	 
-	  //fmt.Println("key type",type_def)
+	  
 	  if type_def == "STREAM_REDIS" {
 	     key = v["key"].(string)
 		 name = v["name"].(string)

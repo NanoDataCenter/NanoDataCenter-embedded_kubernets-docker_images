@@ -46,7 +46,7 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_single_element("DATA_MAP") // map of site data
     su.Cd_Rec.Close_package_contruction()
     
-    su.Construct_incident_logging("SITE_REBOOT")
+    su.Construct_incident_logging("SITE_REBOOT","site_reboot")
     
     su.Cd_Rec.Construct_package("REBOOT_FLAG")
     su.Cd_Rec.Add_single_element("REBOOT_FLAG") // determine if site has done all initialization
@@ -61,38 +61,28 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("WEB_MAP") // map of all subsystem web servers
     su.Cd_Rec.Close_package_contruction()    
     
-    su.Cd_Rec.Construct_package("SITE_CONTROL")
-    su.Cd_Rec.Add_job_queue("WEB_COMMAND_QUEUE",10) // commands such as reboot pull container
-    su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
-    su.Cd_Rec.Add_hash("ERROR_HASH")
-    su.Cd_Rec.Add_hash("WEB_DISPLAY_DICTIONARY")  //for displaying node status
+    su.Cd_Rec.Construct_package("NODE_STATUS")
+    su.Cd_Rec.Add_hash("NODE_STATUS")
     su.Cd_Rec.Close_package_contruction()
-    
-    su.Cd_Rec.Construct_package("DOCKER_CONTROL")
-    su.Cd_Rec.Add_job_queue("DOCKER_COMMAND_QUEUE",10) //temp disable turning of containers
-    su.Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")
-    su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
-    su.Cd_Rec.Close_package_contruction()
+    su.Construct_incident_logging("NODE_FAILURE","node_reboot")
+    su.Construct_RPC_Server("system_control","rpc for controlling system",10,15, make( map[string]interface{}) )
 
     su.Cd_Rec.Construct_package("NODE_MONITORING")
-    su.Cd_Rec.Add_job_queue("WEB_COMMAND_QUEUE",1)
-    su.Cd_Rec.Add_hash("NODE_STATUS")
-    su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
-    su.Cd_Rec.Add_hash("SYSTEM_CONTAINER_IMAGES") //value list of nodes container is in
+    //su.Cd_Rec.Add_job_queue("WEB_COMMAND_QUEUE",1)
+    //su.Cd_Rec.Add_hash("NODE_STATUS")
+    //su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
+    //su.Cd_Rec.Add_hash("SYSTEM_CONTAINER_IMAGES") //value list of nodes container is in
     su.Cd_Rec.Close_package_contruction()
    
-    //su.Cd_Rec.Construct_package("SITE_REBOOT_LOG")
-    //su.Cd_Rec.Add_redis_stream("SITE_REBOOT_LOG",1024)
-    //su.Cd_Rec.Close_package_contruction()
     
     
     su.Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",make(map[string]interface{}))
-    su.Construct_streaming_logs("redis_monitor")    
+    su.Construct_streaming_logs("redis_monitor","redis_monitor",[]string{"KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})   
     su.Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
     file_server_properties := make(map[string]interface{})
     file_server_properties["directory"] = "/files"
-    su.Construct_RPC_Server( "SITE_FILE_SERVER", 30,10,file_server_properties)
+    su.Construct_RPC_Server( "SITE_FILE_SERVER","site_file_server",30,10,file_server_properties)
     
     
  

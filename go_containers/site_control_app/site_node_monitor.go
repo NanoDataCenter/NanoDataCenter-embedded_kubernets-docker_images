@@ -1,7 +1,7 @@
 package main
 
 import "os"
-import "fmt"
+
 import "time"
 import "strconv"
 import "context"
@@ -9,10 +9,10 @@ import "net"
 import "strings"
 
 import "lacima.com/site_data"
-
+import  "lacima.com/site_control_app/docker_management"
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
-import "lacima.com/site_control_app/site_control"
+//import "lacima.com/site_control_app/site_control"
 import "lacima.com/site_control_app/node_control"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
@@ -120,15 +120,20 @@ func main(){
 	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
        graph_query.Graph_support_init(&site_data)
        data_handler.Data_handler_init(&site_data)
+       // wait for reboot flag --- TBD
+       // read and write site data --- TBD
 	}
 	
 	
 	
  	
-    ip_table := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
-    ip_driver := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
-    ip_address := find_local_address()
+    ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
+    ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
+    ip_address  := find_local_address()
     ip_driver.HSet(site_data["local_node"].(string),ip_address )    
+    
+    
+    
 	node_init.Node_Init(&site_data)
    
 	
@@ -136,8 +141,16 @@ func main(){
     
 	(CF_site_node_control_cluster).Cf_cluster_init()
 	(CF_site_node_control_cluster).Cf_set_current_row("site_node_control")
-	site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
-	node_control.Node_Startup(&CF_site_node_control_cluster,&site_data)
+    
+    var all_containers = make([]string,0)
+    if master_flag == "true" {
+	    all_containers = docker_management.Find_containers(&[]string{ "SITE:"+site_data["site"].(string) })
+    }
+    all_containers = append( all_containers, docker_management.Find_containers( &[]string{"PROCESSOR:"+site_data["local_node"].(string)} )...)
+	
+    
+    node_control.Node_Startup(&CF_site_node_control_cluster,&site_data,all_containers)
+   
 	/*
 	
 	   --- other initializations
@@ -152,7 +165,7 @@ func main(){
    var loop_flag = true
    for loop_flag{
       time.Sleep(time.Second*100)
-      fmt.Println("main is spinning")
+      //fmt.Println("main is spinning")
    } 
 
 	

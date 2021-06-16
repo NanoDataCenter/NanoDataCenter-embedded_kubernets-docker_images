@@ -1,6 +1,6 @@
 package main
 
-//import "fmt"
+import "fmt"
 import "os"
 import "time"
 import "lacima.com/site_data"
@@ -18,7 +18,9 @@ const config_file = "/data/redis_configuration.json"
 func main(){
 
     container_name := os.Getenv("CONTAINER_NAME")
-   
+
+    fmt.Println("container_name",container_name)
+    
     site_data_store = get_site_data.Get_site_data(config_file)
 	
     graph_query.Graph_support_init(&site_data_store)

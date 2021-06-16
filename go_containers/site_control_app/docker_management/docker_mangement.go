@@ -1,6 +1,6 @@
 package docker_management
 
-import "fmt"
+
 import "bytes"
 import "time"
 import "strings"
@@ -9,33 +9,22 @@ import "lacima.com/site_control_app/docker_control"
 import  "lacima.com/Patterns/msgpack"
 import "github.com/msgpack/msgpack-go"
 
-// panic("dd") //(docker_handle).hdel_container_status_key(key)
-
-func (docker_handle *Docker_Handle_Type) Clean_Up_Data_Structures(){
 
 
-   var redis_keys  = (docker_handle).container_status_keys()
-  
-   var container_map = (docker_handle).container_set
-   for _,key := range redis_keys{
-       _,ok := container_map[key]
-      if ok==false {
-            (docker_handle).hdel_container_status_key(key)
-	    }
-   }
-}
+
 
 
 func (docker_handle *Docker_Handle_Type)Set_Initial_Hash_Values_Values(){
 
    var default_value = make(map[string]bool)
-   default_value["status"] = true
+   default_value["managed"] = true
    default_value["active"] = true
    for _,container := range (docker_handle).containers{
+      
       (docker_handle).hset_status_values(container,&default_value)
 	  
    }
-   
+  
 }
 
 
@@ -44,7 +33,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   
   var check_map = make(map[string]bool)
   
-  for _,container := range (docker_handle).containers {
+  for _,container := range docker_handle.containers {
      check_map[container] = false
   }
   
@@ -56,11 +45,14 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 	    check_map[running_container] = true
 	}
   }
-  //fmt.Println("check_map",check_map)
-  for _,container := range( docker_handle).containers {
   
+  for _,container := range( docker_handle).containers {
+    
+     
 	 var redis_container_status = (docker_handle).hget_status_value(container)
-	 
+	 if (*redis_container_status)["managed"] == false {
+         continue    // do nothihg if container is not monitored
+     }
 	 // update status values
 	 if (*redis_container_status)["active"] != check_map[container] {
 	   
@@ -72,7 +64,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 	 }
 	
 	  if check_map[container] == false{
-	     fmt.Println("bad starting staritng container ",container)
+	    
 	     docker_control.Container_start(container)
 		
 		 
@@ -93,10 +85,10 @@ func (docker_handle *Docker_Handle_Type)Log_Container_Performance_Data(){
    for _,container := range (docker_handle).containers {
        var working_values = (docker_handle).generate_parsed_fields(container)
 	   if working_values != nil {
-	   
-	     (*docker_handle).store_performance_data(container, "cpu", "PROCESS_CPU",working_values)
-	     (*docker_handle).store_performance_data(container, "rsz", "PROCESS_RSS",working_values)
-	     (*docker_handle).store_performance_data(container, "vsz", "PROCESS_VSZ",working_values)
+	    
+	     (*docker_handle).store_performance_data(container, "cpu", "CPU",working_values)
+	     (*docker_handle).store_performance_data(container, "rsz", "RSS",working_values)
+	     (*docker_handle).store_performance_data(container, "vsz", "VSZ",working_values)
 	   }
    }	  
   
@@ -106,15 +98,15 @@ func (docker_handle *Docker_Handle_Type)Log_Container_Performance_Data(){
 
 func (docker_handle *Docker_Handle_Type) store_performance_data (container string,data_key string,redis_key string ,working_values *map[string]map[string]float64  ){
 
-
+  
   var output_data = make(map[string]float64)
   
-  //fmt.Println("working_data",working_values)
-  
+ 
   for process, data := range *working_values {
     output_data[process] = data[data_key]
   
   }
+  
   var driver_array = (docker_handle).docker_performance_drivers[container]
   var driver = driver_array[redis_key]
   
@@ -152,17 +144,17 @@ func (docker_handle *Docker_Handle_Type) generate_parsed_fields( container_name 
            
 		   temp,err := strconv.ParseFloat(fields[2],64)
 		   if err != nil {
-		     panic("bad cpu conversion")
+		     temp = 0
 		   }	 
 		   entry["cpu"] = temp
 		   temp1,err := strconv.ParseFloat(fields[4],64)
 		   if err != nil {
-		     panic("bad cpu conversion")
+		     temp1 = 0
 		   }	
 		   entry["vsz"] = temp1
 		   temp2,err := strconv.ParseFloat(fields[5],64)
 		   if err != nil {
-		     panic("bad cpu conversion")
+              temp2 = 0
 		   }
 		   entry["rsz"] = temp2
 		   return_value[process_name] = entry
@@ -185,7 +177,7 @@ func (docker_handle Docker_Handle_Type)container_status_keys() []string {
 
   var driver = (docker_handle).hash_status
   var return_value = driver.HKeys()
-  //fmt.Println("status_keys",return_value)
+  
   return return_value
 
 }
@@ -193,9 +185,7 @@ func (docker_handle Docker_Handle_Type)container_status_keys() []string {
 func (docker_handle Docker_Handle_Type) hdel_container_status_key(field string )  {
   var driver = (docker_handle).hash_status
   driver.HDel(field)
-  
-  //var return_value = driver.HKeys()
-  //fmt.Println("status_keys",return_value)
+
 
 }
 

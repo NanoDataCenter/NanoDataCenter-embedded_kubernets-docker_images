@@ -34,6 +34,9 @@ func Construct_System_Control(  container_name string ) *System_Control_Type {
    return &return_value
 }   
 
+
+
+
 func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
 
    v.incident_log = logging_support.Construct_incident_log([]string{"CONTAINER:"+v.container_name,"INCIDENT_LOG:managed_process_failure","INCIDENT_LOG"} )

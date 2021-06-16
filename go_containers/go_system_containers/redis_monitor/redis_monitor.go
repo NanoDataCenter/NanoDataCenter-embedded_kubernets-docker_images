@@ -5,7 +5,7 @@ import "context"
 import "strings"
 import "strconv"
 import "bytes"
-import "fmt"
+//import "fmt"
 import "lacima.com/site_data"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
@@ -54,7 +54,7 @@ func ( v *Redis_Monitor_Type)Init(){
 	v.streams = make(map[string]redis_handlers.Redis_Stream_Struct)
   	data_search_list := []string{ "REDIS_MONITORING","STREAMING_LOG","STREAMING_LOG"}
 	data_element := data_handler.Construct_Data_Structures(&data_search_list)
-	
+	//fmt.Println("data_element",data_element)
 	v.streams["KEYS"]                           = (*data_element)["KEYS"].(redis_handlers.Redis_Stream_Struct)
 	v.streams["CLIENTS"]                        = (*data_element)["CLIENTS"].(redis_handlers.Redis_Stream_Struct)
 	v.streams["MEMORY"]                         = (*data_element)["MEMORY"].(redis_handlers.Redis_Stream_Struct)
@@ -81,7 +81,7 @@ func ( v *Redis_Monitor_Type)log_data(){
       v.log_memory()
 	 
       v.commandstats()
-	  fmt.Println("log data ")   
+	  //fmt.Println("log data ")   
 }
 
 
@@ -99,6 +99,7 @@ func ( v *Redis_Monitor_Type)log_keyspace(){
       
 	   process_key_data(&log_value_data)
 	   log_data := generate_floats(&log_value_data)
+       //fmt.Println("key",log_data)
 	   v.push_data( "KEYS" , &log_data)	  
 	}else{
 	   ;
@@ -112,10 +113,13 @@ func ( v *Redis_Monitor_Type)log_clients(){
    value,err := v.client.Info(v.ctx,"Clients").Result()
    if err == nil {
        log_value_data := generate_map(value)
-	   all_data := generate_floats(&log_value_data)
+       all_data := generate_floats(&log_value_data)
+       
 	   log_data := make(map[string]float64)
        log_data["connected_clients"] =all_data["connected_clients"]
-       log_data["blocked_clients"] = all_data["blocked_clients"]	   
+       log_data["blocked_clients"] = all_data["blocked_clients"]	  
+       //fmt.Println("clients",log_data)
+       
 	   v.push_data( "CLIENTS" , &log_data)	  
 	}else{
 	   ;
@@ -131,6 +135,7 @@ func ( v *Redis_Monitor_Type)log_memory(){
 	   log_data := make(map[string]float64)
        log_data["maxmemory"] =all_data["maxmemory"]
        log_data["used_memory"] = all_data["used_memory"]	   
+       //fmt.Println("memory",log_data)
 	   v.push_data( "MEMORY" , &log_data)	  
 	}else{
 	   ;
@@ -154,6 +159,7 @@ func ( v *Redis_Monitor_Type)commandstats(){
 	      log_data[key] = extract_commandstats_data(value)
 	     
 	   }
+	   //fmt.Println("command_stats",log_data)
        v.push_data( "REDIS_MONITOR_CMD_TIME_STREAM" , &log_data)	    
 	}else{
 	   ;
@@ -196,7 +202,7 @@ func extract_commandstats_data( input string) float64 {
 
 func generate_map (input string )map[string]string{
    return_value := make(map[string]string)
-   lines := strings.Split(input,"\r")
+   lines := strings.Split(input,"\r\n")
    for _,i := range lines{
      temp := strings.Split(i,":")
      if len(temp) == 2{
@@ -232,6 +238,7 @@ func generate_floats( input *map[string]string ) map[string]float64 {
 	  if err == nil {
 	      return_value[key] = temp
 	  }
+	  
 	 
    
    }

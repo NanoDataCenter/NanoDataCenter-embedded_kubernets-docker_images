@@ -2,12 +2,12 @@ package site_control
 
 
 //import "fmt"
-import "time"
-import  "lacima.com/site_control_app/docker_management"
-import "lacima.com/cf_control"
-import  "lacima.com/site_control_app/site_control/site_control_upgrade"
 
-var docker_handle docker_management.Docker_Handle_Type
+//import  "lacima.com/site_control_app/docker_management"
+import "lacima.com/cf_control"
+//import  "lacima.com/site_control_app/site_control/site_control_upgrade"
+
+//var docker_handle docker_management.Docker_Handle_Type
 
 
 
@@ -15,22 +15,15 @@ var docker_handle docker_management.Docker_Handle_Type
 
 func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interface{}){
 
-   	container_search_list  := []string{ "SITE:"+ (*site_data)["site"].(string)}
-    var display_struct_search_list = []string{"DOCKER_CONTROL"}
-    (docker_handle).Initialize_Docker_Monitor( &container_search_list, &display_struct_search_list,site_data)
-    (docker_handle).Clean_Up_Data_Structures()
-	(docker_handle).Set_Initial_Hash_Values_Values()
-	site_control_upgrade.Initialize_site_monitoring_data_structures( site_data)
-	initialize_site_docker_monitoring(cf_cluster)
-	initialize_site_docker_performance_monitoring(cf_cluster)
-	site_control_upgrade.Initialize_site_monitoring_chains(cf_cluster)
+   	
+	//site_control_upgrade.Initialize_site_monitoring_chains(cf_cluster)
 }
 
 
 
 
  
-
+/*
 
 
   
@@ -88,3 +81,4 @@ func docker_performance_monitor( system interface{},chain interface{}, parameter
   (docker_handle).Log_Container_Performance_Data()
   return cf.CF_DISABLE
 }
+*/

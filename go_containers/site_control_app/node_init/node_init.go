@@ -2,7 +2,7 @@
 package node_init
 
 import ( 
-"fmt"
+
 "context"
 "time"
 
@@ -36,12 +36,11 @@ var node_containers = make([]map[string]string,0)
 func start_node_containers(){
   for _,value := range node_containers{
     if value["name"] == "redis" {
-	  fmt.Println("found redis")
+	  
 	  continue
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
-	   fmt.Println("should not happen")
-	   //panic(value["container_image"])
+	   
 	   docker_control.Pull(value["container_image"])
 	}
 	docker_control.Container_rm(value["name"])
@@ -58,7 +57,7 @@ func find_node_container_properties(){
 	     var search_list = []string{"CONTAINER"+":"+container}
 		 var container_nodes = graph_query.Common_qs_search(&search_list)
          var container_node = container_nodes[0]
-		 //fmt.Println(container_node)
+		
 		 item["name"] =  graph_query.Convert_json_string(container_node["name"])
  		 item["container_image"] =graph_query.Convert_json_string(container_node["container_image"])
 		 item["startup_command"] = graph_query.Convert_json_string(container_node["startup_command"])
@@ -66,7 +65,7 @@ func find_node_container_properties(){
 		 node_containers = append(node_containers,item)
 		 
 	}
-	//fmt.Println(site_containers)
+	
 }
 
 
@@ -77,7 +76,7 @@ func  find_node_containers(){
     var site_node = site_nodes[0]
  
     node_init_containers = graph_query.Convert_json_string_array(	site_node["containers"] ) 
-    fmt.Println("nodoe containers ",node_init_containers)
+    
 
 
 

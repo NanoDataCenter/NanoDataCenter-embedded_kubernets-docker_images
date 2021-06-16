@@ -1,9 +1,10 @@
 package sys_defs
 
-import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
+//import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
 
 func Construct_irrigation(){
  
+    /*
     su.Bc_Rec.Add_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING",make(map[string]interface{}))
         
     su.Cd_Rec.Construct_package("IRRIGIGATION_SCHEDULING")
@@ -16,7 +17,7 @@ func Construct_irrigation(){
 	su.Construct_incident_logging("master_irrigation_file")
 	su.Bc_Rec.End_header_node("IRRIGATION_ERROR_LOG","IRRIGATION_ERROR_LOG")
 	su.Bc_Rec.Add_header_node("SYSTEM_ERROR_LOG","SYSTEM_ERROR_LOG",make(map[string]interface{}))
-	su.Construct_incident_logging("master_system_file")
+	//su.Construct_incident_logging("master_system_file")
 	su.Bc_Rec.End_header_node("SYSTEM_ERROR_LOG","SYSTEM_ERROR_LOG")
 	su.Bc_Rec.End_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING")
 	
@@ -37,7 +38,7 @@ func Construct_irrigation(){
     
 	su.Cd_Rec.Close_package_contruction()
 	su.Bc_Rec.End_header_node("IRRIGIGATION_CONTROL","IRRIGIGATION_CONTROL")
-
+    */
 
       
 }   

@@ -24,7 +24,7 @@ func main(){
   if err != nil {
         panic("no error data file ")
   }
-  fmt.Println("file_data",file_data)
+  fmt.Println("file_data",string(file_data))
   site_data_store = get_site_data.Get_site_data(config_file)
  
   
