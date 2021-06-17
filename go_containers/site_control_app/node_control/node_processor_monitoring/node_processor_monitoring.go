@@ -71,7 +71,7 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
   (cf_control).Add_Chain("processor_monitoring",true)
-  (cf_control).Cf_add_log_link("processor monitoring started")
+  (cf_control).Cf_add_log_link("processor monitoring started ")
   
    var par1 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_free_cpu,par1)

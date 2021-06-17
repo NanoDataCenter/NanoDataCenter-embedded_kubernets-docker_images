@@ -23,6 +23,9 @@ func Construct_processor(name string, containers []string){
 	  Bc_Rec.End_header_node("PROCESSOR_WATCHDOG","PROCESSOR_WATCHDOG")
 
       
+      
+      Construct_RPC_Server("NODE_CONTROL","rpc for controlling node",10,15,  make(map[string]interface{}) )
+      
       Cd_Rec.Construct_package("DOCKER_CONTROL")
       Cd_Rec.Add_job_queue("DOCKER_COMMAND_QUEUE",10) //temp disable turning of containers
       Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")

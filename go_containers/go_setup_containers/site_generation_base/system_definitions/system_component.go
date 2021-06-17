@@ -61,17 +61,14 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("WEB_MAP") // map of all subsystem web servers
     su.Cd_Rec.Close_package_contruction()    
     
+    
+    
+    
+    
+    su.Construct_RPC_Server("SYSTEM_CONTROL","rpc for controlling system",10,15, make( map[string]interface{}) )
+
     su.Cd_Rec.Construct_package("NODE_STATUS")
     su.Cd_Rec.Add_hash("NODE_STATUS")
-    su.Cd_Rec.Close_package_contruction()
-    su.Construct_incident_logging("NODE_FAILURE","node_reboot")
-    su.Construct_RPC_Server("system_control","rpc for controlling system",10,15, make( map[string]interface{}) )
-
-    su.Cd_Rec.Construct_package("NODE_MONITORING")
-    //su.Cd_Rec.Add_job_queue("WEB_COMMAND_QUEUE",1)
-    //su.Cd_Rec.Add_hash("NODE_STATUS")
-    //su.Cd_Rec.Add_redis_stream("ERROR_STREAM",1024)
-    //su.Cd_Rec.Add_hash("SYSTEM_CONTAINER_IMAGES") //value list of nodes container is in
     su.Cd_Rec.Close_package_contruction()
    
     

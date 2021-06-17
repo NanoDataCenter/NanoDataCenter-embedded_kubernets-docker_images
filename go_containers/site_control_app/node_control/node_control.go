@@ -4,7 +4,7 @@ package node_control
 
 import "time"
 import "lacima.com/site_control_app/docker_management"
-import"lacima.com/cf_control"
+import "lacima.com/cf_control"
 import "lacima.com/site_control_app/node_control/node_processor_monitoring"
 //import "lacima.com/site_control_app/node_control/monitor_command_upgrade_queues"
 
@@ -23,14 +23,18 @@ func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
     var display_struct_search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"DOCKER_CONTROL"}
     
     
+    
     (docker_handle).Initialize_Docker_Monitor(containers , &display_struct_search_list,site_data)
     
 	(docker_handle).Set_Initial_Hash_Values_Values()
+    
 	node_perform.Init_processor_data_structures(site_data )
-	//node_up.Node_command_queue_structures(site_data)
+	
 	initialize_node_docker_monitoring(cf_cluster)
-	node_perform.Initialize_node_processor_performance(cf_cluster)
-	//node_up.Initialize_node_job_server_watch_dog_cf(cf_cluster)
+	
+    node_perform.Initialize_node_processor_performance(cf_cluster)
+	 setup_site_control(cf_cluster,site_data)
+   
 }
 
 
