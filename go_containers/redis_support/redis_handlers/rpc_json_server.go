@@ -61,7 +61,26 @@ func (v Redis_RPC_Struct)json_handler_request(){
 
 }
 
+func (v Redis_RPC_Struct)Post_json_rpc_message( method string, parameters map[string]interface{})  {
 
+   var request = make([]interface{},0)
+   
+   
+   u2 := uuid.NewV4().String()
+  
+   request = append(request,method,parameters,u2)
+   request_json,err := json.Marshal(&request)
+   if err != nil{
+     panic("json marshall error")
+   }
+   //fmt.Println("request",err,string(request_json))
+   
+   v.Push(string(request_json))
+
+   
+   return nil
+
+}
   
 func (v Redis_RPC_Struct)Send_json_rpc_message( method string, parameters map[string]interface{}) map[string]interface{} {
 
@@ -97,7 +116,7 @@ func (v Redis_RPC_Struct)Send_json_rpc_message( method string, parameters map[st
 	  time.Sleep(time.Second/10)
 	 }
    }
-   panic("communication failure")
+   
    
    return nil
 

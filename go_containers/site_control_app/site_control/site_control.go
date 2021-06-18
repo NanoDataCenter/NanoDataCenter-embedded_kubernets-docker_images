@@ -1,84 +1,55 @@
 package site_control
 
 
-//import "fmt"
+import "fmt"
 
-//import  "lacima.com/site_control_app/docker_management"
+
 import "lacima.com/cf_control"
-//import  "lacima.com/site_control_app/site_control/site_control_upgrade"
-
-//var docker_handle docker_management.Docker_Handle_Type
+import "lacima.com/Patterns/logging_support"
 
 
-
+var wd_struct *logging_support.Watch_Dog_Log_Type
+var wd_array  []*wd_struct
 
 
 func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interface{}){
 
    	
-	//site_control_upgrade.Initialize_site_monitoring_chains(cf_cluster)
+	go start_rpc_server() 
 }
 
 
 
++
+func find_watch_dog_structures(){
+    
+    
+    
+}
+
+func find_node_rpc_servers(){
+    
+    
+    
+    
+}
 
  
-/*
-
-
-  
-func  initialize_site_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
-
-   var cf_control  cf.CF_SYSTEM_TYPE
-
-   (cf_control).Init(cf_cluster ,"site_control_docker_monitoring",true, time.Second*5)
-
-   
-   
-   (cf_control).Add_Chain("container_monitoring",true)
-   //(cf_control).Cf_add_log_link("container_monitor_loop")
-   
-   var parameters = make(map[string]interface{})
-  (cf_control).Cf_add_one_step(docker_monitor,parameters)
-  
-   (cf_control).Cf_add_wait_interval(time.Second*15  )  // first time tick does not count aim for every 15 seconds
-   (cf_control).Cf_add_reset()
-  
-   
-}	
-
-func  initialize_site_docker_performance_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
-
-   var cf_control  cf.CF_SYSTEM_TYPE
-
-   (cf_control).Init(cf_cluster ,"site_control_docker_performance_monitoring",true, time.Minute)
-   (cf_control).Add_Chain("container_performance_logs",true)
-   //(cf_control).Cf_add_log_link("container_performance_loop")
-   
-   var  parameters = make(map[string]interface{}) 
-   (cf_control).Cf_add_one_step(docker_performance_monitor,parameters)
-   
-   (cf_control).Cf_add_wait_interval(time.Minute*15  )
-   (cf_control).Cf_add_reset()
-
-}
-
-func docker_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
-
-	// for managed containes
-	
-   
- 
-     //fmt.Println("site_control-docker_monitor")
-	 (docker_handle).Monitor_Containers()
-     return cf.CF_DISABLE
+func start_rpc_server(){
+     fmt.Println("made it here")
+    
+     search_list := []string{"RPC_SERVER:SYSTEM_CONTROL","RPC_SERVER"}
+     handlers := data_handler.Construct_Data_Structures(&search_list)
+     driver := (*handlers)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)    
+     driver.Add_handler( "reboot",reboot_system)
+     driver.Json_Rpc_start()
 }
 
 
-func docker_performance_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
-
-   //fmt.Println("site+control docker_performance_monitor") 
-  (docker_handle).Log_Container_Performance_Data()
-  return cf.CF_DISABLE
+func reboot_system( parameters map[string]interface{} ) map[string]interface{}{
+    
+    
+    return parameters
 }
-*/
+
+
