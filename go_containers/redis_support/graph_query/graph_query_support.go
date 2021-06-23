@@ -1,7 +1,7 @@
  package graph_query
 
 
-
+//import "fmt"
 
 import "context"
 import "encoding/json"
@@ -207,9 +207,10 @@ func match_list( query_list  *[]query_element)[]map[string]string{
   
   
   var starting_set,_ =  client.SMembersMap(ctx , "@GRAPH_KEYS").Result() 
-  
-  for _,value := range *query_list{
-     
+  //fmt.Println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+  //fmt.Println("length",len(starting_set))
+  for _,value := range (*query_list){
+     //fmt.Println("---------------",index,value,len(starting_set))
      if value["type"] == "MATCH_TERMINAL"{
 	   
        starting_set = match_terminal_relationship( value["relationship"], value["label"] , starting_set)
@@ -219,10 +220,12 @@ func match_list( query_list  *[]query_element)[]map[string]string{
 	     starting_set = match_relationship(value["relationship"], value["label"] , starting_set )
 		 
          } 
+      //fmt.Println("++++++++",index,value,len(starting_set))
       if len(starting_set) == 0 {
 	       
            return make([]map[string]string,0)
 	   }
+	   
   		 
      }            
     

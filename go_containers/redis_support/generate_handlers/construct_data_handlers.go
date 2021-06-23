@@ -1,5 +1,6 @@
 package data_handler
 
+//import "fmt"
 import "context"
 
 import "time"
@@ -87,23 +88,47 @@ func create_constructors( constructor_table *map[string]interface{}){
       */
 }    
 
-
+  
 
 func Construct_Data_Structures(  search_list *[]string )  *map[string]interface{}{
 
-   var handler_definitions = make([]map[string]interface{},0)
-   var handlers            = make(map[string]interface{})
-   construct_handler_definitions( search_list , &handler_definitions)
-   construct_redis_handlers(&handler_definitions, &handlers) 
+   //fmt.Println("$$$$$$$$$$$$$$",search_list)
+   handlers             := make(map[string]interface{})
+   handler_definitions  := make([]map[string]interface{},0)
+   construct_handler_definitions( search_list , &handler_definitions  ) 
+   construct_redis_handlers( &handler_definitions, &handlers )
+   
+   return &handlers
+} 
 
-   return &handlers   
+
+/*
+func Construct_Multiple_Data_Structures(  search_list *[]string )[]*map[string]interface{}{
+    
+    packages   := graph_query.Common_package_search(&site,search_list)
+    handlers       := make([]*map[string]interface{},0)
+    for _,package_name := range packages {
+        
+        handler_items := make(map[string]interface{})
+        handler_definitions  := make([]map[string]interface{},0)
+        data_structures_json := package_name["data_structures"]
+        construct_handler_definitions( data_structures_json , &handler_definitions)
+        construct_redis_handlers(&handler_definitions, &handler_items)
+        handlers = append(handlers,&handler_items)
+        
+    }
+    return handlers
 }
+*/
 
 func construct_handler_definitions( search_list *[]string, handler_definitions *[]map[string]interface{} )   {
 
    
    
    var packages = graph_query.Common_package_search(&site,search_list)
+   if len(packages) != 1 {
+       panic("bad package length "+strconv.Itoa(len(packages)))
+   }
    
    var data_structures_json = packages[0]["data_structures"]
   
@@ -123,7 +148,8 @@ func construct_handler_definitions( search_list *[]string, handler_definitions *
 	 *handler_definitions = append(*handler_definitions,k)
    }
 }  
-   
+
+
  
 func construct_redis_handlers( handler_definitions *[]map[string]interface{}, handlers *map[string]interface{} ){
    var type_def string

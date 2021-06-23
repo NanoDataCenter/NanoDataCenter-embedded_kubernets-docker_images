@@ -12,7 +12,7 @@ import "lacima.com/site_data"
 import  "lacima.com/site_control_app/docker_management"
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
-//import "lacima.com/site_control_app/site_control"
+import "lacima.com/site_control_app/site_control"
 import "lacima.com/site_control_app/node_control"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
@@ -150,7 +150,7 @@ func main(){
 	
     
     node_control.Node_Startup(&CF_site_node_control_cluster,&site_data,all_containers)
-   
+    site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
 	/*
 	
 	   --- other initializations

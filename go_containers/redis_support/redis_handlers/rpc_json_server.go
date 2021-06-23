@@ -78,7 +78,7 @@ func (v Redis_RPC_Struct)Post_json_rpc_message( method string, parameters map[st
    v.Push(string(request_json))
 
    
-   return nil
+   
 
 }
   
