@@ -24,7 +24,6 @@ var wd_struct *logging_support.Watch_Dog_Log_Type
 func setup_site_control(cf_cluster *cf.CF_CLUSTER_TYPE , site_data_input *map[string]interface{}){
 
  site_data = site_data_input
- setup_watch_dog(cf_cluster)
  
  go start_rpc_server()   
     
@@ -32,24 +31,7 @@ func setup_site_control(cf_cluster *cf.CF_CLUSTER_TYPE , site_data_input *map[st
     
 }
 
-func setup_watch_dog(cf_cluster *cf.CF_CLUSTER_TYPE) {
-    
-    
-  wd_struct = logging_support.Construct_watch_data_log([]string{"PROCESSOR:"+(*site_data)["local_node"].(string),"WATCH_DOG:PROCESSOR_WATCHDOG","WATCH_DOG"}  )
-  
-  var cf_control  cf.CF_SYSTEM_TYPE
-  (cf_control).Init(cf_cluster ,"node_control_watch_dog",true, time.Second)
-  (cf_control).Add_Chain("watch_dog_strobing",true)
-  (cf_control).Cf_add_log_link("watch_dog_strobing ************************************")
-   
-  var parameters = make(map[string]interface{})
-  (cf_control).Cf_add_one_step(strobe_watch_dog,parameters)
-  
-  (cf_control).Cf_add_wait_interval(time.Second*10)
-  (cf_control).Cf_add_reset()
-  
-    
-}
+
 
 func strobe_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
 

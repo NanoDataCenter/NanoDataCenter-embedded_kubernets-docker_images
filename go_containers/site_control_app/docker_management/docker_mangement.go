@@ -2,7 +2,7 @@ package docker_management
 
 
 import "bytes"
-import "time"
+
 import "strings"
 import "strconv"
 import "lacima.com/site_control_app/docker_control"
@@ -31,14 +31,14 @@ func (docker_handle *Docker_Handle_Type)Set_Initial_Hash_Values_Values(){
 
 func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   
-  var check_map = make(map[string]bool)
+  check_map := make(map[string]bool)
   
   for _,container := range docker_handle.containers {
      check_map[container] = false
   }
   
   
-  var running_containers = docker_control.Containers_ls_runing()
+  running_containers := docker_control.Containers_ls_runing()
   for _,running_container := range running_containers {
      _,ok := check_map[running_container]
 	 if ok == true{
@@ -49,18 +49,17 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   for _,container := range( docker_handle).containers {
     
      
-	 var redis_container_status = (docker_handle).hget_status_value(container)
-	 if (*redis_container_status)["managed"] == false {
+	 container_status := (docker_handle).hget_status_value(container)
+	 if (*container_status)["managed"] == false {
          continue    // do nothihg if container is not monitored
      }
 	 // update status values
-	 if (*redis_container_status)["active"] != check_map[container] {
+	 if (*container_status)["active"] != check_map[container] {
 	   
-	     (*redis_container_status)["active"] = check_map[container]
-		 (docker_handle).hset_status_values(container,redis_container_status)
-		 if check_map[container] == false {
-		   (docker_handle).xadd_status_stream(container,redis_container_status)
-		 }
+	     (*container_status)["active"] = check_map[container]
+		 (docker_handle).hset_status_values(container,container_status)
+         (docker_handle).add_incident_log(container,container_status,check_map[container])
+		 
 	 }
 	
 	  if check_map[container] == false{
@@ -221,18 +220,18 @@ func (docker_handle Docker_Handle_Type) hset_status_values( field string, value 
 
 }
 
-func (docker_handle Docker_Handle_Type) xadd_status_stream(container string ,redis_container_status *map[string]bool){
+func (docker_handle Docker_Handle_Type) add_incident_log(container string ,redis_container_status *map[string]bool , status bool ){
 
    var return_value = make(map[string]interface{})
-   var driver = (docker_handle).error_stream
+   var driver = (docker_handle).incident_stream
    
-   return_value["time"] = time.Now().UnixNano()
+   
    return_value["container"] = container
    for key,value := range *redis_container_status{
       return_value[key] = value
   }
   var b bytes.Buffer	
-   msgpack.Pack(&b,return_value)	
-  driver.Xadd(b.String())
+  msgpack.Pack(&b,return_value)	
+  driver.Log_data( status , b.String(), b.String()  )
 }
    

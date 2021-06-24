@@ -9,7 +9,7 @@ import (
 
 
 
-
+"lacima.com/Patterns/logging_support"
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
 
@@ -121,7 +121,10 @@ func verify_node_containers(){
 func Node_Init(  site_map *map[string]interface{} ){ 
    site_data = site_map                 
    find_node_containers()
- 
+   
+   incident_log := logging_support.Construct_incident_log( []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"} ) 
+   incident_log.Post_event(false,"reboot","reboot")
+  
    if determine_hot_start() == false {
       find_node_container_properties()
       start_node_containers()

@@ -40,7 +40,7 @@ func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
   var parameters = make(map[string]interface{})
   (cf_control).Cf_add_one_step(node_monitor,parameters)
   
-  (cf_control).Cf_add_wait_interval(time.Second*60 )
+  (cf_control).Cf_add_wait_interval(time.Second*15 )
   (cf_control).Cf_add_reset()
   
     
@@ -52,8 +52,11 @@ func node_monitor( system interface{},chain interface{}, parameters map[string]i
 	 for node,_ := range node_rpc_servers.Driver_array{
          result := node_rpc_servers.Ping(node)
          node_status_hash.HSet(node,strconv.FormatBool(result))
+         incident_log := node_rpc_servers.Incident_array[node]
+         incident_log.Post_event(true,"node_response","node_response")
+         
      }
-	 panic("done")
+	 
      return cf.CF_DISABLE
 }
 

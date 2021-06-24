@@ -296,9 +296,10 @@ func Site_Init(  site_data *map[string]interface{} ){
       
       store_site_data(site_data)
       
+   
       
       incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
-      incident_log.Post_event(true,"reboot","reboot")
+      incident_log.Post_event(false,"reboot","reboot")
 
       
       

@@ -7,10 +7,12 @@ package node_control_server_lib
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/graph_query"
+import "lacima.com/Patterns/logging_support"
 
 type Node_Server_Client_Type struct{
 
    Driver_array map[string]redis_handlers.Redis_RPC_Struct
+   Incident_array  map[string]*logging_support.Incident_Log_Type
 }
 
 
@@ -36,11 +38,13 @@ func Node_Server_Init()Node_Server_Client_Type{
   
   var return_value Node_Server_Client_Type
   return_value.Driver_array = make(map[string]redis_handlers.Redis_RPC_Struct)
+  return_value.Incident_array = make(map[string]*logging_support.Incident_Log_Type)
   for _,processor := range processors {
      
       temp := data_handler.Construct_Data_Structures(&[]string{"PROCESSOR:"+processor,"RPC_SERVER:NODE_CONTROL","RPC_SERVER"} )
       return_value.Driver_array[processor] = (*temp)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
-      
+      temp1 := logging_support.Construct_incident_log( []string{"PROCESSOR:"+processor,"INCIDENT_LOG:NODE_RPC_PING","INCIDENT_LOG"} ) 
+      return_value.Incident_array[processor] = temp1
   }
   
   return return_value

@@ -18,13 +18,13 @@ var docker_handle docker_management.Docker_Handle_Type
 
 func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interface{} , containers []string ){
 
-   
+  
    
     var display_struct_search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"DOCKER_CONTROL"}
+    var incident_search_list = []string{ "PROCESSOR:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:CONTAINER_ERROR_STREAM" ,"INCIDENT_LOG"}
     
     
-    
-    (docker_handle).Initialize_Docker_Monitor(containers , &display_struct_search_list,site_data)
+    (docker_handle).Initialize_Docker_Monitor(containers , &display_struct_search_list,&incident_search_list,site_data)
     
 	(docker_handle).Set_Initial_Hash_Values_Values()
     

@@ -11,12 +11,15 @@ import "github.com/go-redis/redis/v8"
 type Message_Handler_Type func( parameters map[string]interface{} ) map[string]interface{}
 
 type Redis_RPC_Struct struct {
-   ctx context.Context;
-   client *redis.Client;
-   key    string;
-   depth  int64
-   timeout int64
-   rpc_handlers map[string]Message_Handler_Type;
+   ctx               context.Context
+   client            *redis.Client
+   key               string
+   depth             int64
+   timeout           int64
+   Processing_Time   int64 
+   Number            int64
+   Start_Time        int64
+   rpc_handlers      map[string]Message_Handler_Type;
   
 }
 
@@ -35,13 +38,38 @@ func Construct_Redis_RPC(  ctx context.Context, client *redis.Client, key string
    return_value.client = client
    return_value.key = key
    return_value.timeout = timeout*10 // timout is in seconds sampling is in .1 seconds
-
+   return_value.Processing_Time         = 0
+   return_value.Number                  = 0
+   return_value.Start_Time              = time.Now().UnixNano ()
+   
+   
    return_value.rpc_handlers = make(map[string]Message_Handler_Type)
    return_value.Add_handler("ping",return_value.ping)  // method used for status testing
+   return_value.Add_handler("info",return_value.info)
    return return_value
 
 
 }
+
+
+
+func (v Redis_RPC_Struct)info( parameters map[string]interface{} ) map[string]interface{} {
+
+
+   parameters["status"]      = true
+   parameters["length"]      = v.Length()
+   parameters["total_time"]  = v.Processing_Time
+   parameters["number"]      = v.Number
+   parameters["start_time"]  = v.Start_Time
+   parameters["end_time"]    = time.Now().UnixNano()
+   v.Processing_Time         = 0
+   v.Number                  = 0
+   v.Start_Time              = time.Now().UnixNano()
+   return parameters
+
+}
+
+
 
 func (v Redis_RPC_Struct)ping( parameters map[string]interface{} ) map[string]interface{} {
 

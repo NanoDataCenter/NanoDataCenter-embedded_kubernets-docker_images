@@ -6,7 +6,7 @@ package docker_management
 import  "lacima.com/redis_support/generate_handlers"
 import  "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/graph_query"
-
+import "lacima.com/Patterns/logging_support"
 
 
 
@@ -17,7 +17,7 @@ type Docker_Handle_Type struct {
   containers []string
   container_set map[string]bool
   hash_status redis_handlers.Redis_Hash_Struct  
-  error_stream redis_handlers.Redis_Stream_Struct
+  incident_stream *logging_support.Incident_Log_Type
   docker_performance_drivers map[string]map[string]redis_handlers.Redis_Stream_Struct
 }
 
@@ -35,12 +35,12 @@ func Find_containers(search_list *[]string )[]string{
     return graph_query.Convert_json_string_array( site_node["containers"] ) 
 }
 
-func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor( container_list []string ,display_struct_search_list *[]string, site_data *map[string]interface{}){
+func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor( container_list []string ,display_struct_search_list,incident_search_list *[]string, site_data *map[string]interface{}){
 
   
    docker_handle.containers = container_list
    site_ptr = site_data
-   (docker_handle).initialize_docker_container_monitoring(display_struct_search_list)
+   (docker_handle).initialize_docker_container_monitoring(display_struct_search_list,incident_search_list)
    (docker_handle).initialize_docker_performance_monitor()
    
  
@@ -49,7 +49,7 @@ func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor( container_lis
 
 
 
-func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(display_struct_search_list  *[]string ){
+func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(display_struct_search_list, incident_search_list  *[]string ){
   
   
   
@@ -58,7 +58,7 @@ func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(
 
    
   (docker_handle).hash_status = (*data_structures)["DOCKER_DISPLAY_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
-  (docker_handle).error_stream = (*data_structures)["ERROR_STREAM"].(redis_handlers.Redis_Stream_Struct)
+  (docker_handle).incident_stream = logging_support.Construct_incident_log((*incident_search_list))
   (docker_handle).hash_status.Delete_All()  // table will be repopulated later on
 }
 
