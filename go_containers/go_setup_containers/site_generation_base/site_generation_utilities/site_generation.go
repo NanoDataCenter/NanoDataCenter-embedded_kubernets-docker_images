@@ -4,12 +4,18 @@ var working_site string
 
 
 
-func Construt_Site(site string){
-    system_containers,startup_containers := determine_system_containers()
+func Construct_Site(site string){
+    // find containers for the master node
+    system_containers,startup_containers := determine_master_containers()
+    // generate top node for site
     start_site_definitions(site , system_containers, startup_containers)
-    expand_subsystem_definitions()
+    // generate data structures for services
+    expand_service_definitions()
+    // add containers to graph
     add_containers_to_graph()
-    add_processors_to_graph() 
+    // add node to graph
+    add_nodes_to_graph()
+    // add ending site def
     end_site_definitions(site)
 }
 
@@ -34,11 +40,11 @@ func start_site_definitions(site_name string, system_containers, startup_contain
 }
 
 
-func determine_system_containers()([]string,[]string) {
+func determine_master_containers()([]string,[]string) {
   return_value_1 := make([]string,0)
   return_value_2 := make([]string,0)
-  system_containers :=  find_system_containers(true,"")
-  for _,container := range system_containers {
+  master_containers :=  find_master_containers(true,"")
+  for _,container := range master_containers {
      temp := container_map[container]
      if temp.temporary == true{
          return_value_2 = append(return_value_2,container)
@@ -59,26 +65,26 @@ func add_containers_to_graph(){
 }
 
 
-func add_processors_to_graph(){
-   Bc_Rec.Add_header_node( "PROCESSOR_LIST","PROCESSOR_LIST",make(map[string]interface{})  )  
-   for processor,_ := range processor_set {
+func add_nodes_to_graph(){
+   Bc_Rec.Add_header_node( "NODE_LIST","NODE_LIST",make(map[string]interface{})  )  
+   for node,_ := range node_set {
        
-       containers := determine_processor_containers(processor)
-        Construct_processor(processor, containers)
+       containers := determine_node_containers(node)
+        construct_node(node, containers)
        
        
    }
-   Bc_Rec.End_header_node( "PROCESSOR_LIST","PROCESSOR_LIST")     
+   Bc_Rec.End_header_node( "NODE_LIST","NODE_LIST")     
     
 }
 
-func determine_processor_containers(processor string)[]string {
+func determine_node_containers(noder string)[]string {
   return_value_1 := make([]string,0)
-  system_containers :=  find_system_containers(false,"")
+  system_containers :=  find_master_containers(false,"")
   for _,container := range system_containers {
      temp := container_map[container]
      if temp.temporary == true{
-         panic("temporary containers can only be assigned to system not processor container "+container)
+         panic("temporary containers can only be assigned to master not node container "+container)
      }else{
         return_value_1 = append(return_value_1,container)
      }

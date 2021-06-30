@@ -19,7 +19,25 @@ var Data_mount = []string{"DATA"}
 const Temp_run string     = "./run.bsh"
 const Managed_run string  = "./process_control.bsh"
 
-func Setup_Site_File(){
+var system_name string
+
+func Construct_System(sys_name string ,properties map[string]interface{}){
+    setup_Site_File()
+    bc.Graph_support_init(Ip,Port)
+    Bc_Rec = bc.Construct_build_configuration()
+    Cd_Rec = cd.Construct_Data_Structures(Bc_Rec)
+    system_name = sys_name
+    Bc_Rec.Add_header_node( "SYSTEM",system_name,  properties  )
+    
+}
+
+func End_System(){
+
+   Bc_Rec.End_header_node( "SYSTEM",system_name )
+
+}
+
+func setup_Site_File(){
 
 	site_data_store = get_site_data.Get_site_data(config_file)
     
@@ -28,14 +46,28 @@ func Setup_Site_File(){
    
 }
 
-func Setup_graph_generation(){
-   bc.Graph_support_init(Ip,Port)
-   Bc_Rec = bc.Construct_build_configuration()
-   Cd_Rec = cd.Construct_Data_Structures(Bc_Rec)
-   init_system_generation()
+func Initialize_Site_Enviroment(){
 
-
+  init_service_generation()
+  setup_container_run_commands()
+  
+    
 }
+  
+
+
+
+const command_start string = "docker run -d  --network host   --name"          // preambe script to start container
+const command_run   string = "docker run   -it --network host --rm  --name"  // preamble script for container to run and exit
+
+
+func setup_container_run_commands(){
+    
+  initialialize_container_data_structures(command_start,command_run)   
+    
+}
+
+
 
 func Done(){
 

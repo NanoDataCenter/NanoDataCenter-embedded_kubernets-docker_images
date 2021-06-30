@@ -19,7 +19,7 @@ var container_map map[string]container_descriptor
 var command_string_first_part string  // continually execute container
 var command_string_run_part string   // container executes a script and terminates
 
-func Initialialize_container_data_structures(start_part,run_part string){
+func initialialize_container_data_structures(start_part,run_part string){
    
    container_map = make(map[string]container_descriptor)
    command_string_first_part = start_part
@@ -102,9 +102,9 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
  * 
  *  register containers writes containers to configuration graph
  *  this call can be done in two places.  At the system level where the
- *  specified containers run on the master node.  At the processor level
- *  where the containers run on the specified processor.  The master node can
- *  have containers allocated at the system and processor level
+ *  specified containers run on the master node.  At the node level
+ *  where the containers run on the specified node.  The master node can
+ *  have containers allocated at the system and node level
  * 
  * 
  */

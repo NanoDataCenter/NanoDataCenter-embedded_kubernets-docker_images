@@ -35,6 +35,8 @@ func (v Redis_RPC_Struct)json_start() {
 
 func (v Redis_RPC_Struct)json_handler_request(){
   defer recovery()
+  v.Number = v.Number + 1
+  start := time.Now()
   input := v.Pop()
   //fmt.Println(input)
   input_unmarshall := make([]interface{},0)
@@ -56,7 +58,9 @@ func (v Redis_RPC_Struct)json_handler_request(){
    }else{
 		  panic("bad "+method)
    }
-	
+   t := time.Now()
+   elapsed := t.Sub(start)
+   v.Processing_Time = v.Processing_Time + elapsed.UnixNano()
 
 
 }

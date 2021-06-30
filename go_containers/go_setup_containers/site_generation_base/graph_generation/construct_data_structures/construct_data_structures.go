@@ -33,7 +33,7 @@ func ( v *Package_Constructor)Construct_package( package_name string ){
 }
 
 
-func ( v *Package_Constructor)Close_package_contruction(){
+func ( v *Package_Constructor)Close_package_construction(){
         v.package_active = false
         v.bc.Add_info_node_and_data_keys("PACKAGE",v.name,v.package_properties)
         

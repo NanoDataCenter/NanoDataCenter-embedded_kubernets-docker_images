@@ -1,25 +1,25 @@
 package su
 
 
-func Construct_processor(name string, containers []string){
+func construct_node(name string, containers []string){
 
       properties := make(map[string]interface{})
       properties["containers"] = containers
-      Bc_Rec.Add_header_node("PROCESSOR",name, properties )
+      Bc_Rec.Add_header_node("NODE",name, properties )
    
       var description string
       
       description = name + "node reboot"
       Construct_incident_logging("NODE_REBOOT",description)
       
-      description = name + "processor rpc ping status"
+      description = name + "node rpc ping status"
       Construct_incident_logging("NODE_RPC_PING",description)
       
       keys := []string{"FREE_CPU","RAM","TEMPERATURE","DISK_SPACE","SWAP_SPACE","CONTEXT_SWITCHES","BLOCK_DEV","IO_SPACE","RUN_QUEUE","EDEV"}
-      Bc_Rec.Add_header_node("PROCESSOR_MONITORING","PROCESSOR_MONITORING", make(map[string]interface{}))
-	  description = name+" processor_monitor"
-	  Construct_streaming_logs("processor_monitor",description,keys) //wait until flush out
-	  Bc_Rec.End_header_node("PROCESSOR_MONITORING","PROCESSOR_MONITORING")
+      Bc_Rec.Add_header_node("NODE_MONITORING","NODE_MONITORING", make(map[string]interface{}))
+	  description = name+" node_monitor"
+	  Construct_streaming_logs("node_monitor",description,keys) //wait until flush out
+	  Bc_Rec.End_header_node("NODE_MONITORING","NODE_MONITORING")
 
       
       
@@ -34,10 +34,10 @@ func Construct_processor(name string, containers []string){
       
       Cd_Rec.Construct_package("DOCKER_CONTROL")
       Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")
-      Cd_Rec.Close_package_contruction()
+      Cd_Rec.Close_package_construction()
       
       register_containers(containers)
-      Bc_Rec.End_header_node("PROCESSOR",name)
+      Bc_Rec.End_header_node("NODE",name)
 
  
 }    

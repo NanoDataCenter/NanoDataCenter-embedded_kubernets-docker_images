@@ -12,7 +12,7 @@ const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 
 
 
-func generate_system_components(system_flag bool, processor_name string ){
+func generate_system_components(system_flag bool,node_name string ){
    file_server_mount := []string {"DATA","FILE"}
    redis_mount       := []string{"REDIS_DATA"}
    secrets_mount     := []string{"DATA","SECRETS"}
@@ -35,7 +35,7 @@ func generate_system_components(system_flag bool, processor_name string ){
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
    
    containers := []string{"redis","lacima_secrets","file_server","redis_monitor"}
-   su.Construct_system_def("system_monitoring",true,"", containers, generate_system_component_graph) 
+   su.Construct_service_def("system_monitoring",system_flag,"", containers, generate_system_component_graph) 
     
     
 }
@@ -44,22 +44,22 @@ func generate_system_components(system_flag bool, processor_name string ){
 func generate_system_component_graph(){
     su.Cd_Rec.Construct_package("DATA_MAP")
     su.Cd_Rec.Add_single_element("DATA_MAP") // map of site data
-    su.Cd_Rec.Close_package_contruction()
+    su.Cd_Rec.Close_package_construction()
     
     su.Construct_incident_logging("SITE_REBOOT","site_reboot")
     
     su.Cd_Rec.Construct_package("REBOOT_FLAG")
     su.Cd_Rec.Add_single_element("REBOOT_FLAG") // determine if site has done all initialization
-    su.Cd_Rec.Close_package_contruction()
+    su.Cd_Rec.Close_package_construction()
     
     
     su.Cd_Rec.Construct_package("NODE_MAP")
     su.Cd_Rec.Add_hash("NODE_MAP") // map of node ip's
-    su.Cd_Rec.Close_package_contruction()
+    su.Cd_Rec.Close_package_construction()
     
     su.Cd_Rec.Construct_package("WEB_MAP")
     su.Cd_Rec.Add_hash("WEB_MAP") // map of all subsystem web servers
-    su.Cd_Rec.Close_package_contruction()    
+    su.Cd_Rec.Close_package_construction()    
     
     
     
@@ -69,7 +69,7 @@ func generate_system_component_graph(){
 
     su.Cd_Rec.Construct_package("NODE_STATUS")
     su.Cd_Rec.Add_hash("NODE_STATUS")
-    su.Cd_Rec.Close_package_contruction()
+    su.Cd_Rec.Close_package_construction()
    
     
     

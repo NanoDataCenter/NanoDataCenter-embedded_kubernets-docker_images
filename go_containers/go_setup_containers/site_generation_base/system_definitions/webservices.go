@@ -12,7 +12,7 @@ func Construct_web_services(){
 
     su.Cd_Rec.Construct_package("IRRIGIGATION_IP_LOOK_UP")
     su.Cd_Rec.Add_hash("WEB_IP_LOOK_UP") 
-	su.Cd_Rec.Close_package_contruction()
+	su.Cd_Rec.Close_package_construction()
     
     su.Bc_Rec.End_header_node("WEB_DISCOVERY","WEB_DISCOVERY")
  

@@ -6,30 +6,30 @@ package su // site_utilities
  */
 
 
+// function to generate data structures
+type service_graph_generation func()
 
-type System_graph_generation func()
 
 
-
-type system_definition struct {
+type service_definition struct {
    name               string
-   system_flag        bool
-   processor          string
+   master_flag        bool
+   node               string
    containers         []string
-   graph_generation   System_graph_generation
+   graph_generation   service_graph_generation  
 }
 
-var system_map      map[string]system_definition
-var system_list      []system_definition
-var processor_set    map[string]bool
+var service_map      map[string]service_definition
+var service_list     []service_definition
+var node_set         map[string]bool
 var container_set    map[string]bool
 
 
-func init_system_generation(){
+func init_service_generation(){
   
-    system_map    = make(map[string]system_definition)
-    system_list    = make([]system_definition,0)
-    processor_set  = make(map[string]bool)  // make sure that processor is defined and only one
+    service_map    = make(map[string]service_definition)
+    service_list    = make([]service_definition,0)
+    node_set  = make(map[string]bool)  // make sure that node is defined and only one
     container_set  = make(map[string]bool)  // make sure a container is defined and used only once
    
 }
@@ -37,30 +37,30 @@ func init_system_generation(){
 
 
 func expand_container_definitions(){
-   for _,element := range system_list {
+   for _,element := range service_list {
       register_containers(element.containers)
    }
        
 }
 
-func expand_subsystem_definitions(){
+func expand_service_definitions(){
  
-    for _,element := range system_list {
+    for _,element := range service_list {
         element.graph_generation()
     }
     
     
 }
 
-func find_system_containers(system_flag bool, processor string )[]string{
+func find_master_containers(master_flag bool, node string )[]string{
    return_value := make([]string,0)
-   for _,element := range system_list {
-      if element.system_flag != system_flag{
+   for _,element := range service_list {
+      if element.master_flag != master_flag{
           continue
       }
-      if system_flag == true {
+      if master_flag == true {
           return_value = add_containers(return_value,element.containers)
-      }else if processor == element.processor {
+      }else if node == element.node {
           return_value = add_containers(return_value,element.containers)
       }
        
@@ -76,109 +76,60 @@ func add_containers( input []string, new_elements []string )[]string {
 }
 
 
-func Add_processor( processor_name string ){
+func Add_node( node_name string ){
  
-    check_for_duplicate_processor(processor_name)
-    processor_set[processor_name] = true
+    check_for_duplicate_node(node_name)
+    node_set[node_name] = true
 }
 
-func Construct_system_def(system_name string,system_flag bool, processor_name string, containers []string, graph_generation   System_graph_generation){
+func Construct_service_def(service_name string,master_flag bool, node_name string, containers []string, graph_generation   service_graph_generation){
  
-    var system_element system_definition
-    check_for_duplicate_system(system_name)
-    register_system_containers(containers)
-    if system_flag == true {
-      system_element.name   = system_name      
-      system_element.system_flag   = true
-      system_element.processor   = ""
-      system_element.containers    = containers
-      system_element.graph_generation = graph_generation
+    var service_element service_definition
+    check_for_duplicate_system(service_name)
+    register_service_containers(containers)
+    if master_flag == true {
+      service_element.name   = service_name      
+      service_element.master_flag   = true
+      service_element.node   = ""
+      service_element.containers    = containers
+      service_element.graph_generation = graph_generation
         
     }else{
-       check_for_existing_processor(processor_name) 
-       system_element.name          = system_name   
-       system_element.system_flag   = true
-       system_element.processor     = processor_name
-       system_element.containers    = containers
-       system_element.graph_generation = graph_generation
+       check_for_existing_node(node_name) 
+       service_element.name          = service_name   
+       service_element.master_flag   = true
+       service_element.node     = node_name
+       service_element.containers    = containers
+       service_element.graph_generation = graph_generation
         
     }
-    system_map[system_name] = system_element
-    system_list = append(system_list,system_element)
+    service_map[service_name] = service_element
+    service_list = append(service_list,service_element)
     
     
 }  
 
 
-func Generate_System_Container_list()[]string{
-    
-   return_value := make([]string,0)
-   for _,system_element := range system_list{
-        if system_element.system_flag == true {
-            for _,container := range system_element.containers{
-               return_value = append(return_value,container)
-            }
-        }     
-    }
-    return return_value
-    
-}
-
-func Generate_Processor_Container_list(processor_name string )[]string{
-   return_value := make([]string,0)
-   for _,system_element := range system_list{
-        if system_element.processor == processor_name {
-            for _,container := range system_element.containers{
-               return_value = append(return_value,container)
-            }
-        }     
-    }
-    return return_value
-    
-}
-
-/*
- *   This code generates the graph System_definition
- *   for all the registered system
- * 
- * 
- */
-
-
-func Construct_graph_definitions(){
-   for _,system_element := range system_list{
-        system_element.graph_generation()    
-    }    
-    
-    
-}
-
-
-/*
- * 
- * 
- * 
- */
 
 
 
 
-func check_for_duplicate_processor( processor_name string){
-    if _,ok := processor_set[processor_name]; ok== true {
-       panic("duplicate processor")
+func check_for_duplicate_node( node_name string){
+    if _,ok := node_set[node_name]; ok== true {
+       panic("duplicate node")
     }    
     
 }
 
-func check_for_existing_processor( processor_name string ){
+func check_for_existing_node( node_name string ){
     
-     if _,ok := processor_set[processor_name]; ok== true {
-       panic("processor not defined")
+     if _,ok := node_set[node_name]; ok== true {
+       panic("node not defined")
     }
 }    
 
-func check_for_duplicate_system( system_name string){
-     if _,ok := system_map[system_name]; ok== true {
+func check_for_duplicate_system( service_name string){
+     if _,ok := service_map[service_name]; ok== true {
        panic("duplicate system")
     }     
     
@@ -193,7 +144,7 @@ func check_for_duplicate_container( container string ){
     
 }
 
-func register_system_containers(containers []string){
+func register_service_containers(containers []string){
     
     for _,container := range containers{
         check_for_duplicate_container(container)
