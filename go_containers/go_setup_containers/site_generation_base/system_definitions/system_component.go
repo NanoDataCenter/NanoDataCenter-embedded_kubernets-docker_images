@@ -12,7 +12,7 @@ const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 
 
 
-func generate_system_components(system_flag bool,node_name string ){
+func generate_system_components(master_flag bool,node_name string ){
    file_server_mount := []string {"DATA","FILE"}
    redis_mount       := []string{"REDIS_DATA"}
    secrets_mount     := []string{"DATA","SECRETS"}
@@ -35,7 +35,7 @@ func generate_system_components(system_flag bool,node_name string ){
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
    
    containers := []string{"redis","lacima_secrets","file_server","redis_monitor"}
-   su.Construct_service_def("system_monitoring",system_flag,"", containers, generate_system_component_graph) 
+   su.Construct_service_def("system_monitoring",master_flag,"", containers, generate_system_component_graph) 
     
     
 }

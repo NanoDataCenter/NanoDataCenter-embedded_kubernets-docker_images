@@ -27,7 +27,7 @@ func initialialize_container_data_structures(start_part,run_part string){
 }
 
 
-func Setup_Mounts(){
+func Setup_Mount_Points(){
     
   drive_mounts = make(map[string]string)    
     
@@ -42,7 +42,7 @@ func Setup_Mounts(){
  * 
  */
 
-func Add_mount( mount_name string , mount_path string ){
+func Add_mount_point( mount_name string , mount_path string ){
  
    if _,ok := drive_mounts[mount_name]; ok == true {
      panic("duplicate mount name "+mount_name)

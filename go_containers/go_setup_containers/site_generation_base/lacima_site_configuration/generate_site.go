@@ -17,11 +17,7 @@ func main(){
    *  now construct lacima site
    */
   generate_lacima_site()
-  /*
-   *  Generate system site
-   * 
-   */
-  generate_system_site()
+
   
   /*
    * generate other sites
@@ -35,36 +31,28 @@ func main(){
 
 func generate_lacima_site(){
   su.Initialize_Site_Enviroment()
-  setup_lacima_container_drives()
+  setup_lacima_container_mount_points()
   setup_lacima_nodes()
   add_lacima_components()
   su.Construct_Site("LACIMA_SITE")    
 
 }
 
-func generate_system_site(){
- 
-  su.Initialize_Site_Enviroment()
-  setup_lacima_container_drives()
-  setup_system_nodes()
-  add_system_components()
-  su.Construct_Site("SYSTEM_SITE")    
-    
-}
 
 
 
 
-func setup_lacima_container_drives(){
+
+func setup_lacima_container_mount_points(){
   drive_path   := "--mount type=bind,source=/home/pi/system_config/,target=/data/"  // path to get configuration data
   file_path    := "--mount type=bind,source=/home/pi/mountpoint/files/,target=/files/"   // path for file server to get files
   redis_path   := "--mount type=bind,source=/home/pi/mountpoint/redis/,target=/data/"  // path for redis server to store data
   secret_path  := "--mount type=bind,source=/home/pi/mountpoint/secrets/,target=/secrets/"
-  su.Setup_Mounts()  
-  su.Add_mount("DATA",drive_path)
-  su.Add_mount("FILE",file_path)
-  su.Add_mount("REDIS_DATA",redis_path)    
-  su.Add_mount("SECRETS",secret_path)
+  su.Setup_Mount_Points()  
+  su.Add_mount_point("DATA",drive_path)
+  su.Add_mount_point("FILE",file_path)
+  su.Add_mount_point("REDIS_DATA",redis_path)    
+  su.Add_mount_point("SECRETS",secret_path)
 
     
 }
@@ -83,15 +71,4 @@ func add_lacima_components(){
     
 }    
 
-func setup_system_nodes(){
-    
-   su.Add_node("site_controller") 
-    
-    
-}    
-
-func add_system_components(){
-    
-   ;
-    
-}    
+   

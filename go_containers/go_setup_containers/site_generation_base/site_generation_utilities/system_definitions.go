@@ -123,7 +123,7 @@ func check_for_duplicate_node( node_name string){
 
 func check_for_existing_node( node_name string ){
     
-     if _,ok := node_set[node_name]; ok== true {
+     if _,ok := node_set[node_name]; ok== false {
        panic("node not defined")
     }
 }    

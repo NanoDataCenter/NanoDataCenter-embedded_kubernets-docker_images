@@ -2,7 +2,7 @@ package sys_defs
 
 //import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
 
-func Construct_irrigation(system_flag bool, node_name string){
+func Construct_irrigation(master_flag bool, node_name string){
  
     /*
     su.Bc_Rec.Add_header_node("IRRIGIGATION_SCHEDULING","IRRIGIGATION_SCHEDULING",make(map[string]interface{}))
