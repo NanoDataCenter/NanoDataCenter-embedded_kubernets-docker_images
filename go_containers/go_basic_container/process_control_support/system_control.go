@@ -8,12 +8,15 @@ import "lacima.com/redis_support/graph_query"
 import "lacima.com/cf_control"
 import "github.com/msgpack/msgpack-go"
 import "lacima.com/Patterns/logging_support"
+import   "lacima.com/redis_support/generate_handlers"
+import "lacima.com/redis_support/redis_handlers"
 
 type System_Control_Type struct {
   status                   bool
   container_name           string
   incident_log             *logging_support.Incident_Log_Type
   watch_dog_log            *logging_support.Watch_Dog_Log_Type
+  status_dict              redis_handlers.Redis_Hash_Struct
   process_map              map[string]string
   process_ctrl             []*Process_Manager_Type
   process_status           map[string]bool
@@ -26,11 +29,11 @@ type System_Control_Type struct {
 func Construct_System_Control(  container_name string ) *System_Control_Type {
 
    var return_value  System_Control_Type
-   return_value.container_name = container_name
-   return_value.process_map = make(map[string]string)
-   return_value.process_status  = make(map[string]bool)
-   return_value.error_status  = make(map[string]string)
-   return_value.good_count = make(map[string]int)
+   return_value.container_name   = container_name
+   return_value.process_map      = make(map[string]string)
+   return_value.process_status   = make(map[string]bool)
+   return_value.error_status     = make(map[string]string)
+   return_value.good_count      = make(map[string]int)
    return &return_value
 }   
 
@@ -39,8 +42,13 @@ func Construct_System_Control(  container_name string ) *System_Control_Type {
 
 func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
 
-   v.incident_log = logging_support.Construct_incident_log([]string{"CONTAINER:"+v.container_name,"INCIDENT_LOG:managed_process_failure","INCIDENT_LOG"} )
-   v.watch_dog_log = logging_support.Construct_watch_data_log([]string{"CONTAINER:"+v.container_name,"WATCH_DOG:process_control","WATCH_DOG"})
+   var search_path = []string{"CONTAINER:"+v.container_name,"CONTAINER_STRUCTURES"}
+   handlers          := data_handler.Construct_Data_Structures(&search_path)
+   v.status_dict     = (*handlers)["PROCESS_STATUS"].(redis_handlers.Redis_Hash_Struct)
+   
+   v.incident_log    = logging_support.Construct_incident_log([]string{"CONTAINER:"+v.container_name,"INCIDENT_LOG:managed_process_failure","INCIDENT_LOG"} )
+   v.watch_dog_log   = logging_support.Construct_watch_data_log([]string{"CONTAINER:"+v.container_name,"WATCH_DOG:process_control","WATCH_DOG"})
+    
    search_list := []string{ "CONTAINER:"+v.container_name  }
    
    nodes := graph_query.Common_qs_search( &search_list)
@@ -155,6 +163,7 @@ func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
      v.good_count[key] +=1
 	 v.error_status[key] = "-"
    }
+   v.update_status(key,v.process_status[key])
    
 }
 
@@ -172,5 +181,14 @@ func ( v *System_Control_Type )summarize_data(){
 	 v.incident_log.Log_data( v.status, new_value, current_error)
   
 }
-  
+
+func ( v *System_Control_Type )update_status(key string, status bool ){
+    
+  var b bytes.Buffer	
+  msgpack.Pack(&b,status)
+  v.status_dict.HSet(key,b.String())
+    
+    
+    
+}
 

@@ -150,6 +150,9 @@ func register_container( container_name string){
    description = container_name+" container controller watchdog"
    Construct_watchdog_logging("process_control",description,20)
    
+   Cd_Rec.Construct_package("CONTAINER_STRUCTURES" )
+   Cd_Rec.Add_hash("PROCESS_STATUS")
+   Cd_Rec.Close_package_construction()
    Bc_Rec.End_header_node("CONTAINER",container_name)
 }
 

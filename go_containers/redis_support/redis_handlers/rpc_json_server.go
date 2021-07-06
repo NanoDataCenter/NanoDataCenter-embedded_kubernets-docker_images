@@ -60,7 +60,7 @@ func (v Redis_RPC_Struct)json_handler_request(){
    }
    t := time.Now()
    elapsed := t.Sub(start)
-   v.Processing_Time = v.Processing_Time + elapsed.UnixNano()
+   v.Processing_Time = v.Processing_Time + int64(elapsed)
 
 
 }
