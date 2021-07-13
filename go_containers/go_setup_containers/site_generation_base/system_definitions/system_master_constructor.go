@@ -19,7 +19,7 @@ var system_dict = map[string]system_dict_type{
 
 
 func Add_Component_To_Master(component_name string){
-
+     
     check_system_components(component_name )
     system_dict[component_name](true,"")    
     
@@ -27,7 +27,7 @@ func Add_Component_To_Master(component_name string){
 
 
 func Add_Component_To_Node(node_name string,component_name string){
-
+    
     check_system_components(component_name )
     system_dict[component_name](false,node_name)    
     

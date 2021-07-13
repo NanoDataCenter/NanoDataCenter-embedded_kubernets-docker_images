@@ -71,7 +71,7 @@ func find_node_container_properties(){
 
 
 func  find_node_containers(){
-    var search_list = []string{ "PROCESSOR:"+(*site_data)["local_node"].(string) }
+    var search_list = []string{ "NODE:"+(*site_data)["local_node"].(string) }
     var site_nodes = graph_query.Common_qs_search(&search_list)
     var site_node = site_nodes[0]
  
@@ -122,7 +122,7 @@ func Node_Init(  site_map *map[string]interface{} ){
    site_data = site_map                 
    find_node_containers()
    
-   incident_log := logging_support.Construct_incident_log( []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"} ) 
+   incident_log := logging_support.Construct_incident_log( []string{"NODE:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"} ) 
    incident_log.Post_event(false,"reboot","reboot")
   
    if determine_hot_start() == false {
@@ -133,6 +133,7 @@ func Node_Init(  site_map *map[string]interface{} ){
       docker_control.Prune()
       
    }
+  
 
 }	
 						 

@@ -2,7 +2,7 @@
 
 package docker_management
 
-
+import "fmt"
 import  "lacima.com/redis_support/generate_handlers"
 import  "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/graph_query"
@@ -82,6 +82,7 @@ func (docker_handle *Docker_Handle_Type) find_container_data_structures( ){
    
 	
     for _,container := range (*docker_handle).containers{
+         fmt.Println("************************** container",container)
 	     (docker_handle).container_set[container] = true // true is dummy value for the set
 	     var search_list = []string{"CONTAINER"+":"+container,"STREAMING_LOG"}
 		 var data_element = data_handler.Construct_Data_Structures(&search_list)

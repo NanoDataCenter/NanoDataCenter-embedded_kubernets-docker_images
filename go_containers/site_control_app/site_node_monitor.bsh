@@ -1,0 +1,10 @@
+
+while [ 1 ]
+do
+   echo "executing site node control program"
+   ./site_node_monitor 2>  /tmp/site_node_monitor.err
+   
+   sleep 10
+
+
+done

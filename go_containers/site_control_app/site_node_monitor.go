@@ -14,7 +14,7 @@ import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
 import "lacima.com/site_control_app/site_control"
 import "lacima.com/site_control_app/node_control"
-import "lacima.com/redis_support/graph_query"
+//import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/cf_control"
@@ -44,10 +44,7 @@ func mount_usb_drive(){
 var site_data map[string]interface{}
 
 func fill_in_site_data(){
- 
-   
-  site_data= make(map[string]interface{})
-  
+  site_data = make(map[string]interface{})
   site_data["master_flag"]  = os.Getenv("master_flag")
   site_data["site"]  = os.Getenv("site")
   site_data["local_node"]  = os.Getenv("local_node")
@@ -83,45 +80,54 @@ func fill_in_site_data(){
    */
 
   get_site_data.Save_site_data(site_data["config_file"].(string)  ,site_data)
-  mount_usb_drive()
+  
   
   
 }
 
-
-
+func fill_in_slave_data(){
+  /*
+   * 
+   *  Miniumim to Connect to Redis Data Base
+   *  Extract Information from Event Registry
+   * 
+   */
+  site_data = make(map[string]interface{}) 
+  site_data["master_flag"]  = os.Getenv("master_flag")
+  site_data["site"]  = os.Getenv("site")
+  site_data["local_node"]  = os.Getenv("local_node")
+  port,_ := strconv.Atoi(os.Getenv("port"))
+  site_data["port"]  = float64(port)
+  
+}
 
 
 func main(){
     
-    fill_in_site_data()
+    
   
  
-	var master_flag = site_data["master_flag"].(string)
+	var master_flag = os.Getenv("master_flag")
 	fmt.Println("master flag",master_flag)
     redis_handlers.Init_Redis_Mutex()
 
 	if master_flag == "true"{
-       
-	   site_init.Site_Init(&site_data)
+       mount_usb_drive() // mount external hard drive for storing system data
+       fill_in_site_data()
+	   site_init.Site_Master_Init(&site_data)
        //data_handler.Data_handler_init(&site_data)
     
        
        
        
-       ip_table := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
-       ip_driver := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
-       ip_address := find_local_address()
-       ip_driver.HSet("SITE",ip_address )
+
        
        
 	} else {
+      fill_in_slave_data()
+      site_init.Site_Slave_Init(&site_data)
        
-	   wait_for_redis_connection(site_data["host"].(string), int(site_data["port"].(float64)) )
-       graph_query.Graph_support_init(&site_data)
-       data_handler.Data_handler_init(&site_data)
-       // wait for reboot flag --- TBD
-       // read and write site data --- TBD
+
 	}
 	
 	
@@ -135,7 +141,7 @@ func main(){
     
     
 	node_init.Node_Init(&site_data)
-   
+    
 	
 	
     
@@ -146,7 +152,7 @@ func main(){
     if master_flag == "true" {
 	    all_containers = docker_management.Find_containers(&[]string{ "SITE:"+site_data["site"].(string) })
     }
-    all_containers = append( all_containers, docker_management.Find_containers( &[]string{"PROCESSOR:"+site_data["local_node"].(string)} )...)
+    all_containers = append( all_containers, docker_management.Find_containers( &[]string{"NODE:"+site_data["local_node"].(string)} )...)
 	
     
     node_control.Node_Startup(&CF_site_node_control_cluster,&site_data,all_containers)

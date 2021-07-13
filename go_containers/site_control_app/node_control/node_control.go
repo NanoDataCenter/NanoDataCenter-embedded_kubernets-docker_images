@@ -20,8 +20,8 @@ func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
 
   
    
-    var display_struct_search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"DOCKER_CONTROL"}
-    var incident_search_list = []string{ "PROCESSOR:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:CONTAINER_ERROR_STREAM" ,"INCIDENT_LOG"}
+    var display_struct_search_list = []string{"DOCKER_CONTROL"}
+    var incident_search_list = []string{ "INCIDENT_LOG:CONTAINER_ERROR_STREAM" ,"INCIDENT_LOG"}
     
     
     (docker_handle).Initialize_Docker_Monitor(containers , &display_struct_search_list,&incident_search_list,site_data)

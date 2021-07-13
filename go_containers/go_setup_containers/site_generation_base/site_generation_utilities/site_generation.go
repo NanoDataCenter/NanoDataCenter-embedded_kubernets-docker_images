@@ -37,13 +37,21 @@ func start_site_definitions(site_name string, system_containers, startup_contain
 	properties["startup_containers"] = startup_containers
 	properties["containers"] = system_containers
     Bc_Rec.Add_header_node( "SITE",site_name,  properties  )
+    
+    Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream")
+    Cd_Rec.Construct_package("DOCKER_CONTROL")
+    Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")
+    Cd_Rec.Close_package_construction()
+    
+      
+      
 }
 
 
 func determine_master_containers()([]string,[]string) {
   return_value_1 := make([]string,0)
   return_value_2 := make([]string,0)
-  master_containers :=  find_master_containers(true,"")
+  master_containers :=  find_containers(true,"")
   for _,container := range master_containers {
      temp := container_map[container]
      if temp.temporary == true{
@@ -78,10 +86,12 @@ func add_nodes_to_graph(){
     
 }
 
-func determine_node_containers(noder string)[]string {
+func determine_node_containers(node string)[]string { 
   return_value_1 := make([]string,0)
-  system_containers :=  find_master_containers(false,"")
-  for _,container := range system_containers {
+ 
+  node_containers :=  find_containers(false,node)
+  
+  for _,container := range node_containers {
      temp := container_map[container]
      if temp.temporary == true{
          panic("temporary containers can only be assigned to master not node container "+container)

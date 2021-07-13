@@ -45,7 +45,7 @@ func strobe_watch_dog( system interface{},chain interface{}, parameters map[stri
 func start_rpc_server(){
      fmt.Println("made it here")
     
-     search_list := []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"RPC_SERVER:NODE_CONTROL","RPC_SERVER"}
+     search_list := []string{"NODE:"+(*site_data)["local_node"].(string),"RPC_SERVER:NODE_CONTROL","RPC_SERVER"}
      handlers := data_handler.Construct_Data_Structures(&search_list)
      driver := (*handlers)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)    
      driver.Add_handler( "reboot",reboot_system)

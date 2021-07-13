@@ -27,14 +27,11 @@ func isValueInList(value string, list []string) bool {
     return false
 }
 
-func Filter_first(start int, text string) []string {
+func Filter_first( text string) []string {
 
   var return_value  []string
   var lines = strings.Split(text,"\n")
-  //fmt.Println(len(lines),lines[1])
-  if len(lines) <= start {
-    return return_value
-  }
+  
    
   var line1 = lines[1:]
   for _, data := range line1 {
@@ -47,16 +44,16 @@ func Filter_first(start int, text string) []string {
    return return_value
  }
 
-func Filter_last(start int ,text string) []string {
+func Filter_last(text string) []string {
 
   var return_value []string
   var lines = strings.Split(text,"\n")
-  if len(lines) <= start {
-    return return_value
-  }
-
   
-  for _, data := range lines {
+  
+
+  lines_1 := lines[1:]
+  
+  for _, data := range lines_1 {
        if len(data) > 0 {
 	   var data_list = strings.Fields(data) 
 	   return_value = append(return_value,data_list[len(data_list)-1])
@@ -75,10 +72,12 @@ func Exists( container string ) bool {
 }
 
 
-func Image_Exists( container string ) bool {
+func Image_Exists( image string ) bool {
 
-   var container_list = Images()
-   return isValueInList(container,container_list) 
+   var image_list = Images()
+   //fmt.Println("container_list",image_list)
+   //fmt.Println("image_list",image)
+   return isValueInList(image,image_list) 
     
 }
 
@@ -118,14 +117,16 @@ func System( script string )string{
 
 func Containers_ls_runing() []string {
     
-	output := System_shell("docker container ls ")
-	return Filter_last(1,output)
+	output := System_shell("docker container ps  ")
+    //fmt.Println("output",output)
+	return Filter_last(output)
    
 }
 
 func Container_is_running( match_container string) bool {
-
+ 
   var running_containers = Containers_ls_runing()
+ 
   for _,container := range running_containers{
     if match_container == container {
 	  return true
@@ -138,8 +139,8 @@ func Container_is_running( match_container string) bool {
 func Containers_ls_all() []string {
 
     
-	output := System_shell("docker container ls -a")
-	return Filter_last(1,output)
+	output := System_shell("docker container ls -a ")
+	return Filter_last(output)
    
 }
        
@@ -166,7 +167,26 @@ func Container_up(container,startup_script string) {
 	   fmt.Println(System_shell(startup_script))
      }
 }	 
+
+
+func Stop_Running_Containters(){
+ running_containers := Containers_ls_runing()
+ for _,container := range running_containers {
+     Container_stop(container)
+ }
  
+    
+} 
+ 
+func Remove_All_Containers(){
+   containers := Containers_ls_all()
+   for _,container := range containers {
+       Container_rm(container)
+   }
+    
+   
+}
+
 func Container_rm(container string) string {
        if Exists(container) {
 	     return System_shell("docker rm "+container)
@@ -179,7 +199,7 @@ func Container_rm(container string) string {
              
 func  Prune(){
        return_value := System_shell("docker images -qf dangling=true ")
-       var return2 = Filter_first(1,return_value)
+       var return2 = Filter_first(return_value)
 	   for _, name := range return2 {
 	     //fmt.Println(i,name)
 		 Image_rmi(name)
@@ -198,7 +218,7 @@ func  Pull(image string ){
 
 func  Images()[]string{
       return_value := System_shell("docker images ")
-	  var return2 = Filter_first(1,return_value)
+	  var return2 = Filter_first(return_value)
 	  
 	  return return2
 }

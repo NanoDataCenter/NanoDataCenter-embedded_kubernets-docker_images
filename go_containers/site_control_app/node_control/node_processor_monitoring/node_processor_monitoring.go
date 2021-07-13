@@ -34,7 +34,7 @@ func Init_processor_data_structures(site_data *map[string]interface{}){
 
    
    processor_measurement.performance_drivers = make(map[string]redis_handlers.Redis_Stream_Struct)
-   var search_list = []string{"PROCESSOR:"+(*site_data)["local_node"].(string),"STREAMING_LOG:processor_monitor","STREAMING_LOG"}
+   var search_list = []string{"NODE:"+(*site_data)["local_node"].(string),"STREAMING_LOG:node_monitor","STREAMING_LOG"}
    var data_element = data_handler.Construct_Data_Structures(&search_list)
    
    keys := []string{"FREE_CPU","RAM","TEMPERATURE","DISK_SPACE","SWAP_SPACE","CONTEXT_SWITCHES","BLOCK_DEV","IO_SPACE","RUN_QUEUE","EDEV"}

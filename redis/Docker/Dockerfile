@@ -1,7 +1,6 @@
 FROM arm32v7/redis
 ENV CONTAINER_NAME  "redis"
 
-#RUN apt-get install -y libatomic1
                    
 VOLUME [/data/]
 

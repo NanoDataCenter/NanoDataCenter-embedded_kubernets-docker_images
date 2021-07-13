@@ -53,6 +53,10 @@ func generate_system_component_graph(){
     su.Cd_Rec.Close_package_construction()
     
     
+    su.Cd_Rec.Construct_package("ENVIRONMENTAL_VARIABLES")
+    su.Cd_Rec.Add_single_element("ENVIRONMENTAL_VARIABLES") // determine if site has done all initialization
+    su.Cd_Rec.Close_package_construction()    
+    
     su.Cd_Rec.Construct_package("NODE_MAP")
     su.Cd_Rec.Add_hash("NODE_MAP") // map of node ip's
     su.Cd_Rec.Close_package_construction()
