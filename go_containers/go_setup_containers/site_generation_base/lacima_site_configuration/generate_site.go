@@ -12,7 +12,7 @@ func main(){
     
   
   system_properties := make(map[string]interface{})
-  su.Construct_System("farm_system",system_properties)
+  su.Construct_System("farm_system",4,system_properties) 
   /*
    *  now construct lacima site
    */

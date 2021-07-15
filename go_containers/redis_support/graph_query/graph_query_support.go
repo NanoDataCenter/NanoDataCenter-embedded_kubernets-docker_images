@@ -111,13 +111,14 @@ func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
 	site = site_data["site"].(string)
     var address =  site_data["host"].(string)
-    var port = 	      int(site_data["port"].(float64)) //float 64 because of json
+    var port = 	      int(site_data["port"].(float64))//float 64 because of json
    
 	var address_port = address+":"+strconv.Itoa(port)
+    
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												
-												 DB: 3,
+												 DB: site_data["graph_db"].(int),
                                                })
 	err := client.Ping(ctx).Err();     
 	if err != nil{
@@ -126,8 +127,33 @@ func Graph_support_init(sdata *map[string]interface{}) {
    
 }	
 
-func Common_package_search( site *string, search_list *[]string) []map[string]string{
+func Full_site_serach(search_list *[]string) []map[string]string{
+    
    var query_list = make([]query_element,0)
+   
+   
+   
+   for i :=0; i <len(*search_list)-1;i++{
+      var search_term = (*search_list)[i]
+
+	  var search_list = parse_search_list(search_term)
+	  add_match_relationship(&query_list,search_list[0],search_list[1])
+	  
+   }
+   
+   var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
+   
+   add_match_terminal(&query_list,search_list_term[0],search_list_term[1])
+   
+   return match_list(&query_list)
+}    
+    
+    
+
+
+func Common_package_search( site *string, search_list *[]string) []map[string]string{
+   
+    var query_list = make([]query_element,0)
  
    add_match_relationship(&query_list,"SITE",site_data["site"].(string))
    
@@ -145,7 +171,6 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
   
    return match_list(&query_list)
 }
-
 func Common_qs_search(search_list *[]string)[]map[string]string{
 
    var query_list = make([]query_element,0)

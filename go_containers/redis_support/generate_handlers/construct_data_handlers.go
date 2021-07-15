@@ -48,10 +48,22 @@ func Store_Valid_Set(dict_key string,valid_set map[string]string){
       
   }
     
-    
-    
+
 }
 
+func get_data_base_number()int{
+ 
+    search_list := []string{"SYSTEM"}
+    nodes := graph_query.Full_site_serach(&search_list)
+    node := nodes[0]
+
+    data_db,err :=strconv.Atoi(node["data_db"])
+    if err != nil {
+      panic("bad data_db")
+    }
+    return data_db
+    
+}
 
 func create_redis_data_handle(){
   
@@ -60,12 +72,13 @@ func create_redis_data_handle(){
     var port = 	int((*site_ptr)["port"].(float64))
 	var address_port = address+":"+strconv.Itoa(port)
 	
+    data_db := get_data_base_number()
 	
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												 ReadTimeout : time.Second*30,
 												 WriteTimeout : time.Second*30,
-												 DB: 4,
+												 DB: data_db,
                                                })
 	err := client.Ping(ctx).Err();
 	if err != nil{

@@ -50,10 +50,11 @@ func fill_in_site_data(){
   site_data["local_node"]  = os.Getenv("local_node")
   
   // ip of the redis server
-  port,_ := strconv.Atoi(os.Getenv("port"))
-  site_data["port"]  = float64(port)
-  site_data["host"]                      =   os.Getenv("host")
-  
+   port,_               := strconv.Atoi(os.Getenv("port"))
+  site_data["port"]     = float64(port)
+  site_data["host"]     =   os.Getenv("host")
+  graph_db,_              := strconv.Atoi(os.Getenv("graph_db"))
+  site_data["graph_db"] = graph_db
   
   
   site_data["graph_container_image"]     = os.Getenv("graph_container_image")
@@ -70,18 +71,22 @@ func fill_in_site_data(){
 }
 
 func fill_in_slave_data(){
+
   /*
-   * 
-   *  Miniumim to Connect to Redis Data Base
-   *  Extract Information from Event Registry
-   * 
+   * Minimium information to connect to event broker and event registry
    */
-  site_data = make(map[string]interface{}) 
+  
+  site_data = make(map[string]interface{})
   site_data["master_flag"]  = os.Getenv("master_flag")
   site_data["site"]  = os.Getenv("site")
   site_data["local_node"]  = os.Getenv("local_node")
-  port,_ := strconv.Atoi(os.Getenv("port"))
-  site_data["port"]  = float64(port)
+  
+  // ip of the redis server
+   port,_               := strconv.Atoi(os.Getenv("port"))
+  site_data["port"]     = float64(port)
+  site_data["host"]     =   os.Getenv("host")
+  graph_db,_              := strconv.Atoi(os.Getenv("graph_db"))
+  site_data["graph_db"] = graph_db
   
 }
 
