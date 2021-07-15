@@ -29,8 +29,8 @@ var site_data map[string]interface{}
 //   Client *redis.Client
 //}
 var ctx    = context.TODO()
-var graph_container_image string
-var graph_container_script string
+
+var redis_container_name string
 var services_json string
 //var container []string
 var containers = make([]string,0)
@@ -93,13 +93,20 @@ func get_store_site_data(site_data *map[string]interface{}){
     if err1 != nil{
 	 panic("bad json site data")
 	}
-	config_file := (*site_data)["config_file"].(string)
+	site := (*site_data)["site"].(string)
+    search_path := []string{"SITE:"+site}
+	site_nodes := graph_query.Common_qs_search(&search_path)
+	
+    site_node := site_nodes[0]
+    config_file := graph_query.Convert_json_string(site_node["file_path"])
+   
     err := ioutil.WriteFile(config_file, json_data, 0644)
     
     if err != nil{
         fmt.Println(err)
-        panic("bad  json write")
+        panic("bad  file write")
     }
+   
     
 }
 
@@ -114,7 +121,7 @@ func verify_master_containers() {
 
 func start_stopped_master_containers(){
   for _,value := range site_containers{
-    if value["name"] == "redis" {
+    if value["name"] == redis_container_name {
 	  
 	  continue
 	}
@@ -135,7 +142,7 @@ func start_stopped_master_containers(){
 func start_run_once_containers(){
   //fmt.Println("run once ",site_run_once_containers)
   for _,value := range site_run_once_containers{
-    if value["name"] == "redis" {
+    if value["name"] == redis_container_name {
 	  
 	  continue
 	}
@@ -154,7 +161,7 @@ func start_run_once_containers(){
 
 func start_master_containers(){
   for _,value := range site_containers{
-    if value["name"] == "redis" {
+    if value["name"] == redis_container_name {
 	 
 	  continue
 	}
@@ -278,7 +285,7 @@ func determine_master_hot_start(address string, port int) bool {
 
   var running_containers = docker_control.Containers_ls_runing()
   for _,name := range running_containers{
-    if name == "redis"{
+    if name == redis_container_name{
 	  if test_redis_connection( address , port  ) == true{
           return true
       }else{
@@ -309,10 +316,11 @@ func wait_for_reboot_flag_to_clear(){
 	   
 func Site_Master_Init(  site_data *map[string]interface{} ){ 
                          
-	graph_container_image = (*site_data)["graph_container_image"].(string)
-    graph_container_script = (*site_data)["graph_container_script"].(string)			 
-						 
-    var redis_startup_script = (*site_data)["redis_start_script"].(string)		
+	graph_container_image   := (*site_data)["graph_container_image"].(string)
+    graph_container_script  := (*site_data)["graph_container_script"].(string)
+    redis_container_name    = (*site_data)["redis_container_name"].(string)	 		
+	redis_container_image   := (*site_data)["redis_container_image"].(string)	 					 
+    redis_startup_script    := (*site_data)["redis_start_script"].(string)		
 	
     
     
@@ -323,14 +331,17 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    
    if hot_start == false {
       
+      
       docker_control.Stop_Running_Containters()
      
       docker_control.Remove_All_Containers()
-      
-     
-      docker_control.Container_up("redis",redis_startup_script)
+      if docker_control.Image_Exists(redis_container_image)== false {
+          panic("container image should exit")
+          
+	  }
+      docker_control.Container_up(redis_container_name,redis_startup_script)
 	  time.Sleep(time.Second*4)
-	  if docker_control.Container_is_running("redis") == false{
+	  if docker_control.Container_is_running(redis_container_name) == false{
 	     panic("redis container did not start")
 	  }
       
@@ -377,7 +388,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
 
       start_master_containers()
       
-      log_incident_data()
+      
       
       
    }else {
@@ -401,7 +412,8 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    reboot_flag_data_structures := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
    reboot_flag_driver := (*reboot_flag_data_structures)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
    reboot_flag_driver.Set("NOT_ACTIVE")
-  
+   get_store_site_data(site_data)
+   log_incident_data()
         
    
 

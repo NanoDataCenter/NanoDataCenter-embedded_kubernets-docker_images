@@ -34,7 +34,7 @@ func generate_lacima_site(){
   setup_lacima_container_mount_points()
   setup_lacima_nodes()
   add_lacima_components()
-  su.Construct_Site("LACIMA_SITE")    
+  su.Construct_Site("LACIMA_SITE","/home/pi/system_config/redis_configuration.json")    
 
 }
 

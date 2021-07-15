@@ -8,7 +8,7 @@ import "context"
 import "net"
 import "strings"
 
-import "lacima.com/site_data"
+//import "lacima.com/site_data"
 import  "lacima.com/site_control_app/docker_management"
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
@@ -33,7 +33,7 @@ func handle_mount_panic() {
     }
 }
 
-func mount_usb_drive(){
+func mount_usb_drive(mount_string string){
   defer handle_mount_panic()
   fmt.Println(docker_control.System_shell("mount /dev/sda /home/pi/mountpoint"))
 
@@ -48,38 +48,22 @@ func fill_in_site_data(){
   site_data["master_flag"]  = os.Getenv("master_flag")
   site_data["site"]  = os.Getenv("site")
   site_data["local_node"]  = os.Getenv("local_node")
+  
+  // ip of the redis server
   port,_ := strconv.Atoi(os.Getenv("port"))
   site_data["port"]  = float64(port)
-  
-  graph_db, _  := strconv.Atoi(os.Getenv("graph_db"))
-  site_data["graph_db"]  = float64(graph_db)
+  site_data["host"]                      =   os.Getenv("host")
   
   
   
-  redis_table, _  := strconv.Atoi(os.Getenv("redis_table"))
-  site_data["redis_table"] = float64(redis_table)
-  
-  password_table, _  := strconv.Atoi(os.Getenv("password_table"))
-  site_data["password_table"] = float64(password_table)
-  
-  irrigation_files, _  := strconv.Atoi(os.Getenv("irrigation_files"))
-  site_data["irrigation_files"] = float64(irrigation_files)
-  
-  
-  // necessary for a new installation or corrupted installation
-  site_data["graph_container_image"]   = os.Getenv("graph_container_image")
+  site_data["graph_container_image"]     = os.Getenv("graph_container_image")
   site_data["graph_container_script"]    = os.Getenv("graph_container_script")		
-  site_data["redis_start_script"]              = os.Getenv("redis_start_script")
-  site_data["host"]                                    =   os.Getenv("host")
-  site_data["config_file"]              =  os.Getenv("config_file")
+  site_data["redis_container_name"]      = os.Getenv("redis_container_name")
+  site_data["redis_container_image"]     = os.Getenv("redis_container_image")
+  site_data["redis_start_script"]        = os.Getenv("redis_start_script")
   
-  fmt.Println("config_file",site_data["config_file"])
-  /*
-   *   store site file
-   *
-   */
-
-  get_site_data.Save_site_data(site_data["config_file"].(string)  ,site_data)
+  
+ 
   
   
   
@@ -106,22 +90,16 @@ func main(){
     
     
   
- 
+    var mount_string = os.Getenv("mount_string")
 	var master_flag = os.Getenv("master_flag")
 	fmt.Println("master flag",master_flag)
     redis_handlers.Init_Redis_Mutex()
 
 	if master_flag == "true"{
-       mount_usb_drive() // mount external hard drive for storing system data
+       
+       mount_usb_drive(mount_string) // mount external hard drive for storing system data
        fill_in_site_data()
 	   site_init.Site_Master_Init(&site_data)
-       //data_handler.Data_handler_init(&site_data)
-    
-       
-       
-       
-
-       
        
 	} else {
       fill_in_slave_data()
@@ -137,9 +115,6 @@ func main(){
     ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
     ip_address  := find_local_address()
     ip_driver.HSet(site_data["local_node"].(string),ip_address )    
-    
-    
-    
 	node_init.Node_Init(&site_data)
     
 	

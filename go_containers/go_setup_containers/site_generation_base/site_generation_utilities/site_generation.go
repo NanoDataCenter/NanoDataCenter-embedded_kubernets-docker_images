@@ -4,11 +4,11 @@ var working_site string
 
 
 
-func Construct_Site(site string){
+func Construct_Site(site, configuration_file_path string){
     // find containers for the master node
     system_containers,startup_containers := determine_master_containers()
     // generate top node for site
-    start_site_definitions(site , system_containers, startup_containers)
+    start_site_definitions(site ,configuration_file_path, system_containers, startup_containers)
     // generate data structures for services
     expand_service_definitions()
     // add containers to graph
@@ -30,12 +30,13 @@ func end_site_definitions(site_name string){
 
 
 
-func start_site_definitions(site_name string, system_containers, startup_containers   []string){
+func start_site_definitions(site_name , configuration_file_path string, system_containers, startup_containers   []string){
     
     working_site = site_name
     properties := make(map[string]interface{})
 	properties["startup_containers"] = startup_containers
 	properties["containers"] = system_containers
+	properties["file_path"] = configuration_file_path
     Bc_Rec.Add_header_node( "SITE",site_name,  properties  )
     
     Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream")

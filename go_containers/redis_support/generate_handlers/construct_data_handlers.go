@@ -59,13 +59,13 @@ func create_redis_data_handle(){
     var address =  (*site_ptr)["host"].(string)
     var port = 	int((*site_ptr)["port"].(float64))
 	var address_port = address+":"+strconv.Itoa(port)
-	var db = int((*site_ptr)["redis_table"].(float64))
+	
 	
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												 ReadTimeout : time.Second*30,
 												 WriteTimeout : time.Second*30,
-												 DB: db,
+												 DB: 4,
                                                })
 	err := client.Ping(ctx).Err();
 	if err != nil{
