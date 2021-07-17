@@ -4,6 +4,8 @@ package site_init
 import ( 
 
 "fmt"
+"net"
+"strings"
 "context"
 "time"
 "strconv"
@@ -20,7 +22,6 @@ import (
 
 )
 
-type site_data_type map[string]interface{}
 
 var master_flag bool
 var hot_start bool
@@ -39,7 +40,7 @@ var site_run_once_containers = make([]map[string]string,0)
 var site_containers = make([]map[string]string,0)
 
 
-func log_incident_data(){
+func master_log_incident_data(){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
     
     var b bytes.Buffer	
@@ -53,6 +54,21 @@ func log_incident_data(){
     }
     
 }
+func slave_log_incident_data(site_data *map[string]interface{}){
+    call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
+    
+    var b bytes.Buffer	
+    msgpack.Pack(&b,call_back_data)
+    current_value := b.String()
+    search_string := []string{"NODE:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"}
+    incident_log := logging_support.Construct_incident_log(search_string) 
+    if hot_start == false {
+        incident_log.Post_event(false,"cold_stert",current_value)
+    }else{
+       incident_log.Post_event(false,"hot_start",current_value)
+    }
+    
+}	
 
 func remove_obsolete_data_structures(){
  
@@ -272,18 +288,20 @@ func wait_for_redis_connection(address string, port int ) {
 
 
 func determine_slave_hot_start(address string, port int) bool {
-
-  var running_containers = docker_control.Containers_ls_runing()
+ 
+  if test_redis_connection( address , port  ) == false{
+          return false
+  }
+  running_containers := docker_control.Containers_ls_runing()
   if len(running_containers) == 0{
       return false
   }
   return true
-
 }
 
 func determine_master_hot_start(address string, port int) bool {
 
-  var running_containers = docker_control.Containers_ls_runing()
+  running_containers := docker_control.Containers_ls_runing()
   for _,name := range running_containers{
     if name == redis_container_name{
 	  if test_redis_connection( address , port  ) == true{
@@ -313,6 +331,22 @@ func wait_for_reboot_flag_to_clear(){
     
   }
 }
+	   
+func find_local_address()string{
+    
+   conn, error := net.Dial("udp", "8.8.8.8:80")  
+   if error != nil {  
+      fmt.Println(error)  
+  
+    }  
+  
+    defer conn.Close()  
+    ipAddress_port := conn.LocalAddr().(*net.UDPAddr).String()
+    temp := strings.Split(ipAddress_port,":")
+    ip_address := temp[0]
+  
+    return ip_address
+}     
 	   
 func Site_Master_Init(  site_data *map[string]interface{} ){ 
                          
@@ -346,7 +380,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
 	  }
       
       wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
-      docker_control.Prune()
+      
    
       if docker_control.Image_Exists(graph_container_image)== false {
           panic("container image should exit")
@@ -386,7 +420,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
      
       start_run_once_containers()
 
-      start_master_containers()
+      start_master_containers()                                            
       
       
       
@@ -413,9 +447,20 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    reboot_flag_driver := (*reboot_flag_data_structures)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
    reboot_flag_driver.Set("NOT_ACTIVE")
    get_store_site_data(site_data)
-   log_incident_data()
-        
+   master_log_incident_data()  // this is for master node only
+   slave_log_incident_data(site_data) // this is for all nodes
+   ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
+   ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
+   ip_address  := find_local_address()
+   ip_driver.Delete_All()
+   ip_driver.HSet((*site_data)["local_node"].(string),ip_address )    
+   ip_driver.HSet("master",ip_address ) 
    
+   
+
+   docker_table    := data_handler.Construct_Data_Structures(&[]string{"DOCKER_CONTROL"})
+   docker_driver   := (*docker_table)["DOCKER_DISPLAY_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
+   docker_driver.Delete_All()
 
 }	
 						 
@@ -424,18 +469,23 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
 func Site_Slave_Init(site_data *map[string]interface{} ){
     
     hot_start = determine_slave_hot_start((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
+    slave_log_incident_data(site_data)  
     if hot_start == false {
         
         docker_control.Stop_Running_Containters() 
         docker_control.Remove_All_Containers()
     }
-    docker_control.Prune()    
+    
     wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
     
     wait_for_reboot_flag_to_clear()
  
     get_store_site_data(site_data)
-    log_incident_data()
+    ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
+    ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
+    ip_address  := find_local_address()
+    ip_driver.HSet((*site_data)["local_node"].(string),ip_address )    
+      
 }
 
 

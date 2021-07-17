@@ -5,8 +5,7 @@ import "fmt"
 import "time"
 import "strconv"
 import "context"
-import "net"
-import "strings"
+
 
 //import "lacima.com/site_data"
 import  "lacima.com/site_control_app/docker_management"
@@ -16,7 +15,7 @@ import "lacima.com/site_control_app/site_control"
 import "lacima.com/site_control_app/node_control"
 //import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
-import "lacima.com/redis_support/generate_handlers"
+
 import "lacima.com/cf_control"
 import "lacima.com/site_control_app/docker_control"
 import "github.com/go-redis/redis/v8"
@@ -116,10 +115,7 @@ func main(){
 	
 	
  	
-    ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
-    ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)
-    ip_address  := find_local_address()
-    ip_driver.HSet(site_data["local_node"].(string),ip_address )    
+
 	node_init.Node_Init(&site_data)
     
 	
@@ -188,21 +184,7 @@ func wait_for_redis_connection(address string, port int ) {
      
 }
 
-func find_local_address()string{
-    
-   conn, error := net.Dial("udp", "8.8.8.8:80")  
-   if error != nil {  
-      fmt.Println(error)  
-  
-    }  
-  
-    defer conn.Close()  
-    ipAddress_port := conn.LocalAddr().(*net.UDPAddr).String()
-    temp := strings.Split(ipAddress_port,":")
-    ip_address := temp[0]
-  
-    return ip_address
-}      
+ 
     
     
     

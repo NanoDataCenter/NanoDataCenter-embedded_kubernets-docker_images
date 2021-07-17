@@ -65,7 +65,11 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("WEB_MAP") // map of all subsystem web servers
     su.Cd_Rec.Close_package_construction()    
     
+    su.Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream")
     
+    su.Cd_Rec.Construct_package("DOCKER_CONTROL")
+    su.Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")
+    su.Cd_Rec.Close_package_construction()
     
     
     

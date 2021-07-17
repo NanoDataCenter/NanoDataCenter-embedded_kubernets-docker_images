@@ -2,7 +2,7 @@ package node_control_server_lib
 
 
 
-//import "fmt"
+
 
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
@@ -20,17 +20,19 @@ type Node_Server_Client_Type struct{
 func find_processors()[]string {
     
   site_nodes := make([]string,0)
-  nodes := graph_query.Common_qs_search(&[]string{"PROCESSOR"})
+  nodes := graph_query.Common_qs_search(&[]string{"NODE"})
   for _,node := range nodes {
       temp := graph_query.Convert_json_string(node["name"])
       site_nodes = append(site_nodes,temp)
   }
+  
   return site_nodes
     
 }
 
  
-    
+   
+
     
 func Node_Server_Init()Node_Server_Client_Type{
 
@@ -41,9 +43,9 @@ func Node_Server_Init()Node_Server_Client_Type{
   return_value.Incident_array = make(map[string]*logging_support.Incident_Log_Type)
   for _,processor := range processors {
      
-      temp := data_handler.Construct_Data_Structures(&[]string{"PROCESSOR:"+processor,"RPC_SERVER:NODE_CONTROL","RPC_SERVER"} )
+      temp := data_handler.Construct_Data_Structures(&[]string{"NODE:"+processor,"RPC_SERVER:NODE_CONTROL","RPC_SERVER"} )
       return_value.Driver_array[processor] = (*temp)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
-      temp1 := logging_support.Construct_incident_log( []string{"PROCESSOR:"+processor,"INCIDENT_LOG:NODE_RPC_PING","INCIDENT_LOG"} ) 
+      temp1 := logging_support.Construct_incident_log( []string{"NODE:"+processor,"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"} ) 
       return_value.Incident_array[processor] = temp1
   }
   

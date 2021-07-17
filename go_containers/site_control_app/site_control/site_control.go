@@ -1,7 +1,6 @@
 package site_control
 
 
-import "fmt"
 
 import "strconv"
 import "lacima.com/cf_control"
@@ -48,12 +47,13 @@ func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
 func node_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
-
+  
 	 for node,_ := range node_rpc_servers.Driver_array{
          result := node_rpc_servers.Ping(node)
+         
          node_status_hash.HSet(node,strconv.FormatBool(result))
          incident_log := node_rpc_servers.Incident_array[node]
-         incident_log.Post_event(true,"node_response","node_response")
+         incident_log.Log_data(result,"node_response","node_response")
          
      }
 	 
@@ -64,7 +64,7 @@ func node_monitor( system interface{},chain interface{}, parameters map[string]i
 
  
 func start_rpc_server(){
-     fmt.Println("made it here")
+     
     
      search_list := []string{"RPC_SERVER:SYSTEM_CONTROL","RPC_SERVER"}
      handlers := data_handler.Construct_Data_Structures(&search_list)
@@ -74,10 +74,21 @@ func start_rpc_server(){
 }
 
 
-func reboot_system( parameters map[string]interface{} ) map[string]interface{}{
+func reboot_system( parameters map[string]interface{} )map[string]interface{}{
+ 	
+    // reboot flag is set so when node reboots, they wait for the master node
+    reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
+    reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
+    reboot_flag_driver.Set("ACTIVE") 
     
+    for node,_ := range node_rpc_servers.Driver_array{
+         node_rpc_servers.Reboot(node)
+         
+         
+     }   
+     return parameters
     
-    return parameters
+
 }
 
 

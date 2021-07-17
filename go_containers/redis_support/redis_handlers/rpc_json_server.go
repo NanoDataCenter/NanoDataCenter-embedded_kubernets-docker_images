@@ -49,6 +49,9 @@ func (v Redis_RPC_Struct)json_handler_request(){
   params := input_unmarshall[1].(map[string]interface{})
   if _,ok := v.rpc_handlers[method]; ok == true {
   
+       if method == "reboot"{
+         v.Delete_all()  // clear the queue -- prevent nested reboots
+       }
        response := v.rpc_handlers[method](params)
        request_json,err := json.Marshal(&response)
        if err != nil{

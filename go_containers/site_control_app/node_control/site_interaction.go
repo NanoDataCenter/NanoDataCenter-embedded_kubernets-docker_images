@@ -33,12 +33,6 @@ func setup_site_control(cf_cluster *cf.CF_CLUSTER_TYPE , site_data_input *map[st
 
 
 
-func strobe_watch_dog( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
-
-     wd_struct.Strobe_Watch_Dog()
-     return cf.CF_DISABLE
-}
-
 
 
 
@@ -56,6 +50,7 @@ func start_rpc_server(){
 func reboot_system( parameters map[string]interface{} ) map[string]interface{}{
     
     if (*site_data)["master"] == true {
+       // allow other nodes to receive reboot command
        time.Sleep(time.Second*15)    
     
     }
