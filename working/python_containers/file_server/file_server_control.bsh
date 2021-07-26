@@ -1,9 +1,0 @@
-
-while [ 1 ]
-do
-   echo "file server"
-   python file_server_py3.py 2>  /data/file_server_py3.err 
-   cp /data/file_server_py3.err /data/file_server_py3.errr
-
-
-done

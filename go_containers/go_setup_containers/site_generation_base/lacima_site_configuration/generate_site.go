@@ -12,6 +12,7 @@ func main(){
     
   
   system_properties := make(map[string]interface{})
+  system_properties["jquery_files"] = 7
   su.Construct_System("farm_system",4,system_properties) 
   /*
    *  now construct lacima site

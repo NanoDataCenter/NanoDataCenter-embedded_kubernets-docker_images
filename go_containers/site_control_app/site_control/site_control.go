@@ -19,6 +19,7 @@ func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
 
    	node_rpc_servers = node_control_server_lib.Node_Server_Init()
     monitor_node_rpc_servers(cf_cluster)
+    init_site_web_server()
 	go start_rpc_server() 
 }
 

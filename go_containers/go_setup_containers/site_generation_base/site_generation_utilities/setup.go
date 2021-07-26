@@ -21,7 +21,7 @@ const Managed_run string  = "./process_control.bsh"
 
 var system_name string
 
-func Construct_System(sys_name string ,data_db int,properties map[string]interface{}){
+func Construct_System(sys_name string ,data_db   int,properties map[string]interface{}){
     properties["data_db"] = data_db
     setup_Site_File()
     bc.Graph_support_init(Ip,Port)

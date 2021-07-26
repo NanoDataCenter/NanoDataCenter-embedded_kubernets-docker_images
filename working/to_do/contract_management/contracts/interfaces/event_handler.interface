@@ -1,8 +1,0 @@
-interface EventHandler_Interface
-{
-
-function transmit_event_contract( string calldata event_id, string calldata  sub_event, string calldata data) external;
-
-}
-
-

@@ -1,3 +1,0 @@
-cd contracts
-python compile.py
-cd ..

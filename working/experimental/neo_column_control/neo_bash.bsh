@@ -1,4 +1,0 @@
-
-#docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
-
-docker run -ti --rm  --network host    --mount type=bind,source=/mnt/ssd/site_config,target=/data/    nanodatacenter/neo_column_controller /bin/bash 

@@ -109,16 +109,18 @@ func Convert_json_string( json_string string) string{
  
 func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
-	site = site_data["site"].(string)
-    var address =  site_data["host"].(string)
-    var port = 	      int(site_data["port"].(float64))//float 64 because of json
+	
+    address :=  site_data["host"].(string)
+    port  := 	      int(site_data["port"].(float64))//float 64 because of json
    
-	var address_port = address+":"+strconv.Itoa(port)
+	address_port := address+":"+strconv.Itoa(port)
+    graph_db := int(site_data["graph_db"].(float64))
+    
     
 	client = redis.NewClient(&redis.Options{
                                                  Addr: address_port,
 												
-												 DB: site_data["graph_db"].(int),
+												 DB: graph_db,
                                                })
 	err := client.Ping(ctx).Err();     
 	if err != nil{
