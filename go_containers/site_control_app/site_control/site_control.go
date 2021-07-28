@@ -8,6 +8,7 @@ import "lacima.com/server_libraries/node_control_rpc"
 
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
+import "lacima.com/site_control_app/site_control/system_web"
 import "time"
 
 var  node_status_hash   redis_handlers.Redis_Hash_Struct
@@ -19,7 +20,7 @@ func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
 
    	node_rpc_servers = node_control_server_lib.Node_Server_Init()
     monitor_node_rpc_servers(cf_cluster)
-    init_site_web_server()
+    site_web_server.Init_site_web_server()
 	go start_rpc_server() 
 }
 

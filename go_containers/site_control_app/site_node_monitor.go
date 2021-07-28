@@ -52,7 +52,7 @@ func fill_in_site_data(){
    port,_               := strconv.Atoi(os.Getenv("port"))
   site_data["port"]     = float64(port)
   site_data["host"]     =   os.Getenv("host")
-  graph_db,_              := strconv.Atoi(os.Getenv("graph_db"))
+  graph_db,_              := strconv.ParseFloat(os.Getenv("graph_db"),64)
   site_data["graph_db"] = graph_db
   
   
