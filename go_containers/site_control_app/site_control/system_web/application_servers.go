@@ -1,11 +1,14 @@
 package site_web_server
 
 import (
-    "fmt"
-    "os"
+    
+    
     "net/http"
     "html/template"
     "lacima.com/Patterns/web_server_support/jquery_react_support"
+    "lacima.com/redis_support/generate_handlers"
+    "lacima.com/redis_support/redis_handlers"
+    //"lacima.com/Patterns/msgpack"    
 )
 
 
@@ -13,20 +16,25 @@ import (
 
 
 var application_servers_template *template.Template
-
+var web_servers redis_handlers.Redis_Hash_Struct
 
 
 
 func application_servers_init(){
+    display_struct_search_list := []string{"WEB_MAP"}
+    data_structures            :=  data_handler.Construct_Data_Structures(&display_struct_search_list)
+    web_servers = (*data_structures)["WEB_MAP"].(redis_handlers.Redis_Hash_Struct)
+ 
+    
     application_servers_template ,_ = base_templates.Clone()
     link_array := generate_application_web_servers()
-    application_servers_html := web_support.Generate_list_link_component( "container_1","List of Application Web Servers", link_array  )
+    application_servers_html := web_support.Generate_list_link_component( "applicationr_1","<center>List of Application Web Servers</center>", link_array  )
     
-    fmt.Println(application_servers_html)
+    
     template.Must(application_servers_template.New("application").Parse(application_servers_html))
     data := make(map[string]interface{})
-   data["Title"] = "Application Server"
-    application_servers_template.ExecuteTemplate(os.Stdout,"bootstrap", data)
+    data["Title"] = "Application Server"
+    
     
 }    
 
@@ -36,13 +44,24 @@ func application_servers_init(){
 func application_servers(w http.ResponseWriter, r *http.Request) {
    data := make(map[string]interface{})
    data["Title"] = "Application Server"
-   fmt.Println("made it here")
-   application_servers_template.ExecuteTemplate(os.Stdout,"bootstrap", data)
+   
+   
    application_servers_template.ExecuteTemplate(w,"bootstrap", data)
    
     
     
 }
+
+
+func generate_application_web_servers()[]web_support.Link_type{
+ 
+    return_value := make([]web_support.Link_type,0)
+    
+    return return_value
+    
+}
+
+/*
 
 func generate_application_web_servers()[]web_support.Link_type{
  
@@ -61,3 +80,4 @@ func generate_application_web_servers()[]web_support.Link_type{
     return return_value
     
 }
+*/

@@ -123,11 +123,17 @@ input[type="range"] {
 
   <body>
   {{template "menu" }}
-  
+  <style>
+    .application-example{
+        margin: 20px;
+    }
+</style>
+
+<div class="application-example">
    
   {{template "application"}}
   
- 
+</div> 
    
 
     <!-- jquery & Bootstrap JS -->

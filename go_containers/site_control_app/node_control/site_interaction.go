@@ -1,7 +1,7 @@
 package node_control
 
 
-import "fmt"
+//import "fmt"
 import "time"
 
 
@@ -37,7 +37,7 @@ func setup_site_control(cf_cluster *cf.CF_CLUSTER_TYPE , site_data_input *map[st
 
 
 func start_rpc_server(){
-     fmt.Println("made it here")
+     
     
      search_list := []string{"NODE:"+(*site_data)["local_node"].(string),"RPC_SERVER:NODE_CONTROL","RPC_SERVER"}
      handlers := data_handler.Construct_Data_Structures(&search_list)

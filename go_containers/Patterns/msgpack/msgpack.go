@@ -29,7 +29,7 @@ func Unpack_byte_array( packed_data []byte )interface{}{
 
 func Convert_rpc_return( input interface{} ) map[string]interface{}{
    return_value := make(map[string]interface{})
-   temp := input.(map[interface{}]interface{})
+   temp := input.(map[string]bool)
    for key , value := range temp{
   
 	 fmt.Println(key,value)

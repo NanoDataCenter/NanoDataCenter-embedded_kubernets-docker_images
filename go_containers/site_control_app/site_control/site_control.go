@@ -29,9 +29,9 @@ func Site_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
 func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
   var cf_control  cf.CF_SYSTEM_TYPE
   
-  search_list := []string{"NODE_MAP"}
+  search_list := []string{"NODE_STATUS"}
   handlers := data_handler.Construct_Data_Structures(&search_list)    
-  node_status_hash = (*handlers)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)    
+  node_status_hash = (*handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)    
   node_status_hash.Delete_All()
 
   (cf_control).Init(cf_cluster ,"site_control_node_monitoring",true, time.Second)
