@@ -89,7 +89,9 @@ func generate_system_component_graph(){
     file_server_properties["directory"] = "/files"
     su.Construct_RPC_Server( "SITE_FILE_SERVER","site_file_server",30,10,file_server_properties)
     
+    sqlite_server_properties := make(map[string]interface{})
     
+    su.Construct_RPC_Server( "SQLITE3_SERVER","site_file_server",30,10,sqlite_server_properties)
  
     
     

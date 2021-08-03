@@ -8,7 +8,6 @@ import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/cf_control"
-import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/go_basic_container/process_control_support"
 
 var  cf_control_cluster cf.CF_CLUSTER_TYPE
