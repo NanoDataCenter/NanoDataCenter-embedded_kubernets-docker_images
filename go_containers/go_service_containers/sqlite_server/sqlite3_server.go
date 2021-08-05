@@ -113,6 +113,7 @@ func open_database(parameters map[string]interface{} ) map[string]interface{}{
         //fmt.Println("file_path",file_path)
         //fmt.Println("err",err)
         if err != nil {
+            fmt.Println(err)
             return parameters
         }
         //fmt.Println("made it here")
@@ -122,8 +123,8 @@ func open_database(parameters map[string]interface{} ) map[string]interface{}{
         
         
     }
-   
-   
+    // all ready open
+    parameters["status"] = true 
     return parameters
     
 }
@@ -152,6 +153,7 @@ func delete_database(parameters map[string]interface{} ) map[string]interface{}{
          file_path := "/sqlite/"+db_name+".db"
          err := os.Remove(file_path)
          if err != nil {
+             fmt.Println(err)
              parameters["status"] = false
              return parameters
          }
@@ -173,14 +175,22 @@ func list_tables(parameters map[string]interface{} ) map[string]interface{}{
 func vacuum(parameters map[string]interface{} ) map[string]interface{}{ 
      db_name := parameters["database"].(string)
      parameters["results"] = ""
+     parameters["status"] = false
      if valid_database(db_name)==true{
           db := db_handlers[db_name]
-          db.Exec("VACUUM")
-          parameters["status"] = false
+          
+          _,err := db.Exec("VACUUM")
+        fmt.Println("vacuum",err)
+         if err != nil {
+              fmt.Println(err)
+              return parameters
+		      
+	      }
+	      parameters["status"] = true
           return parameters
      }
-     parameters["status"] = false
      
+     fmt.Println("bad db")
      return parameters
 }
        
@@ -206,6 +216,7 @@ func ex_exec(parameters map[string]interface{} ) map[string]interface{}{
       db      := db_handlers[db_name]
     _, err := db.Exec(script)
 	if err != nil {
+        fmt.Println(err)
 		return parameters
 	}
 	parameters["status"] = true
@@ -218,9 +229,9 @@ func ex_exec(parameters map[string]interface{} ) map[string]interface{}{
 
 func query(parameters map[string]interface{} ) map[string]interface{}{            
    
-     db_name   :=  parameters["database"].(string)   
-     script    :=  parameters["script"].(string)           
-     db        := db_handlers[db_name]  
+    db_name   :=  parameters["database"].(string)   
+    script    :=  parameters["script"].(string)           
+    db        := db_handlers[db_name]  
     fmt.Println("query start")
     parameters["results"] = ""
     parameters["status"] = false
@@ -257,9 +268,10 @@ func query(parameters map[string]interface{} ) map[string]interface{}{
 		}
         result = append(result,m)
     } 
-    fmt.Println(result)
+    
     parameters["results"] = result
     parameters["status"] = true
+    
     return parameters
 }
            

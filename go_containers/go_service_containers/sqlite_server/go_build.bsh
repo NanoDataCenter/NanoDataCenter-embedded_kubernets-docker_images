@@ -1,2 +1,5 @@
 #go build -ldflags '-linkmode external -w -extldflags "-static"'
-go build -ldflags '-linkmode external  -extldflags "-static"' $1
+export CGO_ENABLED=1
+
+go build --tags "json1 fts5"   -ldflags '-linkmode external  -extldflags "-static"' $1
+
