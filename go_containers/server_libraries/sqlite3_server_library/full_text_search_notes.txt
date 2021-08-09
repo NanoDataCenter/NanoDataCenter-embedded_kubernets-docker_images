@@ -25,7 +25,7 @@ ORDER BY rank;
 
 SELECT * 
 FROM posts 
-WHERE posts MATCH 'learn SQLite';
+WHERE posts MATCH 'learn AND SQLite';
  
 SELECT * 
 FROM posts

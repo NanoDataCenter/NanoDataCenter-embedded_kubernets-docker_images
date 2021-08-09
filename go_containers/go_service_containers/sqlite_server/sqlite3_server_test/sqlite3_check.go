@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 
+import "encoding/json"
 import "lacima.com/site_data"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/graph_query"
@@ -42,8 +43,9 @@ func main(){
     fmt.Println("vacuum")
     fmt.Println(sqlite3_handle.Vacuum("test2_db"))
     fmt.Println(sqlite3_handle.Delete_database("test1_db"))
-    fmt.Println(sqlite3_handle.Delete_database("test2_db"))
+
     fmt.Println(sqlite3_handle.Close_database("test2_db"))
+     fmt.Println(sqlite3_handle.Delete_database("test2_db"))
 	fmt.Println("done  first step")
     
     
@@ -79,10 +81,12 @@ func main(){
     field_values[3] = []string{".3", "'broccoli cheese onions flour'"}
     field_values[4] = []string{".3", "'duplicate value'"}
     field_values[5] = []string{".4", "'pumpkin sugar flour butter'"}
-   
+    fmt.Println("insert",sqlite3_handle.Insert_entries("test","text",[]string{"a","b"},field_values))
+    
+    fmt.Println("text search example")
+    fmt.Println(sqlite3_handle.Text_search("test","text", "pumpkin OR celery"))
     
     
-    fmt.Println("insert",sqlite3_handle.Insert_entries("test","text",[]string{"a","b"},field_values,))
     fmt.Println("select")
     fmt.Println(sqlite3_handle.Select("test","text",[]string{"a","b"},false,"",false))
     fmt.Println("selecy")
@@ -99,15 +103,7 @@ func main(){
     #  Now testing alter command
     #
     #
-    fmt.Println("tables",sqlite3_handle.List_tables("test"))
-    fmt.Println("alter_table_rename",sqlite3_handle.Alter_table_rename("test","text","new_text" ))
-    fmt.Println("tables",sqlite3_handle.List_tables("test"))
     
-    fmt.Println("insert_composite",sqlite3_handle.Insert_composite("test","test",[]string{"a","b"},field_values))
-    fmt.Println("select_composite",sqlite3_handle.Select_composite("test","test",[]string{"a","b"}))
-    fmt.Println("alter_table_add_column",sqlite3_handle.Alter_table_add_column("test","test","c text"    ))
-    fmt.Println("schema",sqlite3_handle.Get_table_schema("test","test"))
-    fmt.Println("select_composite",sqlite3_handle.Select_composite("test","test",[]string{"a","b","c"]))
     
     #
     #
@@ -116,20 +112,100 @@ func main(){
     
     */
     fmt.Println("drop_table",sqlite3_handle.Drop_table("test","test"))
-    fmt.Println(sqlite3_handle.Create_table("test","test",[]string{"a text","b text"},))
-    fmt.Println("update ",sqlite3_handle.Update("test","test",["c"],["default_value"],where_clause="a>.2"))
-    fmt.Println("select_composite",sqlite3_handle.Select_composite("test","test",["a","b","c"]))
-    fmt.Println("update ",sqlite3_handle.Update("test","test",["c"],["new default"]))
-    fmt.Println("select_composite",sqlite3_handle.Select_composite("test","test",["a","b","c"]))
+    fmt.Println("create table",sqlite3_handle.Create_table("test","test",[]string{"a text","b text"},false,true))
+    
+    
+    field_values = make([][]string,6)
+    field_values[0] = []string{".1", "'broccoli peppers cheese tomatoes'"}
+    field_values[1] = []string{ ".15", "'test data'"}
+    field_values[2] = []string{".2", "'pumpkin onions garlic celery'"}
+    field_values[3] = []string{".3", "'broccoli cheese onions flour'"}
+    field_values[4] = []string{".3", "'duplicate value'"}
+    field_values[5] = []string{".4", "'pumpkin sugar flour butter'"}
+    fmt.Println("insert",sqlite3_handle.Insert_entries("test","test",[]string{"a","b"},field_values))
+    
+    fmt.Println("update entry ",sqlite3_handle.Update("test","test", []string{"b"},[]string{"'new value'"},true,"a>.2"))
 
-    */
-    fmt.Println("drop_table",sqlite3_handle.Drop_table("test","texy"))
+    fmt.Println("select ")
+    fmt.Println(sqlite3_handle.Select("test","test",[]string{},false,"",false))
+    
+    fmt.Println("update ",sqlite3_handle.Update("test","test",[]string{"b"},[]string{"'new default'"},false,""))
+    fmt.Println("select")
+    fmt.Println(sqlite3_handle.Select("test","test",[]string{},false,"",false))
+
+    
+
+    fmt.Println("alter_table_rename",sqlite3_handle.Alter_table_rename("test","text","new_text" ))
+    fmt.Println("tables")
+    fmt.Println(sqlite3_handle.List_tables("test"))
+    
+    fmt.Println("insert",sqlite3_handle.Insert_entries("test","test",[]string{"a","b"},field_values))
+    fmt.Println("select")
+    fmt.Println(sqlite3_handle.Select("test","test",[]string{"a","b"},false,"",false))
+    fmt.Println("alter_table_add_column",sqlite3_handle.Alter_table_add_column("test","test","c text"    ))
+    fmt.Println("schema")
+    fmt.Println(sqlite3_handle.Get_table_schema("test","test"))
+    field_values = make([][]string,6)
+    field_values[0] = []string{".1", "'broccoli peppers cheese tomatoes'","'c0'"}
+    field_values[1] = []string{ ".15", "'test data'","'c1'"}
+    field_values[2] = []string{".2", "'pumpkin onions garlic celery'","'c2'"}
+    field_values[3] = []string{".3", "'broccoli cheese onions flour'","'c3'"}
+    field_values[4] = []string{".3", "'duplicate value'","'c4'"}
+    field_values[5] = []string{".4", "'pumpkin sugar flour butter'","'c5'"}
+    fmt.Println("insert",sqlite3_handle.Insert_entries("test","test",[]string{"a","b","c"},field_values))
+    fmt.Println("select")
+    fmt.Println(sqlite3_handle.Select("test","test",[]string{},false,"",false))   
+   
+    
+    /*
+     * Testing JSON FUNCTIONS
+     * 
+     */
+    
+        
+    fmt.Println("create JSON Table",sqlite3_handle.Create_table("test","json_test",[]string{"a text","b JSON"},false,true))
+    fmt.Println("schema")
+    fmt.Println(sqlite3_handle.Get_table_schema("test","json_test"))
+    
+    field_values = make([][]string,2)
+    
+    insert_data_dict      := make(map[string]interface{})
+    insert_data_dict["test_string"] = "test_string_result"
+    insert_data_dict["test_float"] = 3.14159
+    insert_data_json,_ := json.Marshal(insert_data_dict)
+    field_values[0] = []string{"'test_map'","'"+string(insert_data_json)+"'"}
+    
+    insert_data_dict      = make(map[string]interface{})
+    insert_data_dict["test_string"] = "test_string_result"
+    insert_data_dict["test_float"] = 19.555555
+    insert_data_json,_ = json.Marshal(insert_data_dict)
+    field_values[1] = []string{"'test_map'","'"+string(insert_data_json)+"'"}
+/*    
+    insert_data_list   := make([]interface{},2)
+    insert_data_list[0] = "test_string_result"
+    insert_data_list[1] = 3.14159 
+    insert_data_json1,_ := json.Marshal(insert_data_list)
+    field_values[1] = []string{"'test_array'","'"+string(insert_data_json1)+"'"}   
+*/
+    fmt.Println("insert",sqlite3_handle.Insert_entries("test","json_test",[]string{"a","b"},field_values))
+    fmt.Println("json query")
+    err , json_results := sqlite3_handle.Query("test","select json_extract(json_test.b  ,'$.test_float') from json_test")
+    fmt.Println("err",err)
+    for _,i := range json_results{
+        fmt.Println("resultS",i)
+    }
+    
+    
+    fmt.Println("drop_table",sqlite3_handle.Drop_table("test","json_test"))
     fmt.Println("drop_table",sqlite3_handle.Drop_table("test","test"))
+    fmt.Println("drop_table",sqlite3_handle.Drop_table("test","text"))
     fmt.Println("list tables after drop")
     sqlite3_handle.Close_database("test") 
     sqlite3_handle.Delete_database("test")
+    sqlite3_handle.Delete_database("test")
 
 }
+//select json_extract(user.phone, '$.cell') from user;
 
 /*
  print(sqlite_client.list_data_bases())

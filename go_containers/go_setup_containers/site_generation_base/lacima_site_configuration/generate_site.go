@@ -49,11 +49,13 @@ func setup_lacima_container_mount_points(){
   file_path    := "--mount type=bind,source=/home/pi/mountpoint/files/,target=/files/"   // path for file server to get files
   redis_path   := "--mount type=bind,source=/home/pi/mountpoint/redis/,target=/data/"  // path for redis server to store data
   secret_path  := "--mount type=bind,source=/home/pi/mountpoint/secrets/,target=/secrets/"
+  sqlite3_path := "--mount type=bind,source=/home/pi/mountpoint/sqlite3_databases/,target=/files/ "
   su.Setup_Mount_Points()  
   su.Add_mount_point("DATA",drive_path)
   su.Add_mount_point("FILE",file_path)
   su.Add_mount_point("REDIS_DATA",redis_path)    
   su.Add_mount_point("SECRETS",secret_path)
+  su.Add_mount_point("SQLITE3",sqlite3_path)
 
     
 }

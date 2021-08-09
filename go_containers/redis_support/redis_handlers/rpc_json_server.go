@@ -22,7 +22,7 @@ func (v Redis_RPC_Struct)json_start() {
    for true {
      if v.Length() != 0 {
         
-		v.json_handler_request()
+		v.json_handler_request()  // polling was used instead of a BRPOP because we wish to use a shared redis connection
 	   
      }else{
        //fmt.Println("made it here")

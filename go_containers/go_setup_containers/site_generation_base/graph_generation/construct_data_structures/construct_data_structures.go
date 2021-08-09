@@ -59,7 +59,7 @@ func ( v *Package_Constructor)Create_sql_table( name,database_name,table_name st
        v.check_for_duplicates( name)
 	   
 	   properties := make(map[string]interface{})
-       properties["type"]  = "SQL_LOG_TABLE"
+       properties["type"]  = "SQL_TABLE"
        properties["name"] = name  
        properties["database_name"] = database_name
        properties["table_name"]  = table_name
@@ -72,14 +72,26 @@ func ( v *Package_Constructor) Create_sql_text_search_table(name,database_name,t
        v.check_for_duplicates( name)
 
        properties := make(map[string]interface{})
-       properties["type"]  = "SEARCH_SQL_LOG_TABLE"
+       properties["type"]  = "SQL_TEXT_SEARCH_TABLE"
        properties["name"] = name  
        properties["database_name"] = database_name
        properties["table_name"]  = table_name
        properties["field_names"] = field_names       
        v.update_entry(name,&properties) 
 }
-       
+   
+func ( v *Package_Constructor) Create_document_table(name,database_name,table_name string, field_names []string){
+       v.check_for_duplicates( name)
+
+       properties := make(map[string]interface{})
+       properties["type"]  = "SQL_DOCUMENT_DB"
+       properties["name"] = name  
+       properties["database_name"] = database_name
+       properties["table_name"]  = table_name
+       properties["field_names"] = field_names   
+       v.update_entry(name,&properties) 
+}   
+   
 func ( v *Package_Constructor) Add_single_element(name string){
        v.check_for_duplicates( name)
 

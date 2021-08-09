@@ -1,85 +1,10 @@
+
 package sqlite3_server_lib
 
 
 import "fmt"
 //import "reflect"
 import "strings"
-import "lacima.com/redis_support/redis_handlers"
-import "lacima.com/redis_support/generate_handlers"
-
-type Sqlite_row_element []string
-
-type Sqlite3_Server_Client_Type struct{
-
-   driver redis_handlers.Redis_RPC_Struct
-}
-
-func Sqlite3_Server_Init(search_list *[]string)Sqlite3_Server_Client_Type{
-
-  var return_value Sqlite3_Server_Client_Type
-  handlers := data_handler.Construct_Data_Structures(search_list)  
-  return_value.driver = (*handlers)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
-  return return_value
-}  
-
-
-func (v Sqlite3_Server_Client_Type)Ping()bool{
-  
-
-       parameters := make(map[string]interface{})
-       
-       result := v.driver.Send_json_rpc_message( "ping", parameters ) 
-       return result["status"].(bool)
-
-}
-
-
-func (v Sqlite3_Server_Client_Type)List_databases()(bool , []string) {
-  
-       return_value := make([]string,0)
-       parameters := make(map[string]interface{})
-       
-       result := v.driver.Send_json_rpc_message( "list_data_bases", parameters ) 
-       
-       
-       for _,element := range result["results"].([]interface{}){
-           
-        return_value = append(return_value,element.(string))   
-       }
-       return result["status"].(bool), return_value
-
-}
-
-func (v Sqlite3_Server_Client_Type)Open_database(db_name string )bool{
-  
-
-       parameters := make(map[string]interface{})
-       parameters["database"] = db_name
-       result := v.driver.Send_json_rpc_message( "open_database", parameters ) 
-       return result["status"].(bool)
-
-}
-
-func (v Sqlite3_Server_Client_Type)Close_database(db_name string)bool{
-  
-
-       parameters := make(map[string]interface{})
-       parameters["database"] = db_name
-       result := v.driver.Send_json_rpc_message( "close_database", parameters ) 
-       return result["status"].(bool)
-
-}
-
-func (v Sqlite3_Server_Client_Type)Delete_database( db_name string )bool{
-  
-
-       parameters := make(map[string]interface{})
-       parameters["database"] = db_name
-       result := v.driver.Send_json_rpc_message("delete_database", parameters ) 
-       return result["status"].(bool)
-
-}
-
 
 
 func (v Sqlite3_Server_Client_Type)Vacuum( db_name string )bool{
@@ -91,37 +16,21 @@ func (v Sqlite3_Server_Client_Type)Vacuum( db_name string )bool{
        return result["status"].(bool)
 
 }
-
-func (v Sqlite3_Server_Client_Type)Execute( db_name string, script string )bool{
-  
-
-       parameters := make(map[string]interface{})
-       parameters["script"] = script
-       parameters["database"] = db_name
-       result := v.driver.Send_json_rpc_message("execute", parameters ) 
-       return result["status"].(bool)
-
-}
-
-func (v Sqlite3_Server_Client_Type)Query( db_name string, script string)(bool,[]map[string]interface{}){
-  
-
-       parameters := make(map[string]interface{})
-       parameters["database"]  = db_name   
-       parameters["script"]    = script      
-       parameters = v.driver.Send_json_rpc_message("query", parameters )
-           
-             
-       return_array := make([]map[string]interface{},0)
-       for _,element := range parameters["results"].([]interface{}){
-        value_map := element.(map[string]interface{})
+/*
+SELECT * 
+FROM posts 
+WHERE posts MATCH 'text' 
+ORDER BY rank;
+*/
+func (v Sqlite3_Server_Client_Type)Text_search(db_name,table_name string, match_clause string)(bool,[]map[string]interface{}){
+    
+    
+       script := "select  *  FROM "+table_name+" WHERE "+table_name+" MATCH '"+match_clause+"' ORDER BY rank ;"
+       fmt.Println("text search script "+script)
        
-        return_array = append(return_array,value_map)   
-       }
-      
-       return parameters["status"].(bool),return_array
-
+       return v.Query(db_name,script)
 }
+
 
 func (v Sqlite3_Server_Client_Type)Select(db_name,table_name string, return_fields []string ,where_flag bool , where_clause string,distinct_flag bool)(bool,[]map[string]interface{}){
        script := ""
@@ -130,9 +39,13 @@ func (v Sqlite3_Server_Client_Type)Select(db_name,table_name string, return_fiel
        }else{
           script = "select "
        }
-       script = script+"  "+strings.Join(return_fields,",") + "  FROM "+table_name+" "
+       if len(return_fields) == 0 {
+           script = script+"  *  FROM "+table_name+" "
+       }else{
+           script = script+"  "+strings.Join(return_fields,",") + "  FROM "+table_name+" "
+       }
        if where_flag == true {
-           script = script+ "  where "+where_clause+" ; "
+           script = script+ "  WHERE "+where_clause+" ; "
        }else{
            script = script+" ; "
        }
@@ -177,17 +90,7 @@ field defininations are of the form
 
 
 
-------------------------------+
-|go        | sqlite3           |
-|----------|-------------------|
-|nil       | null              |
-|int       | integer           |
-|int64     | integer           |
-|float64   | float             |
-|bool      | integer           |
-|[]byte    | blob              |
-|string    | text              |
-|time.Time | timestamp/datetime|
+
 */
 
 func (v Sqlite3_Server_Client_Type)Create_table( db_name, table_name string, fields []string, temp_table, not_exists bool )(bool){
@@ -247,21 +150,23 @@ func (v Sqlite3_Server_Client_Type)Drop_table( db_name, table_name string )(bool
 
 
 
-func (v Sqlite3_Server_Client_Type)Get_table_schema( db_name, table_name string )(bool,map[string]string){
+func (v Sqlite3_Server_Client_Type)Get_table_schema( db_name, table_name string )(bool,map[string]string,  string){
   
       script := "PRAGMA table_info('"+table_name+"');"
+      raw_schema := ""
       return_value := make(map[string]string)
       status,query_data := v.Query(db_name,script)
-      fmt.Println("query_data",query_data)
+      fmt.Println("Table_schema",status,query_data)
       if status == true{
+          raw_schema = fmt.Sprintf( "%v", query_data)
           for _,element := range query_data {
-              return_value["name"] = element["name"].(string)
-              return_value["type"] = element["type"].(string)
+              name                 :=  element["name"].(string)
+              return_value[name]   = element["type"].(string)
           }
       }  
       fmt.Println("status",status)
       
-      return status,return_value
+      return status,return_value, raw_schema
 
 }
 
@@ -310,7 +215,7 @@ func (v Sqlite3_Server_Client_Type)Insert_entries(db_name,table_name string,row_
 }
        
        
-func (v Sqlite3_Server_Client_Type)Update_entry(db_name,table_name string,row_names,row_values[]string , where_flag bool,  where_clause string  )(bool){ 
+func (v Sqlite3_Server_Client_Type)Update(db_name,table_name string,row_names,row_values[]string , where_flag bool,  where_clause string  )(bool){ 
 
     if len(row_names) != len(row_values){
           panic("row id and row values are not same length")    
@@ -329,7 +234,7 @@ func (v Sqlite3_Server_Client_Type)Update_entry(db_name,table_name string,row_na
     }else{
            script = script+ " ;"
     }
-       
+    fmt.Println("script",script)
     return v.Execute(db_name,script)
 }
     

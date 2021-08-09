@@ -1,0 +1,6 @@
+sqlite3 must be statically linked to run in the container
+the following cmd line is used to generate this executeable
+
+ gcc -DSQLITE_THREADSAFE=0 shell.c sqlite3.c -ldl -lm -static
+
+Note this command line produces the program a.out which can be renamed to sqlite3

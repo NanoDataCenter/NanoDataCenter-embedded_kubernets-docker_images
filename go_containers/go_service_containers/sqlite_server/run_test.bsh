@@ -1,0 +1,3 @@
+./sqlite3_server &
+./sqlite3_check
+

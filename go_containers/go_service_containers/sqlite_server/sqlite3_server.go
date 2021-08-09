@@ -114,6 +114,7 @@ func open_database(parameters map[string]interface{} ) map[string]interface{}{
         //fmt.Println("err",err)
         if err != nil {
             fmt.Println(err)
+            parameters["error_description"] = fmt.Sprintf( "%v", err)
             return parameters
         }
         //fmt.Println("made it here")
@@ -150,10 +151,11 @@ func delete_database(parameters map[string]interface{} ) map[string]interface{}{
      parameters["results"] = ""
      db_name := parameters["database"].(string)
      if valid_database(db_name) == false{
-         file_path := "/sqlite/"+db_name+".db"
+         file_path := "/files/"+db_name+".db"
          err := os.Remove(file_path)
          if err != nil {
              fmt.Println(err)
+             parameters["error_description"] = fmt.Sprintf( "%v", err)
              parameters["status"] = false
              return parameters
          }
@@ -182,7 +184,9 @@ func vacuum(parameters map[string]interface{} ) map[string]interface{}{
           _,err := db.Exec("VACUUM")
         fmt.Println("vacuum",err)
          if err != nil {
+              parameters["error_description"] = fmt.Sprintf( "%v", err)
               fmt.Println(err)
+              parameters["error_description"] = fmt.Sprintf( "%v", err)
               return parameters
 		      
 	      }
@@ -217,6 +221,7 @@ func ex_exec(parameters map[string]interface{} ) map[string]interface{}{
     _, err := db.Exec(script)
 	if err != nil {
         fmt.Println(err)
+        parameters["error_description"] = fmt.Sprintf( "%v", err)
 		return parameters
 	}
 	parameters["status"] = true
@@ -224,7 +229,7 @@ func ex_exec(parameters map[string]interface{} ) map[string]interface{}{
 }
 
            
-          
+     
 
 
 func query(parameters map[string]interface{} ) map[string]interface{}{            
@@ -232,7 +237,7 @@ func query(parameters map[string]interface{} ) map[string]interface{}{
     db_name   :=  parameters["database"].(string)   
     script    :=  parameters["script"].(string)           
     db        := db_handlers[db_name]  
-    fmt.Println("query start")
+  
     parameters["results"] = ""
     parameters["status"] = false
     if valid_database(db_name) == false {
@@ -241,6 +246,8 @@ func query(parameters map[string]interface{} ) map[string]interface{}{
      rows, err := db.Query(script )
      if err != nil {
 		
+        
+        parameters["error_description"] = fmt.Sprintf( "%v", err)
 		return parameters
      }           
 
@@ -258,6 +265,7 @@ func query(parameters map[string]interface{} ) map[string]interface{}{
 
 		if err := rows.Scan(columnPointers...); err != nil {
            
+             parameters["error_description"] = fmt.Sprintf( "%v", err)
 		     return parameters
 		}
 

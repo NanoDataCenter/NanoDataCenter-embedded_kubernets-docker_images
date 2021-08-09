@@ -6,17 +6,17 @@ const lacima_site_image       string   = "nanodatacenter/lacima_site_generation"
 const lacima_secrets_image    string   = "nanodatacenter/lacima_secrets"
 const file_server_image       string   = "nanodatacenter/file_server"
 const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
-
+const sqlite3_server_image    string   = "nanodatacenter/sqlite3_server"
 
 
 
 
 
 func generate_system_components(master_flag bool,node_name string ){
-   file_server_mount := []string {"DATA","FILE"}
-   redis_mount       := []string{"REDIS_DATA"}
-   secrets_mount     := []string{"DATA","SECRETS"}
-
+   file_server_mount    := []string {"DATA","FILE"}
+   redis_mount          := []string{"REDIS_DATA"}
+   secrets_mount        := []string{"DATA","SECRETS"}
+   sqlite3_server_mount := []string {"DATA","SQLITE3"}
    
    redis_monitor_command_map  := make(map[string]string)
    redis_monitor_command_map["redis_monitor"] = "./redis_monitor"
@@ -24,6 +24,8 @@ func generate_system_components(master_flag bool,node_name string ){
    file_server_command_map  := make(map[string]string)
    file_server_command_map["file_server"] = "./file_server"   
    
+   sqlite3_server_command_map  := make(map[string]string)
+   sqlite3_server_command_map["sqlite3_server"] = "./sqlite3_server"   
    
    
     
@@ -33,8 +35,9 @@ func generate_system_components(master_flag bool,node_name string ){
    su.Add_container( true, "lacima_secrets",lacima_secrets_image,su.Temp_run ,null_map, secrets_mount)
    su.Add_container( false, "file_server",file_server_image, su.Managed_run ,file_server_command_map ,file_server_mount)
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
+   su.Add_container( false,"sqlite3_server",sqlite3_server_image, su.Managed_run,sqlite3_server_command_map, sqlite3_server_mount)
    
-   containers := []string{"redis","lacima_secrets","file_server","redis_monitor"}
+   containers := []string{"redis","lacima_secrets","file_server","sqlite3_server","redis_monitor"}
    su.Construct_service_def("system_monitoring",master_flag,"", containers, generate_system_component_graph) 
     
     
@@ -93,6 +96,10 @@ func generate_system_component_graph(){
     
     su.Construct_RPC_Server( "SQLITE3_SERVER","site_file_server",30,10,sqlite_server_properties)
  
-    
+    su.Cd_Rec.Construct_package("SQLITE3_TEXT")
+    su.Cd_Rec.Create_sql_table( "sql_test","test_db","sql_table",[]string{"a","b"})
+    su.Cd_Rec.Create_sql_text_search_table("sql_test_text","test_db","sql_table_text",[]string{"a","b"})
+    su.Cd_Rec.Create_document_table("sql_test_document","test_db","sql_table_document", []string{"a","b"})  
+    su.Cd_Rec.Close_package_construction()   
     
 }
