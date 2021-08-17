@@ -1,0 +1,19 @@
+
+\c dbname username   Switch to new database
+\l List available databases
+\dt List tablse
+\d table_name  describe table
+\dn  list schema of data base
+\df list availabe functions
+\dv  list view
+\du  list users and their roles:
+SELECT version(); to get version
+\g  Execute previous command
+\s  command history
+\s filename save command history to files
+\i filename execute psql commands from file
+\?  list commands
+\h ALTER TABLE information on alter tab
+\q  quit
+
+

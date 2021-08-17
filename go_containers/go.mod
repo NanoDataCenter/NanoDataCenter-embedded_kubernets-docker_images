@@ -9,6 +9,8 @@ require (
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/influxdata/influxdb-client-go v1.4.0 // indirect
 	github.com/influxdata/influxdb-client-go/v2 v2.4.0 // indirect
+	github.com/jackc/pgx/v4 v4.13.0 // indirect
+	github.com/lib/pq v1.10.2 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect

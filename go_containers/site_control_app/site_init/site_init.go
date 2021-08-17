@@ -48,7 +48,7 @@ func master_log_incident_data(){
     current_value := b.String()
     incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
     if hot_start == false {
-        incident_log.Post_event(false,"cold_stert",current_value)
+        incident_log.Post_event(false,"cold_start",current_value)
     }else{
        incident_log.Post_event(false,"hot_start",current_value)
     }

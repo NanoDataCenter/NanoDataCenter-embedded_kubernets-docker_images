@@ -55,42 +55,25 @@ func ( v *Package_Constructor)update_entry( name string,properties *map[string]i
 
 }
 
-func ( v *Package_Constructor)Create_sql_table( name,database_name,table_name string,field_names []string){
+
+
+// table name is in the derived key
+func ( v *Package_Constructor)Create_postgres_stream( name,user,password, database_name string ,time_limit int64){
        v.check_for_duplicates( name)
 	   
 	   properties := make(map[string]interface{})
-       properties["type"]  = "SQL_TABLE"
-       properties["name"] = name  
-       properties["database_name"] = database_name
-       properties["table_name"]  = table_name
-       properties["field_names"] = field_names       
+       properties["type"]           = "POSTGRES_STREAM"
+       properties["name"]           = name  
+       properties["user"]           = user
+       properties["password"]       = password
+       properties["database_name"]  = database_name
+       properties["time_limit"]     = time_limit
+
        v.update_entry(name,&properties) 
 }
         
         
-func ( v *Package_Constructor) Create_sql_text_search_table(name,database_name,table_name string,field_names []string){
-       v.check_for_duplicates( name)
 
-       properties := make(map[string]interface{})
-       properties["type"]  = "SQL_TEXT_SEARCH_TABLE"
-       properties["name"] = name  
-       properties["database_name"] = database_name
-       properties["table_name"]  = table_name
-       properties["field_names"] = field_names       
-       v.update_entry(name,&properties) 
-}
-   
-func ( v *Package_Constructor) Create_document_table(name,database_name,table_name string, field_names []string){
-       v.check_for_duplicates( name)
-
-       properties := make(map[string]interface{})
-       properties["type"]  = "SQL_DOCUMENT_DB"
-       properties["name"] = name  
-       properties["database_name"] = database_name
-       properties["table_name"]  = table_name
-       properties["field_names"] = field_names   
-       v.update_entry(name,&properties) 
-}   
    
 func ( v *Package_Constructor) Add_single_element(name string){
        v.check_for_duplicates( name)

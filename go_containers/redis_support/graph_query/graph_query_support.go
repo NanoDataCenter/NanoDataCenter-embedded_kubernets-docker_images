@@ -53,7 +53,7 @@ func Convert_json_interface_array( json_string string) []map[string]interface{} 
 }
 func Convert_json_dictionary_interface( json_string string) map[string]interface{}  {
 
-     var return_value = make(map[string]interface{},0)
+     var return_value = make(map[string]interface{})
      var err2 = json.Unmarshal([]byte(json_string),&return_value)
      if err2 != nil{
 	         panic("bad json data")

@@ -145,7 +145,7 @@ func (v Redis_RPC_Struct) Push( value string){
 
 func recovery(){
    if r := recover(); r != nil {
-        
+           fmt.Println("recovery")
 		   fmt.Println(r)
 		   //panic("done")   
     }

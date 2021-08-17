@@ -24,6 +24,17 @@ func Construct_incident_logging(command_code ,description string){
 }
 
 
+
+func Construct_postgres_streaming_logs( description, stream_name,user,password, database_name string, time_limit int64){
+     properties := make(map[string]interface{})
+     properties["description"] = description
+     Bc_Rec.Add_header_node("POSTGRES_LOG",stream_name,properties)
+     Cd_Rec.Construct_package("POSTGRES_LOG")
+     Cd_Rec.Create_postgres_stream( "POSTGRES_LOG",user,password, database_name,time_limit )
+     Cd_Rec.Close_package_construction()
+     Bc_Rec.End_header_node("POSTGRES_LOG",stream_name)
+}
+   
 /*
  *   
  * 

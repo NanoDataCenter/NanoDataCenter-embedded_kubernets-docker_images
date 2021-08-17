@@ -1,4 +1,0 @@
-
-docker build --tag  nanodatacenter/sqlite3_server . 
-
-

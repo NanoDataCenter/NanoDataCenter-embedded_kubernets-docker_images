@@ -1,6 +1,6 @@
 package docker_management
 
-
+//import "fmt"
 import "bytes"
 
 import "strings"
@@ -39,21 +39,26 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   
   
   running_containers := docker_control.Containers_ls_runing()
+  //fmt.Println("running containers",running_containers)
   for _,running_container := range running_containers {
+    //fmt.Println("running container",running_container)
      _,ok := check_map[running_container]
+     //fmt.Println("ok",ok)
 	 if ok == true{
 	    check_map[running_container] = true
 	}
   }
-  
+  //fmt.Println("container map",check_map)
   for _,container := range( docker_handle).containers {
-    
      
+     //fmt.Println("container",container,(docker_handle).hget_status_value(container))
 	 container_status := (docker_handle).hget_status_value(container)
 	 if (*container_status)["managed"] == false {
          continue    // do nothihg if container is not monitored
      }
 	 // update status values
+	 
+	 
 	 if (*container_status)["active"] != check_map[container] {
 	   
 	     (*container_status)["active"] = check_map[container]

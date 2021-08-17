@@ -1,14 +1,16 @@
 package data_handler
 
-//import "fmt"
 import "context"
 
 import "time"
 //import "reflect"
+//import "encoding/json"
 import "strconv"
+import "hash/fnv"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 import "github.com/go-redis/redis/v8"
+import "lacima.com/server_libraries/postgres"
 
 var site string
 var site_ptr *map[string]interface{}
@@ -109,6 +111,8 @@ func Construct_Data_Structures(  search_list *[]string )  *map[string]interface{
    handlers             := make(map[string]interface{})
    handler_definitions  := make([]map[string]interface{},0)
    construct_handler_definitions( search_list , &handler_definitions  ) 
+   
+
    construct_redis_handlers( &handler_definitions, &handlers )
    
    return &handlers
@@ -144,11 +148,15 @@ func construct_handler_definitions( search_list *[]string, handler_definitions *
    }
    
    var data_structures_json = packages[0]["data_structures"]
+   
+   
+   
   
    var data_structures = graph_query.Convert_json_dictionary_interface(  data_structures_json)
    
    var namespace_json = packages[0]["namespace"]
    var namespace = graph_query.Convert_json_string( namespace_json)
+
    
    
    
@@ -165,11 +173,17 @@ func construct_handler_definitions( search_list *[]string, handler_definitions *
 
  
 func construct_redis_handlers( handler_definitions *[]map[string]interface{}, handlers *map[string]interface{} ){
-   var type_def string
-   var name string
-   var key string
-   var depth int64
-   var timeout int64
+   var type_def        string
+   var name            string
+   var user            string
+   var password        string
+   var key             string
+   var depth           int64
+   var timeout         int64
+   var database_name   string
+   var table_name      string
+   var time_limit      int64
+  
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
 	 
@@ -211,15 +225,49 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		   depth = int64(v["depth"].(float64))
 		   (*handlers)[name] = redis_handlers.Construct_Redis_RPC(  ctx , client , key , timeout, depth  )
 	   
-	   } else{
+	   } else if type_def == "POSTGRES_STREAM" {
+          
+		   key            = v["key"].(string)
+           
+           name          =   v["name"].(string)  
+           user          =   v["user"] .(string) 
+           password      =   v["password"].(string)  
+           database_name =   v["database_name"].(string) 
+           table_name    =   "T"+generate_table_name(key)
+           time_limit    =   int64(v["time_limit"].(float64))
+    
+           
+           
+		   (*handlers)[name] = pg_drv.Construct_Postgres_Stream_Driver( key,user,password,database_name,table_name, time_limit) 
+	   
+	   
+	   
+	   }else {
 	   panic("Key is not expected "+type_def)
 	 }
    }
 	 
 }
 
+func generate_table_name( key string)string{
+    h := fnv.New64a()
+    h.Write([]byte(key))
+    hash :=  h.Sum64()
+   
+    temp := int64(hash)
+    if temp < 0 {
+        temp = -temp
+    }
+   
+    return strconv.FormatInt(int64(temp), 10)     
+}
 
-
-
+func convert_string_array_interface( input []interface{})[]string {
+    return_value := make([]string,0)
+    for _,i := range input {
+        return_value = append(return_value,i.(string))
+    }
+    return return_value   
+}   
 
 

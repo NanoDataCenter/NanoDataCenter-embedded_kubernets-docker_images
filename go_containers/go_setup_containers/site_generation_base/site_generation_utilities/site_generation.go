@@ -38,10 +38,6 @@ func start_site_definitions(site_name , configuration_file_path string, system_c
 	properties["containers"] = system_containers
 	properties["file_path"] = configuration_file_path
     Bc_Rec.Add_header_node( "SITE",site_name,  properties  )
-    
-
-    
-      
       
 }
 
