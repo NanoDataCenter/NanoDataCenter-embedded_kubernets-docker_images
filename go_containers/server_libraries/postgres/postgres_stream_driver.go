@@ -7,7 +7,7 @@ import (
     //"strconv"
     "time"
 	"context"
-	"github.com/jackc/pgx/v4"   
+	//"github.com/jackc/pgx/v4"   
 	
 )
     
@@ -26,7 +26,7 @@ type Stream_Output_Data_Record struct {
 
 type Postgres_Stream_Driver struct {
     
-     conn          *pgx.Conn  
+     Postgres_Basic_Driver
      key           string
      user          string
      password      string
@@ -54,15 +54,14 @@ func Construct_Postgres_Stream_Driver( key,user,password,database, table_name st
 
 
 func ( v  *Postgres_Stream_Driver )Connect( ip string )bool{
-     connection_url := "postgres://"+v.user+":" + v.password + "@"+ ip+":5432" + "/"+v.database 
+    connection_url := "postgres://"+v.user+":" + v.password + "@"+ ip+":5432" + "/"+v.database 
+    if v.connect(connection_url) == false {
+        return false
+    }
     
-    conn, err := pgx.Connect(context.Background(), connection_url )
-	if err != nil {
-        v.conn = nil
-		return false
-	}
 	
-	v.conn = conn
+	
+
 	v.create_table()
     v.create_index()
 	
@@ -97,13 +96,6 @@ func ( v  Postgres_Stream_Driver )create_index()bool{
     
 
 
-func ( v  Postgres_Stream_Driver )Vacuum( )bool{
-    
-    v.Trim(v.time_limit) 
-    script := "VACUUM "+v.table_name +";"
-    return v.Exec( script  )
-    
-}
 
 
 func ( v  Postgres_Stream_Driver )Insert( tag1,tag2,tag3,data string )bool{
@@ -130,26 +122,13 @@ func ( v Postgres_Stream_Driver )Trim( trim_time_second int64  )bool{
     
 }
 
-
-/*
- * low level drivers
- * 
- */
-func (v Postgres_Stream_Driver) Close() {
+func ( v  Postgres_Stream_Driver )Vacuum( )bool{
     
-    v.conn.Close(context.Background())
-    v.conn = nil
-}
-
-func (v Postgres_Stream_Driver)Ping()bool{
     
-    if v.conn.Ping(context.Background()) != nil {
-        return false
-    }
-    return true
+    script := "VACUUM "+v.table_name +";"
+    return v.Exec( script  )
     
 }
-
 
 func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output_Data_Record, bool){
     
@@ -238,13 +217,3 @@ func (v Postgres_Stream_Driver)Select_after_time_stamp( timestamp int64)([]Strea
 }
 
 
-func (v  Postgres_Stream_Driver )Exec( script string )bool {
-    
-    
-  _, err := v.conn.Exec(context.Background(),script) 
-  if err != nil {
-      return false
-  }
-  return true
-    
-}

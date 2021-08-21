@@ -3,6 +3,7 @@ module lacima.com
 go 1.16
 
 require (
+	github.com/eclipse/paho.mqtt.golang v1.3.5 // indirect
 	github.com/go-redis/redis/v8 v8.8.2 // indirect
 	github.com/gorilla/handlers v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
