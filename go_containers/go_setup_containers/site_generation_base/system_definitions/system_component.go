@@ -7,9 +7,10 @@ const lacima_secrets_image    string   = "nanodatacenter/lacima_secrets"
 const file_server_image       string   = "nanodatacenter/file_server"
 const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 const postgres_image          string   = "nanodatacenter/postgres"
+const mqtt_image              string   = "nanodatacenter/mosquito"
+const mqtt_to_db_image        string   = "nanodatacenter/mqtt_to_db"
 
-
-
+ 
 
 
 func generate_system_components(master_flag bool,node_name string ){
@@ -17,6 +18,7 @@ func generate_system_components(master_flag bool,node_name string ){
    redis_mount          := []string{"REDIS_DATA"}
    secrets_mount        := []string{"DATA","SECRETS"}
    postgres_mount       := []string{"DATA","POSTGRES"}
+   mqtt_mount           := []string{}
    
    redis_monitor_command_map  := make(map[string]string)
    redis_monitor_command_map["redis_monitor"] = "./redis_monitor"
@@ -24,6 +26,8 @@ func generate_system_components(master_flag bool,node_name string ){
    file_server_command_map  := make(map[string]string)
    file_server_command_map["file_server"] = "./file_server"   
 
+   mqtt_to_db_command_map  := make(map[string]string)
+   mqtt_to_db_command_map["mqtt_to_db"] = "./mqtt_to_db"
    
     
    null_map := make(map[string]string)
@@ -32,6 +36,8 @@ func generate_system_components(master_flag bool,node_name string ){
    su.Add_container( true, "lacima_secrets",lacima_secrets_image,su.Temp_run ,null_map, secrets_mount)
    su.Add_container( false, "file_server",file_server_image, su.Managed_run ,file_server_command_map ,file_server_mount)
    su.Add_container( false,"postgres",postgres_image,su.No_run, null_map, postgres_mount)
+   su.Add_container( false,"mqtt",mqtt_image,su.No_run, null_map, mqtt_mount)
+   su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
   
    
@@ -92,6 +98,9 @@ func generate_system_component_graph(){
     
     su.Bc_Rec.Add_header_node("POSTGRES_TEST","driver_test",make(map[string]interface{}))
     su.Construct_postgres_streaming_logs("postgres driver test","postgress_test","admin","password","admin",30*24*3600)
-    su.Bc_Rec.End_header_node("POSTGRES_TEST","driver_test")  
+    // need to make a test here for registry
+    su.Bc_Rec.End_header_node("POSTGRES_TEST","driver_test")
+    
+    construct_mqtt_device_defintions()
     
 }

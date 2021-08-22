@@ -28,15 +28,12 @@ func Construct_mqtt_tasks( ip string, port int){  // setup receiving mqtt constr
     if token := client.Connect(); token.Wait() && token.Error() != nil {
         panic(token.Error())
     }
-    fmt.Println("connection received")
+    //fmt.Println("connection received")
     topic := get_monitoring_topic()
-    fmt.Println("topic",topic)
+    //fmt.Println("topic",topic)
     token := client.Subscribe(topic, 2, nil)
     token.Wait()
-    fmt.Println("sending message")
-    token = client.Publish("/topic/test", 2, false, "test message")
-    token.Wait()
-    fmt.Println("message sent")
+
 }
  
  

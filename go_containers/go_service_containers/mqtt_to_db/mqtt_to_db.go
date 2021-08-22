@@ -33,7 +33,8 @@ func main(){
 func mqtt_monitor_init(){
     ip   := site_data_store["host"].(string)
     port := 1883
-    support.Construct_event_registry_tasks()
+    site := site_data_store["site"].(string)
+    support.Construct_event_registry_tasks(site)
     support.Construct_mqtt_tasks(ip,port)
 }
 

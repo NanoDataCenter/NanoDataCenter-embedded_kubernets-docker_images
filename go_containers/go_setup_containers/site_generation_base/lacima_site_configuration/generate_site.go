@@ -50,6 +50,7 @@ func setup_lacima_container_mount_points(){
   redis_path     := "--mount type=bind,source=/home/pi/mountpoint/redis/,target=/data/"  // path for redis server to store data
   secret_path    := "--mount type=bind,source=/home/pi/mountpoint/secrets/,target=/secrets/"
   postgres_path  := "--mount type=bind,source=/home/pi/mountpoint/postgres_files/,target=/var/lib/postgresql/data"
+  
   su.Setup_Mount_Points()  
   su.Add_mount_point("DATA",drive_path)
   su.Add_mount_point("FILE",file_path)
