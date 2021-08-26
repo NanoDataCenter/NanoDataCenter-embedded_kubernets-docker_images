@@ -18,6 +18,8 @@ type Stream_Output_Data_Record struct {
     tag1       string;
     tag2       string;
     tag3       string;
+    tag4       string;
+    tag5       string;
     data       string;
     time_stamp int64;
 }    
@@ -68,6 +70,14 @@ func ( v  *Postgres_Stream_Driver )Connect( ip string )bool{
 	return true
 }
 
+
+func ( v  Postgres_Stream_Driver )Create_table()bool{
+    v.create_table()
+    v.create_index()
+    return true
+}
+
+
 func ( v  Postgres_Stream_Driver )Drop_table(  )bool{
     script := "DROP TABLE IF EXISTS  "+v.table_name+";" 
     return v.Exec( script  )
@@ -76,16 +86,17 @@ func ( v  Postgres_Stream_Driver )Drop_table(  )bool{
 
 
 func ( v  Postgres_Stream_Driver )create_table( )bool{
-   script_array := make([]string,7)
+   script_array := make([]string,9)
    script_array[0] = "CREATE TABLE IF NOT EXISTS  "+ v.table_name +"( "
    script_array[1] = "stream_id BIGSERIAL PRIMARY KEY,"
    script_array[2] = "tag1 text,"
    script_array[3] = "tag2 text,"
    script_array[4] = "tag3 text,"
-   script_array[5] = "data text,"
-   script_array[6] = "time bigint );"
+   script_array[5] = "tag4 text,"
+   script_array[6] = "tag5 text,"
+   script_array[7] = "data text,"
+   script_array[8] = "time bigint );"
    script := strings.Join(script_array," ")
-   
    return v.Exec( script  )
 }
 
@@ -98,12 +109,12 @@ func ( v  Postgres_Stream_Driver )create_index()bool{
 
 
 
-func ( v  Postgres_Stream_Driver )Insert( tag1,tag2,tag3,data string )bool{
+func ( v  Postgres_Stream_Driver )Insert( tag1,tag2,tag3,tag4,tag5,data string )bool{
     
   time_stamp := time.Now().UnixNano()
   //ime_string := strconv.FormatInt(time_stamp,10)
  
-  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,data,time ) VALUES('%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,data,time_stamp)
+  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,data,time_stamp)
   
   return v.Exec( script  )
 }

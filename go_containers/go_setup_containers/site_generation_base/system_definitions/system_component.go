@@ -68,8 +68,21 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("NODE_MAP") // map of node ip's
     su.Cd_Rec.Close_package_construction()
     
-    su.Cd_Rec.Construct_package("WEB_MAP")
-    su.Cd_Rec.Add_hash("WEB_MAP") // map of all subsystem web servers
+    port_map_properties                         := make(map[string]interface{})
+    port_map                                    := make(map[string]string)
+    port_map["mqtt_to_db"]                      = ":2021"
+    
+    port_description_map                        := make(map[string]string)
+    port_description_map["mqtt_to_db"]          = "MQTT_TO_DB Web Services"
+    
+    port_map_properties["port_map"]             = port_map
+    port_map_properties["description"]          = port_description_map
+    
+    su.Bc_Rec.Add_info_node("WEB_MAP","WEB_MAP",port_map_properties)
+    
+    
+    su.Cd_Rec.Construct_package("WEB_IP")
+    su.Cd_Rec.Add_hash("WEB_IP")           // map of all subsystem web servers
     su.Cd_Rec.Close_package_construction()    
     
     su.Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream")
@@ -87,7 +100,7 @@ func generate_system_component_graph(){
     su.Cd_Rec.Close_package_construction()
    
     
-    
+   
     su.Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",make(map[string]interface{}))
     su.Construct_streaming_logs("redis_monitor","redis_monitor",[]string{"KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})   
     su.Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
@@ -98,7 +111,9 @@ func generate_system_component_graph(){
     
     su.Bc_Rec.Add_header_node("POSTGRES_TEST","driver_test",make(map[string]interface{}))
     su.Construct_postgres_streaming_logs("postgres driver test","postgress_test","admin","password","admin",30*24*3600)
-    // need to make a test here for registry
+    su.Cd_Rec.Construct_package("POSTGRES_REGISTY_TEST")
+    su.Cd_Rec.Create_postgres_registry("postgress_registry_test","admin","password","admin" )
+    su.Cd_Rec.Close_package_construction()
     su.Bc_Rec.End_header_node("POSTGRES_TEST","driver_test")
     
     construct_mqtt_device_defintions()

@@ -6,8 +6,11 @@ import (
   "fmt"
   "strings"  
   "html/template"
+  "net"
   "net/http"
-  //"path/filepath"
+  "lacima.com/redis_support/generate_handlers"
+  "lacima.com/redis_support/redis_handlers"
+  "lacima.com/redis_support/graph_query"
 )
 
 
@@ -69,8 +72,38 @@ func Generate_single_row_menu( menu_array Menu_array )*template.Template {
     template.Must(template_array.New("menu").Parse(template_string)) 
     return template_array
 }
-    
 
+func Launch_web_server( server_id string ){
+   
+   display_struct_search_list := []string{"WEB_IP"}
+   data_structures            :=  data_handler.Construct_Data_Structures(&display_struct_search_list)
+   web_ip                     := (*data_structures)["WEB_IP"].(redis_handlers.Redis_Hash_Struct)
+   
+   ip_address                 := find_local_address()
+   web_ip.HSet(server_id,ip_address )
+   
+   data_nodes                 :=  graph_query.Common_qs_search(&[]string{"WEB_MAP:WEB_MAP"})
+   data_node                  :=  data_nodes[0]
+   web_port                   :=  graph_query.Convert_json_dict(data_node["port_map"])
+  
+   go http.ListenAndServe(web_port[server_id], nil)
+}
+    
+func find_local_address()string{
+    
+   conn, error := net.Dial("udp", "8.8.8.8:80")  
+   if error != nil {  
+      fmt.Println(error)  
+  
+    }  
+  
+    defer conn.Close()  
+    ipAddress_port := conn.LocalAddr().(*net.UDPAddr).String()
+    temp := strings.Split(ipAddress_port,":")
+    ip_address := temp[0]
+  
+    return ip_address
+}  
 func slash_page(w http.ResponseWriter, r *http.Request){
     
     if r.URL.Path != "/" {

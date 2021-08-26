@@ -51,6 +51,20 @@ func Convert_json_interface_array( json_string string) []map[string]interface{} 
      return return_value  
 
 }
+
+func Convert_json_nested_dictionary_interface( json_string string) map[string]map[string]interface{}  {
+
+     var return_value = make(map[string]map[string]interface{})
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value  
+
+}
+
+
+
 func Convert_json_dictionary_interface( json_string string) map[string]interface{}  {
 
      var return_value = make(map[string]interface{})
@@ -173,6 +187,8 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
   
    return match_list(&query_list)
 }
+
+
 func Common_qs_search(search_list *[]string)[]map[string]string{
 
    var query_list = make([]query_element,0)

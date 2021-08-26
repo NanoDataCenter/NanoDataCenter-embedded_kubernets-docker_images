@@ -58,6 +58,23 @@ func ( v *Package_Constructor)update_entry( name string,properties *map[string]i
 
 
 // table name is in the derived key
+func ( v *Package_Constructor)Create_postgres_registry( name,user,password, database_name string ){
+       v.check_for_duplicates( name)
+	   
+	   properties := make(map[string]interface{})
+       properties["type"]           = "POSTGRES_Registry"
+       properties["name"]           = name  
+       properties["user"]           = user
+       properties["password"]       = password
+       properties["database_name"]  = database_name
+      
+       v.update_entry(name,&properties) 
+}
+
+
+
+
+// table name is in the derived key
 func ( v *Package_Constructor)Create_postgres_stream( name,user,password, database_name string ,time_limit int64){
        v.check_for_duplicates( name)
 	   

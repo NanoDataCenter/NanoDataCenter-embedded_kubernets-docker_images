@@ -7,7 +7,7 @@ import "lacima.com/site_data"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/redis_handlers"
-import "lacima.com/go_service_containers/mqtt_to_db/support"
+import "lacima.com/go_service_containers/mqtt_to_db/mqtt_support"
 
 var site_data_store map[string]interface{}
 const config_file = "/data/redis_configuration.json"
@@ -34,14 +34,15 @@ func mqtt_monitor_init(){
     ip   := site_data_store["host"].(string)
     port := 1883
     site := site_data_store["site"].(string)
-    support.Construct_event_registry_tasks(site)
-    support.Construct_mqtt_tasks(ip,port)
+    mqtt_support.Construct_event_registry_tasks(site)
+    mqtt_support.Construct_mqtt_tasks(ip,port)
 }
 
 
 
 func mqtt_monitor_exec(){
-    
+  go mqtt_support.Monitor_devices()
+  go mqtt_support.Init_site_web_server() 
   for true {
        time.Sleep(time.Second*10)
        fmt.Println("polling loop")

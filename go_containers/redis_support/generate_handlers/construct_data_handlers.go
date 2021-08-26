@@ -12,7 +12,8 @@ import "lacima.com/redis_support/redis_handlers"
 import "github.com/go-redis/redis/v8"
 import "lacima.com/server_libraries/postgres"
 
-var site string
+var site       string
+var redis_ip   string
 var site_ptr *map[string]interface{}
 var ctx    = context.TODO()
 var client *redis.Client
@@ -20,9 +21,9 @@ var constructor_table = make(map[string]interface{})
 
 func Data_handler_init( site_data *map[string]interface{}){
 
-   site_ptr = site_data
-   site = (*site_data)["site"].(string)
-   
+   site_ptr     = site_data
+   site         = (*site_data)["site"].(string)
+   redis_ip     = (*site_data)["host"].(string)
    create_redis_data_handle()
    create_constructors(&constructor_table)
 
@@ -183,6 +184,8 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    var database_name   string
    var table_name      string
    var time_limit      int64
+   var pg_stream       pg_drv.Postgres_Stream_Driver
+   var pg_registry     pg_drv.Registry_Driver
   
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
@@ -238,10 +241,23 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
     
            
            
-		   (*handlers)[name] = pg_drv.Construct_Postgres_Stream_Driver( key,user,password,database_name,table_name, time_limit) 
+		   pg_stream = pg_drv.Construct_Postgres_Stream_Driver( key,user,password,database_name,table_name, time_limit) 
+	       pg_stream.Connect(redis_ip)
+           (*handlers)[name] = pg_stream
 	   
-	   
-	   
+	   } else if type_def == "POSTGRES_Registry" {
+          
+		   key            = v["key"].(string)
+           
+           name          =   v["name"].(string)  
+           user          =   v["user"] .(string) 
+           password      =   v["password"].(string)  
+           database_name =   v["database_name"].(string) 
+           table_name    =   "T"+generate_table_name(key)
+           
+		   pg_registry = pg_drv. Construct_Registry_Driver( key,user,password,database_name, table_name ) 
+	       pg_registry.Connect(redis_ip)
+           (*handlers)[name] = pg_registry	   
 	   }else {
 	   panic("Key is not expected "+type_def)
 	 }

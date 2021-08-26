@@ -29,6 +29,16 @@ const managed_key  string= `
 managed key test
 ***********************************************************
 `
+const adhoc_registry  string= `
+********************************************************
+ad_hoc registry test
+***********************************************************
+`
+const managed_registry  string= `
+********************************************************
+managed registry test
+***********************************************************
+`
 
 
 func main(){
@@ -64,27 +74,29 @@ func main(){
     
     
     fmt.Println(managed_key)
-    status = managed_driver.Connect("localhost")
-    fmt.Println("status",status)
-    if status == false {
-        return
-    }
+    //status = managed_driver.Connect("localhost")
+    //fmt.Println("status",status)
+    //if status == false {
+    //    return
+    //}
     test_table(managed_driver)
     
-    
+    fmt.Println(adhoc_registry)
     test_object_registry()
     
+    fmt.Println(managed_registry)
+    test_manage_object_registry()
 }
 
 func test_table(driver pg_drv.Postgres_Stream_Driver){
    defer driver.Close()
-    //fmt.Println("drop",driver.Drop_table())
-    //fmt.Println("create",driver.Create_table())
-    fmt.Println("insert",driver.Insert("tag1_a","tag2_a","tag3_a","++++ data1 ..........................")) 
-    fmt.Println("insert",driver.Insert("tag1_b","tag2_b","tag3_b","++++ data2 .........................."))  
-    fmt.Println("insert",driver.Insert("tag1_c","tag2_c","tag3_c","+++  data3 .........................."))  
-    fmt.Println("insert",driver.Insert("tag1_d","tag2_d","tag3_d","+++  data4 .........................."))  
-    fmt.Println("insert",driver.Insert("tag1_e","tag2_e","tag3_e","+++  data5 .........................."))  
+    fmt.Println("drop",driver.Drop_table())
+    fmt.Println("create",driver.Create_table())
+    fmt.Println("insert",driver.Insert("tag1_a","tag2_a","tag3_a","tag4_a","tag5_a","++++ data1 ..........................")) 
+    fmt.Println("insert",driver.Insert("tag1_b","tag2_b","tag3_b","tag4_a","tag5_a","++++ data2 .........................."))  
+    fmt.Println("insert",driver.Insert("tag1_c","tag2_c","tag3_c","tag4_a","tag5_a","+++  data3 .........................."))  
+    fmt.Println("insert",driver.Insert("tag1_d","tag2_d","tag3_d","tag4_a","tag5_a","+++  data4 .........................."))  
+    fmt.Println("insert",driver.Insert("tag1_e","tag2_e","tag3_e","tag4_a","tag5_a","+++  data5 .........................."))  
     fmt.Println("query")
     result,err := driver.Select_All()
     fmt.Println("err",err)
@@ -177,6 +189,69 @@ func test_object_registry(){
  
 }
 
+func test_manage_object_registry(){
+    
+ 
+   data_search_list := []string{"POSTGRES_REGISTY_TEST"}
+   data_element := data_handler.Construct_Data_Structures(&data_search_list)
+
+   driver := (*data_element)["postgress_registry_test"].(pg_drv.Registry_Driver)   
+    
+    
+  fmt.Println("drop table",driver.Drop_table())
+  defer driver.Close()
+  fmt.Println("create table",driver.Create_table())
+    
+  fmt.Println("insert", driver.Insert( "name1","key1","properties_1","Top"))
+  fmt.Println("insert", driver.Insert( "name2","key2","properties_2","Top.Science"))
+  fmt.Println("insert", driver.Insert( "name3","key3","properties_3","Top.Science.Astronomy"))
+  fmt.Println("insert", driver.Insert( "name4","key4","properties_4","Top.Science.Astronomy.Astrophysics"))
+  fmt.Println("insert", driver.Insert( "name5","key5","properties_5", "Top.Science.Astronomy.Cosmology"))
+  fmt.Println("insert", driver.Insert( "name6","key6","properties_6","Top.Hobbies"))
+  fmt.Println("insert", driver.Insert( "name7","key7","properties_7","Top.Hobbies.Amateurs_Astronomy"))
+  fmt.Println("insert", driver.Insert( "name8","key8","properties_8","Top.Collections"))
+  fmt.Println("insert", driver.Insert( "name9","key9","properties_9","Top.Collections.Pictures"))
+  fmt.Println("insert", driver.Insert( "name10","key10","properties_10","Top.Collections.Pictures.Astronomy"))
+  fmt.Println("insert", driver.Insert( "name11","key11","properties_11", "Top.Collections.Pictures.Astronomy.Stars"))
+  fmt.Println("insert", driver.Insert( "name12","key12","properties_12","Top.Collections.Pictures.Astronomy.Galaxies"))
+  fmt.Println("insert", driver.Insert( "name14","key14","properties_14","Top.Collections.Pictures.Astronomy.Astronauts"))
+  fmt.Println("insert", driver.Insert( "name15","key15","properties_15","Top.Collections.Pictures.Astronomy.Astronauts.Flight_Engineer.left_seat"))
+  
+  fmt.Println("select all")
+  dump_records(driver.Select_All())
+
+  
+  fmt.Println("select where  path <@ 'Top.Science'")
+  dump_records(driver.Select_where("path <@ 'Top.Science'"))
+  
+  fmt.Println("select where  path ~ '*.Astronomy.*'")
+  dump_records(driver.Select_where("path ~ '*.Astronomy.*'"))
+
+  fmt.Println("select where path ~ '*.!pictures@.Astronomy.*'")
+  dump_records(driver.Select_where("path ~ '*.!pictures@.Astronomy.*'"))
+  
+  fmt.Println( " full text search")
+  
+  fmt.Println("select where path @ 'Astro*% & !pictures@'")
+  dump_records(driver.Select_where("path @ 'Astro*% & !pictures@'"))
+  
+  fmt.Println("select where  path @ 'Astro* & !pictures@'")
+  dump_records(driver.Select_where("path @ 'Astro* & !pictures@'"))
+  
+  
+  fmt.Println("registry specific search")
+  fmt.Println("select where path ~ 'Top.Collections.*.Astronomy.*.Flight_Engineer.left_seat'")
+  dump_records(driver.Select_where("path ~ 'Top.Collections.*.Astronomy.*.Flight_Engineer.left_seat'"))
+
+  
+  
+      
+    
+    
+    
+    
+    
+}
 
 func dump_records( input_data []pg_drv.Registry_Record , status bool){
     for _,element := range input_data{

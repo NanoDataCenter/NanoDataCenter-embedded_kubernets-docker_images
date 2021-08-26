@@ -41,7 +41,7 @@ func Generate_list_link_component( container_id string, header string, link_arra
     
     
     for _,element := range link_array {
-       html_statements = append(html_statements,alink_start+element.Link+"class=\"list-group-item list-group-item-action\">"+element.Display+alink_end)     
+       html_statements = append(html_statements,alink_start+element.Link+"  class=\"list-group-item list-group-item-action\">"+element.Display+alink_end)     
     }    
     
     html_statements = append(html_statements,"</div>")
