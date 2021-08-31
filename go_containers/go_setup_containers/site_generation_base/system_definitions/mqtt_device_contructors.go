@@ -215,10 +215,11 @@ func construct_mqtt_device_defintions() {
   
   su.Bc_Rec.Add_header_node("MQTT_SETUP","mqtt_setup",make(map[string]interface{}))
   su.Cd_Rec.Construct_package("TOPIC_STATUS")
-  su.Cd_Rec.Add_hash("TOPIC_VALUE")
-  su.Cd_Rec.Add_hash("TOPIC_TIME_STAMP")
-  su.Cd_Rec.Add_hash("DEVICE_STATUS")
-  su.Cd_Rec.Add_hash("TIME_STATUS")
+  su.Cd_Rec.Add_hash("TOPIC_ERROR_TIME_STAMP")   // a full length topic and a marshalled data value
+  su.Cd_Rec.Add_hash("TOPIC_VALUE")   // a full length topic and a marshalled data value
+  su.Cd_Rec.Add_hash("TOPIC_TIME_STAMP") // a full length topic and a unix time in seconds as a string
+  su.Cd_Rec.Add_hash("DEVICE_STATUS") // for all devices  the status of the device values "true" or "false"
+  su.Cd_Rec.Add_hash("TIME_STATUS")   // for all devcies the last contact_time Unix time in seconds as a string"
   su.Cd_Rec.Add_hash("TOPIC_HANDLER")
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_DATA_STREAM","admin","password","admin",30*24*3600)
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_INCIDENT_STREAM","admin","password","admin",30*24*3600)

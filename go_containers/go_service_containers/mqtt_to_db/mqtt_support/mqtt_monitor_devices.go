@@ -5,11 +5,23 @@ package mqtt_support
 import "time"
 import "fmt"
 
+var device_status           map[string]bool
+
+
+func initialize_device_status(){
+ 
+    device_status = make(map[string]bool)
+    for key,_ := range device_map{
+        device_status[key] = true
+        redis_device_status.HSet(key,"true")
+    }
+    
+}
 
 
 
 func Monitor_devices(){
-
+    initialize_device_status()
     for true {
         time.Sleep(time.Second*15)
         check_all_devices()

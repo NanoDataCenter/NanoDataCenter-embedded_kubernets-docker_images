@@ -70,9 +70,11 @@ func generate_system_component_graph(){
     
     port_map_properties                         := make(map[string]interface{})
     port_map                                    := make(map[string]string)
+    port_map["site_controller"]                 = ":8080"
     port_map["mqtt_to_db"]                      = ":2021"
-    
+
     port_description_map                        := make(map[string]string)
+    port_description_map["site_controller"]     = "Site Controller Web Site"
     port_description_map["mqtt_to_db"]          = "MQTT_TO_DB Web Services"
     
     port_map_properties["port_map"]             = port_map

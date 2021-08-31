@@ -13,12 +13,14 @@ import (
 var base_templates *template.Template
 var introduction_page_template *template.Template
 
+const site_id string = "site_controller"
 
 func Init_site_web_server(){
    
- 
+   web_support.Register_web_page_start(site_id)
    init_web_server_pages()
-   go http.ListenAndServe(":80", nil)
+   web_support.Launch_web_server()
+
 }
 
 
@@ -39,25 +41,14 @@ func init_web_server_pages() {
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,0)
+    return_value := make(web_support.Menu_array,5)
     
 
-    menu_element := web_support.Menu_element{ "introduction page","/introduction_page",introduction_page}
-    return_value = append(return_value,menu_element)   
-
-    
-    menu_element = web_support.Menu_element{ "application server","/application_server", application_servers}
-    return_value = append(return_value,menu_element)
-
-    menu_element = web_support.Menu_element{ "node status","/node_status", node_status}
-    return_value = append(return_value,menu_element)    
-    
-    menu_element = web_support.Menu_element{ "node ip","/node_ip", node_ip}
-    return_value = append(return_value,menu_element)        
-    
-    menu_element = web_support.Menu_element{ "container status","/container_status",container_status}
-    return_value = append(return_value,menu_element)        
-    
+    return_value[0] = web_support.Menu_element{ "introduction page","introduction_page",introduction_page}
+    return_value[1] = web_support.Menu_element{ "node status","node_status", node_status}
+    return_value[2] = web_support.Menu_element{ "node ip","node_ip", node_ip}
+    return_value[3] = web_support.Menu_element{ "container status","container_status",container_status}
+    return_value[4] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
   
     
     web_support.Register_web_pages(return_value)
@@ -79,11 +70,10 @@ func define_web_pages()*template.Template  {
 func initialize_handlers(){
  
     introduction_page_init()
-    application_servers_init()
     node_status_init()
     node_ip_init()
     container_status_init()
-    
+    web_support.Micro_web_page_init(base_templates)
     
     
 }
@@ -91,16 +81,24 @@ func initialize_handlers(){
 
 
 
-func introduction_page_init(){
+func introduction_page_init( ){
     introduction_page_template ,_ = base_templates.Clone()
-    introduction_page_html := web_support.Generate_accordian("intro_1","Description of Web Services",  generate_intro_data())
-  
-    
-  
+    introduction_page_html := web_support.Generate_Introduction()+ web_support.Generate_accordian("intro_1","Description of Web Pages",  generate_intro_data())
     template.Must(introduction_page_template.New("application").Parse(introduction_page_html))
     
     
 }    
+
+
+
+func introduction_page_generate(w http.ResponseWriter, r *http.Request) {
+   
+   data := make(map[string]interface{})
+   data["Title"] = "Introduction"
+   introduction_page_template.ExecuteTemplate(w,"bootstrap", data)
+}   
+
+
 
 
 
@@ -149,8 +147,8 @@ Container management is manipulated by Ansible Debugging Scripts`
     
 func generate_intro_data()[]web_support.Accordion_Elements{
 
-  title_array := []string{"Application Server","Node Status", "Node Ip", "Container Status"}
-  body_array  := []string{application_server_body,node_status_body,node_ip_body,container_status_body}
+  title_array := []string{"Node Status", "Node Ip", "Container Status","Application Server",}
+  body_array  := []string{node_status_body,node_ip_body,container_status_body,application_server_body}
   return web_support.Populate_accordian_elements(title_array,body_array)
     
     

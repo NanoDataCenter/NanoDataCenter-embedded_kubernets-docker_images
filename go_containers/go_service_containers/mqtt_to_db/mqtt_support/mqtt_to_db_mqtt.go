@@ -6,7 +6,7 @@ import mqtt "github.com/eclipse/paho.mqtt.golang"
 
 
 
-func Construct_mqtt_tasks( ip string, port int){  // setup receiving mqtt construct_mqtt_tasks
+func Construct_mqtt_actions( ip string, port int){  // setup receiving mqtt construct_mqtt_tasks
     ip = "localhost"
     port = 1883
     opts := mqtt.NewClientOptions()

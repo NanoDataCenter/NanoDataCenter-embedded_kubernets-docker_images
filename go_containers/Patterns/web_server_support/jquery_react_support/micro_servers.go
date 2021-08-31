@@ -21,7 +21,7 @@ var web_servers redis_handlers.Redis_Hash_Struct
 
 
 
-func Generate_Introduction( server_id string )string{
+func Generate_Introduction(  )string{
     
     return_array    := make([]string,1)
     return_array[0] = "<center><h2>Front End Web Server for  "+server_id+"  </h2></center>"
@@ -94,14 +94,14 @@ func generate_application_web_servers()[]Link_type{
     html_statements := make([]string,0)
     html_statements = append(html_statements,"<div id=\""+container_id+ "\" class=\"container\">")
     html_statements = append(html_statements,"<h2>"+header+"</h2>")
-    
+    html_statements = append(html_statements,`<ul class="list-group">`)
     
     
     for _,element := range link_array {
-       html_statements = append(html_statements,alink_start+element.Link+` target=_blank >`+element.Display+alink_end)     
+       html_statements = append(html_statements,`<li class="list-group-item">`+alink_start+element.Link+` target=_blank >`+element.Display+alink_end+"</li>")     
     }    
     
-    
+    html_statements = append(html_statements,`</ul>`)
     html_statements = append(html_statements,"</div>")
     return strings.Join(html_statements,"\n")
     

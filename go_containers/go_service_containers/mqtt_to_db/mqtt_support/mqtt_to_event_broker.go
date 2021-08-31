@@ -2,11 +2,10 @@ package mqtt_support
 
 import "fmt"
 import "time"
-import "strings"
-import "strconv"
+
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
-import mqtt "github.com/eclipse/paho.mqtt.golang"
+
 import "lacima.com/Patterns/logging_support"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/server_libraries/postgres"
@@ -16,7 +15,7 @@ var base_topic_string string
 
 var input_topic_map         map[string]string
 var input_error_map         map[string]int64
-var device_status           map[string]bool
+
 var handler_map             map[string]string
 
 
@@ -34,7 +33,7 @@ var redis_topic_value          redis_handlers.Redis_Hash_Struct
 var redis_topic_time_stamp     redis_handlers.Redis_Hash_Struct
 var redis_device_status        redis_handlers.Redis_Hash_Struct
 var redis_topic_handler        redis_handlers.Redis_Hash_Struct   
- 
+var redis_topic_error_ts       redis_handlers.Redis_Hash_Struct
  
  
 var postges_topic_stream    pg_drv.Postgres_Stream_Driver      // time stream for all topics
@@ -48,29 +47,30 @@ var postgres_incident_stream    pg_drv.Postgres_Stream_Driver      // time strea
                                                        // tag1 class
                                                        // tag2 device
                                                        // tag3 status
-                                                       // tag4 not used 
-                                                       // tag5 not used
-                                                       // data not used
+                                                       // tag4 handler 
+                                                       // date time string
+                                                       // data msgpack data
                                                        
-// need postgress inventory table for topics
-// need postgress inventory table for classes 
-// need postgress inventory table for devices
 
 
 
-func Construct_event_registry_tasks(topic string){
+func Construct_event_registry_actions( topic string){
    
    top_topic_string = "/"+topic+"/#"
    base_topic_string = "/"+topic+"/"
    construct_incident_log()
    construct_drivers()
    construct_mqtt_enviroment()
-   construct_mqtt_maps()
-   
-   
-   
- 
+   construct_contact_map()
+   construct_topic_handlers()
+
 }
+
+func get_monitoring_topic()string{
+    fmt.Println("top_topic_string",top_topic_string)
+    return top_topic_string
+}
+
 
 func construct_incident_log(){
     
@@ -86,6 +86,7 @@ func construct_drivers(){
    redis_topic_time_stamp   = (*data_element)["TOPIC_TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
    redis_device_status      = (*data_element)["DEVICE_STATUS"].(redis_handlers.Redis_Hash_Struct)
    redis_topic_handler      = (*data_element)["TOPIC_HANDLER"].(redis_handlers.Redis_Hash_Struct)
+   redis_topic_error_ts     = (*data_element)["TOPIC_ERROR_TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
    postges_topic_stream     = (*data_element)["POSTGRES_DATA_STREAM"].(pg_drv.Postgres_Stream_Driver)
    postgres_incident_stream = (*data_element)["POSTGRES_INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver)
 }
@@ -111,93 +112,44 @@ func construct_mqtt_enviroment(){
 
 
 
-func construct_mqtt_maps(){
-  input_topic_map = make(map[string]string)
-  input_error_map = make(map[string]int64)
-  contact_map     = make(map[string]contact_type)
-  handler_map     = make(map[string]string)
-  device_status   = make(map[string]bool)
-  
-  for key,item := range device_map{
-      
-      for key,item := range topic_map {
-          redis_topic_handler.HSet(key,item.handler_type)
-      }
-          
-      
+
+
+
+
+
+
+
+func construct_contact_map(){
+    
+    contact_map     = make(map[string]contact_type)
+    for key,item := range device_map{
       
       redis_device_status.HSet(key,"true")
-      device_status[key]  = true
-      class := item.class
-      name  := item.name
-      for _,element := range class_map[class].topic_list {
-          topic := base_topic_string+class+"/"+name+"/"+element
-          input_topic_map[topic] = "true"
-          handler_map[topic] = topic_map[element].handler_type
-      }
-      
       var contact_entry contact_type
       contact_entry.contact_time   = time.Now().Unix()
-      contact_entry.delta_time     = class_map[class].contact_time
-      contact_map[name] = contact_entry
-  }
-}
-  
-
-
-
-
-func get_monitoring_topic()string{
-    fmt.Println("top_topic_string",top_topic_string)
-    return top_topic_string
-}
-
-
-func receive_mqtt_packet(msg mqtt.Message){
+      contact_entry.delta_time     = class_map[item.class].contact_time
+      contact_map[key] = contact_entry
+  }    
     
-     topic :=  string(msg.Topic())
-     data  :=  string(msg.Payload())
-     
-     topic_array := strings.Split(topic,"/")
-     
-     if len(topic_array) < 5 {
-         input_error_map[topic] = time.Now().Unix()
-         return
-     }
-     if _,err := input_topic_map[topic]; err == false {
-         input_error_map[topic] = time.Now().Unix()
-         return
-     }
-     
-     
-     class  := topic_array[3]
-     device := topic_array[4]
-     contact_value := contact_map[device]
-     contact_value.contact_time  = time.Now().Unix()
-     contact_map[device] = contact_value
-     
-     
-     redis_topic_time_stamp.HSet(topic, strconv.Itoa(int(time.Now().Unix()) ))
-     redis_topic_handler.HSet(msg.Topic(),string(msg.Payload()))
-     handler := handler_map[topic]
-     postges_topic_stream.Insert( class,device,topic,handler,"",data  )
-     
-     fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
-    
-}
-
-func log_on_connection(){
-    fmt.Println("mqtt on")
-    mqtt_incident_log.Log_data( true,"receive_connection","receive_connection")
     
 }
 
 
-func log_off_connection(){
-    fmt.Println("mqtt off")
-    mqtt_incident_log.Log_data( false, "lost_connection", "lost_connection" )
+
+func construct_topic_handlers(){
+   for class_name,element := range class_map{
+       for _, device_name := range element.device_list {
+           for _, topic_name := range element.topic_list {
+               topic_handler := topic_map[topic_name].handler_type
+               full_topic := base_topic_string+class_name+"/"+device_name+"/"+topic_name
+               redis_topic_handler.HSet(full_topic,topic_handler)
+               redis_topic_time_stamp.HSet(full_topic,"No Contact")
+           }
+       }
+   }
     
 }
+
 
 
 
