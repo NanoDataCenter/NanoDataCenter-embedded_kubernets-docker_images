@@ -16,14 +16,15 @@ import (
 )
 
 var server_id                   string
-var base_templates                *template.Template
-var introduction_page_template    *template.Template
+var base_templates                 *template.Template
+var introduction_page_template     *template.Template
 var class_page                     class_page_type
 var topic_map_page                 topic_map_page_type
 var device_status_page             device_status_page_type
 var bad_topic_page                 bad_topic_page_type
 var recent_mqtt_activitiy_page     recent_mqtt_activitiy_page_type
-var mqtt_inicident_page            mqtt_inicident_page_type
+var device_off_line_incidents_page device_off_line_incidents_page_type
+var mqtt_server_inicident_page     mqtt_server_inicident_page_type
 
 
  
@@ -56,7 +57,7 @@ func initialize_handlers(){
     device_status_page.init_page()
     bad_topic_page.init_page()
     recent_mqtt_activitiy_page.init_page()
-    mqtt_inicident_page.init_page()
+   
     web_support.Micro_web_page_init(base_templates)
 }
 
@@ -74,8 +75,8 @@ func define_web_pages()*template.Template  {
     return_value[3] = web_support.Construct_Menu_Element( "Device Status Page","device_status_page", device_status_page.generate_page)
     return_value[4] = web_support.Construct_Menu_Element( "Bad Topic Page ","bad_topic_page", bad_topic_page.generate_page)
     return_value[5] = web_support.Construct_Menu_Element( "Recent MQTT History","recent_mqtt_activity", recent_mqtt_activitiy_page.generate_page)
-    return_value[6] = web_support.Construct_Menu_Element( "MQTT Incidents","mqtt_incidents", mqtt_inicident_page.generate_page)
-    return_value[7] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
+    return_value[6] = web_support.Construct_Menu_Element( "MQTT Device Connection History","mqtt_device_connection_history", device_off_line_incidents_page.generate_page)
+    return_value[7] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
 
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
@@ -106,10 +107,8 @@ func introduction_page_generate(w http.ResponseWriter, r *http.Request) {
 
  
 
-const application_server_body string = `
-This web page lists all web servers Relating to Site Micro Services<br><br>
 
-Clink the the link opens Web Page for the Micro Service in a separate table.`
+
 
 
 
@@ -117,53 +116,60 @@ const class_page_body  string = `
 This web page lists all the Classes of MQTT devices and their respective Properteis.`
 
 
-const device_page_body  string = `
-This web page lists all the devices in the MQTT system and 
-their respective properties as well as the status of the device
-`
-
 
 const topic_page_body  string = `
-This web page lists all the topics which the MQTT devices use as well
-as the properties of the topics `
-
-
-const master_topic_page_body  string = `
 This web page lists the expanded topic map of the MQTT system.  
 The design of the topic space is /<site_name>/class_name/device_name/+
 the topic which the MQTT device sends.  
 
 The topic fields are sorted alphabetically and the date and time of the latest time 
-stamp is shown.
+stamp is shown. `
+
+
+
+
+
+const device_status_body   string  = `
+
+This page display the connection status of register company
+
 `
 
 
+const bad_topic_page_body  string =`
 
-const device_incident_log_page_body string = `
-This page shows the incident log for the various MQTT devices.
-The incident log show when a device dropped off and when the device came back on line`
+This page displays a list of bad topics and their timestamp 
+
+`
+
+const recent_mqtt_history_body  string = `
+
+This page displays a list of recent mqtt history `
 
 
-const mqtt_client_incident_page_body string = `
-This page tracks the connections and disconnections of the MQTT server`
+const mqtt_device_connection_server_body string = `
+
+This page displays a recent connection history for devices
+
+`
 
 
+const application_server_body string = `
+This web page lists all web servers Relating to Site Micro Services<br><br>
 
-    
+Clink the the link opens Web Page for the Micro Service in a separate table.`
 
-    
+ 
+   
     
     
 func generate_intro_data()[]web_support.Accordion_Elements{
 
-  title_array := []string{"Class Page", "Device Page", "Topic Page","Master Topic Page","Device Incident Log","MQTT CLient Incident Page","Application Servers"}
-  body_array  := []string{application_server_body,
-                          class_page_body,
-                          device_page_body,
-                          topic_page_body,
-                          master_topic_page_body,
-                          device_incident_log_page_body,
-                          mqtt_client_incident_page_body}
+  title_array := []string{"Class Page",  "Topic Page", "Device Status","Bad Topic Page","Recent MQTT History","MQTT Device Connection History","Application Servers"}
+  body_array  := []string{ class_page_body, topic_page_body, device_status_body, 
+                           bad_topic_page_body,recent_mqtt_history_body,mqtt_device_connection_server_body, 
+                           application_server_body }
+
                           
   return web_support.Populate_accordian_elements(title_array,body_array)
     

@@ -90,8 +90,8 @@ func main(){
 
 func test_table(driver pg_drv.Postgres_Stream_Driver){
    defer driver.Close()
-    fmt.Println("drop",driver.Drop_table())
-    fmt.Println("create",driver.Create_table())
+//    fmt.Println("drop",driver.Drop_table())
+//    fmt.Println("create",driver.Create_table())
     fmt.Println("insert",driver.Insert("tag1_a","tag2_a","tag3_a","tag4_a","tag5_a","++++ data1 ..........................")) 
     fmt.Println("insert",driver.Insert("tag1_b","tag2_b","tag3_b","tag4_a","tag5_a","++++ data2 .........................."))  
     fmt.Println("insert",driver.Insert("tag1_c","tag2_c","tag3_c","tag4_a","tag5_a","+++  data3 .........................."))  
@@ -128,7 +128,7 @@ func test_table(driver pg_drv.Postgres_Stream_Driver){
         fmt.Println("index",i,item )
     }
     
-    fmt.Println("drop table",driver.Drop_table())
+  //  fmt.Println("drop table",driver.Drop_table())
 }        
     
 func test_object_registry(){

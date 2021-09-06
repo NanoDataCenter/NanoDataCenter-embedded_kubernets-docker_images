@@ -184,29 +184,26 @@ func device_map_conversion()map[string]interface{}{
 
 
 func add_topics(){
-   add_topic( "topic_1","topic_1_description","msgpack_1" )
-   add_topic( "topic_2","topic_2_description","msgpack_2" )
-   add_topic( "topic_3","topic_3_description","msgpack_3" )
-   add_topic( "topic_4","topic_4_description","msgpack_4" )
+   add_topic( "test_string","test of string topic","string" )
+   add_topic( "test_int","test of integer topic","int32" )
+   add_topic( "test_float","test of float topic","float64" )
+   add_topic( "test_map","test of a message pack topic","map[string]interface" )
+   add_topic( "test_array","test of a message pack topic","[]float32" )
     
 }
   
   
 func add_classes(){
-  add_class( "class_1", "class_1_description" ,[]string{"topic_1","topic_2"}, 60 )
-  add_class( "class_2", "class_2_description" ,[]string{"topic_3","topic_4"}, 60 )
+  add_class( "test_class", "class for self test unit" ,[]string{"test_string","test_int","test_float","test_map","test_array"    }, 60 )
+  
 }
 
 
 func add_devices(){
-    add_device( "device_1","class_1", "device_1_description")
-    add_device( "device_2","class_1", "device_2_description")
-    add_device( "device_3","class_2", "device_3_description")
-    add_device( "device_4","class_2", "device_4_description")
+    add_device( "test_device","test_class", "used as a self check for mqtt system")
+    
     
 }
-
-
 
 
 
@@ -215,16 +212,17 @@ func construct_mqtt_device_defintions() {
   
   su.Bc_Rec.Add_header_node("MQTT_SETUP","mqtt_setup",make(map[string]interface{}))
   su.Cd_Rec.Construct_package("TOPIC_STATUS")
+  
   su.Cd_Rec.Add_hash("TOPIC_ERROR_TIME_STAMP")   // a full length topic and a marshalled data value
   su.Cd_Rec.Add_hash("TOPIC_VALUE")   // a full length topic and a marshalled data value
   su.Cd_Rec.Add_hash("TOPIC_TIME_STAMP") // a full length topic and a unix time in seconds as a string
   su.Cd_Rec.Add_hash("DEVICE_STATUS") // for all devices  the status of the device values "true" or "false"
-  su.Cd_Rec.Add_hash("TIME_STATUS")   // for all devcies the last contact_time Unix time in seconds as a string"
+  su.Cd_Rec.Add_hash("DEVICE_TIME_STAMP") // for all devices  the status of the device values "true" or "false"
   su.Cd_Rec.Add_hash("TOPIC_HANDLER")
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_DATA_STREAM","admin","password","admin",30*24*3600)
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_INCIDENT_STREAM","admin","password","admin",30*24*3600)
   su.Cd_Rec.Close_package_construction()
-  su.Construct_incident_logging("MQTT_LOG","mqtt_log")
+  
   
   mqtt_structure_init()
   add_topics()

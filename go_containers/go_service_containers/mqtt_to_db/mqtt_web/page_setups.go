@@ -51,7 +51,11 @@ type recent_mqtt_activitiy_page_type struct{
     base_type
 }
 
-type mqtt_inicident_page_type struct{
+type device_off_line_incidents_page_type struct{
+    base_type
+}
+
+type mqtt_server_inicident_page_type struct{
     base_type
 }
 
@@ -136,15 +140,17 @@ func (v *recent_mqtt_activitiy_page_type)generate_page(w http.ResponseWriter, r 
     v.basic_generate(html,w,r)
 }
 
-
-
-func (v *mqtt_inicident_page_type)init_page(){
-    v.base_init("List Classes")
+func (v *device_off_line_incidents_page_type)init_page(){
+    v.base_init("MQTT Device Connectivity Changes")
 }
 
  
-func (v *mqtt_inicident_page_type)generate_page(w http.ResponseWriter, r *http.Request){
+func (v *device_off_line_incidents_page_type)generate_page(w http.ResponseWriter, r *http.Request){
     html  := v.generate_html()
     v.basic_generate(html,w,r)
 }
+
+
+
+
 

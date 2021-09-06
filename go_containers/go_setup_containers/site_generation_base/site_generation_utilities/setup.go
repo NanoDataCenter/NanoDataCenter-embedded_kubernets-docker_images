@@ -15,7 +15,7 @@ var Bc_Rec *bc.Build_Configuration
 var Cd_Rec *cd.Package_Constructor
 
 var Data_mount = []string{"DATA"}
-
+var Null_mount = []string{}
 const No_run string       = ""
 const Temp_run string     = "./run.bsh"
 const Managed_run string  = "./process_control.bsh"

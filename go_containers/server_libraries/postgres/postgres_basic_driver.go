@@ -2,7 +2,7 @@ package pg_drv
 
 import (
     
-    //"fmt"   
+    "fmt"   
     //"strings"
     //"strconv"
     //"time"
@@ -45,6 +45,7 @@ func (v  Postgres_Basic_Driver )Exec( script string )bool {
     
   _, err := v.conn.Exec(context.Background(),script) 
   if err != nil {
+      fmt.Println("err",err)
       return false
   }
   return true

@@ -16,6 +16,7 @@ require (
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.4 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect
 )

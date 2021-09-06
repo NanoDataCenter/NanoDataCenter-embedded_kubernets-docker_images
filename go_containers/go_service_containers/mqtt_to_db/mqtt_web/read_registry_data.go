@@ -7,7 +7,6 @@ import "time"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
 
-import "lacima.com/Patterns/logging_support"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/server_libraries/postgres"
 
@@ -30,7 +29,7 @@ var contact_map map[string]contact_type
 
 
 
-var mqtt_incident_log          *logging_support.Incident_Log_Type // incident_log for mqtt server
+
 var redis_topic_value          redis_handlers.Redis_Hash_Struct
 var redis_topic_time_stamp     redis_handlers.Redis_Hash_Struct
 var redis_device_status        redis_handlers.Redis_Hash_Struct
@@ -60,7 +59,6 @@ func Construct_event_registry_actions( topic string){
    
    top_topic_string = "/"+topic+"/#"
    base_topic_string = "/"+topic+"/"
-   construct_incident_log()
    construct_drivers()
    construct_mqtt_enviroment()
    construct_contact_map()
@@ -74,11 +72,7 @@ func get_monitoring_topic()string{
 }
 
 
-func construct_incident_log(){
-    
-    mqtt_incident_log   = logging_support.Construct_incident_log([]string{"INCIDENT_LOG:MQTT_LOG","INCIDENT_LOG"} )
-    
-}
+
 
 func construct_drivers(){
     

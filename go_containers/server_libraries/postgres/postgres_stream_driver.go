@@ -8,20 +8,20 @@ import (
     "time"
 	"context"
 	//"github.com/jackc/pgx/v4"   
-	
+	b64 "encoding/base64"
 )
     
 
 type Stream_Output_Data_Record struct {
  
-    stream_id  int64;
-    tag1       string;
-    tag2       string;
-    tag3       string;
-    tag4       string;
-    tag5       string;
-    data       string;
-    time_stamp int64;
+    Stream_id  int64;
+    Tag1       string;
+    Tag2       string;
+    Tag3       string;
+    Tag4       string;
+    Tag5       string;
+    Data       string;
+    Time_stamp int64;
 }    
 
 
@@ -111,12 +111,16 @@ func ( v  Postgres_Stream_Driver )create_index()bool{
 
 func ( v  Postgres_Stream_Driver )Insert( tag1,tag2,tag3,tag4,tag5,data string )bool{
     
-  time_stamp := time.Now().UnixNano()
+  time_stamp    := time.Now().UnixNano()
+  b64_data      := b64.StdEncoding.EncodeToString([]byte(data))
+     
   //ime_string := strconv.FormatInt(time_stamp,10)
  
-  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,data,time_stamp)
-  
-  return v.Exec( script  )
+  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,b64_data,time_stamp)
+
+    status :=  v.Exec( script  )
+ 
+  return status
 }
 
 /*
@@ -143,12 +147,15 @@ func ( v  Postgres_Stream_Driver )Vacuum( )bool{
 
 func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output_Data_Record, bool){
     
+    var data_value string
+    
     return_value := make([]Stream_Output_Data_Record,0)
     
     script := "Select * from "+v.table_name +" where "+where_clause+ ";"
-    
+    //fmt.Println("script",script)
     rows, err := v.conn.Query(context.Background(), script)
     if err != nil {
+      fmt.Println("err",err)
       return return_value, false
     }
     defer rows.Close()
@@ -156,7 +163,9 @@ func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output
     for rows.Next() {
             
             var item Stream_Output_Data_Record
-            rows.Scan(&item.stream_id,&item.tag1,&item.tag2,&item.tag3,&item.data,&item.time_stamp)
+            rows.Scan(&item.Stream_id,&item.Tag1,&item.Tag2,&item.Tag3,&item.Tag4,&item.Tag5,&data_value,&item.Time_stamp)
+            temp, _ := b64.StdEncoding.DecodeString(data_value)
+            item.Data = string(temp)
             if rows.Err() != nil {
               return return_value,false
             }
@@ -170,10 +179,12 @@ func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output
 }
 func (v Postgres_Stream_Driver)Select_All()([]Stream_Output_Data_Record, bool){
     
+    var data_value string
+    
     return_value := make([]Stream_Output_Data_Record,0)
     
     script := "Select * from "+v.table_name +";"
-
+    //fmt.Println("script",script)
     rows, err := v.conn.Query(context.Background(), script)
     if err != nil {
       return return_value, false
@@ -183,7 +194,9 @@ func (v Postgres_Stream_Driver)Select_All()([]Stream_Output_Data_Record, bool){
     for rows.Next() {
             
             var item Stream_Output_Data_Record
-            rows.Scan(&item.stream_id,&item.tag1,&item.tag2,&item.tag3,&item.data,&item.time_stamp)
+            rows.Scan(&item.Stream_id,&item.Tag1,&item.Tag2,&item.Tag3,&item.Tag4,&item.Tag5,&data_value,&item.Time_stamp)
+            temp, _ := b64.StdEncoding.DecodeString(data_value)
+            item.Data = string(temp)
             if rows.Err() != nil {
               return return_value,false
             }
@@ -196,15 +209,16 @@ func (v Postgres_Stream_Driver)Select_All()([]Stream_Output_Data_Record, bool){
     
 }
 
-func (v Postgres_Stream_Driver)Select_after_time_stamp( timestamp int64)([]Stream_Output_Data_Record, bool){
+func (v Postgres_Stream_Driver)Select_after_time_stamp_desc( timestamp int64)([]Stream_Output_Data_Record, bool){
     
+    var data_value string
     
     return_value := make([]Stream_Output_Data_Record,0)
     
     current_time := time.Now().UnixNano()
     select_time  := current_time - timestamp *1000000000 
-    script := fmt.Sprintf("Select * from %s WHERE time >= %d ;",v.table_name, select_time)
-    
+    script := fmt.Sprintf("Select * from %s WHERE time >= %d ORDER BY time DESC ;",v.table_name, select_time)
+    //fmt.Println("script",script)
     rows, err := v.conn.Query(context.Background(), script)
     if err != nil {
       return return_value, false
@@ -214,7 +228,9 @@ func (v Postgres_Stream_Driver)Select_after_time_stamp( timestamp int64)([]Strea
     for rows.Next() {
             
             var item Stream_Output_Data_Record
-            rows.Scan(&item.stream_id,&item.tag1,&item.tag2,&item.tag3,&item.data,&item.time_stamp)
+            rows.Scan(&item.Stream_id,&item.Tag1,&item.Tag2,&item.Tag3,&item.Tag4,&item.Tag5,&data_value,&item.Time_stamp)
+            temp, _ := b64.StdEncoding.DecodeString(data_value)
+            item.Data = string(temp)
             if rows.Err() != nil {
               return return_value,false
             }
@@ -227,4 +243,37 @@ func (v Postgres_Stream_Driver)Select_after_time_stamp( timestamp int64)([]Strea
     
 }
 
+func (v Postgres_Stream_Driver)Select_after_time_stamp_asc( timestamp int64)([]Stream_Output_Data_Record, bool){
+    
+    var data_value string
+    
+    return_value := make([]Stream_Output_Data_Record,0)
+    
+    current_time := time.Now().UnixNano()
+    select_time  := current_time - timestamp *1000000000 
+    script := fmt.Sprintf("Select * from %s WHERE time >= %d ORDER BY time ASC  ;",v.table_name, select_time)
+    //fmt.Println("script",script)
+    rows, err := v.conn.Query(context.Background(), script)
+    if err != nil {
+      return return_value, false
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+            
+            var item Stream_Output_Data_Record
+            rows.Scan(&item.Stream_id,&item.Tag1,&item.Tag2,&item.Tag3,&item.Tag4,&item.Tag5,&data_value,&item.Time_stamp)
+            temp, _ := b64.StdEncoding.DecodeString(data_value)
+            item.Data = string(temp)
+            if rows.Err() != nil {
+              return return_value,false
+            }
+            return_value = append(return_value,item)
+              
+        }
+    
+  
+    return return_value,true
+    
+}
 

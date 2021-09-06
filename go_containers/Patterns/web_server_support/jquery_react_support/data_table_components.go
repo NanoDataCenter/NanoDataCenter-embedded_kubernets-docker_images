@@ -4,6 +4,7 @@ package web_support
 import "strings"
 
 
+
 func Setup_data_table(table_tag string , table_headers []string, table_data[][]string )string{
     html_array    := make([]string,4)
     html_array[0] = generate_table_header(table_tag,table_headers) 
@@ -26,11 +27,7 @@ const table_script_start string = `
 $(document).ready( function () {
     $('#`
     
-const table_script_end string = `').DataTable(
-        "autoWidth": true,
-        "paging": true,
-        
-    );
+const table_script_end string = `').DataTable( { "order": [] , "pageLength": 50 }  );
 } );
 </script>`
  
