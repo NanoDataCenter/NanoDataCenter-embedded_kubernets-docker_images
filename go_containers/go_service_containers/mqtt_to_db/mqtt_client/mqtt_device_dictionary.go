@@ -36,7 +36,7 @@ var handler_map  map[string]string
 func construct_mqtt_device_enviroment(){
     
     
-   data_nodes := graph_query.Common_qs_search(&[]string{"MQTT_DEVICES:MQTT_DEVICES"})
+   data_nodes := graph_query.Common_qs_search(&[]string{"MQTT_IN_SETUP:mqtt_in_setup","MQTT_DEVICES:MQTT_DEVICES"})
    data_node  := data_nodes[0]
 
    class_dict :=  graph_query.Convert_json_nested_dictionary_interface(data_node["classes"])

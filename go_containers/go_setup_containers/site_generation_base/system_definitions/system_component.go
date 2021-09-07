@@ -1,5 +1,9 @@
 package sys_defs
 import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
+import "lacima.com/go_setup_containers/site_generation_base/system_definitions/mqtt_in"
+import "lacima.com/go_setup_containers/site_generation_base/system_definitions/mqtt_out"
+
+
 
 const redis_image             string   = "nanodatacenter/redis"
 const lacima_site_image       string   = "nanodatacenter/lacima_site_generation"
@@ -72,10 +76,13 @@ func generate_system_component_graph(){
     port_map                                    := make(map[string]string)
     port_map["site_controller"]                 = ":8080"
     port_map["mqtt_to_db"]                      = ":2021"
-
+    port_map["mqtt_status_out"]     = ":2022"
+    
+    
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
     port_description_map["mqtt_to_db"]          = "MQTT_TO_DB Web Services"
+    port_description_map["mqtt_status_out"]     = "MQTT OUTPUT Web Services"
     
     port_map_properties["port_map"]             = port_map
     port_map_properties["description"]          = port_description_map
@@ -118,6 +125,7 @@ func generate_system_component_graph(){
     su.Cd_Rec.Close_package_construction()
     su.Bc_Rec.End_header_node("POSTGRES_TEST","driver_test")
     
-    construct_mqtt_device_defintions()
+    mqtt_in.Construct_mqtt_in_defintions()
+    mqtt_out.Construct_mqtt_out_definitions()
     
 }

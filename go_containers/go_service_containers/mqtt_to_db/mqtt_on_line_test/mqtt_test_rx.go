@@ -35,7 +35,7 @@ var base_topic_string string
 func Mqtt_test_init(site string){
     
    base_topic_string             = "/"+site+"/"
-   data_search_list              := []string{ "MQTT_SETUP:mqtt_setup","TOPIC_STATUS"}
+   data_search_list              := []string{"MQTT_IN_SETUP:mqtt_in_setup","TOPIC_STATUS"}
    data_element                  := data_handler.Construct_Data_Structures(&data_search_list)
    redis_topic_value             = (*data_element)["TOPIC_VALUE"].(redis_handlers.Redis_Hash_Struct)
    redis_topic_handler           = (*data_element)["TOPIC_HANDLER"].(redis_handlers.Redis_Hash_Struct)

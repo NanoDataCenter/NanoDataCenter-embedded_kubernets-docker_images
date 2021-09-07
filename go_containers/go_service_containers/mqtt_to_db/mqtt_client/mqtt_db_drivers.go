@@ -72,7 +72,7 @@ func get_monitoring_topic()string{
 
 func construct_drivers(){
     
-   data_search_list              := []string{ "MQTT_SETUP:mqtt_setup","TOPIC_STATUS"}
+   data_search_list              := []string{"MQTT_IN_SETUP:mqtt_in_setup","TOPIC_STATUS"}
    data_element                  := data_handler.Construct_Data_Structures(&data_search_list)
    redis_topic_value             = (*data_element)["TOPIC_VALUE"].(redis_handlers.Redis_Hash_Struct)
    redis_topic_time_stamp        = (*data_element)["TOPIC_TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
