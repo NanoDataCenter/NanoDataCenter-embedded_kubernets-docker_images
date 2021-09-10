@@ -53,6 +53,7 @@ func generate_system_components(master_flag bool,node_name string ){
 
 
 func generate_system_component_graph(){
+    
     su.Cd_Rec.Construct_package("DATA_MAP")
     su.Cd_Rec.Add_single_element("DATA_MAP") // map of site data
     su.Cd_Rec.Close_package_construction()
@@ -76,9 +77,9 @@ func generate_system_component_graph(){
     port_map                                    := make(map[string]string)
     port_map["site_controller"]                 = ":8080"
     port_map["mqtt_to_db"]                      = ":2021"
-    port_map["mqtt_status_out"]     = ":2022"
+    port_map["mqtt_status_out"]                 = ":2022"
     
-    
+    //
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
     port_description_map["mqtt_to_db"]          = "MQTT_TO_DB Web Services"

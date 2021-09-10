@@ -157,11 +157,11 @@ func class_map_conversion()map[string]interface{}{
    return_value := make(map[string]interface{})
    for key,element := range class_map {
        item := make(map[string]interface{})
-       item["name"]         = element.name
-       item["description"]  = element.description
-       item["instance_list"]  = element.instance_list   
-       item["topic_list"]   = element.topic_list
-       return_value[key] = item
+       item["name"]            = element.name
+       item["description"]     = element.description
+       item["instance_list"]   = element.instance_list   
+       item["topic_list"]      = element.topic_list
+       return_value[key]       = item
    }
    return return_value
 }

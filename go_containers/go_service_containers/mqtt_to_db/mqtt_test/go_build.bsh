@@ -1,0 +1,2 @@
+#go build -ldflags '-linkmode external -w -extldflags "-static"'
+go build -o mqtt_test  -ldflags '-linkmode external  -extldflags "-static"' main.go

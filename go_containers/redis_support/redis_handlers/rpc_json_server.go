@@ -1,7 +1,6 @@
 package redis_handlers
 
 
-//import "fmt"
 import "time"
 import "encoding/json"
 
@@ -52,7 +51,9 @@ func (v Redis_RPC_Struct)json_handler_request(){
        if method == "reboot"{
          v.Delete_all()  // clear the queue -- prevent nested reboots
        }
+       
        response := v.rpc_handlers[method](params)
+       
        request_json,err := json.Marshal(&response)
        if err != nil{
           panic("json marshall error")
@@ -61,6 +62,7 @@ func (v Redis_RPC_Struct)json_handler_request(){
    }else{
 		  panic("bad "+method)
    }
+  
    t := time.Now()
    elapsed := t.Sub(start)
    v.Processing_Time = v.Processing_Time + int64(elapsed)

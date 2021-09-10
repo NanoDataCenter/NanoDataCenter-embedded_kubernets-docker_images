@@ -96,13 +96,14 @@ func Launch_web_server( ){
    data_structures            :=  data_handler.Construct_Data_Structures(&display_struct_search_list)
    web_ip                     := (*data_structures)["WEB_IP"].(redis_handlers.Redis_Hash_Struct)
    ip_address                 := find_local_address()
+   fmt.Println("ip_address",ip_address)
    web_ip.HSet(server_id,ip_address )
    
    data_nodes                 :=  graph_query.Common_qs_search(&[]string{"WEB_MAP:WEB_MAP"})
    data_node                  :=  data_nodes[0]
    web_port                   :=  graph_query.Convert_json_dict(data_node["port_map"])
-   //fmt.Println("web_port",web_port)
-   //fmt.Println("web_ip",web_ip.HGetAll())
+   fmt.Println("web_port",web_port)
+   fmt.Println("web_ip",web_ip.HGetAll())
    
   
    go http.ListenAndServe(web_port[server_id], nil)
