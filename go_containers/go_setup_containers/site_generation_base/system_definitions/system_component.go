@@ -32,6 +32,7 @@ func generate_system_components(master_flag bool,node_name string ){
 
    mqtt_to_db_command_map  := make(map[string]string)
    mqtt_to_db_command_map["mqtt_to_db"] = "./mqtt_to_db"
+   mqtt_to_db_command_map["mqtt_test"]  = "./mqtt_test"
    
     
    null_map := make(map[string]string)
@@ -79,10 +80,9 @@ func generate_system_component_graph(){
     port_map["mqtt_to_db"]                      = ":2021"
     port_map["mqtt_status_out"]                 = ":2022"
     
-    //
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
-    port_description_map["mqtt_to_db"]          = "MQTT_TO_DB Web Services"
+    port_description_map["mqtt_to_db"]          = "MQTT TO DB Web Services"
     port_description_map["mqtt_status_out"]     = "MQTT OUTPUT Web Services"
     
     port_map_properties["port_map"]             = port_map
@@ -90,6 +90,14 @@ func generate_system_component_graph(){
     
     su.Bc_Rec.Add_info_node("WEB_MAP","WEB_MAP",port_map_properties)
     
+    
+    port_mqtt_id_properties                     := make(map[string]interface{})
+    port_mqtt_id_map                            := make(map[string]string)
+    port_mqtt_id_map["mqtt_input_server"]       = "mqtt_input_server"
+    port_mqtt_id_map["mqtt_output_server"]      = "mqtt_output_server"
+    
+    port_mqtt_id_properties["mqtt_client_id_map"]  = port_mqtt_id_map
+    su.Bc_Rec.Add_info_node("MQTT_CLIENT_ID","MQTT_CLIENT_ID",port_mqtt_id_properties )    
     
     su.Cd_Rec.Construct_package("WEB_IP")
     su.Cd_Rec.Add_hash("WEB_IP")           // map of all subsystem web servers

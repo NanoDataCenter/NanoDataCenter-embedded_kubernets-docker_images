@@ -58,7 +58,7 @@ func mqtt_monitor_exec(){
   go mqtt_db_trim.Trim_dbs()
 
   go mqtt_monitor_devices.Monitor_devices()
-  go mqtt_test.Mqtt_test_tx(client)
+  //go mqtt_test.Mqtt_test_tx(client)
   go mqtt_test.Mqtt_test_rx()
 
   go mqtt_web.Init_site_web_server()

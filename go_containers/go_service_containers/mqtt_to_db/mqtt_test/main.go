@@ -27,9 +27,8 @@ func main(){
  
     site_data_store = get_site_data.Get_site_data(config_file)
     graph_query.Graph_support_init(&site_data_store)
-	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)
-
+    redis_handlers.Init_Redis_Mutex()
 	mqtt_monitor_init()
 	mqtt_monitor_exec()
 

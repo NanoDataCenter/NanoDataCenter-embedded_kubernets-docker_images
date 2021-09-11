@@ -15,22 +15,19 @@ import (
     //"github.com/go-redis/redis/v8"
 )
 
-var server_id                   string
+var server_id                      string
 var base_templates                 *template.Template
 var introduction_page_template     *template.Template
 var class_page                     class_page_type
 var topic_map_page                 topic_map_page_type
-var device_status_page             device_status_page_type
 var bad_topic_page                 bad_topic_page_type
 var recent_mqtt_activitiy_page     recent_mqtt_activitiy_page_type
-var device_off_line_incidents_page device_off_line_incidents_page_type
-var mqtt_server_inicident_page     mqtt_server_inicident_page_type
 
 
  
 func Init_site_web_server(){
    
-
+   construct_event_registry_actions()
    server_id  =  os.Getenv("TEST_SERVER_ID")
    if server_id == "" {
        panic("bad server id ")
@@ -55,7 +52,6 @@ func initialize_handlers(){
     introduction_page_init()
     class_page.init_page()  
     topic_map_page.init_page()
-    device_status_page.init_page()
     bad_topic_page.init_page()
     recent_mqtt_activitiy_page.init_page()
    
@@ -69,15 +65,13 @@ func initialize_handlers(){
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,8)
+    return_value := make(web_support.Menu_array,6)
     return_value[0] = web_support.Construct_Menu_Element( "introduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "Class page","class_page", class_page.generate_page)
     return_value[2] = web_support.Construct_Menu_Element( "Topic Map","topic_map", topic_map_page.generate_page)
-    return_value[3] = web_support.Construct_Menu_Element( "Device Status Page","device_status_page", device_status_page.generate_page)
-    return_value[4] = web_support.Construct_Menu_Element( "Bad Topic Page ","bad_topic_page", bad_topic_page.generate_page)
-    return_value[5] = web_support.Construct_Menu_Element( "Recent MQTT History","recent_mqtt_activity", recent_mqtt_activitiy_page.generate_page)
-    return_value[6] = web_support.Construct_Menu_Element( "MQTT Device Connection History","mqtt_device_connection_history", device_off_line_incidents_page.generate_page)
-    return_value[7] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
+    return_value[3] = web_support.Construct_Menu_Element( "Bad Topic Page ","bad_topic_page", bad_topic_page.generate_page)
+    return_value[4] = web_support.Construct_Menu_Element( "Recent MQTT History","recent_mqtt_activity", recent_mqtt_activitiy_page.generate_page)
+    return_value[5] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
 
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
@@ -114,7 +108,7 @@ func introduction_page_generate(w http.ResponseWriter, r *http.Request) {
 
 
 const class_page_body  string = `
-This web page lists all the Classes of MQTT devices and their respective Properteis.`
+This web page lists all the Classes of MQTT Messages and their respective Properteis.`
 
 
 
@@ -130,11 +124,7 @@ stamp is shown. `
 
 
 
-const device_status_body   string  = `
 
-This page display the connection status of register company
-
-`
 
 
 const bad_topic_page_body  string =`
@@ -148,11 +138,6 @@ const recent_mqtt_history_body  string = `
 This page displays a list of recent mqtt history `
 
 
-const mqtt_device_connection_server_body string = `
-
-This page displays a recent connection history for devices
-
-`
 
 
 const application_server_body string = `
@@ -166,10 +151,8 @@ Clink the the link opens Web Page for the Micro Service in a separate table.`
     
 func generate_intro_data()[]web_support.Accordion_Elements{
 
-  title_array := []string{"Class Page",  "Topic Page", "Device Status","Bad Topic Page","Recent MQTT History","MQTT Device Connection History","Application Servers"}
-  body_array  := []string{ class_page_body, topic_page_body, device_status_body, 
-                           bad_topic_page_body,recent_mqtt_history_body,mqtt_device_connection_server_body, 
-                           application_server_body }
+  title_array := []string{"Class Page",  "Topic Page","Bad Topic Page","Recent MQTT History","Application Servers"}
+  body_array  := []string{ class_page_body, topic_page_body, bad_topic_page_body, recent_mqtt_history_body, application_server_body }
 
                           
   return web_support.Populate_accordian_elements(title_array,body_array)

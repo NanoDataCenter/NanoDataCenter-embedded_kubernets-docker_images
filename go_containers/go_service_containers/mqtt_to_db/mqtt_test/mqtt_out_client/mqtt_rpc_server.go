@@ -13,7 +13,7 @@ import  b64 "encoding/base64"
 
 func set_up_rpc_server(){
 
-   
+    
      search_list := []string{"MQTT_OUTPUT_SETUP:site_out_server","RPC_SERVER:MQTT_OUT_RPC_SERVER","RPC_SERVER"}
 
      handlers := data_handler.Construct_Data_Structures(&search_list)
@@ -54,7 +54,7 @@ func publish_message( parameters map[string]interface{} ) map[string]interface{}
    
     parameters["status"] = true
     
-    //update_transmit_data_structures(topic,string(payload))
+    update_transmit_data_structures(topic,string(payload))
   
     return parameters
 

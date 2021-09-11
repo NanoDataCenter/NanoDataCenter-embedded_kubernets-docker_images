@@ -1,7 +1,7 @@
 package mqtt_out_client
 
 
-import  "fmt"
+import "fmt"
 import  "time"
 import "lacima.com/server_libraries/mqtt_publish_rpc"
 
@@ -22,10 +22,10 @@ func Test_generator_start(){
     topic := "mqtt_output/test_message/heart_beat"
     payload := "test message"
     for true {
-     fmt.Println(mqtt_library.Ping())
-     fmt.Println( mqtt_library.Publish(topic,payload))     
-        
+      fmt.Println("sending data")
+      mqtt_library.Publish(topic,payload)     
       time.Sleep(time.Minute*15)
+      
     }
     
     

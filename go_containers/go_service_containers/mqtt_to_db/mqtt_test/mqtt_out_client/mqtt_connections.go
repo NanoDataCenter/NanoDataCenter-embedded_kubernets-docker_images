@@ -3,6 +3,7 @@ package mqtt_out_client
 import "fmt"
 import "os"
 import "time"
+import "lacima.com/redis_support/graph_query"
 import mqtt "github.com/eclipse/paho.mqtt.golang"
 
 var client mqtt.Client
@@ -10,10 +11,24 @@ var connection_status bool
 
 func Construct_mqtt_actions( ip string, port int){  // setup receiving mqtt construct_mqtt_tasks
     
+    data_nodes := graph_query.Common_qs_search(&[]string{"MQTT_CLIENT_ID:MQTT_CLIENT_ID"})
+    data_node  := data_nodes[0]
+    
+    mqtt_client_map := graph_query.Convert_json_dict( data_node["mqtt_client_id_map"] )
+    
+    if _,ok := mqtt_client_map["mqtt_output_server" ]; ok == false {
+        panic("no existant mqtt client map")
+    }
+    
+    mqtt_client_id := mqtt_client_map["mqtt_output_server"]
+    
+    
+    
+    
     connection_status = false    
     opts := mqtt.NewClientOptions()
     opts.AddBroker(fmt.Sprintf("tcp://%s:%d", ip, port))
-    opts.SetClientID("mqtt_to_db_out")
+    opts.SetClientID(mqtt_client_id)
     opts.SetAutoReconnect(true)
     opts.SetCleanSession(true)
     opts.SetConnectRetry(true)

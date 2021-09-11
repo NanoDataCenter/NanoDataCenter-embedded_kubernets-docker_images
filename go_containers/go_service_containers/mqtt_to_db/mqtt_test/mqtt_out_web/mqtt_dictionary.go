@@ -14,22 +14,22 @@ type class_type struct {
    
     name          string
     description   string
-    device_list   []string
+    instance_list   []string
     topic_list    []string
-    contact_time  int64
+    
     
 }
 
-type device_type struct {
+type instance_type struct {
     name        string
     description string
     class       string
 }
 
 
-var topic_map map[string]topic_type
-var class_map map[string]class_type
-var device_map map[string]device_type
+var topic_map    map[string]topic_type
+var class_map    map[string]class_type
+var instance_map map[string]instance_type
 
 func register_topics( topic_interface map[string]map[string]interface{}){
    topic_map = make(map[string]topic_type)
@@ -60,22 +60,21 @@ func register_classes( class_interface map[string]map[string]interface{}){
       item.name         = element["name"].(string)
       item.description  = element["description"].(string)
       item.topic_list   = generate_list_array(element["topic_list"].([]interface{}))
-      item.device_list  = generate_list_array(element["device_list"].([]interface{}))
-      item.contact_time = int64(element["contact_time"].(float64))
+      item.instance_list  = generate_list_array(element["instance_list"].([]interface{}))
       class_map[key] = item
    }
 }
 
 
 
-func register_devices( topic_interface map[string]map[string]interface{}){
-   device_map = make(map[string]device_type)
+func register_instances( topic_interface map[string]map[string]interface{}){
+   instance_map = make(map[string]instance_type)
    for key ,element := range topic_interface{
-      var item device_type
+      var item instance_type
       item.name         = element["name"].(string)
       item.description  = element["description"].(string)
       item.class        = element["class"].(string)
       
-      device_map[key] = item
+      instance_map[key] = item
    }
 }

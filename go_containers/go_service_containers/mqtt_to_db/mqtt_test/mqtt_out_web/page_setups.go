@@ -39,9 +39,7 @@ type topic_map_page_type struct{
     base_type
 }
 
-type device_status_page_type struct{
-    base_type
-}
+
 
 type bad_topic_page_type struct{
     base_type
@@ -51,13 +49,7 @@ type recent_mqtt_activitiy_page_type struct{
     base_type
 }
 
-type device_off_line_incidents_page_type struct{
-    base_type
-}
 
-type mqtt_server_inicident_page_type struct{
-    base_type
-}
 
 
 func (v *base_type)base_init(title string){
@@ -109,15 +101,7 @@ func (v *topic_map_page_type)generate_page(w http.ResponseWriter, r *http.Reques
 
 
 
-func (v *device_status_page_type)init_page(){
-    v.base_init("Device Status List")
-}
 
- 
-func (v *device_status_page_type)generate_page(w http.ResponseWriter, r *http.Request){
-    html  := v.generate_html()
-    v.basic_generate(html,w,r)
-}
 
 
 func (v *bad_topic_page_type)init_page(){
@@ -140,15 +124,7 @@ func (v *recent_mqtt_activitiy_page_type)generate_page(w http.ResponseWriter, r 
     v.basic_generate(html,w,r)
 }
 
-func (v *device_off_line_incidents_page_type)init_page(){
-    v.base_init("MQTT Device Connectivity Changes")
-}
 
- 
-func (v *device_off_line_incidents_page_type)generate_page(w http.ResponseWriter, r *http.Request){
-    html  := v.generate_html()
-    v.basic_generate(html,w,r)
-}
 
 
 
