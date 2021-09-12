@@ -85,8 +85,18 @@ func generate_system_component_graph(){
     port_description_map["mqtt_to_db"]          = "MQTT TO DB Web Services"
     port_description_map["mqtt_status_out"]     = "MQTT OUTPUT Web Services"
     
+    
+    port_start_label_map                        := make(map[string]string)
+    port_start_label_map["site_controller"]     = "site_controller"
+    port_start_label_map["mqtt_to_db"]          = "mqtt_to_db"
+    port_start_label_map["mqtt_status_out"]     = "mqtt_status_out"
+    
+    
+    
+    
     port_map_properties["port_map"]             = port_map
     port_map_properties["description"]          = port_description_map
+    port_map_properties["start_label"]          = port_start_label_map
     
     su.Bc_Rec.Add_info_node("WEB_MAP","WEB_MAP",port_map_properties)
     

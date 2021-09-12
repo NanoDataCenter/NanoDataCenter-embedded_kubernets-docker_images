@@ -4,7 +4,8 @@ package web_support
 
 import (
     
-    "fmt"
+    //"fmt"
+    "sort"
     "strings"
     "net/http"
     "html/template"
@@ -48,9 +49,9 @@ func Micro_web_page(w http.ResponseWriter, r *http.Request) {
    
    micro_servers_template ,_ = base_templates.Clone()
    link_array := generate_application_web_servers()
-   fmt.Println("link_array",link_array)
+   
    micro_servers_html := generate_anchor_link_component( "micro_servers_1","<center>List of Application Web Servers</center>", link_array  )
-   fmt.Println("micro_servers_html",micro_servers_html)
+  
    template.Must(micro_servers_template.New("application").Parse(micro_servers_html))
    
    micro_servers_template.ExecuteTemplate(w,"bootstrap", data)
@@ -75,9 +76,10 @@ func generate_application_web_servers()[]Link_type{
     web_description            := graph_query.Convert_json_dict(data_node["description"])
     
     return_value := make([]Link_type,0)
-    
+
     for key,ip := range web_ip_map {
         
+         
          display := web_description[key]
          ip_link := "http://"+ip+web_port[key]
          var link_struct Link_type
@@ -86,6 +88,9 @@ func generate_application_web_servers()[]Link_type{
          return_value = append( return_value,link_struct)
         
     }
+    sort.Slice(return_value, func (i,j int)bool {
+          return return_value[i].Display < return_value[j].Display
+    })
     return return_value
     
 }    

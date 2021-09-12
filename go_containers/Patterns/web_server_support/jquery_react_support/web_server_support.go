@@ -4,6 +4,7 @@ package web_support
 
 import (
   "fmt"
+  "os"
   "strings"  
   "html/template"
   "net"
@@ -47,7 +48,18 @@ var template_array *template.Template
 
 func Register_web_page_start( input string ){
  
-    web_page_start = "/"+input+"/"
+    
+    data_nodes                 :=  graph_query.Common_qs_search(&[]string{"WEB_MAP:WEB_MAP"})
+    data_node                  :=  data_nodes[0]
+    start_label_map            :=  graph_query.Convert_json_dict(data_node["start_label"])
+    start_label , ok           :=  start_label_map[input]
+    if ok == false {
+        fmt.Println("bad server_id")
+        os.Exit(1)
+    }
+    
+    
+    web_page_start = "/"+start_label+"/"
     server_id        = input
 }
 
