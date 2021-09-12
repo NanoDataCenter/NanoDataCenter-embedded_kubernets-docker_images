@@ -15,12 +15,21 @@ func receive_mqtt_packet(msg mqtt.Message){
     
      topic :=  string(msg.Topic())
      data  :=  string(msg.Payload())
-    
+ 
+     time_string := strconv.Itoa(int(time.Now().Unix()) )
+     
+     topic_array := strings.Split(topic,"/") // structure  /base_string:1/class:2/device:3/topic:4
+     if topic_array[0] == "$SYS" {
+         handle_sys_topics(topic_array,topic,data,time_string)
+         return
+     }  
+     
+     
      /*
       * Verifying Topic
       * 
       */
-      time_string := strconv.Itoa(int(time.Now().Unix()) )
+      
       if err := redis_topic_handler.HExists(topic); err == false {
          redis_topic_error_ts.HSet(topic,time_string) 
          return
@@ -30,8 +39,8 @@ func receive_mqtt_packet(msg mqtt.Message){
      
      
      
-    
-     topic_array := strings.Split(topic,"/") // structure  /base_string:1/class:2/device:3/topic:4
+  
+     
      
      if len(topic_array) < 5 {
           redis_topic_error_ts.HSet(topic,time_string) 
@@ -65,6 +74,24 @@ func receive_mqtt_packet(msg mqtt.Message){
      
     
 }
+
+
+
+func handle_sys_topics(topic_array []string ,topic,data, time_string  string ){
+    tag_fields := [4]string{"","","","",}
+    for i := 0; i<4; i++ {
+        if len(topic_array) > i+1{
+            tag_fields[i] = topic_array[i]
+        }
+    }
+    
+    
+    postgres_sys_stream.Insert(topic,tag_fields[1],tag_fields[2],tag_fields[3],time_string,data)
+    
+    
+    
+}
+
 
 
 func log_on_connection(){

@@ -62,7 +62,7 @@ func Mqtt_test_rx(){
        data_array,_ := postges_topic_stream.Select_where(where_clause )
        
        for _, data_element := range data_array{
-           fmt.Println(data_element)
+           //fmt.Println(data_element)
            process_rx_element(data_element)
        }
        
@@ -106,12 +106,12 @@ func process_rx_element( data_element pg_drv.Stream_Output_Data_Record ){
     handler                  := data_element.Tag4
      
     
-    fmt.Println("class ",data_element.Tag1)
-    fmt.Println("device ", data_element.Tag2)
-    fmt.Println("full topic",data_element.Tag3)
-    fmt.Println("topic id ",handler)
-    fmt.Println("time_string", data_element.Tag5)
-    fmt.Println("time",data_element.Time_stamp)
+    //fmt.Println("class ",data_element.Tag1)
+    //fmt.Println("device ", data_element.Tag2)
+    //fmt.Println("full topic",data_element.Tag3)
+    //fmt.Println("topic id ",handler)
+    //fmt.Println("time_string", data_element.Tag5)
+    //fmt.Println("time",data_element.Time_stamp)
     
     topic_handler_map[handler](data_element.Data)
    
@@ -133,7 +133,7 @@ func  process_string(data string ){
     if err != nil {
         panic(err)
     }
-    fmt.Println("string result",result)
+    //fmt.Println("string result",result)
 }
    
 func  process_int32(data string ){
@@ -142,7 +142,7 @@ func  process_int32(data string ){
     if err != nil {
         panic(err)
     }
-    fmt.Println("int32 result",result)
+    //fmt.Println("int32 result",result)
 }
 
 
@@ -152,7 +152,7 @@ func  process_float(data string ){
     if err != nil {
         panic(err)
     }
-    fmt.Println("float 64 result",result)
+    //fmt.Println("float 64 result",result)
 }
 
 
@@ -162,7 +162,7 @@ func  process_map(data string ){
     if err != nil {
         panic(err)
     }
-    fmt.Println("map result",result)
+    //fmt.Println("map result",result)
 }
 
 
@@ -173,6 +173,6 @@ func  process_float_array(data string ){
     if err != nil {
         panic(err)
     }
-    fmt.Println("[]float32 result",result)
+    //fmt.Println("[]float32 result",result)
 } 
     

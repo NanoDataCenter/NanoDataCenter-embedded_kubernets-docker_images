@@ -219,6 +219,8 @@ func Construct_mqtt_in_defintions() {
   su.Cd_Rec.Add_hash("TOPIC_HANDLER")
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_DATA_STREAM","admin","password","admin",30*24*3600)
   su.Cd_Rec.Create_postgres_stream( "POSTGRES_INCIDENT_STREAM","admin","password","admin",30*24*3600)
+  su.Cd_Rec.Create_postgres_stream( "POSTGRES_SYS_STREAM","admin","password","admin",30*24*3600)
+  
   su.Cd_Rec.Close_package_construction()
   
   

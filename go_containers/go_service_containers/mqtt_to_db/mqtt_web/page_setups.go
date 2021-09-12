@@ -60,6 +60,13 @@ type mqtt_server_inicident_page_type struct{
 }
 
 
+
+
+type sys_history_page_type struct{
+    base_type
+}
+
+
 func (v *base_type)base_init(title string){
     v.title = title
 }
@@ -152,5 +159,10 @@ func (v *device_off_line_incidents_page_type)generate_page(w http.ResponseWriter
 
 
 
+
+func (v *sys_history_page_type )generate_page(w http.ResponseWriter, r *http.Request){
+    html  := v.generate_html()
+    v.basic_generate(html,w,r)
+}
 
 

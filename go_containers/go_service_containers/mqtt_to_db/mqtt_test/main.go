@@ -10,7 +10,7 @@ import "lacima.com/redis_support/redis_handlers"
 
 import "lacima.com/go_service_containers/mqtt_to_db/mqtt_test/mqtt_out_client"
 import "lacima.com/go_service_containers/mqtt_to_db/mqtt_test/mqtt_out_web"
-
+import "lacima.com/go_service_containers/mqtt_to_db/mqtt_test/mqtt_db_table_trim"
 
 import mqtt "github.com/eclipse/paho.mqtt.golang"
 
@@ -44,6 +44,7 @@ func mqtt_monitor_init(){
     mqtt_out_client.Construct_mqtt_actions( ip, port )
     mqtt_out_client.Wait_for_connections()
     mqtt_test_web.Init_site_web_server()
+    mqtt_db_trim.Trim_int(3600*24) // one day trim time
     
 }
 
@@ -51,6 +52,8 @@ func mqtt_monitor_init(){
 
 func mqtt_monitor_exec(){
 
+  go mqtt_db_trim.Trim_dbs()
+  time.Sleep(time.Second)
   mqtt_out_client.Test_generator_start()
 
   for true {

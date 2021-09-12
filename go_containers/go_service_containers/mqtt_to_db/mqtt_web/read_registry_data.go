@@ -35,6 +35,7 @@ var redis_topic_time_stamp     redis_handlers.Redis_Hash_Struct
 var redis_device_status        redis_handlers.Redis_Hash_Struct
 var redis_topic_handler        redis_handlers.Redis_Hash_Struct   
 var redis_topic_error_ts       redis_handlers.Redis_Hash_Struct 
+
  
  
 var postges_topic_stream    pg_drv.Postgres_Stream_Driver      // time stream for all topics
@@ -53,7 +54,14 @@ var postgres_incident_stream    pg_drv.Postgres_Stream_Driver      // time strea
                                                        // data msgpack data
                                                        
 
-
+var postgres_sys_stream     pg_drv.Postgres_Stream_Driver      // time stream for all device changes
+                                                       // tag1 class
+                                                       // tag2 device
+                                                       // tag3 status
+                                                       // tag4 handler 
+                                                       // date time string
+                                                       // data msgpack data
+                                                       
 
 func Construct_event_registry_actions( topic string){
    
@@ -83,8 +91,10 @@ func construct_drivers(){
    redis_device_status      = (*data_element)["DEVICE_STATUS"].(redis_handlers.Redis_Hash_Struct)
    redis_topic_handler      = (*data_element)["TOPIC_HANDLER"].(redis_handlers.Redis_Hash_Struct)
    redis_topic_error_ts     = (*data_element)["TOPIC_ERROR_TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
+
    postges_topic_stream     = (*data_element)["POSTGRES_DATA_STREAM"].(pg_drv.Postgres_Stream_Driver)
    postgres_incident_stream = (*data_element)["POSTGRES_INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver)
+   postgres_sys_stream      = (*data_element)["POSTGRES_SYS_STREAM"].(pg_drv.Postgres_Stream_Driver)
 }
 
    

@@ -1,6 +1,6 @@
 
 
 
-docker build --tag  nanodatacenter/mosquito . 
+docker build --tag  nanodatacenter/mosquitto . 
 
 

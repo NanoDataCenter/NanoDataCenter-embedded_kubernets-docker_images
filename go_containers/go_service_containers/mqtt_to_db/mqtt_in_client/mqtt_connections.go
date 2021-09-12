@@ -40,6 +40,7 @@ func Construct_mqtt_actions( ip string, port int)mqtt.Client{  // setup receivin
     opts.OnConnect = connectHandler
     opts.OnConnectionLost = connectLostHandler 
     client := mqtt.NewClient(opts)
+    
     token := client.Connect()
     if token.WaitTimeout(time.Second*30) == false {
         os.Exit(1)
@@ -49,11 +50,12 @@ func Construct_mqtt_actions( ip string, port int)mqtt.Client{  // setup receivin
     }
     
     topic := get_monitoring_topic()
-   
-    token = client.Subscribe(topic, 2, nil)
-    token.Wait()
-    return client
+    client.Subscribe("$SYS/#", 1, messagePubHandler)
+    client.Subscribe(topic, 2, messagePubHandler)
     
+   
+    return client
+  
 
 }
  

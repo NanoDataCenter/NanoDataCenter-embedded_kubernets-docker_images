@@ -154,4 +154,18 @@ func (v *device_off_line_incidents_page_type)generate_html()string {
 
 
 
+func (v *sys_history_page_type )generate_html()string {
+        
+    postgres_data,_ := postgres_sys_stream.Select_after_time_stamp_desc(3600)
+
+    display_list := make([][]string,len(postgres_data))
+    for index,data := range postgres_data {
+       t :=  time.Unix(data.Time_stamp/1000000000,0)
+       string_date := t.Format(time.UnixDate) 
+       display_list[index] = []string{data.Tag1,data.Tag2,data.Tag3,data.Tag4,string_date,data.Data} 
+    }
+    
+    return web_support.Setup_data_table("topic_list",[]string{"Topic","Tag1","Tag2","Tag3","Time","DATA"},display_list)
+}
+
 
