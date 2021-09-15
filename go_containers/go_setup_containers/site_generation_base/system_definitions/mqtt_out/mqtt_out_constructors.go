@@ -183,17 +183,20 @@ func instance_map_conversion()map[string]interface{}{
 
 func add_topics(){
    add_topic( "heart_beat","string output","string" )
+  
     
 }
   
   
 func add_classes(){
   add_class( "mqtt_output", "class for mqtt heartbeat" ,[]string{"heart_beat" } )
+ 
   
 }
 
 
 func add_instances(){
+    
     add_instance( "test_message","mqtt_output", "used as an test of mqtt ouptut status")
     
     

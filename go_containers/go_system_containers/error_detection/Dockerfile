@@ -1,11 +1,6 @@
-FROM nanodatacenter/basic_python_container
-Run pip install numpy
+FROM nanodatacenter/bash_basic 
+ENV CONTAINER_NAME "error_detection" 
 
-ENV CONTAINER_NAME "log_manager"
-       
-VOLUME [/data/]
+VOLUME [/data/] 
 
-
-COPY . .
- 
-
+COPY ./watchdog_incidents/wd_monitoring .

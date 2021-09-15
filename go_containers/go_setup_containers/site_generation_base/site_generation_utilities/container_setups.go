@@ -4,9 +4,10 @@ package su
 import "strings"
 
 type container_descriptor struct {
-    temporary      bool
-    docker_image   string
-    command_string string
+    temporary          bool
+    managed_container  bool
+    docker_image       string
+    command_string     string
     command_map map[string]string
 
 }
@@ -83,7 +84,11 @@ func Add_container( temp_flag bool, container_name, docker_image, command_string
    }
 
    var temp container_descriptor
-   
+   if command_string == Managed_run {
+      temp.managed_container = true
+   }else{
+    temp.managed_container = false
+   }
    temp.command_map = command_map
    temp.docker_image = docker_image
    if temp_flag == false {
@@ -137,19 +142,20 @@ func register_container( container_name string){
    // these streams contain performance data for the container
    description = container_name+" container resource"
    Construct_streaming_logs("container_resource",description,[]string{"vsz","rss","cpu"})
-
-   // this is a log of the container controller failure
-   description = container_name+" process_control_failure"
-   Construct_incident_logging("process_control_failure",description)
+   if container_map[container_name].managed_container == true {
+       
+       // this is a log of the container controller failure
+       description = container_name+" process_control_failure"
+       Construct_incident_logging("process_control_failure",description)
    
-   // this is a log of failures for processes that container controller manages
-   description = container_name+" managed_process_failure"
-   Construct_incident_logging("managed_process_failure",description)
+       // this is a log of failures for processes that container controller manages
+       description = container_name+" managed_process_failure"
+       Construct_incident_logging("managed_process_failure",description)
    
-   // this is a watchdog failure log for this container
-   description = container_name+" container controller watchdog"
-   Construct_watchdog_logging("process_control",description,20)
-   
+       // this is a watchdog failure log for this container
+       description = container_name+" container controller watchdog"
+       Construct_watchdog_logging("process_control",description,20)
+   }
    Cd_Rec.Construct_package("CONTAINER_STRUCTURES" )
    Cd_Rec.Add_hash("PROCESS_STATUS")
    Cd_Rec.Close_package_construction()

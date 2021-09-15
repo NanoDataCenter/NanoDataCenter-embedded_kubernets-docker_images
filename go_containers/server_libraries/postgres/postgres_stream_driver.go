@@ -114,7 +114,7 @@ func ( v  Postgres_Stream_Driver )Insert( tag1,tag2,tag3,tag4,tag5,data string )
   time_stamp    := time.Now().UnixNano()
   b64_data      := b64.StdEncoding.EncodeToString([]byte(data))
      
-  //ime_string := strconv.FormatInt(time_stamp,10)
+  
  
   script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,b64_data,time_stamp)
 

@@ -40,6 +40,26 @@ func Get_valid_keys()map[string]string{
 }
 
 
+func Generate_full_key( namespace string )[]string{
+   
+   namespace_modified := strings.ReplaceAll(namespace,"[","")
+   temp := strings.Split(namespace_modified,"]")
+   
+   return_value := temp[2:len(temp)-2]
+   
+   return return_value
+}
+
+func Generate_key( namespace string )[]string{
+  
+   namespace_modified := strings.ReplaceAll(namespace,"[","")
+   temp := strings.Split(namespace_modified,"]")
+   
+   return_value := temp[2:len(temp)-2]
+   
+   return return_value
+}
+
 
 func Convert_json_interface_array( json_string string) []map[string]interface{}  {
 
@@ -120,6 +140,17 @@ func Convert_json_string( json_string string) string{
      return return_value
 
 }
+
+func Convert_json_int( json_string string) int64{
+   
+     var return_value int64;
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value
+
+}
  
 func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
@@ -171,8 +202,8 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
    
     var query_list = make([]query_element,0)
  
-   add_match_relationship(&query_list,"SITE",site_data["site"].(string))
-   
+   //add_match_relationship(&query_list,"SITE",site_data["site"].(string))
+   add_match_relationship(&query_list,"SITE",*site)
    for i :=0; i <len(*search_list)-1;i++{
       var search_term = (*search_list)[i]
 
@@ -184,7 +215,7 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
    
    add_match_terminal(&query_list, "PACKAGE",search_list_term[0])
-  
+   //fmt.Println("queru list",query_list)
    return match_list(&query_list)
 }
 

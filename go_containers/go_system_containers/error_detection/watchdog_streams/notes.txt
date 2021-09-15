@@ -1,7 +1,0 @@
-Tag fields will be used in syslog files to identify releavant log files
-
-_EK_:Node_id:Container:ID  user defined message
-
-ID is locally definged by 
-keys are stored in has some kind of structure -- perhaps etc
-

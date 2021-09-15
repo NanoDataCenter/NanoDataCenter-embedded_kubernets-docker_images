@@ -2,7 +2,7 @@ package sys_defs
 import "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
 import "lacima.com/go_setup_containers/site_generation_base/system_definitions/mqtt_in"
 import "lacima.com/go_setup_containers/site_generation_base/system_definitions/mqtt_out"
-
+import "lacima.com/go_setup_containers/site_generation_base/system_definitions/error_detection"
 
 
 const redis_image             string   = "nanodatacenter/redis"
@@ -12,7 +12,7 @@ const file_server_image       string   = "nanodatacenter/file_server"
 const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 const postgres_image          string   = "nanodatacenter/postgres"
 const mqtt_image              string   = "nanodatacenter/mosquito"
-const mqtt_to_db_image        string   = "nanodatacenter/mqtt_to_db"
+const mqtt_to_db_image        string   = "nanodatacenter/error_detection"
 
  
 
@@ -146,5 +146,6 @@ func generate_system_component_graph(){
     
     mqtt_in.Construct_mqtt_in_defintions()
     mqtt_out.Construct_mqtt_out_definitions()
+    error_detection.Construct_definitions()
     
 }
