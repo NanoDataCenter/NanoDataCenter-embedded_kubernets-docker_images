@@ -11,8 +11,8 @@ const lacima_secrets_image    string   = "nanodatacenter/lacima_secrets"
 const file_server_image       string   = "nanodatacenter/file_server"
 const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
 const postgres_image          string   = "nanodatacenter/postgres"
-const mqtt_image              string   = "nanodatacenter/mosquito"
-const mqtt_to_db_image        string   = "nanodatacenter/error_detection"
+const mqtt_image              string   = "nanodatacenter/mosquitto"
+const mqtt_to_db_image        string   = "nanodatacenter/mqtt_to_db"
 
  
 

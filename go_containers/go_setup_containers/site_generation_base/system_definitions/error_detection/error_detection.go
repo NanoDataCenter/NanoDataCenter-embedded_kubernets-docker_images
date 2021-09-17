@@ -20,6 +20,9 @@ func Construct_definitions(){
   
   su.Bc_Rec.Add_header_node("WD_DETECTION","WD_DETECTION",wd_detection_properties)
   su.Cd_Rec.Construct_package("WATCH_DOG_DATA")
+  su.Cd_Rec.Add_single_element("WATCH_DOG_STATUS") 
+  su.Cd_Rec.Add_hash("WATCH_DOG_COMPOSITE_VALUE")   // a full length topic and a marshalled data value
+  su.Cd_Rec.Add_hash("WATCH_DOG_COUNTS")   // a full length topic and a marshalled data value
   su.Cd_Rec.Add_hash("WATCH_DOG_VALUE")   // a full length topic and a marshalled data value
   su.Cd_Rec.Add_hash("WATCH_DOG_STAMP") // a full length topic and a unix time in seconds as a string
   su.Cd_Rec.Add_hash("STATE_CHANGE_COUNTS")  

@@ -146,7 +146,7 @@ func start_stopped_master_containers(){
          
 	     if docker_control.Image_Exists(value["container_image"]) == false{
         
-	       panic("container image should exit")
+	       panic("container image should exit  "+value["container_image"])
 	     
 	      }
 	      docker_control.Container_rm(value["name"])

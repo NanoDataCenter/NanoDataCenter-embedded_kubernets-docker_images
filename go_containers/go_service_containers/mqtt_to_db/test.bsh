@@ -3,3 +3,5 @@
 
 #docker run -ti --rm  --network host    --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/site_config,target=/data/    nanodatacenter/eto /bin/bash 
 docker run    -ti --rm --network host      --mount type=bind,source=/home/pi/system_config,target=/data/   nanodatacenter/mqtt_to_db /usr/local/bin/bash
+
+

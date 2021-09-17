@@ -16,10 +16,13 @@ type wd_control_type struct {
     start_delay                     int64
     trim_time                       int64
     wd_time                         int64
+    status                          redis_handlers.Redis_Single_Structure
+    composite_value                 redis_handlers.Redis_Hash_Struct
     wd_value                        redis_handlers.Redis_Hash_Struct
     wd_ts                           redis_handlers.Redis_Hash_Struct
     state_change_counts             redis_handlers.Redis_Hash_Struct
     wd_incidents                    pg_drv.Postgres_Stream_Driver
+    trim_handle                     pg_drv.Postgres_Stream_Driver
 
 }
 
@@ -70,11 +73,13 @@ func construct_wd_data_structures() {
     
     wd_data_nodes  := []string{"ERROR_DETECTION:ERROR_DETECTION", "WD_DETECTION:WD_DETECTION" ,"WATCH_DOG_DATA"  }
     handlers := data_handler.Construct_Data_Structures(&wd_data_nodes)
-    wd_control.wd_value              = (*handlers)["WATCH_DOG_VALUE"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.wd_ts                 = (*handlers)["WATCH_DOG_STAMP"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.state_change_counts   = (*handlers)["STATE_CHANGE_COUNTS"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.wd_incidents          = (*handlers)["WATCH_DOG_INCIDENTS"].(pg_drv.Postgres_Stream_Driver)    
-
+    wd_control.status                   = (*handlers)["WATCH_DOG_STATUS"].(redis_handlers.Redis_Single_Structure)
+    wd_control.composite_value          = (*handlers)["WATCH_DOG_COMPOSITE_VALUE"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.wd_value                 = (*handlers)["WATCH_DOG_VALUE"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.wd_ts                    = (*handlers)["WATCH_DOG_STAMP"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.state_change_counts      = (*handlers)["STATE_CHANGE_COUNTS"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.wd_incidents             = (*handlers)["WATCH_DOG_INCIDENTS"].(pg_drv.Postgres_Stream_Driver)    
+    wd_control.trim_handle              = (*handlers)["WATCH_DOG_INCIDENTS"].(pg_drv.Postgres_Stream_Driver)  
     
 }
     
@@ -109,6 +114,8 @@ func construct_wd_nodes(){
 
 func initialize_monitoring_variables(){
     
+    wd_control.status.Set("true")                         
+    wd_control.composite_value.Delete_All()                 
     wd_control.wd_value.Delete_All()
     wd_control.wd_ts.Delete_All()
     wd_control.state_change_counts.Delete_All()
@@ -124,6 +131,7 @@ func initialize_monitoring_variables(){
         current_time_map[key]  = current_time
         current_state_map[key] = true
         wd_control.wd_value.HSet(key,"true")
+        wd_control.composite_value.HSet(key,"true")
         wd_control.wd_ts.HSet(key,time_stamp)
         wd_control.state_change_counts.HSet(key,"0")
     }
@@ -136,15 +144,32 @@ func Process_wd_queues(){
         
    go trim_db()
    go check_watch_dogs()
+   go check_counts()
 }
 
 
+
+func check_counts(){
+    wd_control.status.Set("true") 
+    timeout   := time.Duration(wd_control.wd_time)*time.Second*5  
+    for true {
+       for _,wd_record := range wd_records{
+          key := wd_record.key
+          check_wd_timeout(key, wd_record )
+        }
+
+      time.Sleep(timeout)
+      
+    }    
+    
+    
+}
 
 func trim_db(){
   
     for true {
       
-      wd_control.wd_incidents.Trim(wd_control.trim_time)
+      wd_control.trim_handle.Trim(wd_control.trim_time)
       time.Sleep(time.Hour)
       
     }
@@ -186,9 +211,13 @@ func check_wd_record(key string, wd_record wd_record_type, current_time int64, t
          count_string =  strconv.Itoa(count)
          wd_control.state_change_counts.HSet(key,count_string)
          if new_state == true {
+             wd_control.status.Set("true")   
              wd_control.wd_incidents.Insert(key,"true",time_stamp ,"","","" )
          }else{
              wd_control.wd_incidents.Insert(key,"false",time_stamp ,"","","" )
+             increment_count(key)
+             wd_control.status.Set("false")   
+             wd_control.composite_value.HSet(key,"false")
          }
      }
      
@@ -242,3 +271,49 @@ func msg_pack_convert( msgpack_data string )(int64,bool){
     return result, true
     
 }
+
+func check_wd_timeout(key string, wd_record wd_record_type ){
+     if wd_control.wd_value.HGet(key) == "false" {
+         wd_control.status.Set("false")
+     }else{
+        if is_count_zero(key) == true {
+       
+            wd_control.composite_value.HSet(key,"true")
+        }else{
+            clear_count(key)
+            wd_control.composite_value.HSet(key,"false")
+        }
+    }
+    
+    
+}
+
+
+func is_count_zero(key string )bool{
+    
+    temp_str     := wd_control.state_change_counts.HGet(key)
+    temp_int,_     := strconv.Atoi(temp_str)
+    if temp_int == 0 {
+        return true
+    }
+    return false
+    
+}
+
+
+func increment_count(key string){
+    
+    temp_str     := wd_control.state_change_counts.HGet(key)
+    temp_int,_   := strconv.Atoi(temp_str)
+    temp_int      =  temp_int + 1 
+    temp_str     = strconv.Itoa(temp_int)
+    wd_control.state_change_counts.HSet(key,temp_str)
+}
+
+func clear_count(key string){
+    
+    wd_control.state_change_counts.HSet(key,"0")
+    
+}
+
+
