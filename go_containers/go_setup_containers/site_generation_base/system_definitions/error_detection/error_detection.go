@@ -16,7 +16,7 @@ func Construct_definitions(){
   wd_detection_properties["start_delay"]  = 60*5 // 5 minutes
   wd_detection_properties["trim_time"]    = 3600*24*30
   wd_detection_properties["wd_time"]      = 30  // 30 seconds
-  
+  wd_detection_properties["max_count"]    = 5
   
   su.Bc_Rec.Add_header_node("WD_DETECTION","WD_DETECTION",wd_detection_properties)
   su.Cd_Rec.Construct_package("WATCH_DOG_DATA")

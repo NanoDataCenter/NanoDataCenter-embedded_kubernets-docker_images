@@ -16,6 +16,7 @@ type wd_control_type struct {
     start_delay                     int64
     trim_time                       int64
     wd_time                         int64
+    max_count                       int
     status                          redis_handlers.Redis_Single_Structure
     composite_value                 redis_handlers.Redis_Hash_Struct
     wd_value                        redis_handlers.Redis_Hash_Struct
@@ -45,10 +46,10 @@ var wd_control       wd_control_type
 var wd_records       []wd_record_type
 
 
+var overall_state   bool
 
 
-
-var   current_time_map    map[string]int64
+//var   current_time_map    map[string]int64
 var   current_state_map   map[string]bool
 
 
@@ -70,6 +71,7 @@ func construct_wd_data_structures() {
     wd_control.start_delay      = graph_query.Convert_json_int(node["start_delay"])
     wd_control.trim_time        = graph_query.Convert_json_int(node["trim_time"])
     wd_control.wd_time          = graph_query.Convert_json_int(node["wd_time"])
+    wd_control.max_count        = int(graph_query.Convert_json_int(node["max_count"]))
     
     wd_data_nodes  := []string{"ERROR_DETECTION:ERROR_DETECTION", "WD_DETECTION:WD_DETECTION" ,"WATCH_DOG_DATA"  }
     handlers := data_handler.Construct_Data_Structures(&wd_data_nodes)
@@ -114,13 +116,13 @@ func construct_wd_nodes(){
 
 func initialize_monitoring_variables(){
     
-    wd_control.status.Set("true")                         
+                           
     wd_control.composite_value.Delete_All()                 
     wd_control.wd_value.Delete_All()
     wd_control.wd_ts.Delete_All()
     wd_control.state_change_counts.Delete_All()
    
-    current_time_map    = make(map[string]int64)
+    
     current_state_map   = make(map[string]bool)
     
     current_time  := time.Now().Unix()
@@ -128,7 +130,7 @@ func initialize_monitoring_variables(){
     for _, wd_record := range wd_records{
         key := wd_record.key
         
-        current_time_map[key]  = current_time
+        //current_time_map[key]  = current_time
         current_state_map[key] = true
         wd_control.wd_value.HSet(key,"true")
         wd_control.composite_value.HSet(key,"true")
@@ -144,26 +146,12 @@ func Process_wd_queues(){
         
    go trim_db()
    go check_watch_dogs()
-   go check_counts()
+  
 }
 
 
 
-func check_counts(){
-    wd_control.status.Set("true") 
-    timeout   := time.Duration(wd_control.wd_time)*time.Second*5  
-    for true {
-       for _,wd_record := range wd_records{
-          key := wd_record.key
-          check_wd_timeout(key, wd_record )
-        }
 
-      time.Sleep(timeout)
-      
-    }    
-    
-    
-}
 
 func trim_db(){
   
@@ -191,10 +179,17 @@ func check_watch_dogs(){
 func check_queues(){
    current_time  := time.Now().Unix()
    time_stamp    := strconv.FormatInt(current_time,10)
+   overall_state  = true
    for _,wd_record := range wd_records{
        key := wd_record.key
        check_wd_record(key, wd_record, current_time,time_stamp )
    }
+   if overall_state == true {
+       wd_control.status.Set("true")
+   }else{
+       wd_control.status.Set("false")
+   }
+   fmt.Println("overall status",wd_control.status.Get() )
 }       
     
    
@@ -205,28 +200,44 @@ func check_wd_record(key string, wd_record wd_record_type, current_time int64, t
      previous_state := current_state_map[key]
      
      new_state  :=   determine_device_state( key,wd_record, current_time,time_stamp)
+     if new_state == false {
+         
+         increment_count(key)
+         wd_control.wd_value.HSet(key,"false")
+         wd_control.composite_value.HSet(key,"false")
+         
+         
+     }else{
+         wd_control.wd_value.HSet(key,"true")
+          decrement_count(key)
+           
+     }
      if previous_state != new_state {
-         count_string  := wd_control.state_change_counts.HGet(key)
-         count, _  := strconv.Atoi(count_string)
-         count_string =  strconv.Itoa(count)
-         wd_control.state_change_counts.HSet(key,count_string)
+         
          if new_state == true {
-             wd_control.status.Set("true")   
+            
              wd_control.wd_incidents.Insert(key,"true",time_stamp ,"","","" )
          }else{
              wd_control.wd_incidents.Insert(key,"false",time_stamp ,"","","" )
-             increment_count(key)
-             wd_control.status.Set("false")   
-             wd_control.composite_value.HSet(key,"false")
+             
+             
          }
      }
      
+     if is_count_zero(key) == true {
+       
+            wd_control.composite_value.HSet(key,"true")
+     }
+     
+     fmt.Println("counts",wd_control.state_change_counts.HGet(key))
+     fmt.Println("composite",wd_control.composite_value.HGet(key))
+     fmt.Println("actual value",wd_control.wd_value.HGet(key))
      
 }
 
 func determine_device_state(key string, wd_record wd_record_type, current_time int64, time_stamp string)bool {
     
-     fmt.Println("device key",key)
+     
      device_state := false
      wd_time_string := wd_record.watch_dog_time.Get()
      wd_time_int64, err   :=  msg_pack_convert(wd_time_string) 
@@ -234,7 +245,7 @@ func determine_device_state(key string, wd_record wd_record_type, current_time i
          device_state = false
      }else{
        
-       fmt.Println("time",wd_time_int64,current_time - wd_record.max_time_interval,wd_record.max_time_interval,current_time)
+       //fmt.Println("time",wd_time_int64,current_time - wd_record.max_time_interval,wd_record.max_time_interval,current_time)
        
        if wd_time_int64  > current_time - wd_record.max_time_interval {
            device_state = true
@@ -244,18 +255,18 @@ func determine_device_state(key string, wd_record wd_record_type, current_time i
        
      }
      if device_state == true {
-         wd_control.wd_value.HSet(key,"true")
+         
          wd_control.wd_ts.HSet(key,time_stamp)
          current_state_map[key] = true
-         current_time_map[key]  = current_time
+         //current_time_map[key]  = current_time
          
      }else{
         wd_control.wd_value.HSet(key,"false")
         current_state_map[key] = false
      }
      
-    
-     fmt.Println("device state",device_state)
+     
+     fmt.Println("device state",key,device_state)
      return device_state           
     
 }
@@ -272,21 +283,6 @@ func msg_pack_convert( msgpack_data string )(int64,bool){
     
 }
 
-func check_wd_timeout(key string, wd_record wd_record_type ){
-     if wd_control.wd_value.HGet(key) == "false" {
-         wd_control.status.Set("false")
-     }else{
-        if is_count_zero(key) == true {
-       
-            wd_control.composite_value.HSet(key,"true")
-        }else{
-            clear_count(key)
-            wd_control.composite_value.HSet(key,"false")
-        }
-    }
-    
-    
-}
 
 
 func is_count_zero(key string )bool{
@@ -300,12 +296,29 @@ func is_count_zero(key string )bool{
     
 }
 
-
-func increment_count(key string){
+func decrement_count(key string){
+    
     
     temp_str     := wd_control.state_change_counts.HGet(key)
     temp_int,_   := strconv.Atoi(temp_str)
+    if temp_int >0 {
+       temp_int      =  temp_int - 1 
+       overall_state = false
+    }
+    
+    temp_str     = strconv.Itoa(temp_int)
+    wd_control.state_change_counts.HSet(key,temp_str)
+}
+func increment_count(key string){
+    
+    
+    overall_state = false
+    temp_str     := wd_control.state_change_counts.HGet(key)
+    temp_int,_   := strconv.Atoi(temp_str)
     temp_int      =  temp_int + 1 
+    if temp_int >    wd_control.max_count {
+        temp_int =   wd_control.max_count
+    }
     temp_str     = strconv.Itoa(temp_int)
     wd_control.state_change_counts.HSet(key,temp_str)
 }
