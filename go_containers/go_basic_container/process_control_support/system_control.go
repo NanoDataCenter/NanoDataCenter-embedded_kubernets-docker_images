@@ -1,27 +1,33 @@
 package system_control
 
-//import "fmt"
+import "fmt"
 import "time"
-import "bytes"
-
+import  "encoding/json"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/cf_control"
-import "github.com/msgpack/msgpack-go"
 import "lacima.com/Patterns/logging_support"
-import   "lacima.com/redis_support/generate_handlers"
+import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/redis_handlers"
+import "lacima.com/Patterns/msgpack_2"
+
+
+type incident_log_type struct{
+    
+    process_status           map[string]bool
+    error_status             map[string]string  
+    
+}
 
 type System_Control_Type struct {
-  status                   bool
+  
   container_name           string
   incident_log             *logging_support.Incident_Log_Type
   watch_dog_log            *logging_support.Watch_Dog_Log_Type
   status_dict              redis_handlers.Redis_Hash_Struct
   process_map              map[string]string
   process_ctrl             []*Process_Manager_Type
-  process_status           map[string]bool
-  error_status             map[string]string
-  good_count               map[string]int
+  incident_data            incident_log_type
+  
 }
 
 
@@ -31,9 +37,9 @@ func Construct_System_Control(  container_name string ) *System_Control_Type {
    var return_value  System_Control_Type
    return_value.container_name   = container_name
    return_value.process_map      = make(map[string]string)
-   return_value.process_status   = make(map[string]bool)
-   return_value.error_status     = make(map[string]string)
-   return_value.good_count      = make(map[string]int)
+   return_value.incident_data.process_status   = make(map[string]bool)
+   return_value.incident_data.error_status     = make(map[string]string)
+   
    return &return_value
 }   
 
@@ -58,7 +64,7 @@ func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
    process_map := graph_query.Convert_json_dict(process_map_json)
    //fmt.Println("process_map",process_map) 
    
-   v.verify_process_map(process_map)
+   v.initialize_process_map(process_map)
    v.construct_chains(cf_cluster)
    
   
@@ -66,15 +72,15 @@ func ( v *System_Control_Type) Init(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
 
-func ( v *System_Control_Type ) verify_process_map( process_map map[string]string ) {
+func ( v *System_Control_Type ) initialize_process_map( process_map map[string]string ) {
 
    
    
    for key,command := range process_map { 
-    //fmt.Println("key",key,"command",command)
-	v.good_count[key] = 10
-    v.process_status[key] = true
-	v.error_status[key]   = ""
+    
+	v.status_dict.HSet(key,msg_pack_utils.Pack_bool(true))
+    v.incident_data.process_status[key] = true
+	v.incident_data.error_status[key]   = ""
     v.process_map[key] = command
 	v.process_ctrl = append(v.process_ctrl,construct_process_manager( key,command) )
    
@@ -136,59 +142,55 @@ func ( v *System_Control_Type )strobe_watch_dog( system interface{},chain interf
 }
 
 func ( v *System_Control_Type )monitor_process( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE)int{
-   v.status = true
+   update := false
    for _,element := range v.process_ctrl {
-       v.monitor_element(element)
+       if v.monitor_element(element) == true {
+           update = true
+       }
       
    }
-   v.summarize_data()
+   if update == true {
+       v.log_incident_data()
+   }
    return cf.CF_DISABLE
 }
+ 
+func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type) bool{
 
-func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type){
-
-   key := (*element).key
-   if v.good_count[key] == 10 {
-        v.process_status[key] = true
-   }else{
-      v.process_status[key] = false
-   }
+   update := false
   
-   if (*element).failed == true {
-      v.status = false
-      v.process_status[key] = false
-	  v.error_status[key] = (*element).error_log
-	  v.good_count[key] = 0
-   }else{
-     v.good_count[key] +=1
-	 v.error_status[key] = "-"
+   ref := v.incident_data.process_status[element.key]
+   
+   select {
+      case  msg :=  <- element.output:
+          v.incident_data.process_status[element.key] = false
+          update = true
+          if msg != v.incident_data.error_status[element.key]  {
+              v.incident_data.error_status[element.key] = msg
+             
+              v.incident_data.process_status[element.key] = false
+          }
+        default:
+             v.incident_data.error_status[element.key] = ""
+             v.incident_data.process_status[element.key] = true
+     
    }
-   v.update_status(key,v.process_status[key])
+   if ref != v.incident_data.process_status[element.key] {
+        v.status_dict.HSet(element.key,msg_pack_utils.Pack_bool(v.incident_data.process_status[element.key]))
+   }
+   return update
    
 }
 
 
 
-func ( v *System_Control_Type )summarize_data(){
-     //fmt.Println("status",v.process_status,v.error_status)
-     var b bytes.Buffer	
-     msgpack.Pack(&b,v.error_status)
-	 current_error := b.String()
-	 //fmt.Println("new_value",v.process_status)
-     var b1 bytes.Buffer	
-     msgpack.Pack(&b1,v.process_status)
-	 new_value := b1.String()	 
-	 v.incident_log.Log_data( v.status, new_value, current_error)
+func ( v *System_Control_Type )log_incident_data(){
+     
+     bytes_1, _ := json.Marshal(v.incident_data.process_status )
+     bytes_2, _ := json.Marshal(v.incident_data.error_status )
+     incident_data_string := string(bytes_1)+" \n" + string(bytes_2)
+     fmt.Println("incident_data",incident_data_string)
+	 v.incident_log.Log_data( incident_data_string)
   
-}
-
-func ( v *System_Control_Type )update_status(key string, status bool ){
-    
-  var b bytes.Buffer	
-  msgpack.Pack(&b,status)
-  v.status_dict.HSet(key,b.String())
-    
-    
-    
 }
 

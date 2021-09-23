@@ -43,9 +43,9 @@ func Get_valid_keys()map[string]string{
 func Generate_full_key( namespace string )[]string{
    
    namespace_modified := strings.ReplaceAll(namespace,"[","")
-   temp := strings.Split(namespace_modified,"]")
+   return_value := strings.Split(namespace_modified,"]")
    
-   return_value := temp[2:len(temp)-2]
+   
    
    return return_value
 }
@@ -55,7 +55,7 @@ func Generate_key( namespace string )[]string{
    namespace_modified := strings.ReplaceAll(namespace,"[","")
    temp := strings.Split(namespace_modified,"]")
    
-   return_value := temp[2:len(temp)-2]
+   return_value := temp[2:len(temp)-1]
    
    return return_value
 }

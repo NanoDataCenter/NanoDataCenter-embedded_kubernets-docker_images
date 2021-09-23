@@ -4,24 +4,25 @@ package monitor_wd_logs
 import "fmt"
 import "time"
 import "strings"
-import "strconv"
+
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/server_libraries/postgres"
-import "github.com/vmihailenco/msgpack/v5"
+import "lacima.com/Patterns/msgpack_2"
+
 
 
 type wd_control_type struct {
-    start_delay                     int64
+    
     trim_time                       int64
-    wd_time                         int64
-    max_count                       int
-    status                          redis_handlers.Redis_Single_Structure
-    composite_value                 redis_handlers.Redis_Hash_Struct
-    wd_value                        redis_handlers.Redis_Hash_Struct
-    wd_ts                           redis_handlers.Redis_Hash_Struct
-    state_change_counts             redis_handlers.Redis_Hash_Struct
+    sample_time                     int64
+    debounce_counts                  int64
+    subsystem_id                    string
+    overall_status                  redis_handlers.Redis_Hash_Struct
+    debounced_status                redis_handlers.Redis_Hash_Struct
+    status                          redis_handlers.Redis_Hash_Struct
+    time_stamp                      redis_handlers.Redis_Hash_Struct
     wd_incidents                    pg_drv.Postgres_Stream_Driver
     trim_handle                     pg_drv.Postgres_Stream_Driver
 
@@ -36,8 +37,9 @@ type wd_record_type struct {
   namespace          string
   key_array          []string
   key                string
+  counts             int64
   watch_dog_time     redis_handlers.Redis_Single_Structure 
-  watch_dog_state    redis_handlers.Redis_Single_Structure
+  
     
 }
 
@@ -50,10 +52,19 @@ var overall_state   bool
 
 
 //var   current_time_map    map[string]int64
-var   current_state_map   map[string]bool
+var   current_state_map  map[string]bool
+var   current_count_map   map[string]int64
 
+
+var msg_pack_true  string
+var msg_pack_false string
 
 func Init_data_structures(){
+    msg_pack_true   = msg_pack_utils.Pack_bool(true)
+    msg_pack_false  = msg_pack_utils.Pack_bool(false)
+    
+    
+    wd_control.overall_status = get_overall_status_hash()
     construct_wd_data_structures()
     construct_wd_nodes()
     
@@ -61,31 +72,35 @@ func Init_data_structures(){
     
 }
 
-
+func get_overall_status_hash()redis_handlers.Redis_Hash_Struct{
+    
+    node_search  := []string{"ERROR_DETECTION:ERROR_DETECTION", "OVERALL_STATUS"  }
+    handlers := data_handler.Construct_Data_Structures(&node_search)
+    return (*handlers)["OVERALL_STATUS"].(redis_handlers.Redis_Hash_Struct) 
+    
+    
+}
 
 func construct_wd_data_structures() {
    
     wd_nodes  := []string{"ERROR_DETECTION:ERROR_DETECTION", "WD_DETECTION:WD_DETECTION"   }
     nodes := graph_query.Common_qs_search(&wd_nodes)
     node  := nodes[0]
-    wd_control.start_delay      = graph_query.Convert_json_int(node["start_delay"])
-    wd_control.trim_time        = graph_query.Convert_json_int(node["trim_time"])
-    wd_control.wd_time          = graph_query.Convert_json_int(node["wd_time"])
-    wd_control.max_count        = int(graph_query.Convert_json_int(node["max_count"]))
     
-    wd_data_nodes  := []string{"ERROR_DETECTION:ERROR_DETECTION", "WD_DETECTION:WD_DETECTION" ,"WATCH_DOG_DATA"  }
-    handlers := data_handler.Construct_Data_Structures(&wd_data_nodes)
-    wd_control.status                   = (*handlers)["WATCH_DOG_STATUS"].(redis_handlers.Redis_Single_Structure)
-    wd_control.composite_value          = (*handlers)["WATCH_DOG_COMPOSITE_VALUE"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.wd_value                 = (*handlers)["WATCH_DOG_VALUE"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.wd_ts                    = (*handlers)["WATCH_DOG_STAMP"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.state_change_counts      = (*handlers)["STATE_CHANGE_COUNTS"].(redis_handlers.Redis_Hash_Struct)
-    wd_control.wd_incidents             = (*handlers)["WATCH_DOG_INCIDENTS"].(pg_drv.Postgres_Stream_Driver)    
-    wd_control.trim_handle              = (*handlers)["WATCH_DOG_INCIDENTS"].(pg_drv.Postgres_Stream_Driver)  
+    wd_control.trim_time                = graph_query.Convert_json_int(node["trim_time"])
+    wd_control.sample_time              = graph_query.Convert_json_int(node["sample_time"])
+    wd_control.debounce_counts          = int64(graph_query.Convert_json_int(node["debounce_count"]))
+    wd_control.subsystem_id             = graph_query.Convert_json_string(node["subsystem_id"])
+    wd_data_nodes                       := []string{"ERROR_DETECTION:ERROR_DETECTION", "WD_DETECTION:WD_DETECTION" ,"WATCH_DOG_DATA"  }
+    handlers                            := data_handler.Construct_Data_Structures(&wd_data_nodes)
+    wd_control.debounced_status         = (*handlers)["DEBOUNCED_STATUS"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.status                   = (*handlers)["STATUS"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.time_stamp               = (*handlers)["TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.wd_incidents             = (*handlers)["WATCH_DOG_LOG"].(pg_drv.Postgres_Stream_Driver)    
+    wd_control.trim_handle              = (*handlers)["WATCH_DOG_LOG"].(pg_drv.Postgres_Stream_Driver)  
     
 }
     
-
 
 
 func construct_wd_nodes(){
@@ -98,7 +113,9 @@ func construct_wd_nodes(){
         item.name               = graph_query.Convert_json_string(node["name"])
         item.description        = graph_query.Convert_json_string(node["description"])
         item.max_time_interval  = graph_query.Convert_json_int(node["max_time_interval"])
+        item.max_time_interval  = item.max_time_interval*1e9
         item.namespace          = graph_query.Convert_json_string(node["namespace"])
+       
         item.key_array          = graph_query.Generate_key(item.namespace)
         item.key_array          = append(item.key_array,"WATCH_DOG")
         item.key                = strings.Join(item.key_array,"/")
@@ -113,29 +130,30 @@ func construct_wd_nodes(){
  
 
 
-
 func initialize_monitoring_variables(){
     
                            
-    wd_control.composite_value.Delete_All()                 
-    wd_control.wd_value.Delete_All()
-    wd_control.wd_ts.Delete_All()
-    wd_control.state_change_counts.Delete_All()
+    wd_control.debounced_status.Delete_All()                 
+    wd_control.status.Delete_All()
+    wd_control.time_stamp.Delete_All()
+   
    
     
     current_state_map   = make(map[string]bool)
+    current_count_map  = make(map[string]int64)
+    current_time  := time.Now().UnixNano()
+   
+    msg_pack_time    := msg_pack_utils.Pack_int64(current_time)
     
-    current_time  := time.Now().Unix()
-    time_stamp    := strconv.FormatInt(current_time,10)
+   
     for _, wd_record := range wd_records{
         key := wd_record.key
-        
-        //current_time_map[key]  = current_time
         current_state_map[key] = true
-        wd_control.wd_value.HSet(key,"true")
-        wd_control.composite_value.HSet(key,"true")
-        wd_control.wd_ts.HSet(key,time_stamp)
-        wd_control.state_change_counts.HSet(key,"0")
+        current_count_map[key] = 0
+        wd_control.status.HSet(key,msg_pack_true)
+        wd_control.debounced_status.HSet(key,msg_pack_true)
+        wd_control.time_stamp.HSet(key,msg_pack_time)
+       
     }
     
     
@@ -145,6 +163,7 @@ func initialize_monitoring_variables(){
 func Process_wd_queues(){
         
    go trim_db()
+   time.Sleep(time.Second*5)
    go check_watch_dogs()
   
 }
@@ -164,10 +183,10 @@ func trim_db(){
 }
 
 func check_watch_dogs(){
-    timeout   := time.Duration(wd_control.wd_time)*time.Second
+    timeout   := time.Duration(wd_control.sample_time)*time.Second
     //time.Sleep(time.Minute)
     for true {
-      
+      fmt.Println("checking watchdog queue")
       check_queues()
      
       time.Sleep(timeout)
@@ -177,156 +196,80 @@ func check_watch_dogs(){
 
 
 func check_queues(){
-   current_time  := time.Now().Unix()
-   time_stamp    := strconv.FormatInt(current_time,10)
+   current_time  := time.Now().UnixNano()
+   
    overall_state  = true
    for _,wd_record := range wd_records{
        key := wd_record.key
-       check_wd_record(key, wd_record, current_time,time_stamp )
+       check_wd_record(key, wd_record, current_time)
    }
-   if overall_state == true {
-       wd_control.status.Set("true")
-   }else{
-       wd_control.status.Set("false")
-   }
-   fmt.Println("overall status",wd_control.status.Get() )
+   
+   wd_control.overall_status.HSet(wd_control.subsystem_id,msg_pack_utils.Pack_bool(overall_state))
 }       
     
    
     
-func check_wd_record(key string, wd_record wd_record_type, current_time int64, time_stamp string){
+func check_wd_record(key string, wd_record wd_record_type, current_time int64){
     
     
      previous_state := current_state_map[key]
      
-     new_state  :=   determine_device_state( key,wd_record, current_time,time_stamp)
-     if new_state == false {
-         
-         increment_count(key)
-         wd_control.wd_value.HSet(key,"false")
-         wd_control.composite_value.HSet(key,"false")
-         
-         
-     }else{
-         wd_control.wd_value.HSet(key,"true")
-          decrement_count(key)
-           
-     }
+     new_state  :=   determine_device_state( key,wd_record, current_time)
+     current_state_map[key] = new_state
+     //fmt.Println("new_state",new_state,previous_state,wd_record.namespace)
      if previous_state != new_state {
          
          if new_state == true {
+             wd_control.status.HSet(key,msg_pack_true)
+             //fmt.Println("transistion to monitor true",wd_record.namespace)
             
-             wd_control.wd_incidents.Insert(key,"true",time_stamp ,"","","" )
          }else{
-             wd_control.wd_incidents.Insert(key,"false",time_stamp ,"","","" )
+             //fmt.Println("transistion to false",wd_record.namespace)
+             current_count_map[wd_record.namespace] = wd_control.debounce_counts
+             wd_control.status.HSet(key,msg_pack_false)
+             wd_control.debounced_status.HSet(key,msg_pack_false)
+             wd_control.wd_incidents.Insert(key,"false","" ,"","","" )
              
              
          }
      }
-     
-     if is_count_zero(key) == true {
-       
-            wd_control.composite_value.HSet(key,"true")
+     //fmt.Println(new_state,current_count_map[wd_record.namespace],wd_record.namespace)
+     if ( new_state == true ) && (current_count_map[wd_record.namespace] >0) {
+        current_count_map[wd_record.namespace] = current_count_map[wd_record.namespace] - 1
+        if current_count_map[wd_record.namespace] == 0 {
+            //fmt.Println("transistion to true",wd_record.namespace)
+            wd_control.debounced_status.HSet(key,msg_pack_true)
+            wd_control.wd_incidents.Insert(key,"true","" ,"","","" )
+        }
+             
      }
-     
-     fmt.Println("counts",wd_control.state_change_counts.HGet(key))
-     fmt.Println("composite",wd_control.composite_value.HGet(key))
-     fmt.Println("actual value",wd_control.wd_value.HGet(key))
-     
 }
 
-func determine_device_state(key string, wd_record wd_record_type, current_time int64, time_stamp string)bool {
+func determine_device_state(key string, wd_record wd_record_type, current_time int64)bool {
     
      
-     device_state := false
-     wd_time_string := wd_record.watch_dog_time.Get()
-     wd_time_int64, err   :=  msg_pack_convert(wd_time_string) 
-     if err != true {
-         device_state = false
-     }else{
-       
-       //fmt.Println("time",wd_time_int64,current_time - wd_record.max_time_interval,wd_record.max_time_interval,current_time)
-       
-       if wd_time_int64  > current_time - wd_record.max_time_interval {
-           device_state = true
-       }else{
-           device_state = false
-       }
-       
-     }
-     if device_state == true {
+    
+     wd_time_string       :=        wd_record.watch_dog_time.Get()
+     wd_time_int64, err   :=        msg_pack_utils.Unpack_int64(wd_time_string) 
+     
+    
+     if err != true { 
          
-         wd_control.wd_ts.HSet(key,time_stamp)
-         current_state_map[key] = true
-         //current_time_map[key]  = current_time
-         
-     }else{
-        wd_control.wd_value.HSet(key,"false")
-        current_state_map[key] = false
+         return false
      }
+     wd_control.time_stamp.HSet(key,wd_time_string)
+     //fmt.Println( wd_time_int64  - current_time + wd_record.max_time_interval )
+     if wd_time_int64  > current_time - wd_record.max_time_interval {
+           
+           return  true
+      }
+           
      
-     
-     fmt.Println("device state",key,device_state)
-     return device_state           
-    
-}
-
-func msg_pack_convert( msgpack_data string )(int64,bool){
-
-   var result int64
-    err := msgpack.Unmarshal([]byte(msgpack_data), &result)
-    if err != nil {
-        return 0,false
-    }
-    result = result/1e9
-    return result, true
+     return false           
     
 }
 
 
 
-func is_count_zero(key string )bool{
-    
-    temp_str     := wd_control.state_change_counts.HGet(key)
-    temp_int,_     := strconv.Atoi(temp_str)
-    if temp_int == 0 {
-        return true
-    }
-    return false
-    
-}
-
-func decrement_count(key string){
-    
-    
-    temp_str     := wd_control.state_change_counts.HGet(key)
-    temp_int,_   := strconv.Atoi(temp_str)
-    if temp_int >0 {
-       temp_int      =  temp_int - 1 
-       overall_state = false
-    }
-    
-    temp_str     = strconv.Itoa(temp_int)
-    wd_control.state_change_counts.HSet(key,temp_str)
-}
-func increment_count(key string){
-    
-    
-    overall_state = false
-    temp_str     := wd_control.state_change_counts.HGet(key)
-    temp_int,_   := strconv.Atoi(temp_str)
-    temp_int      =  temp_int + 1 
-    if temp_int >    wd_control.max_count {
-        temp_int =   wd_control.max_count
-    }
-    temp_str     = strconv.Itoa(temp_int)
-    wd_control.state_change_counts.HSet(key,temp_str)
-}
-
-func clear_count(key string){
-    
-    wd_control.state_change_counts.HSet(key,"0")
-    
-}
 
 

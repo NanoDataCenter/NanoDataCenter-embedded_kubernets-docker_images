@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 import "os"
-import "bytes"
+
 import "io/ioutil"
 import "syscall"
 import "lacima.com/redis_support/graph_query"
@@ -10,7 +10,7 @@ import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/site_data"
 import "lacima.com/Patterns/logging_support"
-import "github.com/msgpack/msgpack-go"
+
 import ps "github.com/mitchellh/go-ps"
 
 
@@ -37,10 +37,8 @@ func main(){
   
   incident_log := logging_support.Construct_incident_log([]string{"CONTAINER:"+container_name,"INCIDENT_LOG:process_control_failure","INCIDENT_LOG"} )
   
-  var b bytes.Buffer	
-  msgpack.Pack(&b,file_data)
-  new_value := b.String()
-  (*incident_log).Log_data( false, new_value, new_value )
+  
+  (*incident_log).Log_data( "container:  "+container_name +"  "+string(file_data) )
   /*
      At this point there may be zombie spawn processes
 	 this section of code will remove any processes that

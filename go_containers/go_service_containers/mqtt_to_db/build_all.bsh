@@ -1,0 +1,9 @@
+cd mqtt_test
+echo "build mqtt_test"
+./go_build.bsh
+
+cd ../
+echo "build mqtt_to_db"
+./go_build.bsh mqtt_to_db.go
+./docker_build.bsh
+

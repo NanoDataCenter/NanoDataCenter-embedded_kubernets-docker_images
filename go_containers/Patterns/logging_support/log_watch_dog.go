@@ -3,15 +3,15 @@ package logging_support
 
 import "fmt"
 import "time"
-import "bytes"
+
 import "lacima.com/redis_support/redis_handlers"
 import   "lacima.com/redis_support/generate_handlers"
-import	"github.com/msgpack/msgpack-go"
+import "lacima.com/Patterns/msgpack_2"
 
 type Watch_Dog_Log_Type struct {
 
-  watch_dog_time_stamp   redis_handlers.Redis_Single_Structure
-  watch_dog_state        redis_handlers.Redis_Single_Structure
+  time_stamp   redis_handlers.Redis_Single_Structure
+
  
 }
 
@@ -23,8 +23,8 @@ func Construct_watch_data_log( search_path []string ) *Watch_Dog_Log_Type{
    handlers := data_handler.Construct_Data_Structures(&search_path)
    fmt.Println("handlers",handlers)
    
-   return_value.watch_dog_time_stamp          = (*handlers)["WATCH_DOG_TS"].(redis_handlers.Redis_Single_Structure)
-   return_value.watch_dog_state          = (*handlers)["WATCH_DOG_STATE"].(redis_handlers.Redis_Single_Structure)
+   return_value.time_stamp          = (*handlers)["WATCH_DOG_TS"].(redis_handlers.Redis_Single_Structure)
+  
    return &return_value
 
 
@@ -33,11 +33,9 @@ func Construct_watch_data_log( search_path []string ) *Watch_Dog_Log_Type{
 func (v *Watch_Dog_Log_Type)Strobe_Watch_Dog(  ){
    
 
-  time_stamp := time.Now().UnixNano()
-  //fmt.Println("watch_dog log",time_stamp)
-  var b bytes.Buffer	
-  msgpack.Pack(&b,time_stamp)
-  v.watch_dog_time_stamp.Set(b.String())
+   time_stamp           := time.Now().UnixNano()
+   time_stamp_msg_pack  := msg_pack_utils.Pack_int64(time_stamp)
+   v.time_stamp.Set(time_stamp_msg_pack)
   
 
    
