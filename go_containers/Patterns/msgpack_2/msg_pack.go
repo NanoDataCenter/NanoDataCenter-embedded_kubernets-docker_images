@@ -75,6 +75,32 @@ func Unpack_int64( input string) (int64,bool){
     
 }
 
+
+func Pack_float64( input float64) string{
+    
+    b, err := msgpack.Marshal(&input)
+    if err != nil {
+        panic(err)
+    }
+    return string(b)
+}
+
+
+func Unpack_float64( input string) (float64,bool){
+    
+    item  := float64(0)
+    state := true
+    err := msgpack.Unmarshal([]byte(input), &item)
+    if err != nil {
+        item = 0
+        state = false
+    } 
+    
+    return item,state
+    
+}
+
+
 func Unpack_interface( input string )( interface{}, bool){
     var item interface{}
     state := true

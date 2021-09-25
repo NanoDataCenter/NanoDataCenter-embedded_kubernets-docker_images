@@ -1,6 +1,6 @@
 package redis_handlers
 
-
+//import "fmt"
 import "time"
 import "encoding/json"
 
@@ -9,14 +9,14 @@ import "github.com/satori/go.uuid"
 
 
 
-func (v Redis_RPC_Struct)Json_Rpc_start() {
+func (v *Redis_RPC_Struct)Json_Rpc_start() {
   go (v).json_start()
 }
 
 
 
 
-func (v Redis_RPC_Struct)json_start() {
+func (v *Redis_RPC_Struct)json_start() {
 
    for true {
      if v.Length() != 0 {
@@ -32,9 +32,11 @@ func (v Redis_RPC_Struct)json_start() {
 
 }
 
-func (v Redis_RPC_Struct)json_handler_request(){
+func (v *Redis_RPC_Struct)json_handler_request(){
   defer recovery()
+  var response map[string]interface{}
   v.Number = v.Number + 1
+  //fmt.Println("number",v.Number)
   start := time.Now().UnixNano()
   input := v.Pop()
   //fmt.Println(input)
@@ -47,13 +49,18 @@ func (v Redis_RPC_Struct)json_handler_request(){
   uuid   := input_unmarshall[2].(string)
   params := input_unmarshall[1].(map[string]interface{})
   if _,ok := v.rpc_handlers[method]; ok == true {
-  
+     
+
+      
        if method == "reboot"{
          v.Delete_all()  // clear the queue -- prevent nested reboots
        }
-       
-       response := v.rpc_handlers[method](params)
-       
+ 
+       if method == "info" {
+           response = v.info(params)
+       }else{
+          response = v.rpc_handlers[method](params)
+       }
        request_json,err := json.Marshal(&response)
        if err != nil{
           panic("json marshall error")
@@ -63,7 +70,8 @@ func (v Redis_RPC_Struct)json_handler_request(){
 		  panic("bad "+method)
    }
   
-   elasped :=  time.Now().UnixNano() - start
+   elapsed :=  time.Now().UnixNano() - start
+   //fmt.Println("elapsed",elapsed)
    v.Processing_Time = v.Processing_Time + elapsed
 
 

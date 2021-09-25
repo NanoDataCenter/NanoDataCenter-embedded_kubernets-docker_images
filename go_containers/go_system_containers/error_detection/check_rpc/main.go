@@ -29,7 +29,7 @@ func main(){
     
     for true {
         
-      time.Sleep(time.Second*10)
+      time.Sleep(time.Minute*10)
       fmt.Println("polling loop")   
         
     }

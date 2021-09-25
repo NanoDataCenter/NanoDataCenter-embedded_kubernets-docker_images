@@ -68,7 +68,7 @@ func  Construct_RPC_Server( command_code, description string,depth,timeout int64
     Cd_Rec.Construct_package("RPC_SERVER")
     Cd_Rec.Add_rpc_server("RPC_SERVER",depth,timeout)
     Cd_Rec.Close_package_construction()
-    Construct_streaming_logs("statistics" , description, []string{"usage","counts"} )
+    Construct_streaming_logs("RPC_STATISTICS" , description, []string{"number","queue_depth","utilization"} )
     
     Bc_Rec.End_header_node("RPC_SERVER",command_code)    
 }

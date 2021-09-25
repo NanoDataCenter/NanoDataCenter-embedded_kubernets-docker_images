@@ -53,13 +53,14 @@ func Construct_definitions(){
   
        rpc_properties := make(map[string]interface{})
        
-       rpc_properties["sample_time"]     = 15  // 30 seconds
+       rpc_properties["sample_time"]     = 15  // 15 minutes
        
        
        su.Bc_Rec.Add_header_node("RPC_ANALYSIS","RPC_ANALYSIS",rpc_properties)
   
        su.Construct_incident_logging("RPC_ANALYSIS" ,"RPC FAILURES")
-           
+       
+         
   
        su.Bc_Rec.End_header_node("RPC_ANALYSIS","RPC_ANALYSIS")    
        

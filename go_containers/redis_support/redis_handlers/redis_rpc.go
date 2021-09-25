@@ -53,9 +53,9 @@ func Construct_Redis_RPC(  ctx context.Context, client *redis.Client, key string
 
 
 
-func (v Redis_RPC_Struct)info( parameters map[string]interface{} ) map[string]interface{} {
+func (v *Redis_RPC_Struct)info( parameters map[string]interface{} ) map[string]interface{} {
 
-
+   //fmt.Println("number 1 ",v.Number)
    parameters["status"]      = true
    parameters["length"]      = v.Length()
    parameters["total_time"]  = v.Processing_Time
@@ -71,7 +71,7 @@ func (v Redis_RPC_Struct)info( parameters map[string]interface{} ) map[string]in
 
 
 
-func (v Redis_RPC_Struct)ping( parameters map[string]interface{} ) map[string]interface{} {
+func (v *Redis_RPC_Struct)ping( parameters map[string]interface{} ) map[string]interface{} {
 
 
    parameters["status"] = true
@@ -82,7 +82,7 @@ func (v Redis_RPC_Struct)ping( parameters map[string]interface{} ) map[string]in
 
 
 
-func (v Redis_RPC_Struct) Delete_all() {
+func (v *Redis_RPC_Struct) Delete_all() {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
     v.client.Del(v.ctx,v.key)
@@ -91,7 +91,7 @@ func (v Redis_RPC_Struct) Delete_all() {
 
 
 
-func (v Redis_RPC_Struct) Add_handler( key string, handler Message_Handler_Type){
+func (v *Redis_RPC_Struct) Add_handler( key string, handler Message_Handler_Type){
 
   v.rpc_handlers[key] = handler
   
