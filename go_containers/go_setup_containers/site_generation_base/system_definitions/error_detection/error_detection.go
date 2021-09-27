@@ -49,7 +49,16 @@ func Construct_definitions(){
                su.Cd_Rec.Create_postgres_stream( "INCIDENT_LOG","admin","password","admin",30*24*3600)  
            su.Cd_Rec.Close_package_construction()
   
-       su.Bc_Rec .End_header_node("INCIDENT_STREAMS","INCIDENT_STREAMS")    
+       su.Bc_Rec .End_header_node("INCIDENT_STREAMS","INCIDENT_STREAMS")  
+       
+       streaming_properties := make(map[string]interface{})
+       streaming_properties["sample_time"]     = 15  // 30 seconds
+       
+       su.Bc_Rec.Add_header_node("STREAMING_LOGS","STREAMING_LOGS",streaming_properties)
+  
+        
+  
+       su.Bc_Rec .End_header_node("STREAMING_LOGS","STREAMING_LOGS")    
   
        rpc_properties := make(map[string]interface{})
        

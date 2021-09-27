@@ -51,8 +51,14 @@ func Construct_streaming_logs(stream_name , description string, keys []string ){
   for _,key := range keys{
        Cd_Rec.Add_redis_stream(key,1024)  // stream
        Cd_Rec.Add_hash(key+":ANALYSIS")  // used for aggregates of logs
+       Cd_Rec.Add_redis_stream(key+":PEAK_OUTPUT",1024)  // stream
+       
   }
   Cd_Rec.Close_package_construction()
+  for _,key := range keys{
+      Construct_incident_logging(stream_name +"^"+key , "stream_anonomoly")
+  }
+  
   Bc_Rec.End_header_node("STREAMING_LOG",stream_name)
 }
 

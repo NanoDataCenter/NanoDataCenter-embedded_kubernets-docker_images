@@ -6,3 +6,5 @@ VOLUME [/data/]
 COPY ./watchdog_incidents/wd_monitoring .
 COPY ./incident_streams/incident_monitoring .
 COPY ./check_rpc/rpc_monitoring             .
+COPY ./streams/stream_monitoring .
+
