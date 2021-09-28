@@ -55,9 +55,17 @@ func Construct_definitions(){
        streaming_properties["sample_time"]     = 15  // 30 seconds
        
        su.Bc_Rec.Add_header_node("STREAMING_LOGS","STREAMING_LOGS",streaming_properties)
+             su.Cd_Rec.Construct_package("STREAM_SUMMARY_DATA")           
+               su.Cd_Rec.Add_hash("WORKING_TABLE") 
+               su.Cd_Rec.Add_hash("TIME_TABLE") 
+               su.Cd_Rec.Add_hash("STATUS_TABLE")
+               su.Cd_Rec.Add_hash("ERROR_TABLE") 
+               su.Cd_Rec.Add_hash("ERROR_TIME")
+               su.Cd_Rec.Create_postgres_stream( "DATA_STREAM","admin","password","admin",30*24*3600)  
+               su.Cd_Rec.Create_postgres_stream( "INCIDENT_STREAM","admin","password","admin",30*24*3600)  
+             su.Cd_Rec.Close_package_construction()
   
-        
-  
+    
        su.Bc_Rec .End_header_node("STREAMING_LOGS","STREAMING_LOGS")    
   
        rpc_properties := make(map[string]interface{})
@@ -78,6 +86,6 @@ func Construct_definitions(){
     
     
     
-    
+ 
     
 }

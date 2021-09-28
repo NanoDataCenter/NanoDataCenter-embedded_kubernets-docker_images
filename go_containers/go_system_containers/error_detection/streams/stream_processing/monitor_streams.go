@@ -8,16 +8,17 @@ import "strings"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/redis_support/redis_handlers"
-import "lacima.com/Patterns/logging_support"
-//import "lacima.com/Patterns/msgpack_2"
+import "lacima.com/server_libraries/postgres"
+//import "lacima.com/Patterns/logging_support"
+import "lacima.com/Patterns/msgpack_2"
+import "github.com/vmihailenco/msgpack/v5"
 
 
-
-type monitor_stream_type struct {
-    
-    sample_time                      int64
-    current_time                     int64
+type Working_Structure_Type struct {
+    count int64
+    status bool
 }
+
 
 type stream_records_type struct {
     name                    string
@@ -26,17 +27,30 @@ type stream_records_type struct {
     key_array               []string
     key                     string
     stream_keys             []string
-    input_stream_map        map[string]redis_handlers.Redis_Stream_Struct
-    peak_detection_map      map[string]redis_handlers.Redis_Hash_Struct
-    peak_output_map         map[string]redis_handlers.Redis_Stream_Struct
-    incident_log_map        map[string]*logging_support.Incident_Log_Type
+    
+}
+
+type monitor_stream_type struct {
+    
+    sample_time                      int64
+    current_time                     int64
+    key_list                         map[string]string
+    working_table                    redis_handlers.Redis_Hash_Struct
+    time_table                       redis_handlers.Redis_Hash_Struct
+    status_table                     redis_handlers.Redis_Hash_Struct
+    error_value                      redis_handlers.Redis_Hash_Struct
+    error_time                       redis_handlers.Redis_Hash_Struct
+    process_data_stream              pg_drv.Postgres_Stream_Driver
+    process_incident_stream          pg_drv.Postgres_Stream_Driver
+    input_stream_map                 map[string]redis_handlers.Redis_Stream_Struct
+
 }
 
 
 
+var default_working_structure  Working_Structure_Type 
+var monitor_control            monitor_stream_type 
 
-var monitor_control        monitor_stream_type 
-var stream_records         []stream_records_type 
 
 
 
@@ -46,15 +60,20 @@ var stream_records         []stream_records_type
 func Init_data_structures(){
    
     
-    
+    initialize_default_structure()
     construct_monitor_control()
     construct_construct_stream_records()
-    
+    populate_data_structures()
     
     
 }
 
 
+func initialize_default_structure(){
+    default_working_structure.count = 0
+    default_working_structure.status = true
+    
+}
 
 func construct_monitor_control() {
    
@@ -64,80 +83,131 @@ func construct_monitor_control() {
     
     monitor_control.sample_time     = graph_query.Convert_json_int(node["sample_time"])
     fmt.Println("sample time",monitor_control.sample_time)
+    
+    search_list := []string{"ERROR_DETECTION:ERROR_DETECTION", "STREAMING_LOGS:STREAMING_LOGS" ,"STREAM_SUMMARY_DATA"}
+    data_element := data_handler.Construct_Data_Structures(&search_list)
+	 	 
+	monitor_control.working_table               =   (*data_element)["WORKING_TABLE"].(redis_handlers.Redis_Hash_Struct) 
+    monitor_control.time_table                  =   (*data_element)["TIME_TABLE"].(redis_handlers.Redis_Hash_Struct) 
+	monitor_control.status_table                =   (*data_element)["STATUS_TABLE"].(redis_handlers.Redis_Hash_Struct) 
+	monitor_control.error_value                 =   (*data_element)["ERROR_TABLE"].(redis_handlers.Redis_Hash_Struct) 
+	monitor_control.error_time                  =   (*data_element)["ERROR_TIME"].(redis_handlers.Redis_Hash_Struct) 
+	monitor_control.process_data_stream         =   (*data_element)["DATA_STREAM"].(pg_drv.Postgres_Stream_Driver) 
+	monitor_control.process_incident_stream     =   (*data_element)["INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver) 
+	
+  
+    
 }
     
 func construct_construct_stream_records(){
     
+    monitor_control.key_list            = make(map[string]string)
+    monitor_control.input_stream_map    = make(map[string]redis_handlers.Redis_Stream_Struct)
     
     stream_nodes  := []string{"STREAMING_LOG"}
     nodes := graph_query.Common_qs_search(&stream_nodes)
     //fmt.Println("nodes",len(nodes),"\n",nodes)
-    stream_records = make([]stream_records_type,len(nodes))
-    for index,node := range nodes {
+    
+    for _,node := range nodes {
         var item  stream_records_type
         item.namespace    = graph_query.Convert_json_string(node["namespace"])
         item.name         = graph_query.Convert_json_string(node["name"])
         item.description  = graph_query.Convert_json_string(node["descrption"])
         item.stream_keys  = graph_query.Convert_json_string_array(node["keys"])
         item.key_array    = graph_query.Generate_key(item.namespace)
-        item  = construct_stream_data_structures(item)
-        stream_records[index] = item
+        construct_stream_data_structures(item)
+        
     }
-    //fmt.Println("stream records ",stream_records)
-    panic("done")
+    
+    
     
     
 }
 
-func construct_stream_data_structures( item  stream_records_type)  stream_records_type{
+func construct_stream_data_structures( item  stream_records_type){
     
  
     
-        item.input_stream_map     = make(map[string]redis_handlers.Redis_Stream_Struct)
-        item.peak_detection_map   = make(map[string]redis_handlers.Redis_Hash_Struct)
-        item.peak_output_map      = make(map[string]redis_handlers.Redis_Stream_Struct)
-        
+        base_key_array := graph_query.Generate_key(item.namespace)
+        base_key       := strings.Join(base_key_array,"/")
         key_temp               := append(item.key_array,"STREAMING_LOG")
         handlers                := data_handler.Construct_Data_Structures(&key_temp)
         for _,key := range item.stream_keys {
-            item.input_stream_map[key]         = (*handlers)[key].(redis_handlers.Redis_Stream_Struct)
-            item.peak_detection_map[key]       = (*handlers)[key+":ANALYSIS"].(redis_handlers.Redis_Hash_Struct)
-            item.peak_output_map[key]          = (*handlers)[key+":PEAK_OUTPUT"].(redis_handlers.Redis_Stream_Struct)
+            stream_key                         := base_key+"/"+key
+            monitor_control.key_list[stream_key]         = ""
+            monitor_control.input_stream_map[stream_key] = (*handlers)[key].(redis_handlers.Redis_Stream_Struct)
+            
         }
         
-        item.incident_log_map = construct_incident_log_map(item)
-        
-        
-        
-        return item
+    
+
 
     
 }
 
 
-func construct_incident_log_map( item  stream_records_type ) map[string]*logging_support.Incident_Log_Type {
+
+
+func populate_data_structures(){
     
-    return_value := make(map[string]*logging_support.Incident_Log_Type)
+    default_time    := msg_pack_utils.Pack_int64(0)
+    default_working := Pack_working_structure(default_working_structure)
+    default_string  := msg_pack_utils.Pack_string("")
+    default_bool    := msg_pack_utils.Pack_bool(true)
     
-    key_array  := item.key_array
-    key_array  = append(key_array,"STREAMING_LOG:"+item.name,"INCIDENT_LOG")
-   
-    nodes      := graph_query.Common_qs_search(&key_array)    
-    //fmt.Println(len(nodes))
-    for _,node := range nodes {
-       name  := graph_query.Convert_json_string(node["name"])
-       name_list := strings.Split(name,"^")
-       key       := name_list[1]
-       //fmt.Println("name",name,key)
-       //fmt.Println("item.key_array",item.key_array)
-       temp_array   := append(item.key_array,"INCIDENT_LOG:"+item.name+"^"+key,"INCIDENT_LOG")
-       fmt.Println("key_array",temp_array)
-       return_value[key] = logging_support.Construct_incident_log( temp_array)
+    clean_redis_hash_table( monitor_control.key_list, monitor_control.working_table, default_working)
+    clean_redis_hash_table( monitor_control.key_list, monitor_control.time_table, default_time )
+    clean_redis_hash_table( monitor_control.key_list, monitor_control.status_table, default_bool )
+    clean_redis_hash_table( monitor_control.key_list, monitor_control.error_value, default_string )
+    clean_redis_hash_table( monitor_control.key_list, monitor_control.error_time, default_time)
+    
+    
+}
+ 
+func clean_redis_hash_table( key_list map[string]string, table redis_handlers.Redis_Hash_Struct, default_value string){
+    
+   values := table.HGetAll()
+   table.Delete_All()
+
+   for key,value := range values {
+       if _,ok := key_list[value]; ok== true {
+           table.HSet(key,value)
+       }
+   }
+   for key, _ := range key_list {
+      if ok := table.HExists(key); ok == false {
+          table.HSet(key,default_value)
+      }
+       
+   }
+    
+}
+    
+    
+    
+func Pack_working_structure( working_structure Working_Structure_Type )string{
+    
+    b, err := msgpack.Marshal(&working_structure)
+    if err != nil {
+        panic(err)
     }
-    return return_value
+    return string(b)
+}
+
+    
+    
+func Unpack_working_structure( input string) (Working_Structure_Type,bool){
+    
+    item := default_working_structure
+    state := true
+    err := msgpack.Unmarshal([]byte(input), &item)
+    if err != nil {
+        state = false
+    } 
+    
+    return item,state
     
 }
-    
     
     
     
