@@ -31,9 +31,9 @@ func main(){
  	
     
     initialize_telegraph_server(site_data_store)
+    go  telegram.Monitor_input()
     
-    
-     search_list := []string{"RPC_SERVER:SITE_FILE_SERVER","RPC_SERVER"}
+     search_list := []string{"RPC_SERVER:TELEGRAPH_RPC","RPC_SERVER"}
 
      handlers := data_handler.Construct_Data_Structures(&search_list)
     

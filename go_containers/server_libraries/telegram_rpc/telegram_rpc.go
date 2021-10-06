@@ -1,4 +1,4 @@
-package site_control_server_lib
+package telegram_rpc_interface
 
 
 
@@ -6,10 +6,9 @@ package site_control_server_lib
 
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
-import "lacima.com/redis_support/graph_query"
-import "lacima.com/Patterns/logging_support"
 
-type Site_Server_Client_Type struct{
+
+type Telegram_Client_Type struct{
 
    driver redis_handlers.Redis_RPC_Struct
    
@@ -21,18 +20,28 @@ type Site_Server_Client_Type struct{
  
 
     
-func Site_Server_Init()Site_Server_Client_Type{
+func Site_Server_Init()Telegram_Client_Type{
 
-  var return_value Site_Server_Client_Type
+  var return_value Telegram_Client_Type
   temp := data_handler.Construct_Data_Structures(&[]string{"RPC_SERVER:TELEGRAPH_RPC","RPC_SERVER"} )
   return_value.driver = (*temp)["RPC_SERVER"].(redis_handlers.Redis_RPC_Struct)
   
   return return_value
 }  
 
+func (v Telegram_Client_Type)Ping()bool{
+      parameters := make(map[string]interface{})
+       
+       result := v.driver.Send_json_rpc_message( "ping", parameters ) 
+       //fmt.Println(result)
+       if result != nil {
+          return result["status"].(bool)
+       }
+       return false
+}
 
 
-func (v Site_Server_Client_Type)Send_message()bool{
+func (v Telegram_Client_Type)Send_message(message string)bool{
   
 
        parameters := make(map[string]interface{})

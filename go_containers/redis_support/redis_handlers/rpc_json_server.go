@@ -17,14 +17,14 @@ func (v *Redis_RPC_Struct)Json_Rpc_start() {
 
 
 func (v *Redis_RPC_Struct)json_start() {
-
+   v.Delete_all()  // clear old history as old history could contain multiple rebootsf
    for true {
      if v.Length() != 0 {
-        
+        //fmt.Println("length   ------------------------------------ ",v.Length()) 
 		v.json_handler_request()  // polling was used instead of a BRPOP because we wish to use a shared redis connection
 	   
      }else{
-       //fmt.Println("made it here")
+       
 	   time.Sleep(time.Second/10)
 	 }
 	 
@@ -50,7 +50,7 @@ func (v *Redis_RPC_Struct)json_handler_request(){
   params := input_unmarshall[1].(map[string]interface{})
   if _,ok := v.rpc_handlers[method]; ok == true {
      
-
+       //fmt.Println("received method **********************************************************")
       
        if method == "reboot"{
          v.Delete_all()  // clear the queue -- prevent nested reboots
