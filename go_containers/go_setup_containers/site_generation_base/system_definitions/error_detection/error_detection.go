@@ -75,11 +75,24 @@ func Construct_definitions(){
        
        su.Bc_Rec.Add_header_node("RPC_ANALYSIS","RPC_ANALYSIS",rpc_properties)
   
-       su.Construct_incident_logging("RPC_ANALYSIS" ,"RPC FAILURES")
+       su.Construct_incident_logging("RPC_ANALYSIS" ,"RPC FAILURES",su.Emergency)
        
          
   
        su.Bc_Rec.End_header_node("RPC_ANALYSIS","RPC_ANALYSIS")    
+       
+       alert_properties := make(map[string]interface{})
+       su.Bc_Rec.Add_header_node("ALERT_NOTIFICATION","ALERT_NOTIFICATION",alert_properties)
+       
+           telegram_properties := make(map[string]interface{})
+           telegram_properties["valid_users"] = []string{"1575166855"}    
+           su.Bc_Rec.Add_header_node("TELEGRAM_SERVER","TELEGRAM_SERVER",telegram_properties)
+              su.Construct_RPC_Server("TELEGRAPH_RPC","rpc for controlling system",10,15, make( map[string]interface{}) )
+           su.Bc_Rec.End_header_node("TELEGRAM_SERVER","TELEGRAM_SERVER")    
+       
+           
+        su.Bc_Rec.End_header_node("ALERT_NOTIFICATION","ALERT_NOTIFICATION")   
+       
        
        
    su.Bc_Rec.End_header_node("ERROR_DETECTION","ERROR_DETECTION")  

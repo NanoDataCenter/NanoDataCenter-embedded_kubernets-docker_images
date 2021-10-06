@@ -1,0 +1,12 @@
+cd file_server
+./build_all.bsh
+cd ../
+cd mqtt
+./build_all.bsh
+cd ../
+cd mqtt_to_db
+./build_all.bsh
+cd ../
+cd postgresql
+./build_all.bsh
+

@@ -237,6 +237,6 @@ func (docker_handle Docker_Handle_Type) add_incident_log(container string ,redis
   }
   var b bytes.Buffer	
   msgpack.Pack(&b,return_value)	
-  driver.Log_data( status , b.String(), b.String()  )
+  driver.Log_data(  b.String()  )
 }
    

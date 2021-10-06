@@ -59,7 +59,7 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_single_element("DATA_MAP") // map of site data
     su.Cd_Rec.Close_package_construction()
     
-    su.Construct_incident_logging("SITE_REBOOT","site_reboot")
+    su.Construct_incident_logging("SITE_REBOOT","site_reboot",su.Emergency)
     
     su.Cd_Rec.Construct_package("REBOOT_FLAG")
     su.Cd_Rec.Add_single_element("REBOOT_FLAG") // determine if site has done all initialization
@@ -113,7 +113,7 @@ func generate_system_component_graph(){
     su.Cd_Rec.Add_hash("WEB_IP")           // map of all subsystem web servers
     su.Cd_Rec.Close_package_construction()    
     
-    su.Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream")
+    su.Construct_incident_logging("CONTAINER_ERROR_STREAM" ,"container error stream",su.Emergency)
     
     su.Cd_Rec.Construct_package("DOCKER_CONTROL")
     su.Cd_Rec.Add_hash("DOCKER_DISPLAY_DICTIONARY")

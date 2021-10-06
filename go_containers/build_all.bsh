@@ -1,0 +1,39 @@
+
+echo "   basic container "
+cd go_basic_container
+./build_all.bsh
+cd ../
+
+
+echo " setup containers "
+cd go_setup_containers
+./build_all.bsh
+cd ../
+
+
+echo " service containers "
+
+cd go_service_containers
+./build_all.bsh
+cd ../
+
+echo " system containers "
+
+cd go_system_containers
+./build_all.bsh
+cd ../
+
+echo " control app "
+
+cd site_control_app
+./build_all.bsh
+cd ../
+
+echo " application containers "
+
+cd go_application_containers
+./build_all.bsh
+cd ../
+
+
+

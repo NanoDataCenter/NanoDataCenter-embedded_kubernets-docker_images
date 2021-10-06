@@ -1,0 +1,16 @@
+cd error_detection  
+./build_all.bsh
+cd ../
+
+cd managed_switch_logger 
+./build_all.bsh
+cd ../
+ 
+cd operator_control
+./build_all.bsh
+cd ../
+  
+cd redis_monitor
+./build_all.bsh
+cd ../
+

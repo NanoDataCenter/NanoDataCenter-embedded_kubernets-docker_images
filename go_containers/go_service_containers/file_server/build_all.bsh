@@ -1,0 +1,6 @@
+cd file_server_test
+./go_build.bsh  fs_check.go
+cd ../
+./go_build.bsh file_server.go
+./docker_build.bsh
+

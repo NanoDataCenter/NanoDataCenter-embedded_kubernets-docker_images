@@ -1,0 +1,7 @@
+cd error_logger_directory
+./go_build.bsh  error_logger.go
+cd ../
+./go_build.bsh  process_control.go  
+./docker_build.bsh
+
+ 

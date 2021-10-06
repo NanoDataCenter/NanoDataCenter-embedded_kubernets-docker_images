@@ -11,14 +11,15 @@ import (
 "strconv"
 "encoding/json"
 "io/ioutil"
-"bytes"
-"github.com/msgpack/msgpack-go"
+
+
 "lacima.com/redis_support/generate_handlers"
 "lacima.com/redis_support/redis_handlers"
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
 "lacima.com/Patterns/logging_support"
 "github.com/go-redis/redis/v8"
+"lacima.com/Patterns/msgpack_2"
 
 )
 
@@ -43,29 +44,25 @@ var site_containers = make([]map[string]string,0)
 func master_log_incident_data(){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
     
-    var b bytes.Buffer	
-    msgpack.Pack(&b,call_back_data)
-    current_value := b.String()
+    current_value := fmt.Sprint(call_back_data)
     incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
     if hot_start == false {
-        incident_log.Post_event(false,"cold_start",current_value)
+        incident_log.Post_event(msg_pack_utils.Pack_string("cold_start  "+current_value))
     }else{
-       incident_log.Post_event(false,"hot_start",current_value)
+       incident_log.Post_event(msg_pack_utils.Pack_string("hot_start  "+current_value))
     }
     
 }
 func slave_log_incident_data(site_data *map[string]interface{}){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
     
-    var b bytes.Buffer	
-    msgpack.Pack(&b,call_back_data)
-    current_value := b.String()
+    current_value := fmt.Sprint(call_back_data)
     search_string := []string{"NODE:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"}
     incident_log := logging_support.Construct_incident_log(search_string) 
     if hot_start == false {
-        incident_log.Post_event(false,"cold_stert",current_value)
+        incident_log.Post_event(msg_pack_utils.Pack_string("cold_start  "+current_value))
     }else{
-       incident_log.Post_event(false,"hot_start",current_value)
+       incident_log.Post_event(msg_pack_utils.Pack_string("hot_start  "+current_value))
     }
     
 }	

@@ -1,0 +1,10 @@
+cd file_loader
+./build_all.bsh
+cd ../
+cd lacima_secrets_loader
+./build_all.bsh
+cd ../
+cd site_generation_base
+./build_all.bsh
+cd ../
+

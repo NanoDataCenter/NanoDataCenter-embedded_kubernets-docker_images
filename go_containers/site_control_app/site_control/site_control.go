@@ -5,11 +5,13 @@ package site_control
 import "strconv"
 import "lacima.com/cf_control"
 import "lacima.com/server_libraries/node_control_rpc"
-
+import "time"
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/site_control_app/site_control/system_web"
-import "time"
+import "lacima.com/Patterns/msgpack_2"
+
+
 
 var  node_status_hash   redis_handlers.Redis_Hash_Struct
 
@@ -34,6 +36,7 @@ func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
   node_status_hash = (*handlers)["NODE_STATUS"].(redis_handlers.Redis_Hash_Struct)    
   node_status_hash.Delete_All()
 
+  
   (cf_control).Init(cf_cluster ,"site_control_node_monitoring",true, time.Second)
   (cf_control).Add_Chain("node_monitoring",true)
   (cf_control).Cf_add_log_link("node_monitoring")
@@ -49,14 +52,18 @@ func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
 func node_monitor( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
-  
+    
 	 for node,_ := range node_rpc_servers.Driver_array{
          result := node_rpc_servers.Ping(node)
          
          node_status_hash.HSet(node,strconv.FormatBool(result))
          incident_log := node_rpc_servers.Incident_array[node]
-         incident_log.Log_data(result,"node_response","node_response")
          
+         if result == false {
+             incident_log.Log_data(msg_pack_utils.Pack_string(node))
+         }
+         
+
      }
 	 
      return cf.CF_DISABLE

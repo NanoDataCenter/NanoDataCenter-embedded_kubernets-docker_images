@@ -1,0 +1,4 @@
+ docker run -p 8086:8086 \
+      -v /home/pi/mountpoint/influx_db:/var/lib/influxdb2 \
+      -v /home/pi/mountpoint/influx_secrets:/etc/influxdb2
+      nanodatacenter/influxdb

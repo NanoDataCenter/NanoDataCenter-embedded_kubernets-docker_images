@@ -1,0 +1,198 @@
+
+Bots are third-party applications that run inside Telegram. Users can interact with bots by 
+     sending them messages, 
+     commands and inline requests. 
+     You control your bots using HTTPS requests to our Bot API.
+
+What can I do with bots?
+
+    A chat with a bot 
+    Get customized notifications and news. 
+    Integrate with other services. A bot can enrich Telegram chats with content from external services.
+    Create custom tools. A bot may provide you with alerts, weather forecasts, translations, formatting or other services.
+
+
+How do bots work?
+   At the core, Telegram Bots are special accounts that do not require an additional phone number to set up. Users can interact with bots in two ways:
+   Send messages and commands to bots by opening a chat with them or by adding them to groups.
+   Send requests directly from the input field by typing the bot's @username and a query. This allows sending content from inline bots directly into any chat, group or channel.
+   Messages, commands and requests sent by users are passed to the software running on your servers. 
+   Our intermediary server handles all encryption and communication with the Telegram API for you. 
+   You communicate with this server via a simple HTTPS-interface that offers a simplified version of the Telegram API. We call that interface our Bot API.
+
+
+How do I create a bot?
+     The Botfather. Click for hi-res picture
+     There's a… bot for that. Just talk to BotFather (described below) and follow a few simple steps. Once you've created a bot and received your authorization token, head down to the Bot API manual to see what you can teach your bot to do.
+
+
+How are bots different from humans?
+   Bots have no online status and no last seen timestamps, the interface shows the label 'bot' instead.
+   Bots have limited cloud storage — older messages may be removed by the server shortly after they have been processed.
+   Bots can't initiate conversations with users. 
+        A user must either add them to a group or send them a message first. 
+            People can use t.me/<bot_username> links or username search to find your bot.
+        Bot usernames always end in 'bot' (e.g. @TriviaBot, @GitHub_bot).
+        When added to a group, bots do not receive all messages by default (see Privacy mode)
+
+        
+Bot perks
+    Telegram bots are unique in many ways 
+       — we offer two kinds of keyboards, additional interfaces for default commands and deep linking as well as text formatting, integrated payments and more.
+    Inline mode
+       Users can interact with your bot via inline queries straight from the text input field in any chat. All they need to do is start a message with your bot's username and then type a query.
+
+       Having received the query, your bot can return some results. As soon as the user taps one of them, it is sent to the user's currently opened chat. This way, people can request content from your bot in any of their chats, groups or channels.
+
+
+Commands
+
+/command
+A command must always start with the '/' symbol and may not be longer than 32 characters. Commands can use latin letters, numbers and underscores. Here are a few examples:
+
+/get_messages_stats
+/set_timer 10min Alarm!
+/get_timezone London, UK
+Messages that start with a slash are always passed to the bot (along with replies to its messages and messages that @mention the bot by username). Telegram apps will:
+
+Suggest a list of supported commands with descriptions when the user enters a '/' (for this to work, you need to have provided a list of commands to the BotFather). Tapping on a command in the list immediately sends the command.
+Show an additional (/) button in the input field in all chats with bots. Tapping it types a '/' and shows the list of commands.
+Highlight /commands in messages. When the user taps a highlighted command, the command is sent at once.
+Suggested commands Notice the new button in the input field, right next to the sticker button Suggested commands for multiple bots
+If multiple bots are in a group, it is possible to add bot usernames to commands in order to avoid confusion:
+
+/start@TriviaBot
+/start@ApocalypseBot
+This is done automatically when commands are selected via the list of suggestions. Please remember that your bot needs to be able to process commands that are followed by its username.
+
+Global commands
+In order to make it easier for users to navigate the bot multiverse, we ask all developers to support a few basic commands. Telegram apps will have interface shortcuts for these commands.
+
+/start - begins interaction with the user, e.g., by sending a greeting message. This command can also be used to pass additional parameters to the bot (see Deep linking)
+/help - returns a help message. It can be a short text about what your bot can do and a list of commands.
+/settings - (if applicable) returns the bot's settings for this user and suggests commands to edit these settings.
+Users will see a Start button when they first open a conversation with your bot. Help and Settings links will be available in the menu on the bot's profile page.
+
+An empty conversation with a bot A bot's profile page, featuring 'Help' and 'Settings' buttons
+Formatting: bold, italic, fixed-width text and inline links
+You can use bold, italic or fixed-width text, as well as inline links in your bots' messages. Telegram clients will render them accordingly.
+
+Read more in the Bot API manual »
+
+Privacy mode
+Bots are frequently added to groups in order to augment communication between human users, e.g. by providing news, notifications from external services or additional search functionality. This is especially true for work-related groups. Now, when you share a group with a bot, you tend to ask yourself “How can I be sure that the little rascal isn't selling my chat history to my competitors?” The answer is — privacy mode.
+
+A bot running in privacy mode will not receive all messages that people send to the group. Instead, it will only receive:
+
+Messages that start with a slash '/' (see Commands above)
+Replies to the bot's own messages
+Service messages (people added or removed from the group, etc.)
+Messages from channels where it's a member
+On one hand, this helps some of us sleep better at night (in our tinfoil nightcaps), on the other — it allows the bot developer to save a lot of resources, since they won't need to process tens of thousands irrelevant messages each day.
+
+Privacy mode is enabled by default for all bots, except bots that were added to the group as admins (bot admins always receive all messages). It can be disabled, so that the bot receives all messages like an ordinary user (the bot will need to be re-added to the group for this change to take effect). We only recommend doing this in cases where it is absolutely necessary for your bot to work — users can always see a bot's current privacy setting in the group members list. In most cases, using the force reply option for the bot's messages should be more than enough.
+
+So what messages exactly will my bot get? »
+
+Deep linking
+Telegram bots have a deep linking mechanism, that allows for passing additional parameters to the bot on startup. It could be a command that launches the bot — or an auth token to connect the user's Telegram account to their account on some external service.
+
+Each bot has a link that opens a conversation with it in Telegram — https://t.me/<bot username>. You can add the parameters start or startgroup to this link, with values up to 64 characters long. For example:
+
+https://t.me/triviabot?startgroup=test
+A-Z, a-z, 0-9, _ and - are allowed. We recommend using base64url to encode parameters with binary and other types of content.
+
+Following a link with the start parameter will open a one-on-one conversation with the bot, showing a START button in the place of the input field. If the startgroup parameter is used, the user is prompted to select a group to add the bot to. As soon as a user confirms the action (presses the START button in their app or selects a group to add the bot to), your bot will receive a message from that user in this format:
+
+/start PAYLOAD
+PAYLOAD stands for the value of the start or startgroup parameter that was passed in the link.
+
+Deep linking Example
+Suppose the website example.com would like to send notifications to its users via a Telegram bot. Here's what they could do to enable notifications for a user with the ID 123.
+
+Create a bot with a suitable username, e.g. @ExampleComBot
+Set up a webhook for incoming messages
+Generate a random string of a sufficient length, e.g. $memcache_key = "vCH1vGWJxfSeofSAs0K5PA"
+Put the value 123 with the key $memcache_key into Memcache for 3600 seconds (one hour)
+Show our user the button https://t.me/Exam
+
+6. BotFather
+Jump to top to learn everything about Telegram bots »
+
+BotFather is the one bot to rule them all. It will help you create new bots and change settings for existing ones.
+
+Creating a new bot
+Use the /newbot command to create a new bot. The BotFather will ask you for a name and username, then generate an authorization token for your new bot.
+
+The name of your bot is displayed in contact details and elsewhere.
+
+The Username is a short name, to be used in mentions and t.me links. Usernames are 5-32 characters long and are case insensitive, but may only include Latin characters, numbers, and underscores. Your bot's username must end in 'bot', e.g. 'tetris_bot' or 'TetrisBot'.
+
+The token is a string along the lines of 110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw that is required to authorize the bot and send requests to the Bot API. Keep your token secure and store it safely, it can be used by anyone to control your bot.
+
+Generating an authorization token
+If your existing token is compromised or you lost it for some reason, use the /token command to generate a new one.
+
+Botfather commands
+The remaining commands are pretty self-explanatory:
+
+/mybots — returns a list of your bots with handy controls to edit their settings
+/mygames — does the same for your games
+Edit bots
+
+/setname – change your bot's name.
+/setdescription — change the bot's description, a short text of up to 512 characters, describing your bot. Users will see this text at the beginning of the conversation with the bot, titled 'What can this bot do?'.
+/setabouttext — change the bot's about info, an even shorter text of up to 120 characters. Users will see this text on the bot's profile page. When they share your bot with someone, this text is sent together with the link.
+/setuserpic — change the bot's profile pictures. It's always nice to put a face to a name.
+/setcommands — change the list of commands supported by your bot. Users will see these commands as suggestions when they type / in the chat with your bot. Each command has a name (must start with a slash ‘/’, alphanumeric plus underscores, no more than 32 characters, case-insensitive), parameters, and a text description. Users will see the list of commands whenever they type '/' in a conversation with your bot.
+/deletebot — delete your bot and free its username.
+Edit settings
+
+/setinline — toggle inline mode for your bot.
+/setinlinegeo - request location data to provide location-based inline results.
+/setjoingroups — toggle whether your bot can be added to groups or not. Any bot must be able to process private messages, but if your bot was not designed to work in groups, you can disable this.
+/setprivacy — set which messages your bot will receive when added to a group. With privacy mode disabled, the bot will receive all messages. We recommend leaving privacy mode enabled. You will need to re-add the bot to existing groups for this change to take effect.
+Manage games
+
+/newgame — create a new game.
+/listgames — get a list of your games.
+/editgame — edit a game.
+/deletegame — delete an existing game.
+Please note, that it may take a few minutes for changes to take effect.
+
+Status alerts
+Millions choose Telegram for its speed. To stay competitive in this environment, your bot also needs to be responsive. In order to help developers keep their bots in shape, Botfather will send status alerts if it sees something is wrong.
+
+We will be checking the number of replies and the request/response conversion rate for popular bots (~300 requests per minute: but don't write this down as the value may change in the future). If we get abnormally low readings, you will receive a notification from Botfather.
+
+Responding to alerts
+By default, you will only get one alert per bot per hour. Each alert has the following buttons:
+
+Fixed. Use this if you found an issue with your bot and fixed it. If you press the fix button, we will resume sending alerts in the regular way so that you can see if your fix worked within 5-10 minutes instead of having to wait for an hour.
+Support. Use this to open a chat with @BotSupport if you don't see any issues with your bot or if you think the problem is on our side.
+Mute for 8h/1w. Use this if you can't fix your bot at the moment. This will disable all alerts for the bot in question for the specified period of time. We do not recommend using this option since your users may migrate to a more stable bot. You can unmute alerts in your bot's settings via Botfather.
+Monitored issues
+We will currently notify you about the following issues:
+
+1.
+
+Too few **private messages** are sent compared to previous weeks: **{value}**
+Your bot is sending much fewer messages than it did in the previous weeks. This is useful for newsletter-style bots that send out messages without prompts from the users. The larger the value, the more significant the difference.
+
+2.
+
+Too few replies to incoming **private messages**. Conversion rate: **{value}**
+Your bot is not replying to all messages that are being sent to it (the request/response conversion rate for your bot was too low for at least two of the last three 5-minute periods). To provide a good user experience, please respond to all messages that are sent to your bot. Respond to message updates by calling send… methods (e.g. sendMessage).
+
+3.
+
+Too few answers to **inline queries**. Conversion rate: **{value}**
+Your bot is not replying to all inline queries that are being sent to it, calculated in the same way as above. Respond to inline_query updates by calling answerInlineQuery.
+
+4.
+
+Too few answers to **callback queries**. Conversion rate: **{value}**
+Too few answers to **callback game queries**. Conversion rate: **{value}**
+Your bot is not replying to all callback queries that are being sent to it (with or without games), calculated in the same way as above. Respond to callback_query updates by calling answerCallbackQuery.
+
+Please note that the status alerts feature is still being tested and will be improved in the future.

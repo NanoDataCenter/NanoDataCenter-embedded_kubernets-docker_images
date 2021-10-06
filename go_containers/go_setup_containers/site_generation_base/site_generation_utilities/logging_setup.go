@@ -5,12 +5,38 @@ package su
  *  used to  
  *   redundant data structures were put in so that logging element doesnot have to dig into the stream
  *   This data structures could be used on arduino type processors
+ Logging Levels
+
+ 
+
+ 
+ 
+ 
  */
 
-func Construct_incident_logging(command_code ,description string){
+// log levels
+
+const Emergency        uint64 = 7
+const Alert            uint64 = 6
+const Critical         uint64 = 5
+const Error            uint64 = 4
+const Warning          uint64 = 3
+const Notice           uint64 = 2
+const Informational    uint64 = 1 
+const Debug            uint64 = 0
+
+
+
+func Construct_incident_logging(command_code ,description string,log_level uint64 ){
     //fmt.Println("command_code",command_code)
+    if log_level > 7 {
+        log_level = 7
+    }
+    
     properties := make(map[string]interface{})
     properties["description"] = description
+    properties["log_level"] = log_level
+    
     Bc_Rec.Add_header_node("INCIDENT_LOG",command_code,properties)
 	Cd_Rec.Construct_package("INCIDENT_LOG")
     Cd_Rec.Add_single_element("TIME_STAMP")
@@ -47,7 +73,7 @@ func Construct_streaming_logs(stream_name , description string, keys []string ){
   properties["keys"] = keys
   properties["descrption"] = description
   Bc_Rec.Add_header_node("STREAMING_LOG",stream_name,properties)
-  Construct_incident_logging("VALUE_SPECIFIC" ,"VALUE SPECIFIC INCIDENT LOG")
+  Construct_incident_logging("VALUE_SPECIFIC" ,"VALUE SPECIFIC INCIDENT LOG",Emergency)
   Cd_Rec.Construct_package("STREAMING_LOG")
   for _,key := range keys{
        Cd_Rec.Add_redis_stream(key,1024)  // stream

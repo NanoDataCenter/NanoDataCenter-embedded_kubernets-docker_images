@@ -146,11 +146,11 @@ func register_container( container_name string){
        
        // this is a log of the container controller failure
        description = container_name+" process_control_failure"
-       Construct_incident_logging("process_control_failure",description)
+       Construct_incident_logging("process_control_failure",description,Emergency)
    
        // this is a log of failures for processes that container controller manages
        description = container_name+" managed_process_failure"
-       Construct_incident_logging("managed_process_failure",description)
+       Construct_incident_logging("managed_process_failure",description,Emergency)
    
        // this is a watchdog failure log for this container
        description = container_name+" container controller watchdog"

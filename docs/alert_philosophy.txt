@@ -1,0 +1,92 @@
+Data from https://docs.google.com/document/d/199PqyG3UsyXlwieHaqbGiWVa8eMWi8zzAn0YfcApr8Q/edit
+Philosophy of Alerting
+
+Pages
+    -- urgent, important, actionable, and real
+       ongoing or imminent problems with your service
+       Classification areas
+          -- availability & basic functionality 
+             latency
+             correctness (completeness, freshness and durability of data) 
+             feature-specific problems
+             
+Symptoms 
+    -- Include cause-based information in symptom-based pages or on dashboards, 
+       but avoid alerting directly on causes
+       
+       
+This document uses the following terms:
+    -- page: anything that tries to urgently and actively get the attention of a specific human (e.g. via a pager or cell phone going beep beep beep)
+    -- rule: any kind of logic for detecting some interesting condition in any monitoring system.
+    -- alert: is a manifestation of a rule that (intends to) reach a human, e.g. as a page, an email, a message in an IRC channel, auto-filing a ticket, etc.
+
+Users, in general, care about a small number of things:
+    -- Basic availability and correctness. 
+       Latency.  
+       Completeness/freshness/durability.  
+       functionality/availability 
+       
+Cause-based alerts are bad (but sometimes necessary)
+     -- Generally result in duplicate alerts and duplicate resolution documentation
+     -- Necessary if "walking to a cliff" running out of memory where there is no symptom till failure
+     -- clients have better visability than servers
+     -- load balancers better visablity the servers
+     
+     
+     
+Cause-based rules can still be useful.  
+    -- In particular, they can help you jump quickly to a known deficiency in your production system.
+       If you gain a lot of value in automatically tying symptoms back to causes, perhaps because there are causes that are outside of your control to eliminate, I advocate this technique:
+
+            When you write (or discover) a rule that represents a cause, check that the symptom is also caught.  If not, make it so.
+                    Print a terse summary of all of your cause-based rules that are firing in every page that you send out.  A quick skim by a human can identify whether the symptom they just got paged for has an already-identified cause.  This might look like:
+                                TooMany500StatusCodes
+                                    Served 10.7% 5xx results in the last 3 minutes!
+                                Also firing:
+                                    JanitorProcessNotKeepingUp
+                                    UserDatabaseShardDown
+                                FreshnessIndexBehind	
+                            Probably a db problem of a pages problems.
+                            
+            Remove or tune cause-based rules that are noisy or persistent or otherwise low-value.
+                 Using this approach, the mental burden of the mistuned, noisy rules has been changed from a pager beep & ack (and investigation, and followup, and..) to a single line of text to be skimmed over.  Finally, since you need clear debugging dashboards anyway (for problems that don't start with an alert), this is another good place to expose cause-based rules.  
+                That said, if your debugging dashboards let you move quickly enough from symptom to cause to amelioration, you don't need to spend time on cause-based rules anyway.
+
+Tickets, Reports and Email
+      One way or another, you have some alerts that need attention soon, but not right now.   I call these "sub-critical alerts".
+          Bug or ticket-tracking systems can be useful.  Having alerts open a bug can work out great, as long as multiple firings of the same alert get correctly threaded into a single ticket/bug.  This system fails if there's no accountability for triaging and closing bugs; if the alert-opened bugs might go unseen for weeks, this clearly fails as a way of dealing with sub-critical alerts before they become critical!  It also fails if your team is simply overloaded or is not assigning enough people to deal with followup; you need to be honest about how much time this is consuming, or you'll fall further and further behind.
+
+        A daily (or more frequent) report can work too.  One way this can work is to write sub-critical rules that are long-lived (e.g. "the database is over 90% full" or "we've served over 1000 very slow requests in the last day"), and send out a report periodically that shows all currently-firing rules.  Again, without a system of accountability this amounts to less-spammy email alerts, so make sure the oncall person (or someone else) is designated to triage these every day (or every shift hand-off, or whatever works).
+
+        Every alert should be tracked through a workflow system.  Don't only dump them into an email list or IRC channel.  In general, this quickly turns into specialized "foo-alerts" mailing lists or channels so that they can be summarily ignored.  Except as a brief (usually days, at most weeks) period to vet that a new rule will not page too often, it's almost always a bad idea.  It's also easy to ignore the volume of these alerts, and suddenly some old, mis-tuned rule is firing every minute for all of your thousand application servers, clogging up mailboxes.  
+
+
+Playbooks (or runbooks) are an important part of an alerting system; 
+        it's best to have an entry for each alert or family of alerts that catch a symptom, which can further explain what the alert means and how it might be addressed.
+
+        In general, if your playbook has a long detailed flow chart, you're potentially spending too much time documenting what could be wrong and too little time fixing it—unless the root causes are completely out of your control or fundamentally require human intervention (like calling a vendor).  
+        
+         The best playbooks I've seen have a few notes about exactly what the alert means, and what's currently interesting about an alert ("We've had a spate of power outages from our widgets from VendorX; if you find this, please add it to Bug 12345 where we're tracking things for patterns".)  Most such notes should be ephemeral, so a wiki or similar is a great tool.
+         
+         
+Tracking & Accountability
+    Track your pages, and all your other alerts.  If a page is firing and people just say "I looked, nothing was wrong", that's a pretty strong sign that you need to remove the paging rule, or demote it or collect data in some other way.  Alerts that are less than 50% accurate are broken; even those that are false positives 10% of the time merit more consideration.
+
+    Having a system in place (e.g. a weekly review of all pages, and quarterly statistics) can help keep a handle on the big picture of what's going on, and tease out patterns that are lost when the pager is handed from one human to the next.
+
+    
+    
+You're being naïve!
+    Yup, though I prefer the term "aspirational".  Here are some great reasons to break the above guidelines:
+
+    You have a known cause that actually sits below the noise in your symptoms.  For example, if your service has 99.99% availability, but you have a common event that causes 0.001% of requests to fail, you can't alert on it as a symptom (because it's in the noise) but you can catch the causing event.  It might be worth trying to trickle this information up the stack, but maybe it really is simplest just to alert on the cause.  Caveat oncaller.
+
+    You can't monitor at the spout, because you lose data resolution.  For example, maybe you tolerate some handlers/endpoints/backends/URLs being pretty slow (like a credit card validation compared to browsing items for sale) or low-availability (like a background refresh of an inbox).  At your load balancers, this distinction may be lost.  Walk down the stack and alert from the highest place where you have the distinction.
+
+    Your symptoms don't appear until it's too late, like you've run out of quota. Of course, you need to page before it's too late, and sometimes that means finding a cause to page on (e.g. usage > 80% and will run out in < 4h at the growth rate of the last 1h).  But if you can do that, you should also be able to find a similar cause that's less urgent (e.g. quota > 90% and will run out in < 4d at the growth rate of the last 1d) that will catch most cases, and deal with that as a ticket or email alert or daily problem report, rather than the last-ditch escalation that a page represents.
+
+    Your alert setup sound more complex than the problems they're trying to detect. Sometimes they will be.  The goal should be to tend towards simplicity, robust, self-protecting systems (how did you not notice that you were running out of quota? Why can't that data go somewhere else?)  In the long term, they should trend towards simplicity, but at any given time the local optimum may be relatively complex rules to keep things quiet and accurate.
+
+
+
+

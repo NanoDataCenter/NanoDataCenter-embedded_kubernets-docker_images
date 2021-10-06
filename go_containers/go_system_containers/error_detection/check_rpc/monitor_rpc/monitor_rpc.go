@@ -74,7 +74,7 @@ func construct_construct_rpc_servers(){
     rpc_records = make([]rpc_records_type,0)
     incident_nodes  := []string{"RPC_SERVER"}
     nodes := graph_query.Common_qs_search(&incident_nodes)
-    fmt.Println("nodes",len(nodes),nodes)
+    //fmt.Println("nodes",len(nodes),nodes)
     
     for _,node := range nodes{
         var item  rpc_records_type
@@ -120,7 +120,7 @@ func ping_rpc_server_loop(){
     
     rpc_bad_number = 0
     for true {
-      fmt.Println("ping rpc server")
+      //fmt.Println("ping rpc server")
       ping_rpc_servers()
       time.Sleep(timeout)
       
@@ -130,7 +130,7 @@ func ping_rpc_server_loop(){
 
 func ping_rpc_servers(){
    for _,rpc_record := range rpc_records {
-       fmt.Println("key",rpc_record.key)
+       //fmt.Println("key",rpc_record.key)
        ping_rpc_server( rpc_record )
    }
    if rpc_bad_number > 0 {
@@ -155,7 +155,7 @@ func ping_rpc_server(item  rpc_records_type ){
    key       := item.namespace
    rpc_state[key] = false        
    
-   
+   //fmt.Println("rpc server ",key)
    parameters := make(map[string]interface{})
    result := item.rpc_server.Send_json_rpc_message( "info", parameters ) 
    if result == nil {
@@ -163,9 +163,10 @@ func ping_rpc_server(item  rpc_records_type ){
        
        fmt.Println("rpc not active")
    }else{
-      fmt.Println("result", result )
+      //fmt.Println("result", result )
       if result["status"].(bool) == false {
           rpc_bad_number += 1
+          fmt.Println("bad",key,rpc_bad_number)
                     
       }else{
         rpc_state[key]         = true 
@@ -182,7 +183,7 @@ func ping_rpc_server(item  rpc_records_type ){
  
 
 func post_data_to_stream(item  rpc_records_type,   number,length int64, time_utilitization float64){
-    
+    fmt.Println("post",item.namespace,number,length,time_utilitization)
     number_packed  := msg_pack_utils.Pack_int64(number)
     item.rpc_stream_array["number"].Xadd( number_packed )
     
