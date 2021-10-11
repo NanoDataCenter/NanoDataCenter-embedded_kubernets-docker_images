@@ -34,7 +34,9 @@ type monitor_stream_type struct {
     
     sample_time                      int64
     current_time                     int64
-    key_list                         map[string]string
+    description                      map[string]string
+    name                             map[string]string
+    key                              map[string]string
     working_table                    redis_handlers.Redis_Hash_Struct
     time_table                       redis_handlers.Redis_Hash_Struct
     status_table                     redis_handlers.Redis_Hash_Struct
@@ -101,7 +103,11 @@ func construct_monitor_control() {
     
 func construct_construct_stream_records(){
     
-    monitor_control.key_list            = make(map[string]string)
+    
+            
+    monitor_control.description         = make(map[string]string)
+    monitor_control.name                = make(map[string]string)
+    monitor_control.key                 = make(map[string]string)
     monitor_control.input_stream_map    = make(map[string]redis_handlers.Redis_Stream_Struct)
     
     stream_nodes  := []string{"STREAMING_LOG"}
@@ -134,7 +140,10 @@ func construct_stream_data_structures( item  stream_records_type){
         handlers                := data_handler.Construct_Data_Structures(&key_temp)
         for _,key := range item.stream_keys {
             stream_key                         := base_key+"/"+key
-            monitor_control.key_list[stream_key]         = ""
+            
+            monitor_control.key[stream_key]              = key
+            monitor_control.description[stream_key]      = item.description
+            monitor_control.name[stream_key]             = item.name
             monitor_control.input_stream_map[stream_key] = (*handlers)[key].(redis_handlers.Redis_Stream_Struct)
             
         }
@@ -155,11 +164,11 @@ func populate_data_structures(){
     default_string  := msg_pack_utils.Pack_string("")
     default_bool    := msg_pack_utils.Pack_bool(true)
     
-    clean_redis_hash_table( monitor_control.key_list, monitor_control.working_table, default_working)
-    clean_redis_hash_table( monitor_control.key_list, monitor_control.time_table, default_time )
-    clean_redis_hash_table( monitor_control.key_list, monitor_control.status_table, default_bool )
-    clean_redis_hash_table( monitor_control.key_list, monitor_control.error_value, default_string )
-    clean_redis_hash_table( monitor_control.key_list, monitor_control.error_time, default_time)
+    clean_redis_hash_table( monitor_control.key, monitor_control.working_table, default_working)
+    clean_redis_hash_table( monitor_control.key, monitor_control.time_table, default_time )
+    clean_redis_hash_table( monitor_control.key, monitor_control.status_table, default_bool )
+    clean_redis_hash_table( monitor_control.key, monitor_control.error_value, default_string )
+    clean_redis_hash_table( monitor_control.key, monitor_control.error_time, default_time)
     
     
 }

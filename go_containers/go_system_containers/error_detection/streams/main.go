@@ -25,7 +25,7 @@ func main(){
 	data_handler.Data_handler_init(&site_data_store)
     redis_handlers.Init_Redis_Mutex()
 	monitor_streams.Init_data_structures()
-	//go monitor_streams.Process_functions()
+	go monitor_streams.Process_functions()
     
     for true {
         
