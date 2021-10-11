@@ -1,10 +1,9 @@
 server:
 	$(MAKE) -C check_rpc
 	$(MAKE) -C incident_streams
-
-#make -C incident_streams
-#make -C streams
-#make -C  watchdog_incidents
+	$(MAKE) -C watchdog_incidents
+	$(MAKE) -C streams
+	./docker_build.bsh
 
 all:  server
 
