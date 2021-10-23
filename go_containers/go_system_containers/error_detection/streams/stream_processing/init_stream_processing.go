@@ -90,8 +90,8 @@ func construct_monitor_control() {
 
 	monitor_control.stream_table.Delete_All()
     monitor_control.time_table.Delete_All()
-    monitor_control.z_table.Delete_All()
-    monitor_control.z_time.Delete_All()
+    //monitor_control.z_table.Delete_All()
+    //monitor_control.z_time.Delete_All()
     
     monitor_control.process_data_stream         =   (*data_element)["LOG_STREAM"].(pg_drv.Postgres_Stream_Driver) 
     monitor_control.filtered_data_stream        =   (*data_element)["FILTERED_STREAM"].(pg_drv.Postgres_Stream_Driver)
