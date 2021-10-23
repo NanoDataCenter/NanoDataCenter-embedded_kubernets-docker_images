@@ -16,6 +16,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
+	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect
 	github.com/reugn/go-quartz v0.3.6 // indirect

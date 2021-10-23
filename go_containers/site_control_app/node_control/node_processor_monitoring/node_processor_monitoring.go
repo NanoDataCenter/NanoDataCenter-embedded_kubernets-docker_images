@@ -8,53 +8,50 @@ https://www.thegeekstuff.com/2011/03/sar-examples/
 */
 
 
-
+import "fmt"
 import "time"
-import "bytes"
+
 import "strings"
 import "strconv"
 import  "lacima.com/site_control_app/docker_control"
 import "lacima.com/cf_control"
-import  "lacima.com/redis_support/generate_handlers"
-import  "lacima.com/redis_support/redis_handlers"
-import "github.com/msgpack/msgpack-go"
+import "lacima.com/server_libraries/postgres"
+import "lacima.com/Patterns/msgpack_2"
+import "lacima.com/Patterns/logging_support"
 
-
-type processor_measure_type struct {
-
-performance_drivers map[string]redis_handlers.Redis_Stream_Struct
-
-
-
-}
-
-var processor_measurement processor_measure_type
-
+var tag1                  string
+var stream_logging_driver pg_drv.Postgres_Stream_Driver
+var incident_log          map[string]*logging_support.Incident_Log_Type
 func Init_processor_data_structures(site_data *map[string]interface{}){
 
-   
-   processor_measurement.performance_drivers = make(map[string]redis_handlers.Redis_Stream_Struct)
-   var search_list = []string{"NODE:"+(*site_data)["local_node"].(string),"STREAMING_LOG:node_monitor","STREAMING_LOG"}
-   var data_element = data_handler.Construct_Data_Structures(&search_list)
-   
-   keys := []string{"FREE_CPU","RAM","TEMPERATURE","DISK_SPACE","SWAP_SPACE","CONTEXT_SWITCHES","BLOCK_DEV","IO_SPACE","RUN_QUEUE","EDEV"}
-   for _,key := range keys{
-     
-     processor_measurement.performance_drivers[key] = (*data_element)[key].(redis_handlers.Redis_Stream_Struct)
-   }
-   
-
+     stream_logging_driver  =    logging_support.Find_stream_logging_driver()
+     tag1                   =    (*site_data)["local_node"].(string)
+     incident_log           =    make(map[string]*logging_support.Incident_Log_Type)
+     keys := []string{"FREE_CPU","RAM","TEMPERATURE","DISK_SPACE","SWAP_SPACE","CONTEXT_SWITCHES","BLOCK_DEV","IO_SPACE","RUN_QUEUE","EDEV"}
+     for _,key := range(keys){
+         search_path := []string{"NODE:"+tag1,"INCIDENT_LOG:"+key,"INCIDENT_LOG"}
+         incident_log[key] = logging_support.Construct_incident_log( search_path )
+     }
+    
 }
 
-func (processor_measure_type) log_data(key string, data map[string]interface{} ) {
+func  log_data(key string, data map[string]float64 ) {
 
-  var driver = processor_measurement.performance_drivers[key]
- 
-  data["time"] = time.Now().UnixNano()
-  var b bytes.Buffer	
-  msgpack.Pack(&b,data)
-  driver.Xadd(b.String())
-
+  //fmt.Println("data",key,data)
+  tag2   := key
+  for tag3, value := range(data) {
+     packed_data := msg_pack_utils.Pack_float64(value)
+     //fmt.Println("tag1",tag1,tag2,tag3,value,packed_data)
+   
+     err :=  stream_logging_driver.Insert(tag1,tag2,tag3,"","",packed_data)
+     if err == false {
+         panic("done")
+     }
+  
+      
+  }
+  
+  //stream_logging_driver.Insert( tag1,tag2,tag3,tag4,tag5,data string )bool{
 
 }
 
@@ -71,7 +68,7 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
 
 
   (cf_control).Add_Chain("processor_monitoring",true)
-  (cf_control).Cf_add_log_link("processor monitoring started ")
+  //(cf_control).Cf_add_log_link("processor monitoring started ")
   
    var par1 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_free_cpu,par1)
@@ -94,7 +91,7 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
   (cf_control).Cf_add_one_step(assemble_run_queue,par14)
   var par15 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_net_edev,par15)
-  (cf_control).Cf_add_log_link("processor monitoring done")
+  //(cf_control).Cf_add_log_link("processor monitoring done")
   (cf_control).Cf_add_wait_interval(time.Minute*9  ) // first tick is not counted sar -u 300 1 takes 5 minutes
   (cf_control).Cf_add_reset()
 
@@ -120,9 +117,9 @@ func string_to_float64( text string ) float64 {
    return value
 }
 
-func tokens_to_dict(tokens []string, header []string, start_index int) map[string]interface{} {
+func tokens_to_dict(tokens []string, header []string, start_index int) map[string]float64 {
 
-    var return_value = make(map[string]interface{})
+    var return_value = make(map[string]float64)
 	for i:= start_index; i < len(header); i++ {
 	   var key = header[i]
 	   var value,err = strconv.ParseFloat(tokens[i],64)
@@ -147,8 +144,14 @@ func assemble_free_cpu( system interface{},chain interface{}, parameters map[str
 	var tokens = tokenize_line(average_line)
 	
 	var data = tokens_to_dict(tokens,[]string{ "Time","cpu","%user" , "%nice", "%system", "%iowait" ,"%steal" ,"%idle" },2)
-	
-	(processor_measurement).log_data("FREE_CPU",data) 
+	fmt.Println("idle",data["%idle"])
+    if data["%idle"] < 50. {
+        fmt.Println("bad idle",data["%idle"])
+       
+        pack_data  := msg_pack_utils.Pack_float64(data["%idle"])
+        incident_log["FREE_CPU"].Log_data(pack_data)
+    }
+	log_data("FREE_CPU",data) 
 	
 
   return cf.CF_DISABLE
@@ -158,7 +161,7 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
 
   var output = docker_control.System_shell("cat /proc/meminfo ")
   
-  var data = make(map[string]interface{})
+  data   := make(map[string]float64)
   var lines = split_lines(output)
   for _,line := range lines{
       var tokens = tokenize_line(line)
@@ -172,8 +175,15 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
 	  }
 	 
   }
-  
-  (processor_measurement).log_data("RAM",data) 
+  ratio := data["MemFree"]/data["MemAvailable"]
+  fmt.Println("mem ratio",ratio)
+  if ratio < .5 {
+        //fmt.Println("ratio",ratio)
+        //fmt.Println("badd ram")
+        pack_data  := msg_pack_utils.Pack_float64(ratio)
+        incident_log["RAM"].Log_data(pack_data)
+    }
+  log_data("RAM",data) 
   return cf.CF_DISABLE
 
 }
@@ -190,10 +200,16 @@ func assemble_temperature( system interface{},chain interface{}, parameters map[
   
   }
  value = (9.0/5.0*value)+32.
- var data = make(map[string]interface{})
+ data   := make(map[string]float64)
  data["TEMP_F"] = value
- 
- (processor_measurement).log_data("TEMPERATURE",data) 
+ fmt.Println("temp",value)
+ if value > 150{
+    //fmt.Println(value)
+    
+    pack_data  := msg_pack_utils.Pack_float64(value)
+    incident_log["TEMPERATURE"].Log_data(pack_data)   
+ }
+ log_data("TEMPERATURE",data) 
   return cf.CF_DISABLE
 
   
@@ -203,7 +219,7 @@ func assemble_disk_space( system interface{},chain interface{}, parameters map[s
 
   var output = docker_control.System_shell("df")
  
-  var data = make(map[string]interface{})
+  data   := make(map[string]float64)
   var lines = split_lines(output)
   for _ ,line := range lines{
     var tokens = tokenize_line(line)
@@ -225,7 +241,7 @@ func assemble_disk_space( system interface{},chain interface{}, parameters map[s
 	   
 	}
   }
-  (processor_measurement).log_data("DISK_SPACE",data)
+  log_data("DISK_SPACE",data)
   return cf.CF_DISABLE
 }
 
@@ -235,7 +251,7 @@ func assemble_swap_space( system interface{},chain interface{}, parameters map[s
 
  
     var output = docker_control.System_shell("sar -S 1 1")
-    var data = make(map[string]interface{})
+    data   := make(map[string]float64)
     var lines = split_lines(output)
     
 	var key_tokens =  tokenize_line(lines[2])
@@ -248,7 +264,7 @@ func assemble_swap_space( system interface{},chain interface{}, parameters map[s
 	data[key_tokens[2]] = used
     
 	
-   (processor_measurement).log_data("SWAP_SPACE",data)
+   log_data("SWAP_SPACE",data)
    return cf.CF_DISABLE
 }
 
@@ -256,7 +272,7 @@ func assemble_context_switches( system interface{},chain interface{}, parameters
 
    var output = docker_control.System_shell("sar -w 1 1")
       
-    var data = make(map[string]interface{})
+    data   := make(map[string]float64)
     var lines = split_lines(output)
     
 	var key_tokens =  tokenize_line(lines[2])
@@ -269,7 +285,7 @@ func assemble_context_switches( system interface{},chain interface{}, parameters
 	data[key_tokens[2]] = cswch_s
    
 	
-   (processor_measurement).log_data("CONTEXT_SWITCHES",data)
+   log_data("CONTEXT_SWITCHES",data)
    return cf.CF_DISABLE
 }
 
@@ -278,7 +294,7 @@ func assemble_block_io( system interface{},chain interface{}, parameters map[str
   
    var output = docker_control.System_shell("sar -d  3 1")
    
-   var data = make(map[string]interface{})
+   data   := make(map[string]float64)
    var lines = split_lines(output)
    var data_lines = lines[3:]
    for _,line := range data_lines {
@@ -296,7 +312,7 @@ func assemble_block_io( system interface{},chain interface{}, parameters map[str
    
   
    
-   (processor_measurement).log_data("BLOCK_DEV",data)
+   log_data("BLOCK_DEV",data)
    return cf.CF_DISABLE
 
   
@@ -308,7 +324,7 @@ func assemble_io_space( system interface{},chain interface{}, parameters map[str
   
   var output = docker_control.System_shell("sar -b 1 1")
    
-  var data = make(map[string]interface{})
+  data   := make(map[string]float64)
   var lines = split_lines(output)
   var key_line = lines[2]
   var data_line = lines[3]
@@ -318,7 +334,7 @@ func assemble_io_space( system interface{},chain interface{}, parameters map[str
   for i :=1;i<len(key_tokens);i++{
      data[key_tokens[i]]  = string_to_float64(data_tokens[i])
   }
-  (processor_measurement).log_data("IO_SPACE",data)
+  log_data("IO_SPACE",data)
   return cf.CF_DISABLE
  
 }
@@ -328,7 +344,7 @@ func assemble_run_queue( system interface{},chain interface{}, parameters map[st
     
    var output = docker_control.System_shell("sar  -q 1 1")
    
-  var data = make(map[string]interface{})
+  data   := make(map[string]float64)
   var lines = split_lines(output)
   var key_line = lines[2]
   var data_line = lines[3]
@@ -339,7 +355,7 @@ func assemble_run_queue( system interface{},chain interface{}, parameters map[st
   }
   
 
-  (processor_measurement).log_data("RUN_QUEUE",data)
+  log_data("RUN_QUEUE",data)
   return cf.CF_DISABLE
 }
 
@@ -347,7 +363,7 @@ func assemble_net_edev( system interface{},chain interface{}, parameters map[str
 
   
   var output = docker_control.System_shell("sar -n EDEV  3 1")
-  var data = make(map[string]interface{})
+  data   := make(map[string]float64)
   var lines = split_lines(output)
   var data_lines = lines[3:]
   for _,line := range data_lines {
@@ -366,7 +382,7 @@ func assemble_net_edev( system interface{},chain interface{}, parameters map[str
   
    
    
-   (processor_measurement).log_data("EDEV",data)
+   log_data("EDEV",data)
    return cf.CF_DISABLE
 
 }

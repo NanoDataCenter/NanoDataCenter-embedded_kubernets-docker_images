@@ -39,7 +39,7 @@ func monitor_node_rpc_servers(cf_cluster *cf.CF_CLUSTER_TYPE){
   
   (cf_control).Init(cf_cluster ,"site_control_node_monitoring",true, time.Second)
   (cf_control).Add_Chain("node_monitoring",true)
-  (cf_control).Cf_add_log_link("node_monitoring")
+  //(cf_control).Cf_add_log_link("node_monitoring")
    
   var parameters = make(map[string]interface{})
   (cf_control).Cf_add_one_step(node_monitor,parameters)

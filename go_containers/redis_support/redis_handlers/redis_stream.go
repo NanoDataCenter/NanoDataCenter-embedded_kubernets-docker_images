@@ -1,8 +1,11 @@
 package redis_handlers
 
+import "fmt"
+import "time"
 import "context"
-
+import "strconv"
 import "github.com/go-redis/redis/v8"
+import "lacima.com/Patterns/msgpack_2"
 
 type Redis_Stream_Struct struct {
    ctx context.Context;
@@ -43,12 +46,12 @@ func (v Redis_Stream_Struct) Delete_all() {
 
 }
 
-func (v Redis_Stream_Struct) Xadd(packed_data string) string  {
+func (v Redis_Stream_Struct) Xadd(data interface{} ) string  {
     Lock_Redis_Mutex()
 	defer UnLock_Redis_Mutex()
     var xdata = make(map[string]interface{})
-	xdata["data"]  = packed_data
-	
+	xdata["data"]  = msg_pack_utils.Pack_interface(data)
+	xdata["time"]  = msg_pack_utils.Pack_int64(time.Now().UnixNano())
 	var x_add_args = redis.XAddArgs{ v.key, v.depth, v.depth, "*" ,xdata}
 	result,err := v.client.XAdd(v.ctx, &x_add_args ).Result()
 	if err != nil {
@@ -79,29 +82,67 @@ func (v Redis_Stream_Struct) Xtrim( length int64)   {
 	if err != nil {
 	  panic(err)
 	
-   }	
-	
+   }
+   
 }
 
 
+   
+func (v Redis_Stream_Struct) XRange( low_ts, high_ts string) {
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	value, err := v.client.XRange(v.ctx, v.key,low_ts,high_ts).Result()
+	if err != nil {
+	  panic(err)
+	
+   }
+   fmt.Println("value",value)
+   panic("done")
+   
+}
+func (v Redis_Stream_Struct) XRangeN(low_ts, high_ts string, length int64)   {
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	value,err := v.client.XRangeN(v.ctx, v.key,low_ts,high_ts,length ).Result()
+	if err != nil {
+	  panic(err)
+	
+   }
+   fmt.Println("value",value)
+   
+   
+}
+func (v Redis_Stream_Struct)XRevRange(high_ts,low_ts string )   {
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	value,err := v.client.XRevRange(v.ctx, v.key,high_ts,low_ts ).Result()
+	if err != nil {
+	  panic(err)
+	
+   }
+   fmt.Println("value",value)
+   panic("done")
+}
+func (v Redis_Stream_Struct) XRevRangeN(high_ts, low_ts string, length int64)   {
+    Lock_Redis_Mutex()
+	defer UnLock_Redis_Mutex()
+ 	value,err := v.client.XRevRangeN(v.ctx, v.key,high_ts,low_ts, length).Result()
+	if err != nil {
+	  panic(err)
+	
+   }
+   
+   for _,item := range value{
+       fmt.Println(item.ID)
+       
+       fmt.Println(msg_pack_utils.Unpack_interface(item.Values["data"].(string)))
+   }
+   
+   
+}
+ 
+func (v Redis_Stream_Struct)Convert_ts( time_stamp int64)string{
+    return strconv.FormatInt(time_stamp,10)   
+}   
+   
 
-
-
-/* Go commands are documented here
-https://github.com/sp0n-7/redis/blob/v6.15.0/commands.go#L1373
-
-
-
-from https://sourcegraph.com/github.com/go-redis/redis@b3d392315ba16c2bfb0fcab2655e0d401f36ffa5/-/blob/commands_test.go#L3488:14
-Example for stream github
-("should XRevRange", func() {
-			msgs, err := client.XRevRange("stream", "+", "-").Result()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(msgs).To(Equal([]redis.XMessage{
-				{ID: "3-0", Values: map[string]interface{}{"tres": "troix"}},
-				{ID: "2-0", Values: map[string]interface{}{"dos": "deux"}},
-				{ID: "1-0", Values: map[string]interface{}{"uno": "un"}},
-			}))
-			
-
-*/

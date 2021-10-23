@@ -390,7 +390,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    
       graph_query.Graph_support_init(site_data)
       data_handler.Data_handler_init(site_data)
-      
+      store_site_data(site_data)
      
       reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
       reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
@@ -401,7 +401,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
       remove_obsolete_data_structures()
      
       
-      store_site_data(site_data)
+      
       
    
       
@@ -426,7 +426,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
          
          graph_query.Graph_support_init(site_data)  // only start containers that are not running
          data_handler.Data_handler_init(site_data)
-         
+         store_site_data(site_data)
          
          determine_master_containers((*site_data)["site"].(string))
 		 find_master_containers_data()
@@ -443,7 +443,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    reboot_flag_data_structures := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
    reboot_flag_driver := (*reboot_flag_data_structures)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
    reboot_flag_driver.Set("NOT_ACTIVE")
-   get_store_site_data(site_data)
+   
    master_log_incident_data()  // this is for master node only
    slave_log_incident_data(site_data) // this is for all nodes
    ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})

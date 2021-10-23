@@ -106,12 +106,61 @@ func Unpack_interface( input string )( interface{}, bool){
     state := true
     err := msgpack.Unmarshal([]byte(input), &item)
     if err != nil {
-        item = 0
+        item = nil
         state = false
     } 
     
     return item,state
     
 }    
+
+func Pack_interface(input interface{} )string{
+    b, err := msgpack.Marshal(&input)
+    if err != nil {
+        panic(err)
+    }
+    return string(b)
+}   
+    
+func Unpack_map_string_interface( input string )( map[string]interface{}, bool){
+    var item map[string]interface{}
+    state := true
+    err := msgpack.Unmarshal([]byte(input), &item)
+    if err != nil {
+        item = nil
+        state = false
+    } 
+    
+    return item,state
+    
+}    
+
+func Pack_map_string_interface(input map[string]interface{} )string{
+    b, err := msgpack.Marshal(&input)
+    if err != nil {
+        panic(err)
+    }
+    return string(b)
+}   
     
     
+func Unpack_map_string_bool( input string )( map[string]bool, bool){
+    var item map[string]bool
+    state := true
+    err := msgpack.Unmarshal([]byte(input), &item)
+    if err != nil {
+        item = nil
+        state = false
+    } 
+    
+    return item,state
+    
+}    
+
+func Pack_map_string_bool(input map[string]bool )string{
+    b, err := msgpack.Marshal(&input)
+    if err != nil {
+        panic(err)
+    }
+    return string(b)
+}   

@@ -73,14 +73,9 @@ func Construct_streaming_logs(stream_name , description string, keys []string ){
   properties["keys"] = keys
   properties["descrption"] = description
   Bc_Rec.Add_header_node("STREAMING_LOG",stream_name,properties)
-  Construct_incident_logging("VALUE_SPECIFIC" ,"VALUE SPECIFIC INCIDENT LOG",Emergency)
-  Cd_Rec.Construct_package("STREAMING_LOG")
   for _,key := range keys{
-       Cd_Rec.Add_redis_stream(key,1024)  // stream
-       
+       Construct_incident_logging(key ,description+":"+key,Critical)
   }
-  Cd_Rec.Close_package_construction()
-  
   Bc_Rec.End_header_node("STREAMING_LOG",stream_name)
 }
 

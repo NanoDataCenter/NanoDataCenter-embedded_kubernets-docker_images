@@ -42,11 +42,11 @@ func generate_system_components(master_flag bool,node_name string ){
    su.Add_container( false, "file_server",file_server_image, su.Managed_run ,file_server_command_map ,file_server_mount)
    su.Add_container( false,"postgres",postgres_image,su.No_run, null_map, postgres_mount)
    su.Add_container( false,"mqtt",mqtt_image,su.No_run, null_map, mqtt_mount)
-   su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
-   su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
+   //su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
+   //su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
    
    
-   containers := []string{"redis","lacima_secrets","file_server","postgres","redis_monitor","mqtt","mqtt_to_db"}
+   containers := []string{"redis","lacima_secrets","file_server","postgres","mqtt"}
    su.Construct_service_def("system_monitoring",master_flag,"", containers, generate_system_component_graph) 
     
     

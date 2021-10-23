@@ -197,8 +197,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		 depth = int64(v["depth"].(float64))
 		 (*handlers)[name] = redis_handlers.Construct_Redis_Stream(ctx,client,key,depth)
 		  
-		 //var x redis_handlers.Redis_Stream_Struct
-		 //x =(*handlers)[name].(redis_handlers.Redis_Stream_Struct)
+		 
 
       }else if type_def == "HASH" {
 	      key = v["key"].(string)

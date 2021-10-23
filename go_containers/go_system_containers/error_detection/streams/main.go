@@ -26,7 +26,7 @@ func main(){
     redis_handlers.Init_Redis_Mutex()
 	monitor_streams.Init_data_structures()
 	go monitor_streams.Process_functions()
-    
+    go monitor_streams.Trim_time_series()
     for true {
         
       time.Sleep(time.Minute*10)

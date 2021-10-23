@@ -145,6 +145,16 @@ func ( v  Postgres_Stream_Driver )Vacuum( )bool{
     
 }
 
+
+
+func   Assemble_key( input Stream_Output_Data_Record)string{
+
+     return_value := "/"+input.Tag1+"/"+input.Tag2+"/"+input.Tag3+"/"+input.Tag4+"/"+input.Tag5
+     return return_value
+    
+}
+
+
 func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output_Data_Record, bool){
     
     var data_value string
