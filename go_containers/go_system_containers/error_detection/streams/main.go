@@ -22,8 +22,9 @@ func main(){
  
     site_data_store = get_site_data.Get_site_data(config_file)
     graph_query.Graph_support_init(&site_data_store)
-	data_handler.Data_handler_init(&site_data_store)
     redis_handlers.Init_Redis_Mutex()
+	data_handler.Data_handler_init(&site_data_store)
+    
 	monitor_streams.Init_data_structures()
 	go monitor_streams.Process_functions()
     go monitor_streams.Trim_time_series()

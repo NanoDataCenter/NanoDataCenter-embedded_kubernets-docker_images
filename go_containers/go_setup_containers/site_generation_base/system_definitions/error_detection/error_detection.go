@@ -52,8 +52,8 @@ func Construct_definitions(){
        su.Bc_Rec .End_header_node("INCIDENT_STREAMS","INCIDENT_STREAMS")  
        
        streaming_properties := make(map[string]interface{})
-       streaming_properties["sample_time"]     = 30 // 30 minutes
-       streaming_properties["trim_time"]       = 60*24  // one day
+       streaming_properties["sample_time"]     = 60*30 // 30 minutes
+       streaming_properties["trim_time"]       = 3600*24*30*3  // 3 months
        su.Bc_Rec.Add_header_node("STREAMING_LOGS","STREAMING_LOGS",streaming_properties)
              su.Cd_Rec.Construct_package("STREAM_SUMMARY_DATA")           
                su.Cd_Rec.Add_hash("STREAM_TABLE") 

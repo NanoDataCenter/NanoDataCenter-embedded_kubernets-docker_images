@@ -1,7 +1,7 @@
  package graph_query
 
 
-//import "fmt"
+import "fmt"
 
 import "context"
 import "encoding/json"
@@ -167,7 +167,8 @@ func Graph_support_init(sdata *map[string]interface{}) {
 												
 												 DB: graph_db,
                                                })
-	err := client.Ping(ctx).Err();     
+	err := client.Ping(ctx).Err();   
+    fmt.Println("err",err)
 	if err != nil{
 	         panic("redis graph connection")
 	 }

@@ -1,7 +1,7 @@
 package docker_management
 
-//import "fmt"
-
+import "fmt"
+import "time"
 
 import "strings"
 import "strconv"
@@ -32,6 +32,7 @@ func (docker_handle *Docker_Handle_Type)Set_Initial_Hash_Values_Values(){
 func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
   
   check_map := make(map[string]bool)
+  
   
   for _,container := range docker_handle.containers {
      check_map[container] = false
@@ -87,7 +88,7 @@ func (docker_handle *Docker_Handle_Type)Monitor_Containers(){
 func (docker_handle *Docker_Handle_Type)Log_Container_Performance_Data(){
 
    
-   
+   fmt.Println("starting container log ",time.Now().Unix())
    for _,container := range (docker_handle).containers {
        var working_values = (docker_handle).generate_parsed_fields(container)
 	   if working_values != nil {

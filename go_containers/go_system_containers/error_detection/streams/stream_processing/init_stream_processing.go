@@ -79,7 +79,7 @@ func construct_monitor_control() {
     monitor_control.trim_time       = graph_query.Convert_json_int(node["trim_time"])
     monitor_control.sample_time     = graph_query.Convert_json_int(node["sample_time"])
     fmt.Println("sample time",monitor_control.sample_time)
-    
+    fmt.Println("trim time",monitor_control.trim_time)
     search_list := []string{"ERROR_DETECTION:ERROR_DETECTION", "STREAMING_LOGS:STREAMING_LOGS" ,"STREAM_SUMMARY_DATA"}
     data_element := data_handler.Construct_Data_Structures(&search_list)
 	 	 

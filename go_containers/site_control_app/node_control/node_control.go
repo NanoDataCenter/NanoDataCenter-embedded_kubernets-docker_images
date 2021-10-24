@@ -60,12 +60,12 @@ func  initialize_node_docker_monitoring(cf_cluster *cf.CF_CLUSTER_TYPE){
   
    
    (cf_control).Add_Chain("container_performance_logs",true)
-   ///(cf_control).Cf_add_log_link("container_performance_loop")
+   (cf_control).Cf_add_log_link("container_performance_loop")
    
    parameters = make(map[string]interface{}) 
    (cf_control).Cf_add_one_step(docker_performance_monitor,parameters)
-   
-   (cf_control).Cf_add_wait_interval(time.Minute*1 )
+   (cf_control).Cf_add_log_link("container_performance_done")
+   (cf_control).Cf_add_wait_interval(time.Hour*1 )
    (cf_control).Cf_add_reset()
 
    

@@ -135,6 +135,8 @@ func tokens_to_dict(tokens []string, header []string, start_index int) map[strin
 
 func assemble_free_cpu( system interface{},chain interface{}, parameters map[string]interface{}, event *cf.CF_EVENT_TYPE) int {
     
+    ts := time.Now().Unix()
+    fmt.Println("performance cpu ",ts)
     
 	var output = docker_control.System_shell("sar -u 300 1 ")
 		var lines = split_lines(output)
