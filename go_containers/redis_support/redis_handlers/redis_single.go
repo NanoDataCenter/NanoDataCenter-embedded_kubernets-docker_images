@@ -23,6 +23,14 @@ func Construct_Redis_Single(  ctx context.Context, client *redis.Client, key str
 
 }
 
+func (v Redis_Single_Structure)Get_client() *redis.Client{
+  return v.client
+}
+
+func (v Redis_Single_Structure)Get_context() context.Context{
+  return v.ctx
+}
+
 
 func (v Redis_Single_Structure) Get() string {
     Lock_Redis_Mutex()

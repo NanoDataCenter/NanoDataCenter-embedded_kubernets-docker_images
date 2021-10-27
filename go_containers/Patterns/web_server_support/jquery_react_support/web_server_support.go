@@ -52,9 +52,12 @@ func Register_web_page_start( input string ){
     data_nodes                 :=  graph_query.Common_qs_search(&[]string{"WEB_MAP:WEB_MAP"})
     data_node                  :=  data_nodes[0]
     start_label_map            :=  graph_query.Convert_json_dict(data_node["start_label"])
+    
     start_label , ok           :=  start_label_map[input]
     if ok == false {
         fmt.Println("bad server_id")
+        fmt.Println("input",input)
+        fmt.Println("map",start_label_map)
         os.Exit(1)
     }
     

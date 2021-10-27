@@ -42,11 +42,11 @@ func generate_system_components(master_flag bool,node_name string ){
    su.Add_container( false, "file_server",file_server_image, su.Managed_run ,file_server_command_map ,file_server_mount)
    su.Add_container( false,"postgres",postgres_image,su.No_run, null_map, postgres_mount)
    su.Add_container( false,"mqtt",mqtt_image,su.No_run, null_map, mqtt_mount)
-   //su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
-   //su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
+   su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
+   su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
    
    
-   containers := []string{"redis","lacima_secrets","file_server","postgres","mqtt"}
+   containers := []string{"redis","lacima_secrets","file_server","postgres","mqtt","mqtt_to_db","redis_monitor"}
    su.Construct_service_def("system_monitoring",master_flag,"", containers, generate_system_component_graph) 
     
     
@@ -79,18 +79,19 @@ func generate_system_component_graph(){
     port_map["site_controller"]                 = ":8080"
     port_map["mqtt_to_db"]                      = ":2021"
     port_map["mqtt_status_out"]                 = ":2022"
+    port_map["error_detection"]                 = ":2023"
     
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
     port_description_map["mqtt_to_db"]          = "MQTT TO DB Web Services"
     port_description_map["mqtt_status_out"]     = "MQTT OUTPUT Web Services"
-    
+    port_description_map["error_detection"]                 = "Display Error Monitoring Results"
     
     port_start_label_map                        := make(map[string]string)
     port_start_label_map["site_controller"]     = "site_controller"
     port_start_label_map["mqtt_to_db"]          = "mqtt_to_db"
     port_start_label_map["mqtt_status_out"]     = "mqtt_status_out"
-    
+    port_start_label_map["error_detection"]     = "error_detection"
     
     
     
@@ -130,7 +131,10 @@ func generate_system_component_graph(){
     
    
     su.Bc_Rec.Add_header_node("REDIS_MONITORING","REDIS_MONITORING",make(map[string]interface{}))
-    su.Construct_streaming_logs("redis_monitor","redis_monitor",[]string{"KEYS","CLIENTS","MEMORY","REDIS_MONITOR_CMD_TIME_STREAM"})   
+    su.Construct_incident_logging("REDIS_MONITORING","redis_monitor",su.Emergency)
+    su.Cd_Rec.Construct_package("REDIS_MONITORING")
+    su.Cd_Rec.Add_single_element("REDIS_MONITORING")
+    su.Cd_Rec.Close_package_construction() 
     su.Bc_Rec.End_header_node("REDIS_MONITORING","REDIS_MONITORING")
    
     file_server_properties := make(map[string]interface{})

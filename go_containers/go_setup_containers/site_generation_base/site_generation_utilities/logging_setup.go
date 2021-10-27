@@ -73,9 +73,7 @@ func Construct_streaming_logs(stream_name , description string, keys []string ){
   properties["keys"] = keys
   properties["descrption"] = description
   Bc_Rec.Add_header_node("STREAMING_LOG",stream_name,properties)
-  for _,key := range keys{
-       Construct_incident_logging(key ,description+":"+key,Critical)
-  }
+  
   Bc_Rec.End_header_node("STREAMING_LOG",stream_name)
 }
 
@@ -87,11 +85,12 @@ func  Construct_RPC_Server( command_code, description string,depth,timeout int64
     
     
     properties["description"] = description
+    
     Bc_Rec.Add_header_node("RPC_SERVER",command_code,properties)
     Cd_Rec.Construct_package("RPC_SERVER")
     Cd_Rec.Add_rpc_server("RPC_SERVER",depth,timeout)
     Cd_Rec.Close_package_construction()
-    Construct_streaming_logs("RPC_STATISTICS" , description, []string{"number","queue_depth","utilization"} )
+    
     
     Bc_Rec.End_header_node("RPC_SERVER",command_code)    
 }

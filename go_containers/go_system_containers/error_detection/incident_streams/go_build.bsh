@@ -1,2 +1,0 @@
-#go build -ldflags '-linkmode external -w -extldflags "-static"'
-go build -o incident_monitoring  -ldflags '-linkmode external  -extldflags "-static"' main.go

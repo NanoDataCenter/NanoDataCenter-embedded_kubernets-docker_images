@@ -1,0 +1,29 @@
+cd check_rpc
+./go_build.bsh 
+
+cd ../
+
+cd incident_streams
+
+./go_build.bsh  
+
+cd ../
+
+
+
+cd streams
+./go_build.bsh  
+
+cd ../
+
+cd watchdog_incidents
+
+./go_build.bsh  
+
+cd ../
+
+./docker_build.bsh
+
+
+
+
