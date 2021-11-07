@@ -1,3 +1,5 @@
 target:
 	./go_build.bsh  redis_monitor.go
 	./docker_build.bsh
+
+all: target

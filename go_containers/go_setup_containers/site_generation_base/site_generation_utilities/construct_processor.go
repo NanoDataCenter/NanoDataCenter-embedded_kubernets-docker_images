@@ -19,9 +19,9 @@ func construct_node(name string, containers []string){
 	  description = name+" node_monitor"
 	  Construct_streaming_logs("node_monitor",description,keys) //wait until flush out
       for _,key := range keys{
-          Bc_Rec.Add_header_node("INCIDENT_LOG",key, make(map[string]interface{}))
+          //Bc_Rec.Add_header_node("INCIDENT_LOG",key, make(map[string]interface{}))
           Construct_incident_logging(key ,"CPU_Mon:"+key,Emergency )
-          Bc_Rec.End_header_node("INCIDENT_LOG",key)
+          //Bc_Rec.End_header_node("INCIDENT_LOG",key)
       }
 	  Bc_Rec.End_header_node("NODE_MONITORING","NODE_MONITORING")
 

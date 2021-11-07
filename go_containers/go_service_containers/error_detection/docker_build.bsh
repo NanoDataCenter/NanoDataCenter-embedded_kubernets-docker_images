@@ -1,1 +1,1 @@
-docker build --tag  nanodatacenter/error_detection  .
+docker build --tag  nanodatacenter/system_error_detection  .

@@ -42,6 +42,7 @@ func Construct_incident_logging(command_code ,description string,log_level uint6
     Cd_Rec.Add_single_element("TIME_STAMP")
     Cd_Rec.Add_single_element("STATUS")
     Cd_Rec.Add_single_element("LAST_ERROR")
+    Cd_Rec.Add_single_element("ERROR_TIME")
     Cd_Rec.Close_package_construction()
 	Bc_Rec.End_header_node("INCIDENT_LOG",command_code)
 

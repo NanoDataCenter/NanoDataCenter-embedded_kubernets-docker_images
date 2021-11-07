@@ -16,7 +16,8 @@ import "lacima.com/server_libraries/postgres"
 type monitor_rpc_type struct {
     stream_keys                      []string
     sample_time                      int64
-    incident_log                     *logging_support.Incident_Log_Type
+    rpc_incident_log                 *logging_support.Incident_Log_Type
+    load_incident_log                *logging_support.Incident_Log_Type
     performance_log                  pg_drv.Postgres_Stream_Driver
 }
 
@@ -60,13 +61,14 @@ func construct_monitor_control() {
     wd_nodes  := []string{"ERROR_DETECTION:ERROR_DETECTION", "RPC_ANALYSIS:RPC_ANALYSIS"   }
     nodes := graph_query.Common_qs_search(&wd_nodes)
     node  := nodes[0]
-    monitor_control.stream_keys     = []string{"queue_depth","utilization"}    
-    monitor_control.sample_time     = graph_query.Convert_json_int(node["sample_time"])
-    monitor_control.incident_log    = logging_support.Construct_incident_log([]string{"ERROR_DETECTION:ERROR_DETECTION", "RPC_ANALYSIS:RPC_ANALYSIS" ,"INCIDENT_LOG"} )
+    monitor_control.stream_keys         = []string{"queue_depth","utilization"}    
+    monitor_control.sample_time         = graph_query.Convert_json_int(node["sample_time"])
+    monitor_control.rpc_incident_log    = logging_support.Construct_incident_log([]string{"ERROR_DETECTION:ERROR_DETECTION", "INCIDENT_LOG:RPC_FAILURE" ,"INCIDENT_LOG"} )
+    monitor_control.load_incident_log   = logging_support.Construct_incident_log([]string{"ERROR_DETECTION:ERROR_DETECTION", "INCIDENT_LOG:RPC_LOADING" ,"INCIDENT_LOG"} )
+    
+    
     monitor_control.performance_log = logging_support.Find_stream_logging_driver()
 }
-    
-
 
 
 
@@ -140,11 +142,22 @@ func ping_rpc_servers(){
           panic("json marshall error")
     }  
     fmt.Println("request_json",string(request_json))
-    monitor_control.incident_log.Log_data(string(request_json))
+    monitor_control.rpc_incident_log.Log_data(string(request_json))
+}
+
+func post_performance_incident(key string,time_utilitization float64){
+    rpc_state := make(map[string]interface{})
+    rpc_state["server"] = key
+    rpc_state["utilization"] = time_utilitization
+    request_json,err := json.Marshal(&rpc_state)
+    if err != nil{
+          panic("json marshall error")
+    }  
+    fmt.Println("request_json",string(request_json))
+    monitor_control.load_incident_log.Log_data(string(request_json))
 }
 
 
-  
 func ping_rpc_server(item  rpc_records_type ){
    key       := item.namespace
    rpc_state[key] = false        
@@ -166,8 +179,11 @@ func ping_rpc_server(item  rpc_records_type ){
         rpc_state[key]         = true 
         
         length                 :=int64( result["length"].(float64))
-        delta_time             :=(  result["end_time"].(float64) -  result["start_time"].(float64))
+        delta_time             :=  result["end_time"].(float64) -  result["start_time"].(float64)
         time_utilitization      := result["total_time"].(float64)/delta_time
+        if time_utilitization > .5 {
+            post_performance_incident(key,time_utilitization)
+        }
         post_data_to_stream(item, length,time_utilitization)
       }
    }

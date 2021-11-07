@@ -36,16 +36,20 @@ func Construct_definitions(){
   
   
        incident_properties := make(map[string]interface{})
-       incident_properties["trim_time"]       = 3600*24*30
+       incident_properties["trim_time"]       = 3600*24*30 // 30 days
        incident_properties["sample_time"]     = 15  // 30 seconds
        incident_properties["subsystem_id"]     = "incident"
        
        su.Bc_Rec.Add_header_node("INCIDENT_STREAMS","INCIDENT_STREAMS",incident_properties)
-  
+
            su.Cd_Rec.Construct_package("INCIDENT_DATA")
+               su.Cd_Rec.Add_hash("DESCRIPTION")
                su.Cd_Rec.Add_hash("TIME") 
                su.Cd_Rec.Add_hash("STATUS") 
-               su.Cd_Rec.Add_hash("LAST_ERROR")   
+               su.Cd_Rec.Add_hash("LAST_ERROR")
+               su.Cd_Rec.Add_hash("ERROR_TIME") 
+               su.Cd_Rec.Add_hash("REVIEW_STATE")
+               su.Cd_Rec.Add_hash("OLD_STATUS") 
                su.Cd_Rec.Create_postgres_stream( "INCIDENT_LOG","admin","password","admin",30*24*3600)  
            su.Cd_Rec.Close_package_construction()
   
@@ -76,9 +80,9 @@ func Construct_definitions(){
        
        su.Bc_Rec.Add_header_node("RPC_ANALYSIS","RPC_ANALYSIS",rpc_properties)
   
-       su.Construct_incident_logging("RPC_ANALYSIS" ,"RPC FAILURES",su.Emergency)
+       su.Construct_incident_logging("RPC_FAILURE" ,"RPC FAILURES",su.Emergency)
        
-         
+       su.Construct_incident_logging("RPC_LOADING" ,"RPC_LOADING",su.Emergency)  
   
        su.Bc_Rec.End_header_node("RPC_ANALYSIS","RPC_ANALYSIS")    
        

@@ -34,6 +34,7 @@ func Init_processor_data_structures(site_data *map[string]interface{}){
      }
     
 }
+ 
 
 func  log_data(key string, data map[string]float64 ) {
 
