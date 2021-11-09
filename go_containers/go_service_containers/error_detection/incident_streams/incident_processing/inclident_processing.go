@@ -251,10 +251,10 @@ func process_incident_logs(){
     timeout   := time.Duration(incident_control.sample_time)*time.Second
     //time.Sleep(time.Minute)
     for true {
-      fmt.Println("checking incident logs")
-      fmt.Println("redis length",len(incident_control.status.HKeys()))
+      //fmt.Println("checking incident logs")
+      //fmt.Println("redis length",len(incident_control.status.HKeys()))
       check_incident_logs()
-      fmt.Println("keys",len(incident_control.keys))
+      //fmt.Println("keys",len(incident_control.keys))
       
       time.Sleep(timeout)
       
@@ -265,7 +265,7 @@ func process_incident_logs(){
 
 func check_incident_logs(){
 
-    fmt.Println("incident records",len(incident_records))
+    //fmt.Println("incident records",len(incident_records))
     for index,_ := range incident_records {
         check_one_incident_log(index )
     }
@@ -278,31 +278,27 @@ func check_incident_logs(){
 func check_one_incident_log(index int ){
 
     item := incident_records[index]
-     update_status(index)
+    key  := item.namespace
+     validate_new_data(item)
      new_time  := current_data.contact_time_unpacked 
-     ref_time, _ := msg_pack_utils.Unpack_int64(incident_control.contact_time.HGet(item.namespace))
+     ref_time, _ := msg_pack_utils.Unpack_int64(incident_control.contact_time.HGet(key))
+     //fmt.Println("new_time",new_time-ref_time)
      if new_time > ref_time   {
         status := current_data.status_unpacked
         if status == true {
              panic("should not happen")
         }else{
-             process_new_status_data(index)
+             //fmt.Println("process new time",index)
+              process_new_status_data(item)
         }
      }
+     
+    
+    
 }
 
     
-func update_status(index int ){
-    item := incident_records[index]
-    validate_new_data(item)
-     
-    key  := item.namespace
-    
-    incident_control.contact_time.HSet(key,current_data.contact_time) 
-    incident_control.status.HSet(key,current_data.status)   
-    incident_control.last_error_data.HSet(key,current_data.last_error_data)
-
-}    
+ 
     
 func validate_new_data(item incident_record_type ){
     
@@ -365,14 +361,20 @@ func check_last_error_data(item  redis_handlers.Redis_Single_Structure){
 
   
     
-func process_new_status_data(index int){
+func process_new_status_data(item incident_record_type){
     
-    item := incident_records[index] 
+   
     
-    key := item.namespace
-    item.last_error_time.Set(current_data.contact_time)
-    incident_control.last_error_time.HSet(key,current_data.contact_time)    
-
+     key := item.namespace
+     incident_control.contact_time.HSet(key,current_data.contact_time) 
+        
+     item.last_error_time.Set(current_data.contact_time)
+      
+     old_status ,_ := msg_pack_utils.Unpack_bool(incident_control.status.HGet(key))
+     if old_status == true {
+         incident_control.last_error_time.HSet(key,current_data.contact_time)
+     }
+     incident_control.status.HSet(key,current_data.status)
     post_postgress_stream_data( item )
 
     
@@ -381,7 +383,7 @@ func process_new_status_data(index int){
 
 func post_postgress_stream_data( item incident_record_type ){
     key := item.namespace
-    old_value := incident_control.last_error_data.HGet(key)
+    old_value := get_new_incident_data(key)
     new_value := item.last_error_data.Get()
     //fmt.Println("old_value",old_value)
     
@@ -390,6 +392,19 @@ func post_postgress_stream_data( item incident_record_type ){
         log_postgress_stream( item )
     }
     
+}
+
+func get_new_incident_data( key string)string {
+    
+  where_clause   := "tag1 = '"+key+"'  and  time >= 0 ORDER BY time DESC LIMIT 1 "
+  pg_data,status := incident_control.incident_log.Select_where(where_clause)
+  if status == false {
+      panic("should not happen")
+  }
+  if len(pg_data) == 0 {
+      return ""
+  }
+  return pg_data[0].Data  
 }
 
 

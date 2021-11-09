@@ -5,5 +5,5 @@ ENV TEST_SERVER_ID "mqtt_status_out"
 VOLUME [/data/] 
 
 COPY ./mqtt_to_db .
-COPY ./mqtt_test/mqtt_test .
+COPY ./mqtt_out/mqtt_out .
 

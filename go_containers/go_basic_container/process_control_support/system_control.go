@@ -2,7 +2,7 @@ package system_control
 
 import "fmt"
 import "time"
-import  "encoding/json"
+//import  "encoding/json"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/cf_control"
 import "lacima.com/Patterns/logging_support"
@@ -186,9 +186,8 @@ func ( v *System_Control_Type )monitor_element( element  *Process_Manager_Type) 
 
 func ( v *System_Control_Type )log_incident_data(){
      
-     bytes_1, _ := json.Marshal(v.incident_data.process_status )
-     bytes_2, _ := json.Marshal(v.incident_data.error_status )
-     incident_data_string := string(bytes_1)+" \n" + string(bytes_2)
+     incident_data_string :=  fmt.Sprint(v.incident_data.process_status) + "\n"+ fmt.Sprint(v.incident_data.error_status)
+     
      fmt.Println("incident_data",incident_data_string)
 	 v.incident_log.Log_data( incident_data_string)
   

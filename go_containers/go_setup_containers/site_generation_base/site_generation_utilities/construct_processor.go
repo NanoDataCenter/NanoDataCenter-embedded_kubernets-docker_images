@@ -9,7 +9,7 @@ func construct_node(name string, containers []string){
    
       var description string
       
-      description = name + "node reboot"
+      description = name + "  node reboot"
       Construct_incident_logging("NODE_REBOOT",description,Emergency)
       
       

@@ -1,7 +1,7 @@
 package mqtt_client
 
 import "fmt"
-import "os"
+//import "os"
 import "time"
 import "strings"
 import "strconv"
@@ -106,7 +106,6 @@ func log_off_connection(){
     fmt.Println("mqtt off")
     connection_status = false
    
-    fmt.Println("os exit")
-    os.Exit(1)
+    panic("mqtt lost connections")
     
 }

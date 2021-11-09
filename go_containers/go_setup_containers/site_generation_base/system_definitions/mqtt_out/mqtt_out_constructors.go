@@ -210,6 +210,7 @@ func Construct_mqtt_out_definitions() {
 
   
   su.Bc_Rec.Add_header_node("MQTT_OUTPUT_SETUP","site_out_server",make(map[string]interface{}))
+  su.Construct_incident_logging("MQTT_TX_CONNECTION_LOST","MQTT_TX_CONNECTION_LOST",su.Error)
   su.Construct_RPC_Server( "MQTT_OUT_RPC_SERVER","MQTT_OUT_RPC_SERVER",30,10,make(map[string]interface{}))
   su.Cd_Rec.Construct_package("TOPIC_STATUS")
   su.Cd_Rec.Add_hash("TOPIC_ERROR_TIME_STAMP")   // a full length topic and a marshalled data value

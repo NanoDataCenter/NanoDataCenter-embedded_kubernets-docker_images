@@ -45,7 +45,7 @@ var device_list []string
 
 func Monitor_int(){
     
-   data_search_list              := []string{ "MQTT_IN_SETUP:mqtt_in_setup","TOPIC_STATUS"}
+   data_search_list              := []string{ "MQTT_IN_SETUP:site_in_server","TOPIC_STATUS"}
    data_element                  := data_handler.Construct_Data_Structures(&data_search_list)
    redis_device_status           = (*data_element)["DEVICE_STATUS"].(redis_handlers.Redis_Hash_Struct)
    redis_contact_time            = (*data_element)["DEVICE_TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
@@ -63,7 +63,7 @@ func Monitor_int(){
 func construct_mqtt_device_enviroment(){
     
     
-   data_nodes := graph_query.Common_qs_search(&[]string{"MQTT_IN_SETUP:mqtt_in_setup","MQTT_DEVICES:MQTT_DEVICES"})
+   data_nodes := graph_query.Common_qs_search(&[]string{"MQTT_IN_SETUP:site_in_server","MQTT_DEVICES:MQTT_DEVICES"})
    data_node  := data_nodes[0]
 
    class_dict :=  graph_query.Convert_json_nested_dictionary_interface(data_node["classes"])

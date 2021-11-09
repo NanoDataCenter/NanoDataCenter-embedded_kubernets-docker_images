@@ -9,6 +9,7 @@ import (
     "net/http"
     "html/template"
     "encoding/json"
+    "lacima.com/redis_support/graph_query"
     "lacima.com/redis_support/generate_handlers"
     "lacima.com/redis_support/redis_handlers"
     "lacima.com/server_libraries/postgres"
@@ -41,10 +42,26 @@ type incident_control_type struct {
     old_status                      redis_handlers.Redis_Hash_Struct
     review_state                    redis_handlers.Redis_Hash_Struct
     incident_log                    pg_drv.Postgres_Stream_Driver
+    keys                            map[string]incident_record_type
+}
+
+type incident_record_type struct {
+  name               string
+  description        string
+  max_time_interval  int64
+  namespace          string
+  key_array          []string
+  key                string
+  contact_time       redis_handlers.Redis_Single_Structure
+  status              redis_handlers.Redis_Single_Structure
+  last_error_time     redis_handlers.Redis_Single_Structure
+  last_error_data     redis_handlers.Redis_Single_Structure
+  
+    
 }
 
 var incident_control       incident_control_type
-
+var incident_records       []incident_record_type
 
 
 
@@ -52,8 +69,11 @@ var incident_control       incident_control_type
 func incident_status_init(){
    
    construct_incident_data_structures() 
+   construct_incident_data_nodes()
+   construct_keys()
    web_support.Generate_special_route("incident_status/detail/{key}" , incident_detail_function)
    web_support.Generate_special_post_route("incident_status/review" , incident_change_review)
+   web_support.Generate_special_post_route("incident_status/reset" , incident_change_reset)
 }
    
    
@@ -81,6 +101,53 @@ func construct_incident_data_structures() {
     
  
 }
+
+func construct_incident_data_nodes(){
+    incident_records = make([]incident_record_type,0)
+    incident_nodes  := []string{"INCIDENT_LOG"}
+    nodes := graph_query.Common_qs_search(&incident_nodes)
+   
+   
+    for _,node := range nodes{
+        var item  incident_record_type
+        //fmt.Println("node",node)
+        item.name               = graph_query.Convert_json_string(node["name"])
+        item.description        = graph_query.Convert_json_string(node["description"])
+        
+        item.namespace          = graph_query.Convert_json_string(node["namespace"])
+        item.key_array          = graph_query.Generate_key(item.namespace)
+        item.key_array          = append(item.key_array,"INCIDENT_LOG")
+        item.key                = strings.Join(item.key_array,"/")
+        
+        handlers                := data_handler.Construct_Data_Structures(&item.key_array)
+        item.contact_time       = (*handlers)["TIME_STAMP"].(redis_handlers.Redis_Single_Structure)
+        item.status             = (*handlers)["STATUS"].(redis_handlers.Redis_Single_Structure)
+        item.last_error_data    = (*handlers)["LAST_ERROR"].(redis_handlers.Redis_Single_Structure)
+        item.last_error_time    = (*handlers)["ERROR_TIME"].(redis_handlers.Redis_Single_Structure)
+        incident_records        = append(incident_records,item)
+    }
+    
+}
+
+
+
+
+
+
+
+       
+    
+    
+func construct_keys(){
+    incident_control.keys = make(map[string]incident_record_type)
+    
+    for _,item := range incident_records{
+        
+        incident_control.keys[item.namespace] = item
+        
+    }
+}
+
 
 func incident_status (w http.ResponseWriter, r *http.Request) {
    
@@ -205,6 +272,44 @@ func incident_change_review(w http.ResponseWriter, r *http.Request) {
     
 }
 
+func incident_change_reset(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+  var input map[string]interface{}
+
+  if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+        fmt.Println(err)
+        panic("BAD:")
+    }
+
+  key := input["key"].(string)
+  incident_control.keys[key].last_error_time.Set(msg_pack_utils.Pack_int64(0))
+  incident_control.keys[key].status.Set(msg_pack_utils.Pack_bool(true))
+  incident_control.keys[key].contact_time.Set(msg_pack_utils.Pack_int64(0))
+  incident_control.keys[key].last_error_data.Set(msg_pack_utils.Pack_string(""))
+
+  
+
+  incident_control.time.HSet(key,msg_pack_utils.Pack_int64(0))                    
+  incident_control.status.HSet(key,msg_pack_utils.Pack_bool(true))                  
+  incident_control.last_error_data.HSet(key,msg_pack_utils.Pack_string(""))
+  incident_control.last_error_time.HSet(key,msg_pack_utils.Pack_int64(0))          
+  incident_control.review_state.HSet(key,msg_pack_utils.Pack_bool(true))              
+  incident_control.old_status.HSet(key,msg_pack_utils.Pack_bool(true))   
+  
+  fmt.Println("db delete",incident_control.incident_log.Delete_Entry(key))
+            
+   
+  
+  
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}
+
+
+
+
 func incident_detail_function(w http.ResponseWriter, r *http.Request) {
    
    wd_status_template ,_ := base_templates.Clone()
@@ -233,7 +338,7 @@ func incident_detail_status_html(r *http.Request)string {
       
       status_string          := strconv.FormatBool(status)
      
-      return_value := generate_java_script(key,web_support.Get_Web_Start()+"ajax/incident_status/review")
+      return_value := generate_java_script(key,web_support.Get_Web_Start()+"ajax/incident_status/review",web_support.Get_Web_Start()+"ajax/incident_status/reset")
      
      
       
@@ -244,7 +349,9 @@ func incident_detail_status_html(r *http.Request)string {
       if review_state == false {
  
       return_value = return_value+ `
-      <center><button id="click_to_change" type="button">Change Review Status</button><BR>
+      <center>
+      <button id="reset_data" type="button">Reset Results</button><BR>
+      <button id="click_to_change" type="button">Change Review Status</button><BR>
       <input type="checkbox" id="review_state" name="review_state" value="Review"  > 
       <label for="review_state"> Data Reviewed </label><br>
       </center>
@@ -252,7 +359,9 @@ func incident_detail_status_html(r *http.Request)string {
       `
       }else{
        return_value = return_value+ `    
-      <center><button id="click_to_change" type="button">Change Review Status</button><BR>
+      <center>
+      <button id="reset_data" type="button">Reset Results</button><BR>
+      <button id="click_to_change" type="button">Change Review Status</button><BR>
       <input type="checkbox" id="review_state" name="review_state" value="Review" checked> 
       <label for="review_state"> Data Reviewed </label><br>
       </center>
@@ -284,13 +393,14 @@ func incident_detail_status_html(r *http.Request)string {
 }
 
 
-func generate_java_script(key string, url_path string)string{
+func generate_java_script(key string, url_path_1 string, url_path_2 string)string{
 
 
 return_value := `    
  <script>
   key = "`+key+`"
-  url_path = "`+url_path+`"
+  url_path_1 = "`+url_path_1+`"
+  url_path_2 = "`+url_path_2+`" 
   $(document).ready(function(){` + web_support.Load_jquery_ajax_components() +
      ` 
      $("#click_to_change").click(function(){
@@ -298,7 +408,14 @@ return_value := `
          data= {"review_state" : review_state,
                 "key" :key}
          
-         ajax_post(url_path, data,"review state changed","server error" )
+         ajax_post(url_path_1, data,"review state changed","server error" )
+         
+    });
+     $("#reset_data").click(function(){
+         review_state = $("#review_state").is(':checked');
+         data= { "key" :key}
+         
+         ajax_post(url_path_2, data,"entry is reset","server error" )
          
     });
   });
@@ -314,7 +431,7 @@ return return_value
 func generate_time_series(key string)string {
     
   return_value := "<h5>Time History Changes </h5>"
-  where_clause   := "tag1 = '"+key+"'  and  time >= 0 ORDER BY time DESC "
+  where_clause   := "tag1 = '"+key+"'  and  time >= 0 ORDER BY time DESC LIMIT 10 "
   pg_data,status := incident_control.incident_log.Select_where(where_clause)
 
   if status != true {

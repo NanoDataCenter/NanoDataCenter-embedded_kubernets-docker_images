@@ -39,7 +39,7 @@ var  trim_time int64
 func Trim_int(trim_time_seconds int64) { // one day trim time 
     
    trim_time                     = trim_time_seconds              
-   data_search_list              := []string{ "MQTT_IN_SETUP:mqtt_in_setup","TOPIC_STATUS"}
+   data_search_list              := []string{ "MQTT_IN_SETUP:site_in_server","TOPIC_STATUS"}
    data_element                  := data_handler.Construct_Data_Structures(&data_search_list)
    postges_topic_stream          = (*data_element)["POSTGRES_DATA_STREAM"].(pg_drv.Postgres_Stream_Driver)
    postgres_incident_stream      = (*data_element)["POSTGRES_INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver)    

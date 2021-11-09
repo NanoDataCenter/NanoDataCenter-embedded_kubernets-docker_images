@@ -209,7 +209,8 @@ func add_devices(){
 func Construct_mqtt_in_defintions() {
 
   
-  su.Bc_Rec.Add_header_node("MQTT_IN_SETUP","mqtt_in_setup",make(map[string]interface{}))
+  su.Bc_Rec.Add_header_node("MQTT_IN_SETUP","site_in_server",make(map[string]interface{}))
+  su.Construct_incident_logging("MQTT_RX_CONNECTION_LOST","MQTT_RX_CONNECTION_LOST",su.Error)
   su.Cd_Rec.Construct_package("TOPIC_STATUS")
   su.Cd_Rec.Add_hash("TOPIC_ERROR_TIME_STAMP")   // a full length topic and a marshalled data value
   su.Cd_Rec.Add_hash("TOPIC_VALUE")   // a full length topic and a marshalled data value
@@ -236,6 +237,6 @@ func Construct_mqtt_in_defintions() {
   properties["devices"] = device_map_conversion()
   su.Bc_Rec.Add_info_node("MQTT_DEVICES","MQTT_DEVICES",properties)
   
-  su.Bc_Rec.End_header_node("MQTT_IN_SETUP","mqtt_in_setup")
+  su.Bc_Rec.End_header_node("MQTT_IN_SETUP","site_in_server")
 }
 

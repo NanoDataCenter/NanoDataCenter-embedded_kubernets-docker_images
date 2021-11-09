@@ -32,7 +32,7 @@ func generate_system_components(master_flag bool,node_name string ){
 
    mqtt_to_db_command_map  := make(map[string]string)
    mqtt_to_db_command_map["mqtt_to_db"] = "./mqtt_to_db"
-   mqtt_to_db_command_map["mqtt_test"]  = "./mqtt_test"
+   mqtt_to_db_command_map["mqtt_out"]  = "./mqtt_out"
    
     
    null_map := make(map[string]string)

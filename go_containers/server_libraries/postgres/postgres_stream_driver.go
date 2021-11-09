@@ -137,6 +137,14 @@ func ( v Postgres_Stream_Driver )Trim( trim_time_second int64  )bool{
     
 }
 
+func ( v  Postgres_Stream_Driver)Delete_Entry( tag1 string)bool{
+    
+    script := "DELETE FROM "+v.table_name+" where tag1 = '"+tag1+"'  ;"
+    fmt.Println("delete script ",script)
+    return v.Exec(script)
+    
+}
+
 func ( v  Postgres_Stream_Driver )Vacuum( )bool{
     
     
