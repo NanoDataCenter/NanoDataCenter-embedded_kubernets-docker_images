@@ -53,7 +53,7 @@ func Process_functions(){
     initalize_stream_processing()
     for true {
        
-    
+       fmt.Println("sample_time",monitor_control.sample_time)
        time.Sleep(time.Duration(monitor_control.sample_time)* time.Second)
        process_stream_logs()
       
@@ -87,6 +87,7 @@ func process_stream_logs(){
         
        for _,data_element := range stream_data {
        key_string :=    pg_drv.Assemble_key(data_element)
+       fmt.Println("key_string",key_string)
        value,err      :=    msg_pack_utils.Unpack_float64(data_element.Data)
        if err != true {
            panic("bad packed data")

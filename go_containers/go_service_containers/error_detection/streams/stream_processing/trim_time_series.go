@@ -17,6 +17,7 @@ func Trim_time_series(){
 
 
 func execute_time_series_trim(){
-    monitor_control.process_data_stream_trim.Trim( monitor_control.trim_time )     
-    monitor_control.filtered_data_stream_trim.Trim( monitor_control.trim_time)      
+    monitor_control.filtered_log_stream_trim  .Trim( monitor_control.trim_time )     
+    monitor_control.filtered_data_stream_trim.Trim( monitor_control.trim_time)     
+    monitor_control.filtered_incident_stream_trim.Trim( monitor_control.trim_time)    
 }

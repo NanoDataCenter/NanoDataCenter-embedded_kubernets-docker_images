@@ -65,6 +65,8 @@ func setup_lacima_container_mount_points(){
 func setup_lacima_nodes(){
     
    su.Add_node("site_controller") 
+   //su.Add_node("irrigation_controller")
+   
     
     
 }    

@@ -7,7 +7,10 @@ import (
     "net/http"
     "html/template"
     "lacima.com/Patterns/web_server_support/jquery_react_support"
+    "lacima.com/go_service_containers/error_detection/web_services/web_components/stream_support"
 )
+
+
 
 
 var base_templates *template.Template
@@ -48,7 +51,7 @@ func define_web_pages()*template.Template  {
     return_value[2] = web_support.Menu_element{ "watchdog_incident",   "watchdog_incident_status"       ,   watchdog_incident_status }
     
     return_value[3] = web_support.Menu_element{ "incident",   "incident_status"     ,   incident_status }
-    return_value[4] = web_support.Menu_element{ "log",         "log_status"      ,   stream_status }
+    return_value[4] = web_support.Menu_element{ "log",         "log_status"      ,   stream_support.Stream_status }
     return_value[5] = web_support.Menu_element{ "log_anamoly",  "log_anamoly_status"  ,   stream_anamoly_status}
     
     
@@ -79,7 +82,7 @@ func initialize_handlers(){
     watchdog_status_init()
    
     incident_status_init()
-    stream_status_init()
+    stream_support.Stream_status_init(base_templates)
     stream_anamoly_init()
     web_support.Micro_web_page_init(base_templates)
     

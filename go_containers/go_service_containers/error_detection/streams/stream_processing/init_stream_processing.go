@@ -37,8 +37,9 @@ type monitor_stream_type struct {
     process_data_stream              pg_drv.Postgres_Stream_Driver
     filtered_data_stream             pg_drv.Postgres_Stream_Driver
     process_incident_stream          pg_drv.Postgres_Stream_Driver
-    process_data_stream_trim         pg_drv.Postgres_Stream_Driver
+    filtered_log_stream_trim         pg_drv.Postgres_Stream_Driver
     filtered_data_stream_trim        pg_drv.Postgres_Stream_Driver
+    filtered_incident_stream_trim    pg_drv.Postgres_Stream_Driver
     
 
 }
@@ -98,8 +99,10 @@ func construct_monitor_control() {
     
 	monitor_control.process_incident_stream     =   (*data_element)["INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver) 
 	
-    monitor_control.process_data_stream_trim    =   (*data_element)["LOG_STREAM"].(pg_drv.Postgres_Stream_Driver) 
-    monitor_control.filtered_data_stream_trim   =   (*data_element)["FILTERED_STREAM"].(pg_drv.Postgres_Stream_Driver)	
+    monitor_control.filtered_log_stream_trim          =   (*data_element)["LOG_STREAM"].(pg_drv.Postgres_Stream_Driver) 
+    monitor_control.filtered_data_stream_trim         =   (*data_element)["FILTERED_STREAM"].(pg_drv.Postgres_Stream_Driver)	
+    monitor_control.filtered_incident_stream_trim     =   (*data_element)["INCIDENT_STREAM"].(pg_drv.Postgres_Stream_Driver)	
+  
   
 }
     
