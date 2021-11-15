@@ -152,7 +152,7 @@ func process_entry(data Stream_Processing_Type,value float64)Stream_Processing_T
 func process_median(data Median_Filter_Type,value float64)Median_Filter_Type{
     
    return_value                      := data
-   return_value.current_value        =  .1*value +.9*return_value.current_value
+   return_value.current_value        =  .25*value +.75*return_value.current_value
    index                             := return_value.buffer_position
    limit                             := return_value.buffer_limit
    return_value.median_buffer[index] = return_value.current_value
