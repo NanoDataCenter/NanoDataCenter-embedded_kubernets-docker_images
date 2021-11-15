@@ -1,0 +1,5 @@
+./rpc_monitoring&       
+./wd_monitoring&
+./incident_monitoring&  
+./stream_monitoring&
+

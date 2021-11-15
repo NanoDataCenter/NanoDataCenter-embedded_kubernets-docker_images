@@ -39,7 +39,6 @@ type Z_Type struct {
     
 }
 
-
 type Stream_Processing_Type struct {
     median    Median_Filter_Type
     velocity  Velocity_Type
@@ -64,7 +63,7 @@ func Process_functions(){
 
 func initalize_stream_processing(){
     
-    Z_LEVEL = 5.0
+    Z_LEVEL = 3.0
     monitor_control.current_time = time.Now().UnixNano()   
     
 }
@@ -153,10 +152,10 @@ func process_entry(data Stream_Processing_Type,value float64)Stream_Processing_T
 func process_median(data Median_Filter_Type,value float64)Median_Filter_Type{
     
    return_value                      := data
-   return_value.current_value        = value
+   return_value.current_value        =  .1*value +.9*return_value.current_value
    index                             := return_value.buffer_position
    limit                             := return_value.buffer_limit
-   return_value.median_buffer[index] = value
+   return_value.median_buffer[index] = return_value.current_value
    index                             = index + 1
    if index >= limit {
        index                         = 0
@@ -164,12 +163,12 @@ func process_median(data Median_Filter_Type,value float64)Median_Filter_Type{
    return_value.buffer_position      = index
  
    
-   median, err                       := stats.Median(return_value.median_buffer)
-   if err != nil {
-       panic("bad median")
-   }
+   //median, err                       := stats.Median(return_value.median_buffer)
+  // if err != nil {
+      // panic("bad median")
+   //}
    
-   return_value.filtered_value        = median
+   return_value.filtered_value        = return_value.current_value
 
 return  return_value
     
@@ -331,7 +330,7 @@ func initialize_stream_processing_data( input_data float64)Stream_Processing_Typ
     return_value.velocity.previous_value            = input_data
     return_value.velocity.current_velocity = 0.
     return_value.velocity.lag_velocity     = 0.
-    return_value.velocity.r_value          = .1
+    return_value.velocity.r_value          = .5
     return_value.median.current_value      = input_data
     return_value.median.buffer_position    = 1
     return_value.median.buffer_limit       = 5

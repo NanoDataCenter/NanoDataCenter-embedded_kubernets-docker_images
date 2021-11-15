@@ -178,7 +178,9 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
 	  }
 	 
   }
-  ratio := data["MemFree"]/data["MemAvailable"]
+  
+  
+  ratio := data["MemAvailable"]/data["MemTotal"]
   fmt.Println("mem ratio",ratio)
   if ratio < .5 {
         //fmt.Println("ratio",ratio)
@@ -186,6 +188,7 @@ func assemble_ram( system interface{},chain interface{}, parameters map[string]i
         pack_data  := msg_pack_utils.Pack_float64(ratio)
         incident_log["RAM"].Log_data(pack_data)
     }
+  data["ratio"] = ratio
   log_data("RAM",data) 
   return cf.CF_DISABLE
 

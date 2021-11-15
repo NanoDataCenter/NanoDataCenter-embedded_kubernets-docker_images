@@ -168,6 +168,10 @@ func Generate_special_route( route_string string , web_page_function Menu_functi
 }
 
 
+
+
+
+
 func Generate_special_post_route( route_string string , web_page_function Menu_function_type){
     
     fmt.Println("link",web_page_start+`ajax/`+route_string)
@@ -188,6 +192,25 @@ func Generate_special_get_route( route_string string , web_page_function Menu_fu
 func Generate_ajax_anchor( links []string,display string ) string {
     
     anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+`">`+display+"</a>"
+    //fmt.Println("anchor",anchor)
+    return anchor
+    
+    
+}
+
+func Generate_ajax_anchor_with_parameters( links []string,parameters,display string ) string {
+    
+    anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+"?"+parameters+`">`+display+"</a>"
+    //fmt.Println("anchor",anchor)
+    return anchor
+    
+    
+}
+
+
+func Generate_ajax_anchor_with_parameters_and_target( links []string,parameters,target string, display string ) string {
+    
+    anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+"?"+parameters+`"  target="`+target+`">`+display+"</a>"
     //fmt.Println("anchor",anchor)
     return anchor
     

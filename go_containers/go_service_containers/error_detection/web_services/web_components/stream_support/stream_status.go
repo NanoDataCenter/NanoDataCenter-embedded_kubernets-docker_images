@@ -3,11 +3,12 @@ package stream_support
 
 import (
     "fmt"
-    //"strings"
+    "strings"
     //"strconv"
     "sort"
     "time"
     "net/http"
+     "net/url"
     "html/template"
     //"encoding/json"
     //"lacima.com/redis_support/graph_query"
@@ -40,7 +41,8 @@ func  Stream_status_init(input *template.Template){
    base_templates = input
    init_stream_data_structures()
 
-   web_support.Generate_special_route("stream_status/raw/{key}" ,stream_raw_detail)
+    web_support.Generate_special_route("stream_status/raw" ,stream_raw_detail)
+    web_support.Generate_special_route("stream_status/filtered" ,stream_filtered_detail)
    //web_support.Generate_special_post_route("incident_status/review" , incident_change_review)
    //web_support.Generate_special_post_route("incident_status/reset" , incident_change_reset)
 }
@@ -76,26 +78,39 @@ func stream_generate_html()string{
     //review               := incident_control.review_state.HGetAll()
     //status               := incident_control.status.HGetAll()
     
-    
+    ref_time               := time.Now().UnixNano()
    
-    display_list := make([][]string,len(keys))    
-    for index,key             := range keys {
+    
+    display_list := make([][]string,0)    
+    for _,key             := range keys {
        
        latest_result,state := get_stream_processing_data(key)
        if state == true {
-           link             := "detail_link"
+           key_encoded      :=  url.QueryEscape(key)
+           parameters       :=  "key="+key_encoded
+           link1             :=  web_support.Generate_ajax_anchor_with_parameters_and_target([]string{"stream_status","raw"},parameters,"_blank","RAW DATA")
+           link2             :=  web_support.Generate_ajax_anchor_with_parameters_and_target([]string{"stream_status","filtered"},parameters,"_blank","FILTERED DATA")
            current_value    :=  fmt.Sprintf("%f",latest_result.median.current_value) 
            filtered_value   :=  fmt.Sprintf("%f",latest_result.median.filtered_value)
            velocity_value   :=  fmt.Sprintf("%f",latest_result.velocity.current_velocity)
            std_value        :=  fmt.Sprintf("%f",latest_result.z_data.std)
            
            z_value          :=  fmt.Sprintf("%f",latest_result.z_data.z_value)
-           current_time     :=  get_current_time(key)
-           display_list[index] = []string{link,key,current_value,filtered_value,velocity_value,std_value,z_value,current_time} 
-       }
+           key_list         :=  strings.Split(key,"~+~")
+           key_display      :=  strings.Join(key_list,"~")
+           current_time,raw_time     :=  get_current_time(key)
+           
+           
+           if ref_time -raw_time  < 3600 *4*1e9 {
+               display_list = append(display_list, []string{link1,link2,key_display ,current_value,filtered_value,velocity_value,std_value,z_value,current_time}) 
+        
+               
+        }
+               
+        }
     }
     
-    return web_support.Setup_data_table("stream_list",[]string{"LINK","KEY","VALUE","FILTER_VALUE","VELOCITY","STD","Z_VALUE","TIME" },display_list)
+    return web_support.Setup_data_table("stream_list",[]string{"RAW Data","FILTERED DATA","KEY","VALUE","FILTER_VALUE","VELOCITY","STD","Z_VALUE","TIME" },display_list)
 }  
 
 
@@ -150,11 +165,12 @@ func recover_intermediate_values( data map[string]interface{})Stream_Processing_
     
 }
 
-func get_current_time(key string)string {
+func get_current_time(key string)(string,int64) {
     
     
     var intermediate_data int64
    
+    intermediate_data = 0
     return_value := "NOT SPECIFIED"
     
     packed_data := stream_control.time_table.HGet(key)
@@ -169,7 +185,7 @@ func get_current_time(key string)string {
         
     } 
     
-    return return_value
+    return return_value, intermediate_data 
     
     
 }

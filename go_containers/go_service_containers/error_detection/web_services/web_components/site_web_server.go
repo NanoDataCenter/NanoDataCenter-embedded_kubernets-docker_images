@@ -51,8 +51,8 @@ func define_web_pages()*template.Template  {
     return_value[2] = web_support.Menu_element{ "watchdog_incident",   "watchdog_incident_status"       ,   watchdog_incident_status }
     
     return_value[3] = web_support.Menu_element{ "incident",   "incident_status"     ,   incident_status }
-    return_value[4] = web_support.Menu_element{ "log",         "log_status"      ,   stream_support.Stream_status }
-    return_value[5] = web_support.Menu_element{ "log_anamoly",  "log_anamoly_status"  ,   stream_anamoly_status}
+    return_value[4] = web_support.Menu_element{ "log",         "stream_status"      ,   stream_support.Stream_status }
+    return_value[5] = web_support.Menu_element{ "log_anamoly",  "stream_anamoly_status"  ,   stream_anamoly_status}
     
     
     

@@ -157,7 +157,7 @@ func ( v  Postgres_Stream_Driver )Vacuum( )bool{
 
 func   Assemble_key( input Stream_Output_Data_Record)string{
 
-     return_value := "/"+input.Tag1+"/"+input.Tag2+"/"+input.Tag3+"/"+input.Tag4+"/"+input.Tag5
+     return_value := input.Tag1+"~+~"+input.Tag2+"~+~"+input.Tag3+"~+~"+input.Tag4+"~+~"+input.Tag5
      return return_value
     
 }
@@ -170,7 +170,7 @@ func (v Postgres_Stream_Driver)Select_where(where_clause string)([]Stream_Output
     return_value := make([]Stream_Output_Data_Record,0)
     
     script := "Select * from "+v.table_name +" where "+where_clause+ ";"
-    fmt.Println("script",script)
+    //fmt.Println("script",script)
     rows, err := v.conn.Query(context.Background(), script)
     if err != nil {
       fmt.Println("err",err)
