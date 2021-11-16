@@ -1,3 +1,0 @@
- docker run -it --name influx --rm  -p 8086:8086 \
-      -v /home/pi/mountpoint/influx_db:/var/lib/influxdb \
-      nanodatacenter/influxdb

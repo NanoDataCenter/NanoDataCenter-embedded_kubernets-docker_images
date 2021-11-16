@@ -44,7 +44,7 @@ var site_containers = make([]map[string]string,0)
 func master_log_incident_data(){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
     
-    current_value := fmt.Sprint(call_back_data)
+    current_value := string( fmt.Sprint(call_back_data))
     incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
     if hot_start == false {
         incident_log.Post_event(msg_pack_utils.Pack_string("cold_start  "+current_value))

@@ -345,8 +345,8 @@ func generate_filtered_table_display()string{
         current_value         := fmt.Sprintf("%f",data.value.current_value)
         filtered_value        := fmt.Sprintf("%f",data.value.filtered_value)
         velocity              := fmt.Sprintf("%f",data.value.current_velocity)
-        std                   := fmt.Sprintf("%f",data.value.z_value)
-        z_value               := fmt.Sprintf("%f",data.value.std)
+        std                   := fmt.Sprintf("%f",data.value.std)
+        z_value               := fmt.Sprintf("%f",data.value.z_value)
         z_state               := fmt.Sprintf("%t",data.value.z_state  )
         time_stamp            :=  format_time(data.time_stamp, true) 
         display_list[index] = []string{current_value,filtered_value, velocity, std, z_value,z_state, time_stamp} 

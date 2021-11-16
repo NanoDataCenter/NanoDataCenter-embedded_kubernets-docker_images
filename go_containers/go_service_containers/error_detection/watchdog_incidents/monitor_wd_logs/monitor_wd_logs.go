@@ -107,6 +107,7 @@ func construct_wd_nodes(){
     wd_records = make([]wd_record_type,0)
     wd_nodes  := []string{"WATCH_DOG"}
     nodes := graph_query.Common_qs_search(&wd_nodes)
+    
     for _,node := range nodes{
         var item  wd_record_type
        
@@ -123,6 +124,7 @@ func construct_wd_nodes(){
         item.watch_dog_time     = (*handlers)["WATCH_DOG_TS"].(redis_handlers.Redis_Single_Structure)
         
         wd_records              = append(wd_records,item)
+        
     }
     
 }

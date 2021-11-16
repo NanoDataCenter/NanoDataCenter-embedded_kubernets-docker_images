@@ -152,10 +152,12 @@ func process_entry(data Stream_Processing_Type,value float64)Stream_Processing_T
 func process_median(data Median_Filter_Type,value float64)Median_Filter_Type{
     
    return_value                      := data
-   return_value.current_value        =  .25*value +.75*return_value.current_value
+   return_value.current_value        =  value 
+   return_value.filtered_value       = .75*return_value.filtered_value + .25 *value
+   
    index                             := return_value.buffer_position
    limit                             := return_value.buffer_limit
-   return_value.median_buffer[index] = return_value.current_value
+   return_value.median_buffer[index] =  return_value.filtered_value
    index                             = index + 1
    if index >= limit {
        index                         = 0
@@ -163,12 +165,9 @@ func process_median(data Median_Filter_Type,value float64)Median_Filter_Type{
    return_value.buffer_position      = index
  
    
-   //median, err                       := stats.Median(return_value.median_buffer)
-  // if err != nil {
-      // panic("bad median")
-   //}
+
    
-   return_value.filtered_value        = return_value.current_value
+  
 
 return  return_value
     
@@ -195,7 +194,7 @@ type Velocity_Type struct {
 func process_velocity(data Stream_Processing_Type)Velocity_Type{
  
     return_value                    := data.velocity
-    return_value.current_velocity   = (1. - return_value.r_value)*(data.median.filtered_value-return_value.previous_value)+(return_value.r_value*return_value.lag_velocity)
+    return_value.current_velocity   = .25 *(data.median.filtered_value - return_value.previous_value)+.75*return_value.current_velocity
     return_value.lag_velocity       = return_value.current_velocity
     return_value.previous_value     = data.median.filtered_value
  
@@ -231,10 +230,9 @@ func process_z_data(data Stream_Processing_Type)Z_Type{
        return_value.z_state = false
        return_value.z_value = 0
        return return_value
+   }else {
+      return_value.z_value    = math.Abs((data.median.current_value-data.median.filtered_value)/return_value.std)
    }
-   
-   return_value.z_value    = math.Abs((data.median.current_value-data.median.filtered_value)/return_value.std)
-   
    if return_value.z_value > Z_LEVEL {
        return_value.z_state = true
    }else{
@@ -384,7 +382,7 @@ func store_stream_processing_data(key_string string, data Stream_Processing_Type
     
      monitor_control.stream_table.HSet(key_string,string(packed_data))
      monitor_control.time_table.HSet(key_string,string(packed_time))
-     fmt.Println(monitor_control.filtered_data_stream.Insert(data_element.Tag1,data_element.Tag2,data_element.Tag3,data_element.Tag4,data_element.Tag5,string(packed_data)))
+     monitor_control.filtered_data_stream.Insert(data_element.Tag1,data_element.Tag2,data_element.Tag3,data_element.Tag4,data_element.Tag5,string(packed_data))
      
      
      if data.z_data.z_state == true {

@@ -52,6 +52,7 @@ func  Stream_status_init(input *template.Template){
 
 func Stream_status  (w http.ResponseWriter, r *http.Request) {
    
+   
    incident_status_template ,_ := base_templates.Clone()
    
    display_data := stream_generate_html()
@@ -73,7 +74,7 @@ func stream_generate_html()string{
   
     keys                 := stream_control.stream_table.HKeys()
     sort.Strings(keys)
-    
+    //fmt.Println("keys",keys)
     //old_status           := incident_control.old_status.HGetAll()
     //review               := incident_control.review_state.HGetAll()
     //status               := incident_control.status.HGetAll()
@@ -81,10 +82,11 @@ func stream_generate_html()string{
     ref_time               := time.Now().UnixNano()
    
     
-    display_list := make([][]string,0)    
+    display_list := make([][]string,0) // not efficient but good enough for now   
     for _,key             := range keys {
-       
+       //fmt.Println("key",key)
        latest_result,state := get_stream_processing_data(key)
+       //fmt.Println("key",key,state)
        if state == true {
            key_encoded      :=  url.QueryEscape(key)
            parameters       :=  "key="+key_encoded
