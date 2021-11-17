@@ -43,21 +43,20 @@ func init_web_server_pages() {
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,7)
+    return_value := make(web_support.Menu_array,5)
     
 
     return_value[0] = web_support.Menu_element{ "introduction page","introduction_page",introduction_page}
     return_value[1] = web_support.Menu_element{ "watchdog",   "watchdog_status"       ,   watchdog_status }
-    return_value[2] = web_support.Menu_element{ "watchdog_incident",   "watchdog_incident_status"       ,   watchdog_incident_status }
     
-    return_value[3] = web_support.Menu_element{ "incident",   "incident_status"     ,   incident_status }
-    return_value[4] = web_support.Menu_element{ "log",         "stream_status"      ,   stream_support.Stream_status }
-    return_value[5] = web_support.Menu_element{ "log_anamoly",  "stream_anamoly_status"  ,   stream_anamoly_status}
+    return_value[2] = web_support.Menu_element{ "incident",   "incident_status"     ,   incident_status }
+    return_value[3] = web_support.Menu_element{ "log",         "stream_status"      ,   stream_support.Stream_status }
     
     
     
     
-    return_value[6] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
+    
+    return_value[4] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
   
     
     web_support.Register_web_pages(return_value)
@@ -83,7 +82,7 @@ func initialize_handlers(){
    
     incident_status_init()
     stream_support.Stream_status_init(base_templates)
-    stream_anamoly_init()
+    
     web_support.Micro_web_page_init(base_templates)
     
     
@@ -148,27 +147,8 @@ const log_body string = `
 This web page shows the status of performance logs
 
 `
-const log_anamoly_body string = `
 
-This web page shows the performance logs which has anomolies
 
-`
-
-const node_status_body string = `
-This web page lists all nodes in the system and whether the node is active.<br><br>
-Active is defined whether the node orchestration node is responding to site controller`
-
-const node_ip_body string = `
-This web page lists the ip for all active nodes`
-
-const container_status_body string = `
-The web page list the status for all the containers in a system<br><br>
-
-The status contain two parameters<br><br>
-The first parameter is whether the container is running<br><br>
-The second parameters is whether the container is managed by the node system.<br>  
-Containers may be unmanged due to debugging operatons.<br>
-Container management is manipulated by Ansible Debugging Scripts`
 
 
 
@@ -182,8 +162,8 @@ Container management is manipulated by Ansible Debugging Scripts`
     
 func generate_intro_data()[]web_support.Accordion_Elements{
 
-  title_array := []string{"Watch Dog",  "INCIDENT","LOG","LOG ANOMOLY","Application Server",}
-  body_array  := []string{watchdog_body,incident_body,log_body,log_anamoly_body,application_server_body}
+  title_array := []string{"Watch Dog",  "INCIDENT","LOG","Application Server",}
+  body_array  := []string{watchdog_body,incident_body,log_body,application_server_body}
   return web_support.Populate_accordian_elements(title_array,body_array)
     
     

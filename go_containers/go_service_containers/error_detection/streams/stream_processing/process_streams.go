@@ -231,7 +231,8 @@ func process_z_data(data Stream_Processing_Type)Z_Type{
        return_value.z_value = 0
        return return_value
    }else {
-      return_value.z_value    = math.Abs((data.median.current_value-data.median.filtered_value)/return_value.std)
+       mean,_                 := stats.Mean(data.median.median_buffer)
+      return_value.z_value    = math.Abs((data.median.current_value-mean)/return_value.std)
    }
    if return_value.z_value > Z_LEVEL {
        return_value.z_state = true
@@ -389,7 +390,7 @@ func store_stream_processing_data(key_string string, data Stream_Processing_Type
          fmt.Println("zstate true",data)
          monitor_control.z_table.HSet(key_string,string(packed_data))
          monitor_control.z_time.HSet(key_string,string(packed_time))
-         monitor_control.process_incident_stream.Insert(data_element.Tag1,data_element.Tag2,data_element.Tag3,data_element.Tag4,data_element.Tag5,string(packed_data))
+         //monitor_control.process_incident_stream.Insert(data_element.Tag1,data_element.Tag2,data_element.Tag3,data_element.Tag4,data_element.Tag5,string(packed_data))
      }
     
 }

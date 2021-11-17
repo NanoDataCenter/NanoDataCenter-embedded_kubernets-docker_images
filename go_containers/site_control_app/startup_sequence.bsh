@@ -16,13 +16,10 @@ export redis_container_image="nanodatacenter/redis"
 export redis_start_script="docker run -d  --network host   --name redis    --mount type=bind,source=/home/pi/mountpoint/redis,target=/data    nanodatacenter/redis /bin/bash  redis_control.bsh"
 
 
-#./site_node_monitor.bsh
+
+echo --- $hot_start
 ./site_node_monitor 2>  /tmp/site_node_monitor.err
-
-
-#export redis_table=4
-#export password_table=5
-#export irrigation_files=6
+rm /tmp/site_node_monitor.errr
 
 
 

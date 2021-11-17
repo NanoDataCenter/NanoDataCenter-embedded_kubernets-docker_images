@@ -42,7 +42,7 @@ var site_containers = make([]map[string]string,0)
 
 
 func master_log_incident_data(){
-    call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
+    call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.errr")
     
     current_value := string( fmt.Sprint(call_back_data))
     incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
@@ -54,15 +54,15 @@ func master_log_incident_data(){
     
 }
 func slave_log_incident_data(site_data *map[string]interface{}){
-    call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.err")
+    call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.errr")
     
-    current_value := fmt.Sprint(call_back_data)
+    current_value := string(fmt.Sprint(call_back_data))
     search_string := []string{"NODE:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"}
     incident_log := logging_support.Construct_incident_log(search_string) 
     if hot_start == false {
-        incident_log.Post_event(msg_pack_utils.Pack_string("cold_start  "+current_value))
+        incident_log.Post_event(msg_pack_utils.Pack_string("cold_start--  "+current_value))
     }else{
-       incident_log.Post_event(msg_pack_utils.Pack_string("hot_start  "+current_value))
+       incident_log.Post_event(msg_pack_utils.Pack_string("hot_start--  "+current_value))
     }
     
 }	
@@ -280,10 +280,46 @@ func wait_for_redis_connection(address string, port int ) {
    
 }
 
+func determine_slave_hot_start(site_data *map[string]interface{} ) bool {
+ 
+  test := (*site_data)["hot_start"].(string)
+  if test == "true" {
+      return true
+  }
+  return false
+  
+  
+}
+
+func determine_master_hot_start(site_data *map[string]interface{} ) bool {
+
+  status := determine_slave_hot_start(site_data)
+  if status == true{
+      status = test_redis_operation(site_data)
+  }
+  return status
+}
 
 
+func test_redis_operation(site_data *map[string]interface{}) bool {
+  address := (*site_data)["host"].(string)
+  port    := int((*site_data)["port"].(float64))
+  running_containers := docker_control.Containers_ls_runing()
+  for _,name := range running_containers{
+    if name == redis_container_name{
+	  if test_redis_connection( address , port  ) == true{
+          return true
+      }else{
+        return false
+      }
+          
+	}
+  }
+  return false
 
+}
 
+/*
 func determine_slave_hot_start(address string, port int) bool {
  
   if test_redis_connection( address , port  ) == false{
@@ -312,7 +348,7 @@ func determine_master_hot_start(address string, port int) bool {
   return false
 
 }
-
+*/
 
 func wait_for_reboot_flag_to_clear(){
     
@@ -356,7 +392,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
     
     
 
-     hot_start = determine_master_hot_start((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
+     hot_start = determine_master_hot_start(site_data)
     
      
    
@@ -465,7 +501,7 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
 
 func Site_Slave_Init(site_data *map[string]interface{} ){
     
-    hot_start = determine_slave_hot_start((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
+    hot_start = determine_slave_hot_start(site_data)
     slave_log_incident_data(site_data)  
     if hot_start == false {
         

@@ -1,10 +1,15 @@
 
+
+
+rm /tmp/site_node_monitor.errr
+export hot_start="false"  
 while [ 1 ]
 do
-   echo "executing site node control program"
-   ./site_node_monitor 2>  /tmp/site_node_monitor.err
-   
+   echo "executing site node control program ++++++++++++++++++++++++++ "+$hot_start
+   ./startup_sequence.bsh
+   echo "done"
+   export hot_start="true"  
    sleep 10
-
+   
 
 done

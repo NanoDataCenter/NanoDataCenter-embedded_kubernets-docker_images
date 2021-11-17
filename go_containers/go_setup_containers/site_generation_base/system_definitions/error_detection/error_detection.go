@@ -29,6 +29,7 @@ func Construct_definitions(){
                 su.Cd_Rec.Add_hash("DEBOUNCED_STATUS")   
                 su.Cd_Rec.Add_hash("STATUS")   
                 su.Cd_Rec.Add_hash("TIME_STAMP") 
+                su.Cd_Rec.Add_hash("DESCRIPTION")
                 su.Cd_Rec.Create_postgres_stream( "WATCH_DOG_LOG","admin","password","admin",30*24*3600)  
             su.Cd_Rec.Close_package_construction()
   
@@ -49,6 +50,7 @@ func Construct_definitions(){
                su.Cd_Rec.Add_hash("LAST_ERROR")
                su.Cd_Rec.Add_hash("ERROR_TIME") 
                su.Cd_Rec.Add_hash("REVIEW_STATE")
+               su.Cd_Rec.Add_hash("ACKNOWLEGE_STATE")
                su.Cd_Rec.Add_hash("OLD_STATUS") 
                su.Cd_Rec.Create_postgres_stream( "INCIDENT_LOG","admin","password","admin",30*24*3600)  
            su.Cd_Rec.Close_package_construction()

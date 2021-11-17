@@ -3,7 +3,7 @@ package monitor_wd_logs
 
 import "fmt"
 import "time"
-import "strings"
+//import "strings"
 
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/generate_handlers"
@@ -23,6 +23,7 @@ type wd_control_type struct {
     debounced_status                redis_handlers.Redis_Hash_Struct
     status                          redis_handlers.Redis_Hash_Struct
     time_stamp                      redis_handlers.Redis_Hash_Struct
+    description                     redis_handlers.Redis_Hash_Struct
     wd_incidents                    pg_drv.Postgres_Stream_Driver
     trim_handle                     pg_drv.Postgres_Stream_Driver
 
@@ -96,6 +97,7 @@ func construct_wd_data_structures() {
     wd_control.debounced_status         = (*handlers)["DEBOUNCED_STATUS"].(redis_handlers.Redis_Hash_Struct)
     wd_control.status                   = (*handlers)["STATUS"].(redis_handlers.Redis_Hash_Struct)
     wd_control.time_stamp               = (*handlers)["TIME_STAMP"].(redis_handlers.Redis_Hash_Struct)
+    wd_control.description              = (*handlers)["DESCRIPTION"].(redis_handlers.Redis_Hash_Struct)
     wd_control.wd_incidents             = (*handlers)["WATCH_DOG_LOG"].(pg_drv.Postgres_Stream_Driver)    
     wd_control.trim_handle              = (*handlers)["WATCH_DOG_LOG"].(pg_drv.Postgres_Stream_Driver)  
     
@@ -113,13 +115,14 @@ func construct_wd_nodes(){
        
         item.name               = graph_query.Convert_json_string(node["name"])
         item.description        = graph_query.Convert_json_string(node["description"])
+        
         item.max_time_interval  = graph_query.Convert_json_int(node["max_time_interval"])
         item.max_time_interval  = item.max_time_interval*1e9
         item.namespace          = graph_query.Convert_json_string(node["namespace"])
        
         item.key_array          = graph_query.Generate_key(item.namespace)
         item.key_array          = append(item.key_array,"WATCH_DOG")
-        item.key                = strings.Join(item.key_array,"/")
+        item.key                = item.namespace
         handlers                := data_handler.Construct_Data_Structures(&item.key_array)
         item.watch_dog_time     = (*handlers)["WATCH_DOG_TS"].(redis_handlers.Redis_Single_Structure)
         
@@ -138,7 +141,7 @@ func initialize_monitoring_variables(){
     wd_control.debounced_status.Delete_All()                 
     wd_control.status.Delete_All()
     wd_control.time_stamp.Delete_All()
-   
+    wd_control.description.Delete_All()
    
     
     current_state_map   = make(map[string]bool)
@@ -152,6 +155,7 @@ func initialize_monitoring_variables(){
         key := wd_record.key
         current_state_map[key] = true
         current_count_map[key] = 0
+        wd_control.description.HSet(key,wd_record.description)
         wd_control.status.HSet(key,msg_pack_true)
         wd_control.debounced_status.HSet(key,msg_pack_true)
         wd_control.time_stamp.HSet(key,msg_pack_time)

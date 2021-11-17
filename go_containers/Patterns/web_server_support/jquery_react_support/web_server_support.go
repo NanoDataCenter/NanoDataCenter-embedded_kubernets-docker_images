@@ -198,6 +198,15 @@ func Generate_ajax_anchor( links []string,display string ) string {
     
 }
 
+func Generate_ajax_anchor_target( links []string,target,display string ) string {
+    
+    anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+`"  target="`+target+`">`+display+"</a>"
+    //fmt.Println("anchor",anchor)
+    return anchor
+    
+    
+}
+
 func Generate_ajax_anchor_with_parameters( links []string,parameters,display string ) string {
     
     anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+"?"+parameters+`">`+display+"</a>"
@@ -208,7 +217,7 @@ func Generate_ajax_anchor_with_parameters( links []string,parameters,display str
 }
 
 
-func Generate_ajax_anchor_with_parameters_and_target( links []string,parameters,target string, display string ) string {
+func Generate_ajax_anchor_with_parameters_and_target( links []string,parameters,target,  display string ) string {
     
     anchor := `<a href="`+web_page_start+`ajax/`+strings.Join(links,"/")+"?"+parameters+`"  target="`+target+`">`+display+"</a>"
     //fmt.Println("anchor",anchor)

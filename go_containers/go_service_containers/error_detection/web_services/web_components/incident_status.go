@@ -41,6 +41,7 @@ type incident_control_type struct {
     description                     redis_handlers.Redis_Hash_Struct
     old_status                      redis_handlers.Redis_Hash_Struct
     review_state                    redis_handlers.Redis_Hash_Struct
+    acknowlege_state                redis_handlers.Redis_Hash_Struct
     incident_log                    pg_drv.Postgres_Stream_Driver
     keys                            map[string]incident_record_type
 }
@@ -74,6 +75,7 @@ func incident_status_init(){
    web_support.Generate_special_route("incident_status/detail/{key}" , incident_detail_function)
    web_support.Generate_special_post_route("incident_status/review" , incident_change_review)
    web_support.Generate_special_post_route("incident_status/reset" , incident_change_reset)
+   web_support.Generate_special_post_route("incident_status/acknowlege" , incident_change_acknowlege)
 }
    
    
@@ -95,6 +97,7 @@ func construct_incident_data_structures() {
     incident_control.last_error_time          = (*handlers)["ERROR_TIME"].(redis_handlers.Redis_Hash_Struct)
     incident_control.description              = (*handlers)["DESCRIPTION"].(redis_handlers.Redis_Hash_Struct)
     incident_control.review_state             = (*handlers)["REVIEW_STATE"].(redis_handlers.Redis_Hash_Struct)
+    incident_control.acknowlege_state         = (*handlers)["ACKNOWLEGE_STATE"].(redis_handlers.Redis_Hash_Struct)
     incident_control.old_status               = (*handlers)["OLD_STATUS"].(redis_handlers.Redis_Hash_Struct)
     
     incident_control.incident_log             = (*handlers)["INCIDENT_LOG"].(pg_drv.Postgres_Stream_Driver)
@@ -177,6 +180,7 @@ func generate_incident_status_html()string {
     contact_time_values  := incident_control.time.HGetAll() 
     descriptions         := incident_control.description.HGetAll()
     last_error_times      := incident_control.last_error_time.HGetAll()
+    acknowlege_state      := incident_control.acknowlege_state.HGetAll()
     //last_error_data       := incident_control.last_error_data.HGetAll()
     
    
@@ -187,7 +191,10 @@ func generate_incident_status_html()string {
        
        old_status_value,_         := msg_pack_utils.Unpack_bool(old_status[key])
       
-
+       ack_value,err       := msg_pack_utils.Unpack_bool(acknowlege_state[key])
+       if err != true {
+           ack_value = false
+       }
 
        review_value,err       := msg_pack_utils.Unpack_bool(review[key])
        if err != true {
@@ -216,18 +223,23 @@ func generate_incident_status_html()string {
            review_display = ""
        }
        
+       ack_display    := "Acknowledged"
+       if ack_value == false {
+           ack_display = ""
+       }       
+       
        description_string,_   := msg_pack_utils.Unpack_string(descriptions[key])
        
        contact_time           := format_time(msg_pack_utils.Unpack_int64(contact_time_values[key]))
        error_time             := format_time(msg_pack_utils.Unpack_int64(last_error_times[key]))
-       link                   := web_support.Generate_ajax_anchor([]string{"incident_status","detail",key},"Link to Detailed Data")
+       link                   := web_support.Generate_ajax_anchor_target([]string{"incident_status","detail",key},"blank","Link to Detailed Data")
        //fmt.Println(" comparison route /error_detection/ajax/incident/{key} \n","link",link)
        
-       display_list[index] = []string{link,description_string,review_display,status_string,contact_time,error_time} 
+       display_list[index] = []string{link,description_string,ack_display,review_display,status_string,contact_time,error_time} 
        
     }
     
-    return web_support.Setup_data_table("topic_list",[]string{"LINK","DESCRIPTION","NEEDS TO BE REVIEWED","STATUS","CONTACT TIME","FIRST_ERROR"},display_list)
+    return web_support.Setup_data_table("topic_list",[]string{"LINK","DESCRIPTION","ACK STATE","REVIEW STATE","STATUS","CONTACT TIME","FIRST_ERROR"},display_list)
 }  
 
 
@@ -271,6 +283,29 @@ func incident_change_review(w http.ResponseWriter, r *http.Request) {
    w.Write(output) 
     
 }
+
+func incident_change_acknowlege(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+  var input map[string]interface{}
+
+  if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+        fmt.Println(err)
+        panic("BAD:")
+    }
+
+  key := input["key"].(string)
+  ack_state  := input["ack_state"].(bool)
+  
+  ack_string := msg_pack_utils.Pack_bool(ack_state)
+  incident_control.acknowlege_state.HSet(key,ack_string)
+  
+  
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}
+
 
 func incident_change_reset(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
@@ -335,42 +370,59 @@ func incident_detail_status_html(r *http.Request)string {
       error_time    :=     format_time(msg_pack_utils.Unpack_int64(incident_control.last_error_time.HGet(key)))   
       description,_  :=    msg_pack_utils.Unpack_string(incident_control.description.HGet(key))            
       review_state,_  :=   msg_pack_utils.Unpack_bool(incident_control.review_state.HGet(key))  
+      ack_state,_     :=   msg_pack_utils.Unpack_bool(incident_control.acknowlege_state.HGet(key))
+      status_string   := strconv.FormatBool(status)
+     
+      return_value := generate_java_script(key,web_support.Get_Web_Start()+"ajax/incident_status/review",
+                                           web_support.Get_Web_Start()+"ajax/incident_status/acknowlege",
+                                           web_support.Get_Web_Start()+"ajax/incident_status/reset")
+     
+     
       
-      status_string          := strconv.FormatBool(status)
-     
-      return_value := generate_java_script(key,web_support.Get_Web_Start()+"ajax/incident_status/review",web_support.Get_Web_Start()+"ajax/incident_status/reset")
-     
-     
       
-      return_value = return_value + "<center>"+ web_support.Generate_link_button( "incident_status","BACK" )+"</center>"
       
-     
+      return_value = return_value + `
+      <button id="reset_data" type="button">Reset Results</button><BR>
+      <button id="change_review" type="button">Change Review Status</button><BR>
+      <button id="change_ack" type="button">Change Acknwolege Status</button><BR>`
       
       if review_state == false {
  
       return_value = return_value+ `
-      <center>
-      <button id="reset_data" type="button">Reset Results</button><BR>
-      <button id="click_to_change" type="button">Change Review Status</button><BR>
+      
       <input type="checkbox" id="review_state" name="review_state" value="Review"  > 
       <label for="review_state"> Data Reviewed </label><br>
-      </center>
-      <h3>Detail Values</h3>
+      
       `
       }else{
        return_value = return_value+ `    
-      <center>
-      <button id="reset_data" type="button">Reset Results</button><BR>
-      <button id="click_to_change" type="button">Change Review Status</button><BR>
+      
       <input type="checkbox" id="review_state" name="review_state" value="Review" checked> 
       <label for="review_state"> Data Reviewed </label><br>
-      </center>
-      <h3>Detail Values</h3>
-      `          
-          
+      `
+ 
+      }
+      if ack_state == false {
+ 
+      return_value = return_value+ `
+      
+      <input type="checkbox" id="ack_state" name="ack_state" value="ACKNOWLEGE_STATE"  > 
+      <label for="review_state"> ACK Reviewed </label><br>
+      
+      `
+      }else{
+       return_value = return_value+ `    
+      
+      <input type="checkbox" id="review_state" name="review_state" value="ACKNOWLEGE_STATE" checked> 
+      <label for="review_state"> Acknowledged </label><br>
+      `
+ 
+      
+      
+      
           
       }
-      
+      return_value = return_value+"<h5>Summary Data</h5>"
       
       
       list_data :=  []string{  "<ul>",
@@ -393,7 +445,8 @@ func incident_detail_status_html(r *http.Request)string {
 }
 
 
-func generate_java_script(key string, url_path_1 string, url_path_2 string)string{
+
+func generate_java_script(key , url_path_1,url_path_2,url_path_3 string)string{
 
 
 return_value := `    
@@ -401,9 +454,10 @@ return_value := `
   key = "`+key+`"
   url_path_1 = "`+url_path_1+`"
   url_path_2 = "`+url_path_2+`" 
+  url_path_3 = "`+url_path_3+`"
   $(document).ready(function(){` + web_support.Load_jquery_ajax_components() +
      ` 
-     $("#click_to_change").click(function(){
+     $("#change_review").click(function(){
          review_state = $("#review_state").is(':checked');
          data= {"review_state" : review_state,
                 "key" :key}
@@ -411,11 +465,21 @@ return_value := `
          ajax_post(url_path_1, data,"review state changed","server error" )
          
     });
+    $("#change_ack").click(function(){
+         ack_state = $("#ack_state").is(':checked');
+         data= {"ack_state" : ack_state,
+                "key" :key}
+         
+         ajax_post(url_path_2, data,"review state changed","server error" )
+         
+    });
+    
+    
      $("#reset_data").click(function(){
          review_state = $("#review_state").is(':checked');
          data= { "key" :key}
          
-         ajax_post(url_path_2, data,"entry is reset","server error" )
+         ajax_post(url_path_3, data,"entry is reset","server error" )
          
     });
   });
@@ -439,7 +503,7 @@ func generate_time_series(key string)string {
   }
   for _,data := range pg_data {
     ts       := format_time(data.Time_stamp,true)
-    fmt.Println(data.Data)
+    //fmt.Println(data.Data)
     raw_data,err := msg_pack_utils.Unpack_string(data.Data)
     if err != true {
         raw_data = data.Data

@@ -151,5 +151,6 @@ func generate_system_component_graph(){
     mqtt_in.Construct_mqtt_in_defintions()
     mqtt_out.Construct_mqtt_out_definitions()
     error_detection.Construct_definitions()
+   
     
 }

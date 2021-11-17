@@ -61,8 +61,9 @@ func fill_in_site_data(){
   site_data["redis_container_name"]      = os.Getenv("redis_container_name")
   site_data["redis_container_image"]     = os.Getenv("redis_container_image")
   site_data["redis_start_script"]        = os.Getenv("redis_start_script")
-  
-  
+  site_data["hot_start"]                 = os.Getenv("hot_start")
+  fmt.Println("hot_start",site_data["hot_start"])
+ 
  
   
   

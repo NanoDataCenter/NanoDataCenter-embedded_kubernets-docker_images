@@ -12,7 +12,9 @@ func construct_node(name string, containers []string){
       description = name + "  node reboot"
       Construct_incident_logging("NODE_REBOOT",description,Emergency)
       
-      
+      // this is a watchdog failure log for this container
+      //description = name+"  node controller watchdog"
+      //Construct_watchdog_logging("node_control",description,20)
       
       keys := []string{"FREE_CPU","RAM","TEMPERATURE","DISK_SPACE","SWAP_SPACE","CONTEXT_SWITCHES","BLOCK_DEV","IO_SPACE","RUN_QUEUE","EDEV"}
       Bc_Rec.Add_header_node("NODE_MONITORING","NODE_MONITORING", make(map[string]interface{}))
