@@ -27,7 +27,7 @@ const table_script_start string = `
 $(document).ready( function () {
     $('#`
     
-const table_script_end string = `').DataTable( { "order": [] , "pageLength": 50 }  );
+const table_script_end string = `').DataTable( { "order": [] , "paging":false }  );
 } );
 </script>`
  

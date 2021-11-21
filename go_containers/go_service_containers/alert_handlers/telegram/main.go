@@ -9,7 +9,7 @@ import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
 
 import "lacima.com/Patterns/secrets"
-import "lacima.com/go_system_containers/alert_handlers/telegram/api"
+import "lacima.com/go_service_containers/alert_handlers/telegram/api"
 
 
 

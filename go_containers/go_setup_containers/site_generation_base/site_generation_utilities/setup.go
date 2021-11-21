@@ -59,8 +59,8 @@ func Initialize_Site_Enviroment(){
 
 
 
-const command_start string = "docker run -d  --network host   --name"          // preambe script to start container
-const command_run   string = "docker run   -it --network host --rm  --name"  // preamble script for container to run and exit
+const command_start string = "docker run -d  --network host --log-driver  local  --name"          // preambe script to start container
+const command_run   string = "docker run   -it --network host --log-driver  local  --rm  --name"  // preamble script for container to run and exit
 
 
 func setup_container_run_commands(){

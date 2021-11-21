@@ -5,17 +5,16 @@ import "lacima.com/go_setup_containers/site_generation_base/system_definitions/m
 import "lacima.com/go_setup_containers/site_generation_base/system_definitions/error_detection"
 
 
-const redis_image             string   = "nanodatacenter/redis"
-const lacima_site_image       string   = "nanodatacenter/lacima_site_generation"
-const lacima_secrets_image    string   = "nanodatacenter/lacima_secrets"
-const file_server_image       string   = "nanodatacenter/file_server"
-const redis_monitor_image     string   = "nanodatacenter/redis_monitoring"
-const postgres_image          string   = "nanodatacenter/postgres"
-const mqtt_image              string   = "nanodatacenter/mosquitto"
-const mqtt_to_db_image        string   = "nanodatacenter/mqtt_to_db"
-
- 
-
+const redis_image                    string   = "nanodatacenter/redis"
+const lacima_site_image              string   = "nanodatacenter/lacima_site_generation"
+const lacima_secrets_image           string   = "nanodatacenter/lacima_secrets"
+const file_server_image              string   = "nanodatacenter/file_server"
+const redis_monitor_image            string   = "nanodatacenter/redis_monitoring"
+const postgres_image                 string   = "nanodatacenter/postgres"
+const mqtt_image                     string   = "nanodatacenter/mosquitto"
+const mqtt_to_db_image               string   = "nanodatacenter/mqtt_to_db"
+const system_error_detection_image   string   = "nanodatacenter/system_error_detection"
+const alert_generation_image         string   = "nanodatacenter/alert_generation"
 
 func generate_system_components(master_flag bool,node_name string ){
    file_server_mount    := []string {"DATA","FILE"}
@@ -34,6 +33,15 @@ func generate_system_components(master_flag bool,node_name string ){
    mqtt_to_db_command_map["mqtt_to_db"] = "./mqtt_to_db"
    mqtt_to_db_command_map["mqtt_out"]  = "./mqtt_out"
    
+   system_error_detection_command_map  := make(map[string]string)
+   system_error_detection_command_map["wd_monitoring"] = "./wd_monitoring"  
+   system_error_detection_command_map["incident_monitoring"] = "./incident_monitoring"  
+   system_error_detection_command_map["rpc_monitoring"] = "./rpc_monitoring"  
+   system_error_detection_command_map["stream_monitoring"] = "./stream_monitoring"  
+   system_error_detection_command_map["web_services"] = "./web_services"  
+   
+   alert_generation_command_map  := make(map[string]string)
+   alert_generation_command_map["telegram"] = "./telegram"   
     
    null_map := make(map[string]string)
    su.Add_container( false,"redis", redis_image, "./redis_control.bsh", null_map,redis_mount)
@@ -44,9 +52,11 @@ func generate_system_components(master_flag bool,node_name string ){
    su.Add_container( false,"mqtt",mqtt_image,su.No_run, null_map, mqtt_mount)
    su.Add_container( false,"mqtt_to_db",mqtt_to_db_image, su.Managed_run,mqtt_to_db_command_map, su.Data_mount)
    su.Add_container( false,"redis_monitor",redis_monitor_image, su.Managed_run,redis_monitor_command_map, su.Data_mount)
+   su.Add_container( false,"alert_generation",alert_generation_image, su.Managed_run,alert_generation_command_map, su.Data_mount)
+   su.Add_container( false,"system_error_detection",system_error_detection_image, su.Managed_run,system_error_detection_command_map, su.Data_mount)
    
    
-   containers := []string{"redis","lacima_secrets","file_server","postgres","mqtt","mqtt_to_db","redis_monitor"}
+   containers := []string{"redis","lacima_secrets","file_server","postgres","mqtt","mqtt_to_db","redis_monitor","alert_generation","system_error_detection"}
    su.Construct_service_def("system_monitoring",master_flag,"", containers, generate_system_component_graph) 
     
     

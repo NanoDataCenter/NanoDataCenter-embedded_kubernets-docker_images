@@ -2,7 +2,7 @@
 #docker run [OPTIONS] IMAGE[:TAG|@DIGEST] [COMMAND] [ARG...]
 
 #docker run -ti --rm  --network host    --mount type=bind,source=/home/pi/mountpoint/lacuma_conf/site_config,target=/data/    nanodatacenter/eto /bin/bash 
-docker run  -d --network host --name postgres  --mount type=bind,source=/home/pi/system_config,target=/data/   --mount type=bind,source=/home/pi/mountpoint/postgres_files/,target=/var/lib/postgresql/data  nanodatacenter/postgres postgres 
+docker run --log-driver none -d --network host --name postgres  --mount type=bind,source=/home/pi/system_config,target=/data/   --mount type=bind,source=/home/pi/mountpoint/postgres_files/,target=/var/lib/postgresql/data  nanodatacenter/postgres postgres 
 
 #docker run --name [container_name] -e POSTGRES_PASSWORD=[your_password] -d postgres
 

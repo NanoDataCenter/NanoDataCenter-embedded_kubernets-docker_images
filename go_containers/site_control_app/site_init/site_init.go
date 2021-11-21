@@ -44,7 +44,7 @@ var site_containers = make([]map[string]string,0)
 func master_log_incident_data(){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.errr")
     
-    current_value := string( fmt.Sprint(call_back_data))
+    current_value := string( call_back_data)
     incident_log := logging_support.Construct_incident_log( []string{"INCIDENT_LOG:SITE_REBOOT","INCIDENT_LOG"} ) 
     if hot_start == false {
         incident_log.Post_event(msg_pack_utils.Pack_string("cold_start  "+current_value))
@@ -56,7 +56,7 @@ func master_log_incident_data(){
 func slave_log_incident_data(site_data *map[string]interface{}){
     call_back_data, _ := ioutil.ReadFile("/tmp/site_node_monitor.errr")
     
-    current_value := string(fmt.Sprint(call_back_data))
+    current_value := string(call_back_data)
     search_string := []string{"NODE:"+(*site_data)["local_node"].(string),"INCIDENT_LOG:NODE_REBOOT","INCIDENT_LOG"}
     incident_log := logging_support.Construct_incident_log(search_string) 
     if hot_start == false {

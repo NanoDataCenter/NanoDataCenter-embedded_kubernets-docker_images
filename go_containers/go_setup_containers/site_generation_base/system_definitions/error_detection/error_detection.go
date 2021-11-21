@@ -78,13 +78,24 @@ func Construct_definitions(){
        rpc_properties := make(map[string]interface{})
        
        rpc_properties["sample_time"]     = 15  // 15 minutes
-       
+       rpc_properties["trim_time"]       = 3600*24*30*3  // 3 months
        
        su.Bc_Rec.Add_header_node("RPC_ANALYSIS","RPC_ANALYSIS",rpc_properties)
   
-       su.Construct_incident_logging("RPC_FAILURE" ,"RPC FAILURES",su.Emergency)
+
+          su.Construct_incident_logging("RPC_FAILURE" ,"RPC FAILURES",su.Emergency)
        
-       su.Construct_incident_logging("RPC_LOADING" ,"RPC_LOADING",su.Emergency)  
+          su.Construct_incident_logging("RPC_LOADING" ,"RPC_LOADING",su.Emergency)  
+          
+           su.Cd_Rec.Construct_package("RPC_ANALYSIS_DATA")
+               su.Cd_Rec.Add_hash("DESCRIPTION")
+               su.Cd_Rec.Add_hash("TIME") 
+               su.Cd_Rec.Add_hash("STATUS") 
+               su.Cd_Rec.Add_hash("LOADING")
+               su.Cd_Rec.Add_hash("LENGTH")
+               su.Cd_Rec.Add_hash("ERROR_TIME") 
+               su.Cd_Rec.Create_postgres_stream( "INCIDENT_LOG","admin","password","admin",30*24*3600)  
+            su.Cd_Rec.Close_package_construction()
   
        su.Bc_Rec.End_header_node("RPC_ANALYSIS","RPC_ANALYSIS")    
        

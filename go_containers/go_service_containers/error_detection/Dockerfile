@@ -1,5 +1,5 @@
 FROM nanodatacenter/bash_basic 
-ENV CONTAINER_NAME "error_detection" 
+ENV CONTAINER_NAME "system_error_detection" 
 
 VOLUME [/data/] 
 

@@ -1,6 +1,6 @@
 package monitor_streams
 
-import "math"
+//import "math"
 import "time"
 import "fmt"
 import "lacima.com/Patterns/msgpack_2"
@@ -63,7 +63,7 @@ func Process_functions(){
 
 func initalize_stream_processing(){
     
-    Z_LEVEL = 3.0
+    Z_LEVEL = 5.0
     monitor_control.current_time = time.Now().UnixNano()   
     
 }
@@ -231,8 +231,9 @@ func process_z_data(data Stream_Processing_Type)Z_Type{
        return_value.z_value = 0
        return return_value
    }else {
-       mean,_                 := stats.Mean(data.median.median_buffer)
-      return_value.z_value    = math.Abs((data.median.current_value-mean)/return_value.std)
+      mean,_                 := stats.Mean(data.median.median_buffer)
+      //return_value.z_value    = math.Abs((data.median.current_value-mean)/return_value.std)
+      return_value.z_value    = (data.median.current_value - mean)/return_value.std
    }
    if return_value.z_value > Z_LEVEL {
        return_value.z_state = true

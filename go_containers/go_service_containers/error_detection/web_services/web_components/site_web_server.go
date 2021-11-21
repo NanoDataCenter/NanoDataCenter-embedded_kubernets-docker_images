@@ -43,20 +43,20 @@ func init_web_server_pages() {
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,5)
+    return_value := make(web_support.Menu_array,6)
     
 
-    return_value[0] = web_support.Menu_element{ "introduction page","introduction_page",introduction_page}
+    return_value[0] = web_support.Menu_element{ "introduction page","introduction_page",  introduction_page}
     return_value[1] = web_support.Menu_element{ "watchdog",   "watchdog_status"       ,   watchdog_status }
-    
-    return_value[2] = web_support.Menu_element{ "incident",   "incident_status"     ,   incident_status }
-    return_value[3] = web_support.Menu_element{ "log",         "stream_status"      ,   stream_support.Stream_status }
-    
-    
+    return_value[2] = web_support.Menu_element{ "rpc",        "rpc_status"          ,     rpc_status  }
+    return_value[3] = web_support.Menu_element{ "incident",   "incident_status"     ,     incident_status }
+    return_value[4] = web_support.Menu_element{ "log",         "stream_status"      ,     stream_support.Stream_status }
     
     
     
-    return_value[4] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
+    
+    
+    return_value[5] = web_support.Construct_Menu_Element( "application_servers","application_servers", web_support.Micro_web_page)
   
     
     web_support.Register_web_pages(return_value)
@@ -79,7 +79,7 @@ func initialize_handlers(){
  
     introduction_page_init()
     watchdog_status_init()
-   
+    rpc_status_init()
     incident_status_init()
     stream_support.Stream_status_init(base_templates)
     

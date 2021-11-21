@@ -93,7 +93,7 @@ func Initialize_node_processor_performance(cf_cluster *cf.CF_CLUSTER_TYPE){
   var par15 = make(map[string]interface{})
   (cf_control).Cf_add_one_step(assemble_net_edev,par15)
   //(cf_control).Cf_add_log_link("processor monitoring done")
-  (cf_control).Cf_add_wait_interval(time.Minute*9  ) // first tick is not counted sar -u 300 1 takes 5 minutes
+  (cf_control).Cf_add_wait_interval(time.Minute*4  ) // first tick is not counted sar -u 300 1 takes 5 minutes
   (cf_control).Cf_add_reset()
 
 

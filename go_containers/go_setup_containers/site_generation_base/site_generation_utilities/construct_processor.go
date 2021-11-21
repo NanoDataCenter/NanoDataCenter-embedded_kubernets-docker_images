@@ -1,12 +1,14 @@
 package su
 
 
+
 func construct_node(name string, containers []string){
 
       properties := make(map[string]interface{})
       properties["containers"] = containers
       Bc_Rec.Add_header_node("NODE",name, properties )
    
+      
       var description string
       
       description = name + "  node reboot"
