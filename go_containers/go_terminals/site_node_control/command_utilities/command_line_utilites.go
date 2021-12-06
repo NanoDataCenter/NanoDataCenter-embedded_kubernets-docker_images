@@ -1,7 +1,7 @@
 package command_line_utilities
 
 import (
-	gc "github.com/gbin/goncurses"
+	//gc "github.com/gbin/goncurses"
     "lacima.com/go_terminals/go_terminal_library"
 	//"fmt"
 )
@@ -13,12 +13,12 @@ import (
 
 
 
-func Command_line_launcher( input gc.Key) bool {
+func Command_line_launcher( ) {
     
     
 
     gc_support.Construct_Console("Command Console",commmand_handler)
-    return false
+    
     
     
     

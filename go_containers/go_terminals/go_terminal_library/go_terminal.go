@@ -25,7 +25,7 @@ func Construct_Console(title string,cmd_handler CMD_handler){
     window.Box(0, 0)
     window.ColorOn(NORMAL_WINDOW_COLOR)
     window.SetBackground(gc.ColorPair(NORMAL_WINDOW_COLOR))
-    blank_soft_keys()
+   
     window.MoveAddChar(2, 0, gc.ACS_LTEE)
     window.HLine(2, 1, gc.ACS_HLINE, cols-2)
     window.MoveAddChar(2, cols-1, gc.ACS_RTEE)

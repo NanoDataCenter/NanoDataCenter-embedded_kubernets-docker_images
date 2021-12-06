@@ -29,7 +29,7 @@ func kill_current_panel(){
         active := panel_list.Front()
         panel = active.Value.(*gc.Panel)
         panel.Top()
-        soft_key_populate_labels()
+        
         
     }
     
@@ -51,7 +51,7 @@ func Pop_up_confirmation(title string,message[]string)bool{
     window.Box(0, 0)
     window.ColorOn(POP_UP_COLOR)
     window.SetBackground(gc.ColorPair(POP_UP_COLOR))
-    blank_soft_keys()
+    
     window.MoveAddChar(2, 0, gc.ACS_LTEE)
     window.HLine(2, 1, gc.ACS_HLINE, cols-2)
     window.MoveAddChar(2, cols-1, gc.ACS_RTEE)
@@ -107,7 +107,7 @@ func Pop_up_alert(title string,message[]string){
     if  title_length > w {
         w = title_length
     }
-    blank_soft_keys()
+    
     
     y := (rows-h)/2
     x := (cols-w)/2
@@ -147,13 +147,14 @@ func calculate_message_length( input []string )int{
     return return_value
 }
 
+type Default_Handler_Type func()
 
-func Construct_default_panel( title string, message []string,help []string, soft_key_constructors []Soft_Key_Def, user_handler Soft_Key_Function_Handler ){
+func Construct_base_panel( title string, message []string,user_handler Default_Handler_Type ){
    
    rows, cols := Stdscr.MaxYX()
     
-    blank_soft_keys()
-    Setup_SoftKey(soft_key_constructors,help)
+   
+    
     w := calculate_message_length(message)
     if len(title)> len(message) {
         w = len(title)+10
@@ -179,12 +180,13 @@ func Construct_default_panel( title string, message []string,help []string, soft
     gc.Cursor(0)
     gc.UpdatePanels()
     gc.Update()
-    Key_Stroke_Handler( user_handler )
+    user_handler()
    
     kill_current_panel()
     
     
 }
+
 type Menu_records struct {
     Name   string
     Description string
@@ -242,7 +244,7 @@ func Construct_menu_window( title string,menu_items []Menu_records, ncols int, s
 func create_menu( menuwin *gc.Window,menu_records []Menu_records, ncols int, single_select bool )(bool,[]Menu_records){
 
 
-    blank_soft_keys()
+   
  	items := make([]*gc.MenuItem, len(menu_records))
 	for i, val := range menu_records  {
 		items[i], _ = gc.NewItem(val.Name, val.Description)
@@ -275,11 +277,8 @@ func create_menu( menuwin *gc.Window,menu_records []Menu_records, ncols int, sin
 	//O_NONCYCLIC  = C.O_NONCYCLIC  // Don't wrap next/prev item
  
     menu.Option(gc.O_SHOWDESC,true)
-    if single_select == true {
-       menu.Option(gc.O_ONEVALUE,true)
-    }else{
-        menu.Option(gc.O_ONEVALUE,false)
-    }
+ 
+    menu.Option(gc.O_ONEVALUE,false)
    
 	menu.Format(rows-7, ncols)
 	menu.Mark(" * ")
@@ -317,18 +316,18 @@ func create_menu( menuwin *gc.Window,menu_records []Menu_records, ncols int, sin
             if single_select == false {
 			  menu.Driver(gc.REQ_TOGGLE)
             }else{
-                current_value :=  menu.Current(nil)
-                return_value := make([]Menu_records,0)
-                var temp Menu_records
-                temp.Name = (*current_value).Name()
-                temp.Description = (*current_value).Description()
-                temp.State = true
-                return_value = append(return_value,temp)
-                return true ,return_value
+                current := menu.Current(nil)
+                menu_state, state := get_selected_index(current.Index(),menu.Items())
+                if state == false {  // no item selected
+                    menu.Driver(gc.REQ_TOGGLE)
+                }else if menu_state == true {
+                    menu.Driver(gc.REQ_TOGGLE)
+                }
+
             }
             
 		case gc.KEY_F8:
-           if single_select == false{
+           
               return_value := make([]Menu_records,0)
               for index, item := range menu.Items() {
                  if item.Value() {
@@ -339,7 +338,7 @@ func create_menu( menuwin *gc.Window,menu_records []Menu_records, ncols int, sin
                   }
                 }
              return true,return_value
-           }
+          
     
 
 		default:
@@ -350,6 +349,16 @@ func create_menu( menuwin *gc.Window,menu_records []Menu_records, ncols int, sin
 }   
 
 
-
+func get_selected_index(index int, input []*gc.MenuItem)(bool, bool){
+    menu_state := input[index].Value()
+    state      := false
+    for _,val := range input {
+        if val.Value()== true {
+            state = true
+            break
+        }
+    }
+    return menu_state, state
+}
 
 

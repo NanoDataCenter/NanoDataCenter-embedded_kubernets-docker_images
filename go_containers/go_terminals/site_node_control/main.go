@@ -25,49 +25,62 @@ func main(){
 func initial_screen(){
     title := "Site and Node Control Terminal"
     message := []string{"F1 Key ","F2 Key ","F3 Key","F4 Key ","F5 Key ","F6 Key","F7 Key ","F8 Key Command Line Utitilies"}
-    help_message :=[]string{"this is a test","of the help message"}
-    user_key := make([]gc_support.Soft_Key_Def,6)
-    user_key[0].Label = "Pop up"
-    user_key[0].Func  = pop_key_handler
-    user_key[1].Label = "Nested Win"
-    user_key[1].Func  = nested_key_handler
-    user_key[2].Label = "Menu"
-    user_key[2].Func  = menu_key_handler  
-    user_key[3].Label = "Single Select"
-    user_key[3].Func  =  single_key_handler
-    user_key[4].Label = "Confirm"
-    user_key[4].Func  = confirm_handler  
-    user_key[5].Label = "Util"
-    user_key[5].Func  = command_line_utilities.Command_line_launcher  
-	gc_support.Construct_default_panel( title , message,help_message,user_key , nil )    
-	//gc_support.Pop_up_alert(title,message)
+	gc_support.Construct_base_panel( title , message,initial_key_handler )    
+	
     
 }   
 
-func pop_key_handler( input gc.Key )bool{
+
+
+func initial_key_handler(){
+    
+   for true {
+      gc.UpdatePanels()
+      gc.Update()
+      ch := gc_support.Stdscr.GetChar()
+      switch ch {
+		case gc.KEY_F1:
+            pop_up_key_handler()
+        case gc.KEY_F2:
+           nested_key_handler()
+        case gc.KEY_F3:
+            menu_screen_test()
+        case gc.KEY_F4:
+            single_screen_test()
+        case gc.KEY_F5:
+            confirm_handler()
+        case gc.KEY_F7:
+            command_line_utilities.Command_line_launcher()
+        case gc.KEY_F8:
+            return
+        default:
+            ;
+      }
+   }
+}
+
+
+
+
+func pop_up_key_handler(  ){
     
     message  := make([]string,1)
     message[0] = "test message"
     gc_support.Pop_up_alert("popup_test",message)
-    return false
+    
     
 }
 
-func nested_key_handler( input gc.Key )bool{
+func nested_key_handler(  ){
     
     message  := make([]string,1)
     message[0] = "nested window"
-    gc_support.Construct_default_panel( "nested test" , message,make([]string,0),make([]gc_support.Soft_Key_Def,0) , nil )    
-    return false
+    gc_support.Construct_base_panel( "nested test" , message,initial_key_handler  )    
+    
     
 }
 
-func menu_key_handler( input gc.Key ) bool{
-    
-   menu_screen_test()
-   return false
-    
-}
+
 
 func menu_screen_test(){
     title := "menu test"
@@ -117,12 +130,7 @@ func menu_screen_test(){
 	gc_support.Construct_menu_window( title , menu_items,1 ,false)    
 	//gc_support.Pop_up_alert(title,message)
 }                  
-func single_key_handler( input gc.Key ) bool{
-    
-   single_screen_test()
-   return false
-    
-}
+
 
 func single_screen_test(){
     title := "Single Select"
@@ -171,17 +179,17 @@ func single_screen_test(){
     
     
 	gc_support.Construct_menu_window( title , menu_items,1 ,true)    
-	//gc_support.Pop_up_alert(title,message)
+	
 }   
 
 
 
 
-func confirm_handler( input gc.Key )bool{
+func confirm_handler( ){
     title     := "test message"
     message   := []string{"test line1","test lin2","test line3"}
     gc_support.Pop_up_confirmation(title,message)
-    return false
+    
 }    
 
 
