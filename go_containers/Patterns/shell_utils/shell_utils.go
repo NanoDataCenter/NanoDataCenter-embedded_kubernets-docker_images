@@ -4,7 +4,7 @@ package shell_utils
 import "fmt"
 import "strings"
 import "os/exec"
-import "github.com/polydawn/gosh"
+import "lacima.com/gosh"
 
 /*
 Gosh(args ...interface{}) Command {
@@ -18,6 +18,15 @@ Gosh(args ...interface{}) Command {
 	}, args...))
 }
 */
+
+
+
+func System_mshell( script string )string{
+   var script_list = strings.Fields(script) 
+
+   out := gosh.Gosh(script_list).Output()
+   return string(out)
+}
 
 
 func System_shell( script string )string{

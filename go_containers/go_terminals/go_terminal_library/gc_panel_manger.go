@@ -29,6 +29,7 @@ func kill_current_panel(){
         active := panel_list.Front()
         panel = active.Value.(*gc.Panel)
         panel.Top()
+        panel.Window().Refresh()
         
         
     }
@@ -147,18 +148,28 @@ func calculate_message_length( input []string )int{
     return return_value
 }
 
-type Default_Handler_Type func()
+type Default_Handler_Type func(*gc.Window)
 
-func Construct_base_panel( title string, message []string,user_handler Default_Handler_Type ){
+func Launch_panel_display( window *gc.Window, title string, message []string){
+    
+    _, cols := Stdscr.MaxYX()
+    window.Clear()
+   
+    window.HLine(2, 0, gc.ACS_HLINE, cols)
+
+    window.MovePrint(1, (cols/2)-(len(title)/2), title)
+    for index,_ := range message {
+         window.MovePrint(3+index, 3, message[index])
+    }
+}    
+
+func Construct_launch_panel( user_handler Default_Handler_Type ){
    
    rows, cols := Stdscr.MaxYX()
     
    
     
-    w := calculate_message_length(message)
-    if len(title)> len(message) {
-        w = len(title)+10
-    }
+    
     
     
     window, _ := gc.NewWindow(rows,cols,0,0)
@@ -167,20 +178,16 @@ func Construct_base_panel( title string, message []string,user_handler Default_H
     window.ColorOn(NORMAL_WINDOW_COLOR)
     window.SetBackground(gc.ColorPair(NORMAL_WINDOW_COLOR))
    
-    window.MoveAddChar(2, 0, gc.ACS_LTEE)
-    window.HLine(2, 1, gc.ACS_HLINE, cols-2)
-    window.MoveAddChar(2, cols-1, gc.ACS_RTEE)
-    window.MovePrint(1, (w/2)-(len(title)/2), title)
-    for index,_ := range message {
-         window.MovePrint(3+index, 3, message[index])
-    }
+    
+    
+    
     panel := gc.NewPanel(window)
     panel.Top()
     panel_list.PushFront(panel)
     gc.Cursor(0)
     gc.UpdatePanels()
     gc.Update()
-    user_handler()
+    user_handler(window)
    
     kill_current_panel()
     
@@ -201,7 +208,7 @@ func Construct_menu_window( title string,menu_items []Menu_records, ncols int, s
     
     
     
-     w  := len(title)+10
+   
     
     
     
@@ -210,16 +217,11 @@ func Construct_menu_window( title string,menu_items []Menu_records, ncols int, s
     window.ColorOn(POP_UP_COLOR)
     window.SetBackground(gc.ColorPair(POP_UP_COLOR))
    
-    window.MoveAddChar(2, 0, gc.ACS_LTEE)
-    window.HLine(2, 1, gc.ACS_HLINE, cols-2)
-    window.MoveAddChar(2, cols-1, gc.ACS_RTEE)
-    window.MoveAddChar(2, 0, gc.ACS_LTEE)
-    window.MovePrint(1, (w/2)-(len(title)/2), title)
     
+   
     
-    window.HLine(rows-3, 1, gc.ACS_HLINE, cols-2)
-    window.MoveAddChar(rows-3,cols-1, gc.ACS_RTEE)
-    window.MoveAddChar(rows-3, 0, gc.ACS_LTEE)
+    window.HLine(rows-3, 1, gc.ACS_HLINE, cols-1)
+    
     
     if single_select == false {
         window.MovePrint(rows -2,3,"Press Enter to toggle state  F8 to return  and F1 to abort")
