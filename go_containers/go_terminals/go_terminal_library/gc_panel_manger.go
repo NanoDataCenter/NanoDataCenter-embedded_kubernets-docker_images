@@ -30,6 +30,8 @@ func kill_current_panel(){
         panel = active.Value.(*gc.Panel)
         panel.Top()
         panel.Window().Refresh()
+        gc.UpdatePanels()
+        gc.Update()
         
         
     }
@@ -37,18 +39,66 @@ func kill_current_panel(){
     
 }
 
+
+func Pop_up_Display(title string, message [] string ){
+    rows, cols := Stdscr.MaxYX()
+    screen_width := rows
+    message_requirements := len(message)+10
+    if message_requirements < rows{
+        rows = message_requirements
+    }
+    
+    
+     w  := len(title)+5
+    
+    
+    
+    window, _ := gc.NewWindow(rows,cols-30,screen_width/4,10)
+    window.Box(0, 0)
+    window.ColorOn(NORMAL_WINDOW_COLOR)
+    window.SetBackground(gc.ColorPair(NORMAL_WINDOW_COLOR))
+    
+    window.MovePrint(1, (w/2)-(len(title)/2), title)
+    
+     for index,_ := range message {
+         window.MovePrint(3+index, 3, message[index])
+    }   
+    
+    panel := gc.NewPanel(window)
+    panel.Top()
+    panel_list.PushFront(panel)
+    gc.Cursor(0)
+    gc.UpdatePanels()
+    gc.Update()
+ 
+    
+}
+
+func Pop_up_close(){
+    
+   kill_current_panel() 
+    
+}
+
+
+
+
+
 func Pop_up_confirmation(title string,message[]string)bool{
    
    rows, cols := Stdscr.MaxYX()
-   
-    
+   screen_width := rows
+    message_requirements := len(message)+10
+    if message_requirements < rows{
+        rows = message_requirements
+    }
     
     
      w  := len(title)+10
     
     
     
-    window, _ := gc.NewWindow(rows,cols,0,0)
+    window, _ := gc.NewWindow(rows,cols-10,screen_width/4,10)
     window.Box(0, 0)
     window.ColorOn(POP_UP_COLOR)
     window.SetBackground(gc.ColorPair(POP_UP_COLOR))

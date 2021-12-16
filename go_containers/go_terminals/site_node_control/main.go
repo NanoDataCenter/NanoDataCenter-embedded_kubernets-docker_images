@@ -7,7 +7,9 @@ import (
     //"lacima.com/go_terminals/site_node_control/node_management"
     //"lacima.com/go_terminals/site_node_control/redis_management"
     "lacima.com/go_terminals/site_node_control/central_db"
-     "lacima.com/go_terminals/site_node_control/connection_management"
+    "lacima.com/go_terminals/site_node_control/connection_management"
+    "lacima.com/go_terminals/site_node_control/site_node_manager"
+     "lacima.com/go_terminals/site_node_control/container_manager"
 )
 
 	//"fmt"
@@ -49,13 +51,13 @@ func generate_main_screen_message(window *gc.Window){
             message = []string{"F1: Docker Utilities","F2: Connection Mananger","F8: Exit"}
         case 1:
             title = "Connect Master Setup No Site Node controller "
-            message = []string{"F1: Docker Utilities","F2: Setup Contiainers", "F8: Exit"}
+            message = []string{"F1: Docker Utilities","F2: Connection Mananger", "F8: Exit"}
         case 2:
             title =  "Redis DB Connecte Slave_setup Setup No Site Node controller "
-            message = []string{"F1: Docker Utilities","F2: Setup Contiainers", "F8: Exit"}
+            message = []string{"F1: Docker Utilities","F2: Connection Mananger", "F8: Exit"}
         case 3:
             title = "SITE CONTROLLER ACTIVE "
-            message = []string{"F1: Docker Utilities","F2: Setup Contiainers","F3: Site Controller","F4: Node Controller","F8: Exit"}
+            message = []string{"F1: Docker Utilities","F2: Connection Mananger","F3: Site/Node Controller","F4: Container Controller","F8: Exit"}
         default:
             panic("illegal statue")
     }
@@ -116,10 +118,7 @@ func process_not_connected(ch gc.Key )bool{
         case gc.KEY_F2:
             connection_management.Connection_management_launcher()
         
-        case gc.KEY_F3:
-            ;// site control
-        case gc.KEY_F4:
-            ;// site_control
+       
             
         case gc.KEY_F8:
             return_value = true
@@ -138,6 +137,7 @@ func process_master_standalone(ch gc.Key )bool{
         case gc.KEY_F2:
             connection_management.Connection_management_launcher()        
 
+        
         
         case gc.KEY_F8:
             return_value = true
@@ -175,7 +175,13 @@ func process_site_controller_active(ch gc.Key )bool{
     
         case gc.KEY_F2:
             connection_management.Connection_management_launcher()     
-        
+
+         case gc.KEY_F3:
+            site_node_management.Site_node_management_launcher()
+            
+        case gc.KEY_F4:
+            container_management.Container_management_launcher()
+             
         case gc.KEY_F8:
             return_value = true
         default:

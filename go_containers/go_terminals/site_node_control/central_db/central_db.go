@@ -1,8 +1,14 @@
 package central_db
 
-import "strconv"
-import "os"
-
+import (
+    "strconv"
+    "os"
+    "lacima.com/go_terminals/site_node_control/site_init"
+    "lacima.com/go_terminals/docker_control"
+    "lacima.com/redis_support/generate_handlers"
+     "lacima.com/redis_support/redis_handlers"
+     "lacima.com/redis_support/graph_query"
+)
 
 var Connection_state int  
 /*
@@ -38,7 +44,7 @@ func Fill_in_slave_data(){
   Site_data["redis_container_name"]      = os.Getenv("redis_container_name")
   Site_data["redis_container_image"]     = os.Getenv("redis_container_image")
   Site_data["redis_start_script"]        = os.Getenv("redis_start_script")
-  Graph_db,_                             := strconv.Atoi(os.Getenv("graph_db"))
+  Graph_db,_                              := strconv.ParseFloat(os.Getenv("graph_db"),64)
   Site_data["graph_db"] = Graph_db
   
 }
@@ -64,5 +70,43 @@ func Generate_title( starting_title string)string{
     return starting_title
 }
 
+func convert_float( input float64 )int{
+    return int(input)
+}
 
 
+
+func Test_for_redis_connection()bool{
+    port := convert_float(Site_data["port"].(float64))
+    if site_init.Test_redis_connection( Site_data["host"].(string),port )  == true{
+        return true
+    }
+    return false
+}
+
+func Do_master_setup(){
+    
+    site_init.Site_Master_Init(&Site_data)
+    
+    
+}
+
+func Do_slave_setup(){
+    Fill_in_slave_data()
+    site_init.Site_Slave_Init(&Site_data)
+    
+    
+}
+
+
+func Reload_graphic_db(){
+    
+ docker_control.Container_Run(Site_data["graph_container_script"].(string))   
+    
+}
+
+func Setup_Structures(){
+   redis_handlers.Init_Redis_Mutex()
+   graph_query.Graph_support_init(&Site_data)
+   data_handler.Data_handler_init(&Site_data)
+}

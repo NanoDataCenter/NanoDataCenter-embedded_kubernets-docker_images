@@ -4,7 +4,7 @@ package shell_utils
 import "fmt"
 import "strings"
 import "os/exec"
-import "lacima.com/gosh"
+import "github.com/polydawn/gosh"
 
 /*
 Gosh(args ...interface{}) Command {

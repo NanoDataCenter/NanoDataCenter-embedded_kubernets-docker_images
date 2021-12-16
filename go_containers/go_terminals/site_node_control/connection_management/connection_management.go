@@ -4,18 +4,24 @@ import (
 gc "github.com/gbin/goncurses"
 "lacima.com/go_terminals/go_terminal_library"
 "lacima.com/go_terminals/site_node_control/central_db"
+"lacima.com/go_terminals/docker_control"
+
+	
 )
 
 
 var current_line *gc_support.LINE_BUFFER
 
+
 func Connection_management_launcher(){
     
-    gc_support.Construct_Console(nil,connection_key_handler,init_handler)
+    gc_support.Construct_Console(gc_support.Commmand_handler,connection_key_handler,init_handler)
     
     
     
 }
+
+
 
 func init_handler(){
      current_line = gc_support.Return_SubWindow_Draw_Structures()
@@ -42,7 +48,7 @@ func generate_main_screen_message(window *gc.Window){
             title = central_db.Generate_title(starting_msg)
             message = connected_message
         default:
-            panic("illegal statue")
+            panic("illegal state")
     }
     gc_support.Construct_Console_Menu(current_line.Window,title,message)
 }
@@ -60,9 +66,6 @@ func connection_key_handler( ch gc.Key)bool{
      
       connection_state := central_db.Connection_state 
  
-     
-      connection_state = central_db.Connection_state
-          
       gc.UpdatePanels()
       gc.Update()
       
@@ -87,15 +90,16 @@ func process_not_connected(ch gc.Key )bool{
      return_value := false
      switch ch {
         case gc.KEY_F1:
-            central_db.Connection_state = 1
-           
+            setup_standalone_master()
+            current_line.Refresh()
     
         case gc.KEY_F2:
-            central_db.Connection_state = 2
+            setup_standalone_slave()
+            
            
             
         case gc.KEY_F3:
-            central_db.Connection_state = 3
+            connect_to_site_controller()
             
         
         default:
@@ -109,10 +113,12 @@ func process_redis_connected(ch gc.Key )bool{
      switch ch {
         
          case gc.KEY_F1:
-            central_db.Connection_state = 0
+            remove_existing_connection()
+            current_line.Refresh()
             
         case gc.KEY_F2:
-            ; //reload graph data base
+            reload_graphic_container()
+            current_line.Refresh()
 
         
        
@@ -124,22 +130,93 @@ func process_redis_connected(ch gc.Key )bool{
 
     
 
-          
-/*
-
-func commmand_handler(input string )string{
-    var return_value string
-    return_value = "bad command "+input
-    defer func() {
-        if r := recover(); r != nil {
-            return_value = input +"  bad command"
-            
+func setup_standalone_master(){
+    if central_db.Test_for_redis_connection() == true {
+        
+        status := remove_existing_connection()
+        
+        
+        if status == false {
+            return
         }
-    }()
-    if len(input) > 0 {
-      return_value = shell_utils.System_mshell(input)
     }
-    return return_value
-}
-*/
+    gc_support.Pop_up_Display("Starting Containers",make([]string,0))
+    central_db.Do_master_setup()
+    gc_support.Pop_up_close()
+    current_line.Return_cmd("Redis Server and Containers Started\n")
+    current_line.Refresh()
+    gc.UpdatePanels()
+    gc.Update()
+    central_db.Connection_state = 1
+}    
 
+
+
+
+func remove_existing_connection()bool{
+    result := gc_support.Pop_up_confirmation("Delete And Remove All Containers",[]string{"An Existing Redis Server is Present","This command will stop all containers and",
+                                                                                    "And Delete All Containers"})
+    current_line.Refresh()
+    if result == true{
+         gc_support.Pop_up_Display("Stop Running Containers",make([]string,0))
+         docker_control.Stop_Running_Containters()
+         current_line.Return_cmd("Running Containers Stopped\n")
+         gc_support.Pop_up_close()
+         current_line.Refresh()
+         
+         gc.UpdatePanels()
+         gc.Update()
+         gc_support.Pop_up_Display("Remove  Containers",make([]string,0))
+    
+        docker_control.Remove_All_Containers()
+        current_line.Return_cmd("Containers Removed\n")
+        gc_support.Pop_up_close()
+        current_line.Refresh()
+        central_db.Connection_state = 0
+        current_line.Refresh()
+         
+        gc.UpdatePanels()
+        gc.Update()
+    }
+    return result
+}
+
+func reload_graphic_container(){
+    current_line.Return_cmd("Registry Starting To Be Reloaded\n")
+    central_db.Reload_graphic_db()
+    current_line.Return_cmd("Registry Reloaded\n")
+    
+}
+
+func verify_redis_server()bool{
+   result := true
+   
+   if central_db.Test_for_redis_connection() == false {
+        error_message := []string{"No Redis Server","Start Master Node","Or bad configuration data"}
+        gc_support.Pop_up_alert("No Redis Server",error_message)
+        result = false
+    } 
+    return result 
+    
+}
+
+
+func setup_standalone_slave(){
+   current_line.Return_cmd("Start in standalone slave\n")
+   if verify_redis_server() == true {
+       central_db.Do_slave_setup()
+       current_line.Return_cmd("Stand only slave setup\n")
+   }else{
+     current_line.Return_cmd("Stand only slave setup aborted\n")
+   }
+    
+}
+
+func connect_to_site_controller(){
+   if verify_redis_server() {
+      central_db.Setup_Structures()
+      current_line.Return_cmd("Connected to Site Controller")
+      central_db.Connection_state = 3
+   }
+    
+}

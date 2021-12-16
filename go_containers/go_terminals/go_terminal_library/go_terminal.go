@@ -3,7 +3,7 @@ package gc_support
 
 import (
 	gc "github.com/gbin/goncurses"
-     
+    "lacima.com/Patterns/shell_utils" 
       
 	//"fmt"
 )
@@ -15,6 +15,25 @@ type CMD_handler func(string)string
 
 
 var line_limit int
+
+
+
+func Commmand_handler(input string )string{
+    var return_value string
+    return_value = "bad command "+input
+    defer func() {
+        if r := recover(); r != nil {
+            return_value = input +"  bad command"
+            
+        }
+    }()
+    if len(input) > 0 {
+      return_value = shell_utils.System_mshell(input)
+    }
+    return return_value
+}
+
+
 
 func Construct_Console_Menu(window *gc.Window, title string, message string ){
     title =  title +" F8 to return F7 screen clear"
@@ -40,8 +59,8 @@ func Construct_Console_Menu(window *gc.Window, title string, message string ){
 func Construct_Console( cmd_handler CMD_handler, user_handler  func( gc.Key )bool, init_handler func()){
      
      
-     ref_lines  = make(map[LINE_TYPE]LINE_BUFFER)
-     past_lines = make([]LINE_TYPE,0)
+    ref_lines  = make(map[LINE_TYPE]LINE_BUFFER)
+    past_lines = make([]LINE_TYPE,0)
       
     rows, cols := Stdscr.MaxYX()
     
@@ -279,6 +298,18 @@ func ( r *LINE_BUFFER)initialize_line(rows int,cols int, win *gc.Window, sub_win
             
 }
 
+func (r *LINE_BUFFER)Refresh(){
+    gc.NewPanel(r.Window).Top()
+    r.sub_window.Touch()
+    //r.Window.Touch()
+    //r.Window.Refresh()
+   
+    r.sub_window.Refresh()
+    gc.UpdatePanels()
+    gc.Update()
+   
+}
+
 func (r *LINE_BUFFER)redraw(){
     r.sub_window.Move(r.rows,r.cursor)
     r.sub_window.ClearToEOL()
@@ -336,7 +367,8 @@ func (r *LINE_BUFFER )Return_cmd( output string ){
     r.add_character('>')
     
     r.sub_window.Refresh()     
-
+    gc.UpdatePanels()
+    gc.Update()
 
 }
 

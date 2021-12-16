@@ -5,7 +5,7 @@ import (
 	"strings"
     "lacima.com/go_terminals/go_terminal_library"
     "lacima.com/go_terminals/docker_control"
-	"lacima.com/Patterns/shell_utils"
+	
     gc "github.com/gbin/goncurses"
 )
 
@@ -19,7 +19,7 @@ var current_line *gc_support.LINE_BUFFER
 func Basic_docker_launcher( ) {
     
 
-    gc_support.Construct_Console(commmand_handler,special_handlers,init_handler)
+    gc_support.Construct_Console(gc_support.Commmand_handler,special_handlers,init_handler)
     
     
     
@@ -33,20 +33,6 @@ func Basic_docker_launcher( ) {
      gc_support.Construct_Console_Menu(current_line.Window,title,message)
 }
 
-func commmand_handler(input string )string{
-    var return_value string
-    return_value = "bad command "+input
-    defer func() {
-        if r := recover(); r != nil {
-            return_value = input +"  bad command"
-            
-        }
-    }()
-    if len(input) > 0 {
-      return_value = shell_utils.System_mshell(input)
-    }
-    return return_value
-}
 
 
 func special_handlers( input gc.Key )bool{
@@ -76,7 +62,7 @@ func special_handlers( input gc.Key )bool{
     }
     return false
 }
-
+  
 func dangling()string{
    output := docker_control.Prune()
    if len(output) == 0{
