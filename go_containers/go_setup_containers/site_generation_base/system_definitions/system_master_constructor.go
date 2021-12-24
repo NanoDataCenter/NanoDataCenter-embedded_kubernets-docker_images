@@ -14,6 +14,7 @@ type system_dict_type func(bool,string )
 var system_dict = map[string]system_dict_type{ 
         "system_component": generate_system_components ,
         "tp_managed_switch":generate_tp_monitored_switches,
+        "irrigation":construct_irrigation,
 }
 
 

@@ -1,9 +1,8 @@
-FROM nanodatacenter/basic_python_container
-ENV CONTAINER_NAME "eto"
-       
-VOLUME [/data/]
-
-
-COPY . .
+FROM nanodatacenter/bash_basic 
+ENV CONTAINER_NAME "eto" 
  
+VOLUME [/data/] 
+COPY ./eto .
+
+
 

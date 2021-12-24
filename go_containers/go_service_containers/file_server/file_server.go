@@ -185,13 +185,15 @@ func file_directory( parameters map[string]interface{} ) map[string]interface{}{
   fmt.Println("path",path)
   c, err := ioutil.ReadDir(path)
   if err != nil {
+        fmt.Println(err)
+        panic("done")
         parameters["status"] = false
 		parameters["results"] = ""
   } else {
       parameters["status"] = true
 	 parameters["results"] = convert_to_file_names(c)
   }
-
+   fmt.Println("parameters",parameters)
    return parameters
 
 }

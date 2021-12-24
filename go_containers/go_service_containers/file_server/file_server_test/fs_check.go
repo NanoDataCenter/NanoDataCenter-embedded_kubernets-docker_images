@@ -44,6 +44,7 @@ func main(){
 	fmt.Println((fs_handle).File_directory("test_path"))
 	fmt.Println((fs_handle).Delete_file("test_path/test_file_a.test"))
     fmt.Println((fs_handle).File_directory("test_path"))
+    fmt.Println((fs_handle).File_directory("/app_data_files"))
 	fmt.Println("done")
 	
 }

@@ -151,6 +151,17 @@ func Convert_json_int( json_string string) int64{
      return return_value
 
 }
+
+func Convert_json_float64( json_string string) float64{
+   
+     var return_value float64;
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value
+
+}
  
 func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
@@ -216,7 +227,7 @@ func Common_package_search( site *string, search_list *[]string) []map[string]st
    var search_list_term = parse_search_list((*search_list)[len(*search_list)-1])
    
    add_match_terminal(&query_list, "PACKAGE",search_list_term[0])
-   //fmt.Println("queru list",query_list)
+   //fmt.Println("query list",query_list)
    return match_list(&query_list)
 }
 

@@ -125,6 +125,31 @@ func (system *CF_SYSTEM_TYPE) Cf_add_unfiltered_element(helper_function CF_helpe
    
    (system).CF_add_generic_link( &temp)
 
+} 
+
+ 
+func (system *CF_SYSTEM_TYPE)Cf_wait_hour_minute_le( hour, minute int){
+    
+    var temp       CF_LINK_TYPE
+    temp.initialized = false
+    temp.active = false
+    temp.parameters = make(map[string]interface{})
+    temp.parameters["hour"]    = hour
+    temp.parameters["minute"]  = minute
+    temp.opcode_type = "Wait_hour_minute_le"
+    (system).CF_add_generic_link( &temp)
+    
 }
 
-
+func (system *CF_SYSTEM_TYPE)Cf_wait_hour_minute_ge( hour, minute int){
+    
+    var temp       CF_LINK_TYPE
+    temp.initialized = false
+    temp.active = false
+    temp.parameters = make(map[string]interface{})
+    temp.parameters["hour"]    = hour
+    temp.parameters["minute"]  = minute
+    temp.opcode_type = "Wait_hour_minute_ge"
+    (system).CF_add_generic_link( &temp)
+    
+}

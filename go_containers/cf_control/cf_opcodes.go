@@ -24,6 +24,8 @@ func (system *CF_SYSTEM_TYPE) cf_initialize_opcodes(){
   (system).add_opcode("Enable_Chains",cf_op_enable_chains)
   (system).add_opcode("Disable_Chains",cf_op_disable_chains) 
   (system).add_opcode("Unfiltered_Element",cf_op_unfiltered_element)
+  (system).add_opcode("Wait_hour_minute_le",cf_wait_hour_minute_le)
+  (system).add_opcode("Wait_hour_minute_ge",cf_wait_hour_minute_ge)
 
 }
 
@@ -142,10 +144,6 @@ func cf_op_wait_interval(system interface{},chain interface{}, parameters map[st
 
 func cf_op_one_step( system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
 
-
-   
-  
-
    if (*event).Name == CF_INIT_EVENT {
       //fmt.Println("made it here")
       var helper_function = parameters["__helper_function__"].(CF_helper_function)
@@ -156,5 +154,46 @@ func cf_op_one_step( system interface{},chain interface{}, parameters map[string
    return CF_DISABLE
 
 }
+
+
+
+func cf_wait_hour_minute_le( system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
+    if (*event).Name == CF_TIME_TICK {
+       ref_hour           := parameters["hour"].(int)
+       ref_minute         := parameters["minute"].(int)
+       hour,minute,_      := time.Now().Clock() 
+       if  hour < ref_hour {
+           return CF_DISABLE
+       }
+       if hour == ref_hour {
+           if minute <= ref_minute {
+               return CF_DISABLE
+           }
+       }
+    }
+    return CF_HALT
+}    
+       
+ func cf_wait_hour_minute_ge( system interface{},chain interface{}, parameters map[string]interface{}, event *CF_EVENT_TYPE)int{
+    if (*event).Name == CF_TIME_TICK {
+       ref_hour           := parameters["hour"].(int)
+       ref_minute         := parameters["minute"].(int)
+       hour,minute,_      := time.Now().Clock() 
+       if  hour > ref_hour {
+           return CF_DISABLE
+       }
+       if hour == ref_hour {
+           if minute >= ref_minute {
+               return CF_DISABLE
+           }
+       }
+    }
+    return CF_HALT
+}         
+        
+
+    
+
+
 
 

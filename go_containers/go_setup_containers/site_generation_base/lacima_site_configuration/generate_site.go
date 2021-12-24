@@ -65,7 +65,7 @@ func setup_lacima_container_mount_points(){
 func setup_lacima_nodes(){
     
    su.Add_node("site_controller") 
-   //su.Add_node("irrigation_controller")
+   
    
     
     
@@ -73,8 +73,8 @@ func setup_lacima_nodes(){
 
 func add_lacima_components(){
     
-    sys_defs.Add_Component_To_Master("system_component") 
-    //sys_defs.Add_Component_To_Node("site_controller", "tp_managed_switch")
+    sys_defs.Add_Component_To_Master("system_component")
+    sys_defs.Add_Component_To_Node("site_controller", "irrigation")
     
 }    
 

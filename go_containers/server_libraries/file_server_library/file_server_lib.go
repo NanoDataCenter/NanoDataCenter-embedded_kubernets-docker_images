@@ -2,7 +2,7 @@ package file_server_lib
 
 
 
-//import "fmt"
+import "fmt"
 
 import "lacima.com/redis_support/redis_handlers"
 import "lacima.com/redis_support/generate_handlers"
@@ -81,7 +81,7 @@ func (v File_Server_Client_Type)File_directory(path string)([]string , bool){
        parameters["path"] = path
 	   
        return_value_interface := v.driver.Send_json_rpc_message( "file_directory" ,parameters)
-	  
+	   fmt.Println("file sever lib",return_value_interface)
        status := return_value_interface["status"].(bool)
 	   results_list := return_value_interface["results"].([]interface{})
 	   
