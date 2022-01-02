@@ -90,19 +90,20 @@ func generate_system_component_graph(){
     port_map["mqtt_to_db"]                      = ":2021"
     port_map["mqtt_status_out"]                 = ":2022"
     port_map["error_detection"]                 = ":2023"
+    port_map["eto"]                             = ":2024"
     
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
     port_description_map["mqtt_to_db"]          = "MQTT TO DB Web Services"
     port_description_map["mqtt_status_out"]     = "MQTT OUTPUT Web Services"
-    port_description_map["error_detection"]                 = "Display Error Monitoring Results"
+    port_description_map["error_detection"]     = "Display Error Monitoring Results"
+    port_description_map["eto"]                 = "ETO SETUP and Control"
     
     port_start_label_map                        := make(map[string]string)
     port_start_label_map["site_controller"]     = "site_controller"
     port_start_label_map["mqtt_to_db"]          = "mqtt_to_db"
     port_start_label_map["mqtt_status_out"]     = "mqtt_status_out"
-    port_start_label_map["error_detection"]     = "error_detection"
-    
+    port_start_label_map["eto"]                 = "eto"
     
     
     port_map_properties["port_map"]             = port_map

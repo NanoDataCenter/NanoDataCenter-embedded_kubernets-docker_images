@@ -1,0 +1,10 @@
+./go_format.bsh calculate_eto_py3.go  
+./go_format.bsh cimis_handlers_py3.go
+./go_format.bsh cimis_spatial_py3.go
+./go_format.bsh eto_init.go
+./go_format.bsh eto_secrets.go 
+./go_format.bsh hybrid_handler_py3.go
+./go_format.bsh messo_handlers_py3.go
+./go_format.bsh wunderground_personal_weather_station_py3.go
+
+

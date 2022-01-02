@@ -24,7 +24,7 @@ require (
 	github.com/reugn/go-quartz v0.3.6 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
-	github.com/tidwall/gjson v1.9.1 // indirect
+	github.com/tidwall/gjson v1.12.1 // indirect
 	github.com/tidwall/sjson v1.2.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.4 // indirect
 	github.com/winterssy/gjson v0.0.0-20200306020332-1f68efaec187 // indirect
