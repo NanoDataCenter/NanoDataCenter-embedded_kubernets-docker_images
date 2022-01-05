@@ -1,0 +1,6 @@
+#go build -ldflags '-linkmode external -w -extldflags "-static"'
+#go build -ldflags '-linkmode external  -extldflags "-static"' $1
+gofmt tp_manage_switch_logger.go  > test
+mv test   tp_manage_switch_logger.go
+
+

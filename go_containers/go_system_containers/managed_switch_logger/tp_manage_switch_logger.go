@@ -9,20 +9,20 @@ import (
 	"time"
     "strings"
 	"strconv"
-	//"reflect"
-	"bytes"
     "lacima.com/site_data"
     "lacima.com/redis_support/graph_query"
     "lacima.com/redis_support/redis_handlers"
     "lacima.com/redis_support/generate_handlers"
-	"github.com/msgpack/msgpack-go"
+	"lacima.com/Patterns/msgpack_2"
 	"lacima.com/Patterns/logging_support"
 	"lacima.com/Patterns/secrets"
+    "lacima.com/server_libraries/postgres"
+   
 )
 
 
 
-
+var  performance_log    pg_drv.Postgres_Stream_Driver
 
 
 type switch_record_type  struct  {
@@ -32,7 +32,6 @@ type switch_record_type  struct  {
   password string
   incident_log             *logging_support.Incident_Log_Type
   
-
 
 }
 
@@ -61,14 +60,14 @@ func main() {
 }
 
 
-
+ 
 
 func Monitor_TP_Setup(){
 
    // find switches
    // for each switch find data structures
    
-   
+   performance_log  = logging_support.Find_stream_logging_driver()
    
     
    search_list := []string{ "TP_SWITCH"}
@@ -107,26 +106,27 @@ func Monitior_TP_Switch() {
 
 }
 
-func handlepanic() {
-  
-    if a := recover(); a != nil {
-      
-        fmt.Println("RECOVER", a)
-    }
-}
+
 func make_measurement( element *switch_record_type ){
-     defer handlepanic()
-     make_login_post(element)
+    
+     if make_login_post(element) == false{
+         return
+     }
 	 raw_data,err := make_collect_data_get(element)
-     fmt.Println("err",err)
+     
 	 //fmt.Println("raw_data",raw_data)
     
 	 if err == true {
-	   parse_raw_data(element,raw_data)
-	 }
-	 
+         preamble := "Switch Data Collection Success \n"
+         (*element).incident_log.Log_data_status(true,preamble)
+	     parse_raw_data(element,raw_data)
+	 }else{
+         
+         fmt.Println("err",err)
+         preamble := "Switch Data Collection Failue \n"
+         (*element).incident_log.Log_data_status(false,preamble+fmt.Sprint(err))
+     }
 }
-
 
 
 
@@ -152,6 +152,9 @@ func make_login_post( element *switch_record_type ) bool{
    
     if err != nil {
         return_value = false
+         fmt.Println("err",err)
+         preamble := "Switch Login Failue \n"
+         (*element).incident_log.Log_data_status(false,preamble+fmt.Sprint(err))
     }else{
 	  return_value = true
 	}
@@ -186,73 +189,46 @@ func make_collect_data_get(element *switch_record_type )(string,bool){
 
 func parse_raw_data(element *switch_record_type,raw_data string ) {
 
-   defer recover()
-  //fmt.Println("raw_data",raw_data)
-  data_block := extract_balance_element( raw_data, "<script>", "</script>",1 )
-  fmt.Println("data_block",data_block)
-  link_data := extract_balance_element( data_block, "link_status:[", "]",1 )
-  link_int := turn_to_ints(link_data)
+      
+      //fmt.Println("raw_data",raw_data)
+      data_block := extract_balance_element( raw_data, "<script>", "</script>",1 )
+      //fmt.Println("data_block",data_block)
+      link_data := extract_balance_element( data_block, "link_status:[", "]",1 )
+      link_int := turn_to_ints(link_data)
   
-  pkt_data := extract_balance_element( data_block, "pkts:[", "]",1 )
-  pkt_int := turn_to_ints(pkt_data)
+      pkt_data := extract_balance_element( data_block, "pkts:[", "]",1 )
+      pkt_int := turn_to_ints(pkt_data)
  
-  number := len(pkt_int)/4
-  valid_links := link_int[:number]
-  var pkt_tx_good []int
-  var pkt_tx_bad  []int
-  var pkt_rx_good []int
-  var pkt_rx_bad  []int
+      number := len(pkt_int)/4
+      valid_links    := link_int[:number]
+      pkt_tx_good    := make([]int64,0)
+      pkt_tx_bad     := make([]int64,0)
+      pkt_rx_good    := make([]int64,0)
+      pkt_rx_bad     := make([]int64,0)
   
-  for i:=0;i<number*4;i+=4{
-     pkt_tx_good = append(pkt_tx_good,pkt_int[i])
-     pkt_tx_bad  = append(pkt_tx_bad,pkt_int[i+1])
-     pkt_rx_good = append(pkt_rx_good,pkt_int[i+2])
-     pkt_rx_bad  = append(pkt_rx_bad,pkt_int[i+3])
+     for i:=0;i<number*4;i+=4{
+        pkt_tx_good = append(pkt_tx_good,pkt_int[i])
+        pkt_tx_bad  = append(pkt_tx_bad,pkt_int[i+1])
+        pkt_rx_good = append(pkt_rx_good,pkt_int[i+2])
+        pkt_rx_bad  = append(pkt_rx_bad,pkt_int[i+3])
   
-  }
-  log_data:= make(map[string]interface{})
-  
-  log_data["pkt_tx_bad"]  =  pkt_tx_bad
-  log_data["pkt_rx_bad"]  = pkt_rx_bad
-  log_data["valid_links"] = valid_links
-  fmt.Println("log_data",log_data)
-  
-  var b bytes.Buffer	
-  msgpack.Pack(&b,log_data)
-  current_value := b.String()
-  
-   
- 
-  
-  var ok_flag = true 
-  element_tx := log_data["pkt_tx_bad"].([]int)
-  element_rx := log_data["pkt_rx_bad"].([]int)
-  switch_links := log_data["valid_links"].([]int)
-  for j :=0;j<len(switch_links);j++{
-    i := switch_links[j]
-    switch i{
-	   case 5,6: {
-         fmt.Println("i",i,element_tx[j],element_rx[j])
-	     if (element_tx[j] > 0 ) || (element_rx[j] > 0 ) {
-		    ok_flag = false
-		} // if
-		}// case
-		}// switch
-   }// for
-
-  (*element).incident_log.Log_data( ok_flag,  current_value, current_value )
-  fmt.Println("Message logged",ok_flag)
+       }
+       for j :=int64(0);j<int64(len(valid_links));j++{
+           i := valid_links[j]
+           switch i{
+	          case 5,6: 
+                    fmt.Println("j",j,i,pkt_rx_bad[j],pkt_tx_bad[j])
+                    j_ascii := strconv.FormatInt(j, 10)
+	                performance_log.Insert( "TP_Managed_Switch",element.name,"tx",j_ascii,"",msg_pack_utils.Pack_int64(pkt_rx_bad[j]))
+                    performance_log.Insert( "TP_Managed_Switch",element.name,"rx",j_ascii,"",msg_pack_utils.Pack_int64(pkt_tx_bad[j]))
+		
+              default:
+                  ; // do nothing as there are empty links
+           }
+       }
 
 }
 
-func log_differences( number int, a,b string){
-
-  for i:= 0;i<number;i++{
-    if a[i] != b[i]{
-	  fmt.Println("bad",a[i],b[i])
-	}
-  }
-}
 
 func extract_balance_element( input_string, start_delem, end_delem string, target_element int) string {
 
@@ -264,12 +240,12 @@ func extract_balance_element( input_string, start_delem, end_delem string, targe
 
 }
 
-func turn_to_ints( input_data string) []int {
-  var return_value []int
+func turn_to_ints( input_data string) []int64 {
+  var return_value []int64
   token_elements := strings.Split(input_data,",")
   for _,i := range token_elements{
     value,_ := strconv.Atoi(i)
-    return_value = append(return_value,value)
+    return_value = append(return_value,int64(value))
   }
   return return_value
 }

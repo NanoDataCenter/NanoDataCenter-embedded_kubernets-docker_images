@@ -60,7 +60,7 @@ func (r Hybrid_ETO_TYPE ) Compute_eto() {
 	previous_date := fmt.Sprintf("%04d%02d%02d", year, month, day) 
     // assemble base key
     base_key := r.base_type +":"+r.base_sub_type
-    fmt.Println("base key",base_key)
+    //fmt.Println("base key",base_key)
     base_data := Stream_HGet(base_key)
     variant_key := r.variant_type +":"+r.variant_sub_type
     variant_data :=  Stream_HGet(variant_key)
@@ -80,7 +80,7 @@ func (r Hybrid_ETO_TYPE ) Compute_eto() {
     r.eto_output.Date_string    = previous_date
     r.eto_output.Priority       = r.priority 
     r.eto_output.Value          = eto_value
-    fmt.Println("hybrid_eto_value",r.eto_output.Value)
+    //fmt.Println("hybrid_eto_value",r.eto_output.Value)
     ETO_HSet(r.key,r.eto_output )
     Stream_HSet(r.key,r.eto_data)
     

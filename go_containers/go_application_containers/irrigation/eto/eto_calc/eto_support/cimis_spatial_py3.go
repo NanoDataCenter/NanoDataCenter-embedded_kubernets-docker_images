@@ -74,7 +74,7 @@ func (r CIMIS_ETO_SPATIAL_TYPE) Compute_eto() {
     r.eto_output.Priority       = r.priority 
     r.eto_output.Value          = eto_value
 	
-	//ETO_HSet( r.key,date, true, r.priority, eto_value  )
+	ETO_HSet( r.key, r.eto_output   )
 
 }
 

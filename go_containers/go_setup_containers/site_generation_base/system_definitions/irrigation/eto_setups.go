@@ -13,12 +13,20 @@ func Construct_eto_data(){
     
     su.Bc_Rec.Add_header_node("WEATHER_DATA_STRUCTURE","WEATHER_DATA_STRUCTURE",make(map[string]interface{}))
     
+    su.Bc_Rec.Add_header_node("ROLL_OVER","ROLL_OVER",make(map[string]interface{}))
+    su.Construct_incident_logging("ETO_MONITOR_ROLLOVER","eto_monitor_day_rollover",su.Alert)
+    su.Bc_Rec.End_header_node("ROLL_OVER","ROLL_OVER")
+    
+    su.Bc_Rec.Add_header_node("ETO_UPDATE","ETO_UPDATE",make(map[string]interface{}))
+    su.Construct_incident_logging("ETO_MONITOR_UPDATE_ETO","eto_monitor_update_eto",su.Alert)
+    su.Bc_Rec.End_header_node("ETO_UPDATE","ETO_UPDATE")
+    
+    
     su.Cd_Rec.Construct_package("WEATHER_DATA")
     su.Cd_Rec.Add_hash("ETO_CONTROL") 
     su.Cd_Rec.Add_hash("EXCEPTION_VALUES")
 	su.Cd_Rec.Add_hash("RAIN_VALUES") // rain flag and stuff
     su.Cd_Rec.Add_hash("ETO_VALUES") 
-    su.Cd_Rec.Add_hash("ETO_ACCUMULATION_TABLE")
     su.Cd_Rec.Add_hash("ETO_STREAM_DATA")
 	su.Cd_Rec.Create_postgres_stream( "ETO_HISTORY","admin","password","admin",2*365*24*3600)
     su.Cd_Rec.Create_postgres_stream( "RAIN_HISTORY","admin","password","admin",2*365*24*3600)

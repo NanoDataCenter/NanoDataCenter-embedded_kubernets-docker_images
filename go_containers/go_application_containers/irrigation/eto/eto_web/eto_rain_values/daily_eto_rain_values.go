@@ -52,7 +52,7 @@ func generate_ETO_html()string {
     sort.Strings(keys)
     for index,key := range keys {
        data := eto_support.ETO_HGet(key)
-       priority_string := fmt.Sprintf("%.2f",data.Priority)
+       priority_string := fmt.Sprintf("%3.0f",data.Priority)
        eto_string := fmt.Sprintf("%.2f",data.Value)
        display_list[index] = []string{key,priority_string,eto_string}  
        
@@ -68,7 +68,7 @@ func generate_Rain_html()string {
     sort.Strings(keys)
     for index,key := range keys {
        data := eto_support.Rain_HGet(key)
-       priority_string := fmt.Sprintf("%.2f",data.Priority)
+       priority_string := fmt.Sprintf("%3.0f",data.Priority)
        eto_string := fmt.Sprintf("%.2f",data.Value)
        display_list[index] = []string{key,priority_string,eto_string}  
        

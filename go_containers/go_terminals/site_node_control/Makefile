@@ -1,8 +1,5 @@
-server:
-	./go_build.bsh main.go
-all:  server
+target:
+	./go_build.bsh
+		
 
-
-
-
-
+all: target

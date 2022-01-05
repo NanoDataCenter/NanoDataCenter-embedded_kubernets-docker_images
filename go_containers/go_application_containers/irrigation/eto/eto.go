@@ -17,8 +17,9 @@ package main
 import (
 	//"fmt"
 	"lacima.com/go_application_containers/irrigation/eto/eto_calc"
+	"lacima.com/go_application_containers/irrigation/eto/eto_monitor"
+	"lacima.com/go_application_containers/irrigation/eto/eto_trim"
 	"lacima.com/go_application_containers/irrigation/eto/eto_web"
-    "lacima.com/go_application_containers/irrigation/eto/eto_trim"
 	"lacima.com/redis_support/generate_handlers"
 	"lacima.com/redis_support/graph_query"
 	"lacima.com/redis_support/redis_handlers"
@@ -35,8 +36,10 @@ func main() {
 	graph_query.Graph_support_init(&site_data)
 	data_handler.Data_handler_init(&site_data)
 	eto_calc.Start(site_data)
+	time.Sleep(time.Second * 5) // allow initialization
 	eto_web.Start()
-    eto_trim.Trim_int(3600*24*365*10) // 10 years
+	eto_trim.Trim_int(3600 * 24 * 365 * 10) // 10 years
+	eto_monitor.Start()
 	for true {
 		time.Sleep(time.Second * 60)
 		//fmt.Println("polling loop")

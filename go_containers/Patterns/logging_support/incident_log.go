@@ -48,6 +48,21 @@ func (v *Incident_Log_Type)Log_data(  current_error string ){
 
 }
 
+func (v *Incident_Log_Type)Log_data_status( status bool ,current_error string ){
+   
+      time_stamp           := time.Now().UnixNano()
+      time_stamp_msg_pack  := msg_pack_utils.Pack_int64(time_stamp)
+      v.time.Set(time_stamp_msg_pack)
+      _,err := msg_pack_utils.Unpack_string(current_error)
+      if err == false {
+          current_error = msg_pack_utils.Pack_string(current_error)
+      }
+      v.last_error.Set(current_error)
+      v.status.Set(msg_pack_utils.Pack_bool(status))
+
+      
+
+}
 
 
 func (v *Incident_Log_Type)Post_event( current_error string){

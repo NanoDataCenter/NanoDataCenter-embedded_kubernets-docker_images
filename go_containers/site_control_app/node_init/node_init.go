@@ -4,7 +4,7 @@ package node_init
 import ( 
 
 "context"
-
+//"fmt"
 
 "lacima.com/site_control_app/docker_control"
 "lacima.com/redis_support/graph_query"
@@ -70,6 +70,7 @@ func find_node_container_properties(){
 		 
 	}
 	
+	
 }
 
 
@@ -80,7 +81,7 @@ func  find_node_containers(){
     var site_node = site_nodes[0]
  
     node_container_list = graph_query.Convert_json_string_array(site_node["containers"] ) 
-    
+      
 
 
 

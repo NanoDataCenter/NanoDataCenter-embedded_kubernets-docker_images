@@ -261,6 +261,70 @@ func (v Postgres_Stream_Driver)Select_after_time_stamp_desc( timestamp int64)([]
     
 }
 
+func (v Postgres_Stream_Driver)Find_Tag1_Entries()([]string,bool){
+    return_value := make([]string,0)
+   
+    script := fmt.Sprintf("Select DISTINCT tag1 from %s  ;",v.table_name)
+   
+    rows, err := v.conn.Query(context.Background(), script)
+    if err != nil {
+    
+      return return_value, false
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+            
+            var item string
+            rows.Scan(&item)
+            
+        
+            if rows.Err() != nil {
+              return return_value,false
+            }
+            return_value = append(return_value,item)
+              
+        }
+    
+  
+    return return_value,true
+}
+
+func (v Postgres_Stream_Driver)Select_after_time_stamp_desc_tag1(tag1 string, timestamp int64)([]Stream_Output_Data_Record, bool){
+    
+    var data_value string
+    
+    return_value := make([]Stream_Output_Data_Record,0)
+    
+    current_time := time.Now().UnixNano()
+    select_time  := current_time - timestamp *1000000000 
+    script := fmt.Sprintf("Select * from %s WHERE tag1 = '%s' and time >= %d ORDER BY time DESC ;",v.table_name, tag1, select_time)
+    //fmt.Println("script",script)
+    rows, err := v.conn.Query(context.Background(), script)
+    if err != nil {
+      fmt.Println(err)
+      return return_value, false
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+            
+            var item Stream_Output_Data_Record
+            rows.Scan(&item.Stream_id,&item.Tag1,&item.Tag2,&item.Tag3,&item.Tag4,&item.Tag5,&data_value,&item.Time_stamp)
+            temp, _ := b64.StdEncoding.DecodeString(data_value)
+            item.Data = string(temp)
+            if rows.Err() != nil {
+              return return_value,false
+            }
+            return_value = append(return_value,item)
+              
+        }
+    
+  
+    return return_value,true
+    
+}
+
 func (v Postgres_Stream_Driver)Select_after_time_stamp_asc( timestamp int64)([]Stream_Output_Data_Record, bool){
     
     var data_value string

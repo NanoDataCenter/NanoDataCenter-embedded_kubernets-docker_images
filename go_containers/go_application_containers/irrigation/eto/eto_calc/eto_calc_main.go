@@ -29,7 +29,7 @@ var Eto_data_structs *map[string]interface{}
  */
 var eto_control           redis_handlers.Redis_Hash_Struct
 var eto_exceptions        redis_handlers.Redis_Hash_Struct
-var eto_accumulation      redis_handlers.Redis_Hash_Struct
+
 var eto_data              redis_handlers.Redis_Hash_Struct
 var rain_data             redis_handlers.Redis_Hash_Struct
 var eto_stream_data       redis_handlers.Redis_Hash_Struct
@@ -52,12 +52,11 @@ func Start(site_data map[string]interface{}) {
 
 	eto_support.Init_Secret_Support(site_data)
 	CF_site_node_control_cluster.Cf_cluster_init()
-	CF_site_node_control_cluster.Cf_set_current_row("site_node_control")
+	CF_site_node_control_cluster.Cf_set_current_row("eto_calc")
 
 	
 	setup_data_structures()
-    eto_support.Init_Record_Store(eto_data,rain_data,eto_stream_data)
-    eto_support.Setup_ETO_Accumulation_Table(eto_accumulation)
+    eto_support.Init_Record_Store(eto_data, rain_data,eto_stream_data)
     initialize_eto_calc_setup()
 	setup_eto_calculators()
 	setup_chain_flow(&CF_site_node_control_cluster)
@@ -80,7 +79,7 @@ func setup_data_structures() {
 	Eto_data_structs = data_handler.Construct_Data_Structures(&search_list)
 	eto_control      = (*Eto_data_structs)["ETO_CONTROL"].(redis_handlers.Redis_Hash_Struct)
 	eto_exceptions   = (*Eto_data_structs)["EXCEPTION_VALUES"].(redis_handlers.Redis_Hash_Struct)
-	eto_accumulation = (*Eto_data_structs)["ETO_ACCUMULATION_TABLE"].(redis_handlers.Redis_Hash_Struct)
+	
 	eto_data         = (*Eto_data_structs)["ETO_VALUES"].(redis_handlers.Redis_Hash_Struct)
 	rain_data        = (*Eto_data_structs)["RAIN_VALUES"].(redis_handlers.Redis_Hash_Struct)
     eto_stream_data  = (*Eto_data_structs)["ETO_STREAM_DATA"].(redis_handlers.Redis_Hash_Struct)
@@ -94,10 +93,10 @@ func setup_chain_flow(cf_cluster *cf.CF_CLUSTER_TYPE) {
 
 	var cf_control cf.CF_SYSTEM_TYPE
 
-	cf_control.Init(cf_cluster, "ETO_CALCULATOR", true, time.Second)
+	cf_control.Init(cf_cluster, "ETO_CALCULATOR", false, time.Second)
 
 	//**********************************************************************************
-	cf_control.Add_Chain("test_generator", false)
+	cf_control.Add_Chain("test_generator", true)
 	cf_control.Cf_add_one_step(new_day_rollover, make(map[string]interface{}))
     cf_control.Cf_add_enable_chains_links([]string{"eto_make_measurements"})
     cf_control.Cf_add_wait_interval(time.Minute * 5)
@@ -186,7 +185,7 @@ func update_eto_bins(system interface{}, chain interface{}, parameters map[strin
       eto_control.HSet("ETO_UPDATE_FLAG",message_pack_true)
       eto_msgpack  := msg_pack_utils.Pack_float64(eto)
       eto_control.HSet("ETO_UPDATE_VALUE",eto_msgpack)
-      eto_support.Update_Accumulation_Tables(eto_accumulation, eto)
+      //eto_support.Update_Accumulation_Tables(eto_accumulation, eto)
       log_eto_data()
       log_rain_data()
       return cf.CF_DISABLE
