@@ -73,7 +73,7 @@ func (r Messo_RAIN_TYPE) Compute_eto() {
 		panic(err)
 	}
 	data := string(byt)
-    fmt.Println("data",data)
+    //fmt.Println("data",data)
     rain_result     := gjson.Get(string(data),"STATION.0.OBSERVATIONS.total_precip_value_1")
     fmt.Println("\nrain_result",rain_result)
 

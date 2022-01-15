@@ -1,7 +1,7 @@
 package eto_calc
 
 import (
-	//"fmt"
+	"fmt"
     
 	"lacima.com/cf_control"
 	"lacima.com/go_application_containers/irrigation/eto/eto_calc/eto_support"
@@ -66,6 +66,7 @@ func Start(site_data map[string]interface{}) {
 }
 
 func execute() {
+    
 	(CF_site_node_control_cluster).CF_Fork()
 }
 
@@ -93,10 +94,10 @@ func setup_chain_flow(cf_cluster *cf.CF_CLUSTER_TYPE) {
 
 	var cf_control cf.CF_SYSTEM_TYPE
 
-	cf_control.Init(cf_cluster, "ETO_CALCULATOR", false, time.Second)
-
-	//**********************************************************************************
-	cf_control.Add_Chain("test_generator", true)
+	cf_control.Init(cf_cluster, "ETO_CALCULATOR", true, time.Second)
+    
+    //**********************************************************************************
+	cf_control.Add_Chain("test_generator", false)
 	cf_control.Cf_add_one_step(new_day_rollover, make(map[string]interface{}))
     cf_control.Cf_add_enable_chains_links([]string{"eto_make_measurements"})
     cf_control.Cf_add_wait_interval(time.Minute * 5)
@@ -104,15 +105,7 @@ func setup_chain_flow(cf_cluster *cf.CF_CLUSTER_TYPE) {
 	cf_control.Cf_add_terminate()
     
     
-    cf_control.Add_Chain("new_day_rollover", true)
-	cf_control.Cf_add_log_link("start new day rollover ")
-	cf_control.Cf_wait_hour_minute_le(7, 0) // Wait till time is less than 7
-	cf_control.Cf_wait_hour_minute_ge(7, 1) // Then when time gt 7 act
-	cf_control.Cf_add_one_step(new_day_rollover, make(map[string]interface{}))
-	cf_control.Cf_add_reset()
-	//----------------------------------------------------------------------------------
-	//***********************************************************************************
-	cf_control.Add_Chain("enable_measurement", true)
+    cf_control.Add_Chain("enable_measurement", true)
 	cf_control.Cf_add_log_link("starting enable_measurement")
 	
     
@@ -128,6 +121,19 @@ func setup_chain_flow(cf_cluster *cf.CF_CLUSTER_TYPE) {
 	cf_control.Cf_add_disable_chains_links([]string{"eto_make_measurements", "update_eto_bins"})
 	cf_control.Cf_wait_hour_minute_le(1, 0)
 	cf_control.Cf_add_reset()
+
+	
+    
+    
+    cf_control.Add_Chain("new_day_rollover", true)
+	cf_control.Cf_add_log_link("start new day rollover ")
+	cf_control.Cf_wait_hour_minute_le(7, 0) // Wait till time is less than 7
+	cf_control.Cf_wait_hour_minute_ge(7, 1) // Then when time gt 7 act
+	cf_control.Cf_add_one_step(new_day_rollover, make(map[string]interface{}))
+	cf_control.Cf_add_reset()
+	//----------------------------------------------------------------------------------
+	//***********************************************************************************
+	
 	//----------------------------------------------------------------------------------
 
 	//***********************************************************************************
@@ -183,6 +189,7 @@ func update_eto_bins(system interface{}, chain interface{}, parameters map[strin
       }
       
       eto_control.HSet("ETO_UPDATE_FLAG",message_pack_true)
+      eto_control.HSet("ETO_LOG_FLAG",message_pack_true)
       eto_msgpack  := msg_pack_utils.Pack_float64(eto)
       eto_control.HSet("ETO_UPDATE_VALUE",eto_msgpack)
       //eto_support.Update_Accumulation_Tables(eto_accumulation, eto)
@@ -216,7 +223,7 @@ func find_eto_lowest_priority()(float64,bool){
     status := false
     output.Priority = 1E9
     output.Value    = 0
-    
+    fmt.Println("find eto lowest priority ")
     data := eto_data.HKeys()
     for _,key := range data{
         status = true
@@ -227,6 +234,7 @@ func find_eto_lowest_priority()(float64,bool){
         }
         
     }
+    fmt.Println("output.value",output.Value,status)
     return output.Value,status
     
 }

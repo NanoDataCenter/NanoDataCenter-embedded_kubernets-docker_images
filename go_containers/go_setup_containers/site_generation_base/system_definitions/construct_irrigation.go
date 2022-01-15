@@ -18,6 +18,8 @@ func generate_irrigation_component_graph(){
  
     irrigation.Construct_irrigation_scheduling()
     irrigation.Construct_eto_data()
+    irrigation.Add_irrigation_stations_definitions()
+    irrigation.Eto_valve_setup()
     
 }   
 

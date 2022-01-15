@@ -1,27 +1,24 @@
 package irr_files
 import "lacima.com/server_libraries/file_server_library"
-import "lacima.com/redis_support/redis_file"
+
 
 
 
 type Irrigation_File_Manager_Type struct {
 
    fs                 file_server_lib.File_Server_Client_Type
-   redis_file_driver  *redis_file.Redis_File_Struct 
    application_path   string
    system_path        string
 
 }
 
 
-func Initialization( address string, port,file_db int) Irrigation_File_Manager_Type{
+func Initialization( ) Irrigation_File_Manager_Type{
 
   var return_value Irrigation_File_Manager_Type
-  return_value.fs                      = file_server_lib.File_Server_Init(&[]string{"FILE_SERVER"})
-  redis_file.Create_redis_data_handle(address, port , file_db )
-  return_value.redis_file_driver       = redis_file.Construct_File_Struct(  ) 
-  return_value.application_path        = "application_files"
-  return_value.system_path             = "system_files"
+  return_value.fs                      = file_server_lib.File_Server_Init(&[]string{"RPC_SERVER:SITE_FILE_SERVER","RPC_SERVER"})
+  return_value.application_path        = "/app_data_files"
+  return_value.system_path             = "/system_files"
   return return_value  
 }
 
@@ -29,13 +26,11 @@ func Initialization( address string, port,file_db int) Irrigation_File_Manager_T
 
 func( v *Irrigation_File_Manager_Type)Read_App_File( file_name string )(string,bool){
   path := v.application_path+"/"+file_name
-  return v.redis_file_driver.Get(path)
+  return v.fs.Read_file(path)
 }
 
 func( v *Irrigation_File_Manager_Type)Write_App_File( file_name,data string )bool{
-
   path := v.application_path+"/"+file_name
-  v.redis_file_driver.Set(path,data)
   return v.fs.Write_file(path,data)
 }
 
@@ -43,7 +38,6 @@ func( v *Irrigation_File_Manager_Type)Write_App_File( file_name,data string )boo
 func( v *Irrigation_File_Manager_Type)Delete_App_File( file_name string )bool{
 
   path := v.application_path+"/"+file_name
-  v.redis_file_driver.Rm(path)
   return v.fs.Delete_file(path)
 
 }
@@ -68,20 +62,20 @@ func( v *Irrigation_File_Manager_Type)Copy_App_File( from_file_name,to_file_name
 func( v *Irrigation_File_Manager_Type)App_Ls( file_name string )[]string{
 
   path := v.application_path
-  return v.redis_file_driver.Ls(path)
-  
+  return_value,_ := v.fs.File_directory(path)
+  return return_value
 
 }
 
 func( v *Irrigation_File_Manager_Type)Read_Sys_File( file_name string )(string,bool){
   path := v.system_path+"/"+file_name
-  return v.redis_file_driver.Get(path)
+  return v.fs.Read_file(path)
 }
 
 func( v *Irrigation_File_Manager_Type)Write_Sys_File( file_name,data string )bool{
 
   path := v.system_path+"/"+file_name
-  v.redis_file_driver.Set(path,data)
+ 
   return v.fs.Write_file(path,data)
 }
 
@@ -89,7 +83,7 @@ func( v *Irrigation_File_Manager_Type)Write_Sys_File( file_name,data string )boo
 func( v *Irrigation_File_Manager_Type)Delete_Sys_File( file_name string )bool{
 
   path := v.system_path+"/"+file_name
-  v.redis_file_driver.Rm(path)
+  
   return v.fs.Delete_file(path)
 
 }
@@ -114,9 +108,8 @@ func( v *Irrigation_File_Manager_Type)Copy_Sys_File( from_file_name,to_file_name
 func( v *Irrigation_File_Manager_Type)Sys_Ls( file_name string )[]string{
 
   path := v.system_path
-  return v.redis_file_driver.Ls(path)
-  
-
+  return_value,_ := v.fs.File_directory(path)
+  return return_value
 }
 
 

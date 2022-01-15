@@ -130,6 +130,17 @@ func Convert_json_string_array( json_string string)[]string{
 
 }
 
+func Convert_json_int_array( json_string string)[]int64{
+
+     var return_value = make([]int64,0)
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value  
+
+}
+
 func Convert_json_string( json_string string) string{
    
      var return_value string;

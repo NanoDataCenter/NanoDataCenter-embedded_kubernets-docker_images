@@ -85,7 +85,7 @@ func check_new_day_rollover(system interface{}, chain interface{}, parameters ma
     if eto_control.HGet("ETO_LOG_FLAG") != message_pack_false {
           error_flag = false
     }
-    fmt.Println("**************************** eto bin update",error_flag)
+    fmt.Println("**************************** day rollover ",error_flag)
    if error_flag == false {
         state := make(map[string]interface{})
         state["system"]              = "eto_monitor"

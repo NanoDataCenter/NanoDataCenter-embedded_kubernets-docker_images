@@ -164,3 +164,24 @@ func Pack_map_string_bool(input map[string]bool )string{
     }
     return string(b)
 }   
+
+func Unpack_map_string_float64( input string )( map[string]float64, bool){
+    var item map[string]float64
+    state := true
+    err := msgpack.Unmarshal([]byte(input), &item)
+    if err != nil {
+        item = nil
+        state = false
+    } 
+    
+    return item,state
+    
+}    
+
+func Pack_map_string_float64(input map[string]float64 )string{
+    b, err := msgpack.Marshal(&input)
+    if err != nil {
+        panic(err)
+    }
+    return string(b)
+}   

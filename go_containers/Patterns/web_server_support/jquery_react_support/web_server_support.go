@@ -89,7 +89,7 @@ func Register_web_pages( menu_array Menu_array){
     //http.HandleFunc(web_page_start,slash_page)
     router.HandleFunc(web_page_start, slash_page) 
     for _,element := range menu_array {
-       fmt.Println("link",element.Menu_link,element.Menu_function)
+       //fmt.Println("link",element.Menu_link,element.Menu_function)
        //http.HandleFunc(web_page_start +element.Menu_link,element.Menu_function)
        router.HandleFunc(web_page_start+element.Menu_link, element.Menu_function)
     }
