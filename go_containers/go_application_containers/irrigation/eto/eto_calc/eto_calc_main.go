@@ -5,6 +5,7 @@ import (
     
 	"lacima.com/cf_control"
 	"lacima.com/go_application_containers/irrigation/eto/eto_calc/eto_support"
+    "lacima.com/go_application_containers/irrigation/irrigation_libraries/eto_support"  
 	"lacima.com/redis_support/generate_handlers"
 	//"lacima.com/redis_support/graph_query"
 	"lacima.com/redis_support/redis_handlers"
@@ -60,7 +61,8 @@ func Start(site_data map[string]interface{}) {
     initialize_eto_calc_setup()
 	setup_eto_calculators()
 	setup_chain_flow(&CF_site_node_control_cluster)
-	
+	eto_resource_support.Setup_eto_handlers()
+    
 	go execute()
 
 }
@@ -192,7 +194,7 @@ func update_eto_bins(system interface{}, chain interface{}, parameters map[strin
       eto_control.HSet("ETO_LOG_FLAG",message_pack_true)
       eto_msgpack  := msg_pack_utils.Pack_float64(eto)
       eto_control.HSet("ETO_UPDATE_VALUE",eto_msgpack)
-      //eto_support.Update_Accumulation_Tables(eto_accumulation, eto)
+      eto_resource_support.Update_Accumulation_Tables(eto)
       log_eto_data()
       log_rain_data()
       return cf.CF_DISABLE

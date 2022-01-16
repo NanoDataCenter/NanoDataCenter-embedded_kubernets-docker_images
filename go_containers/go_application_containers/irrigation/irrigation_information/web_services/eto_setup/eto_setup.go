@@ -3,7 +3,7 @@ package eto_setup
 import (
    
 	"strings"
-    
+     "lacima.com/Patterns/web_server_support/jquery_react_support"
 	//"lacima.com/cf_control"
 	//"lacima.com/go_application_containers/irrigation/eto/eto_calc/eto_support"
 	//"lacima.com/redis_support/generate_handlers"
@@ -20,21 +20,25 @@ import (
 
 
 func generate_eto_setup_html()string{
-    html_array := make([]string,13)
+    
+    ajax_components := `<script type="text/javascript">  `  +web_support.Load_jquery_ajax_components()+"</script>" 
+    
+    html_array := make([]string,14)
     html_array[0] = include_style()
     html_array[1] = include_top_js()
     html_array[2] = include_station_javascript()
-    html_array[3] = `<div class="container"></div>`
-    html_array[4] = generate_main_html("main_div")
+    html_array[3] = ajax_components
+    html_array[4] = `<div class="container"></div>`
+    html_array[5] = generate_main_html("main_div")
 
-    html_array[5] = create_change_recharge_level("recharge_div")
-    html_array[6] = create_crop_utilization("crop_utilization_div")
-    html_array[7] = create_change_salt_flush("salt_flush_div")
-    html_array[8] = create_change_sprayer_efficiency("sprayer_efficiency_div")
-    html_array[9] = create_change_sprayer_rate("sprayer_rate_div")
-    html_array[10] = create_change_tree_radius("tree_radius_div")
-    html_array[11] = create_new_station_html("new_station_div")
-    html_array[12] = `</div>`
+    html_array[6] = create_change_recharge_level("recharge_div")
+    html_array[7] = create_crop_utilization("crop_utilization_div")
+    html_array[8] = create_change_salt_flush("salt_flush_div")
+    html_array[9] = create_change_sprayer_efficiency("sprayer_efficiency_div")
+    html_array[10] = create_change_sprayer_rate("sprayer_rate_div")
+    html_array[11] = create_change_tree_radius("tree_radius_div")
+    html_array[12] = create_new_station_html("new_station_div")
+    html_array[13] = `</div>`
     return strings.Join(html_array,"\n")
 }
 
@@ -60,10 +64,12 @@ func include_top_js()string{
     js_data := `
         <script type="text/javascript"> 
         eto_resource_json = '`+eto_definitions_json+`'
+        console.log(eto_resource_json)
         eto_resource      = new Map(Object.entries(JSON.parse(eto_resource_json)))
+        console.log(eto_resource)
         station_config_data_json = '`+station_data_json+`'
         station_config_data = JSON.parse(station_config_data_json)
-        
+        url_link_save            = '`+eto_setup_url_save_link+`'
         
        function zeroPad(num, places) {
            var zero = places - num.toString().length + 1;
@@ -205,14 +211,13 @@ function master_reset_control()
 }
 
 function master_save_control()
-{
-       var result = confirm("Do you wish to save data?");  
-      
-       if( result == true )
-       {
-          setup_main_screen()
-
-       }
+{      
+       let data = Object.fromEntries(eto_resource);
+       console.log("data")
+       console.log(data)
+       
+       
+       ajax_post_confirmation(url_link_save, data,"Do you wish to save eto configuration data?","Eto Config Data Saved","Eto Config Data Not Saved") 
 }
 
 
@@ -376,12 +381,14 @@ function()
    setup_station_controls()
    
    
+   
    $("#master_save").bind('click',master_save_control)
    $("#master_reset").bind('click',master_reset_control)
    
    
    $("#action-choice").bind('change',main_menu)
    $("#action-choice")[0].selectedIndex = 0;
+   refresh_entries(eto_resource)
 })
     </script>
 `

@@ -2,7 +2,9 @@ package irrigation_information_web
      
 
 import (
-    
+     "io"
+    // "encoding/json"
+     "fmt"
     "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/eto_setup"
     "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/eto_adjust"
     "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/irrigation_schedule_setup"
@@ -48,6 +50,7 @@ func init_web_server_pages() {
     web_support.Init_web_support(introduction_page_generate)  // register page
     base_templates = define_web_pages()
     initialize_handlers()
+    web_support.Generate_special_post_route("irrigation/eto/eto_setup_store" , eto_setup_store)
    
 }
 
@@ -69,7 +72,7 @@ func initialize_handlers(){
 func define_web_pages()*template.Template  {
  
     return_value := make(web_support.Menu_array,6)
-    return_value[0] = web_support.Construct_Menu_Element( "Introduction page","introduction_page",introduction_page_generate)
+    return_value[0] = web_support.Construct_Menu_Element( "Iintroduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "ETO Station Setup","eto_setup", eto_setup.Generate_page_setup)
     return_value[2] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
     return_value[3] = web_support.Construct_Menu_Element( "Modify Irrigation Schedules","irrigation_schedules", irrigation_schedules.Generate_page)
@@ -79,6 +82,8 @@ func define_web_pages()*template.Template  {
     return web_support.Generate_single_row_menu(return_value)
 }
     
+
+ 
 
 
 
@@ -147,3 +152,35 @@ func generate_intro_data()[]web_support.Accordion_Elements{
 }  
 
 
+/*
+ * 
+ * 
+ * Ajax handlers 
+ * 
+*/
+
+
+func eto_setup_store(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+  //var input interface{}
+
+  /*if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+        fmt.Println(err)
+       // panic("BAD:")
+    }
+  */
+  
+  input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      fmt.Println(err)
+  }else{   
+  
+     eto_setup.Process_new_eto_setup(string(input))  
+      
+  }
+  
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}

@@ -103,10 +103,9 @@ func create_new_station_java_script()string{
 
    function station_save_control()
    {
-       var result = confirm("Do you wish to add new station?");  
       
-       if( result == true )
-       {
+      
+      
           let return_value = new Map()
           let temp = []
           
@@ -129,13 +128,13 @@ func create_new_station_java_script()string{
           return_value[temp[0]] = temp[1]
        
           return_value["station"] = $("#station_controller").val()
-          return_value["valve"]   = $("#station_valve").val()
+          return_value["valve"]   = parseFloat($("#station_valve").val())
           
           if (add_new_station(return_value) == true)  {
              setup_main_screen()
           }
 
-       }
+       
     }
     
    function populate_controllers(  ){ 

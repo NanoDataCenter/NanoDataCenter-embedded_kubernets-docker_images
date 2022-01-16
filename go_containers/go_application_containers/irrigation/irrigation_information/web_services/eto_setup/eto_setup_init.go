@@ -13,7 +13,8 @@ import (
     "lacima.com/redis_support/generate_handlers"
 	"lacima.com/redis_support/graph_query"
     "lacima.com/redis_support/redis_handlers"
-   "lacima.com/go_application_containers/irrigation/irrigation_libraries/irrigation_files_library"   
+   "lacima.com/go_application_containers/irrigation/irrigation_libraries/irrigation_files_library"  
+   
     //"lacima.com/Patterns/web_server_support/jquery_react_support"
     "lacima.com/Patterns/msgpack_2"
     
@@ -23,6 +24,7 @@ var base_templates        *template.Template
 var file_loader           irr_files.Irrigation_File_Manager_Type
 var eto_definitions_json  string  
 var station_data_json     string
+const eto_setup_url_save_link string ="ajax/irrigation/eto/eto_setup_store"
 
 var Eto_Accumulation                  redis_handlers.Redis_Hash_Struct
 var Eto_Reserve                       redis_handlers.Redis_Hash_Struct
@@ -39,6 +41,7 @@ func Page_init(input *template.Template){
     setup_eto_handlers()
     resolve_setup_file()
     import_station_valve_data()
+    
     
     
 }
@@ -71,7 +74,7 @@ func setup_eto_handlers() {
     Eto_Accumulation                = (*eto_data_structs)["ETO_ACCUMULATION"].(redis_handlers.Redis_Hash_Struct)
 	Eto_Reserve                     = (*eto_data_structs)["ETO_RESERVE"].(redis_handlers.Redis_Hash_Struct)
     Eto_Min_level                   = (*eto_data_structs)["ETO_MIN_LEVEL"].(redis_handlers.Redis_Hash_Struct)
-    Eto_Recharge_Rate               = (*eto_data_structs)["ETO_RESERVE"].(redis_handlers.Redis_Hash_Struct)
+    Eto_Recharge_Rate               = (*eto_data_structs)["ETO_RECHARGE_RATE"].(redis_handlers.Redis_Hash_Struct)
     
 }
 
@@ -81,6 +84,7 @@ func resolve_setup_file(){
     
    
     eto_definitions_json = validate_eto_file(read_eto_file())
+    
     store_eto_file(eto_definitions_json)
 
 }
@@ -114,8 +118,17 @@ func validate_eto_file(input string )string{
 }
 
 
-
-
+func Process_new_eto_setup(raw_input string){
+    var decode_value map[string]map[string]interface{}
+  
+    if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
+        panic("bad json")
+    }else{
+        store_eto_file(raw_input)
+        eto_definitions_json = raw_input
+    }
+    
+}
 
     
 func store_eto_file(data string){
@@ -128,6 +141,7 @@ func store_eto_file(data string){
     if err1 != nil {
         panic("should not happen")
     }
+    
     trim_hashtable(decode_value,Eto_Accumulation,0.)
     trim_hashtable(decode_value,Eto_Reserve,0.)    
     trim_hashtable(decode_value,Eto_Min_level,.07)
