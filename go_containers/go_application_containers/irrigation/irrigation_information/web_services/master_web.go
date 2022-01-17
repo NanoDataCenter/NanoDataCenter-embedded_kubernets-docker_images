@@ -51,6 +51,7 @@ func init_web_server_pages() {
     base_templates = define_web_pages()
     initialize_handlers()
     web_support.Generate_special_post_route("irrigation/eto/eto_setup_store" , eto_setup_store)
+    web_support.Generate_special_post_route("irrigation/eto/eto_adjust_store" , eto_adjust_store)
    
 }
 
@@ -176,6 +177,33 @@ func eto_setup_store(w http.ResponseWriter, r *http.Request) {
   }else{   
   
      eto_setup.Process_new_eto_setup(string(input))  
+      
+  }
+  
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}
+
+
+
+func eto_adjust_store(w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+  //var input interface{}
+
+  /*if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+        fmt.Println(err)
+       // panic("BAD:")
+    }
+  */
+  
+  input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      fmt.Println(err)
+  }else{   
+  
+     eto_adjust.Process_new_eto_adjust(string(input))  
       
   }
   

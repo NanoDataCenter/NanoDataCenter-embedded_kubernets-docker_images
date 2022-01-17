@@ -263,3 +263,52 @@ function ajax_post_get(url_path, data, success_function, error_message)
 return return_value
 }
 
+func Check_box_state_components()string{
+    
+    js := `
+   
+  function check_state(keys){
+  
+   let check_status = [];
+   //console.log(keys)
+   for (i= 0;i<keys.length;i++){
+      let key = keys[i]
+      //console.log("loop")
+      //console.log(i)
+      //console.log(key)
+      if( $("#"+key).is(":checked") == true )
+      {       
+	         check_status.push(key);
+	         
+       }
+        
+    }
+   return check_status
+     
+  }
+ 
+  
+  function select_values(keys){
+
+  let i = 0
+  for( i= 0;i<keys.length;i++){
+      let key = keys[i]
+      $("#"+key).prop('checked', true)
+   }
+
+}
+
+function unselect_values(keys){
+  let i = 0
+  for( i= 0;i<keys.length;i++){
+      let key = keys[i]
+      $("#"+key).prop('checked', false)
+   }
+
+
+}
+
+
+`
+return js
+}

@@ -106,7 +106,7 @@ func create_new_station_java_script()string{
       
       
       
-          let return_value = new Map()
+          let return_value = []
           let temp = []
           
           temp = recharge_div_add_get_value()

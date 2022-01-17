@@ -64,8 +64,8 @@ func include_top_js()string{
     js_data := `
         <script type="text/javascript"> 
         eto_resource_json = '`+eto_definitions_json+`'
-        console.log(eto_resource_json)
-        eto_resource      = new Map(Object.entries(JSON.parse(eto_resource_json)))
+        //console.log(eto_resource_json)
+        eto_resource      = JSON.parse(eto_resource_json)
         console.log(eto_resource)
         station_config_data_json = '`+station_data_json+`'
         station_config_data = JSON.parse(station_config_data_json)
@@ -81,13 +81,13 @@ func include_top_js()string{
            let key = new_station["station"]+"__"+zeroPad(new_station["valve"],2)
           
            
-           if (eto_resource.has(key) != true){
+           if (eto_resource[key] == undefined){
  
                new_station["key"] = key 
                new_station = calculate_eto_recharge_rate(new_station)
                //console.log("new_station")
                //console.log(new_station)
-               eto_resource.set(key,new_station)
+               eto_resource[key] = new_station
                //console.log(eto_resource)
                refresh_entries(eto_resource)
                return true
@@ -117,7 +117,7 @@ func include_top_js()string{
             div.show()
          }
          
-         var eto_ref_map     = new Map();
+         var eto_ref_map     = [];
          
          eto_ref_map["recharge_level"]       =  .07
          eto_ref_map["crop_utilization"]     =  .8
@@ -127,18 +127,19 @@ func include_top_js()string{
          eto_ref_map["tree_radius"]          =  6.0
          
          
-         var eto_holding_map = new Map();
+         var eto_holding_map = [];
          
          function update_values(field,value){
             //console.log(field,value)
-            let update_keys = check_state()
+            let keys = Object.keys(eto_resource)
+            let update_keys = check_state(keys)
             let i=0
             for (i=0;i<update_keys.length;i++){
                 key = update_keys[i]
-                data = eto_resource.get(key)
+                data = eto_resource[key]
                 data[field] = value
                 data = calculate_eto_recharge_rate(data)
-                eto_resource.set(key,data)
+                eto_resource[key] = data
                
             }
              refresh_entries(eto_resource)
@@ -212,12 +213,10 @@ function master_reset_control()
 
 function master_save_control()
 {      
-       let data = Object.fromEntries(eto_resource);
-       console.log("data")
-       console.log(data)
        
        
-       ajax_post_confirmation(url_link_save, data,"Do you wish to save eto configuration data?","Eto Config Data Saved","Eto Config Data Not Saved") 
+       
+       ajax_post_confirmation(url_link_save, eto_resource,"Do you wish to save eto configuration data?","Eto Config Data Saved","Eto Config Data Not Saved") 
 }
 
 
@@ -229,27 +228,28 @@ function main_menu(event,ui){
 
    if( choice == "recharge")
    {
-    
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
          return
        }else{
        let key = update_keys[0]
-       let data = eto_resource.get(key)
+       let data = eto_resource[key]
        setup_aux_screen( $("#recharge_div"))
        recharge_div_open(data["recharge_level"])
        }
    }
    if( choice == "crop_util")
    {
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
          
        }else{
        let key = update_keys[0]
-        let data = eto_resource.get(key)
+        let data = eto_resource[key]
        setup_aux_screen( $("#crop_utilization_div"))
        crop_utilization_div_open(data["crop_utilization"])
        }
@@ -257,14 +257,14 @@ function main_menu(event,ui){
    
    if( choice == "salt")
    {
-       
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
          return
        }else{
        let key = update_keys[0]
-        let data = eto_resource.get(key)
+        let data = eto_resource[key]
        setup_aux_screen( $("#salt_flush_div"))
        salt_flush_div_open(data["salt_flush"])
       }
@@ -273,13 +273,14 @@ function main_menu(event,ui){
    
    if( choice == "sprayer_efficiency")
    {
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
          
        }else{
        let key = update_keys[0]
-        let data = eto_resource.get(key)
+        let data = eto_resource[key]
        setup_aux_screen( $("#sprayer_efficiency_div"))
        sprayer_efficiency_div_open(data["sprayer_effiency"])
        }
@@ -287,26 +288,28 @@ function main_menu(event,ui){
 
    if( choice == "sprayer_rate")
    {
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
         
        }else{
        let key = update_keys[0]
-        let data = eto_resource.get(key)
+        let data = eto_resource[key]
        setup_aux_screen( $("#sprayer_rate_div"))
        sprayer_rate_div_open(data["sprayer_rate"])
        }
    }
    if( choice == "tree_radius")
    {
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
     
        }else{
        let key = update_keys[0]
-        let data = eto_resource.get(key)
+        let data = eto_resource[key]
        setup_aux_screen( $("#tree_radius_div"))
        tree_radius_div_open(data["tree_radius"])
        }
@@ -329,8 +332,8 @@ function main_menu(event,ui){
    }
  
    if( choice == "delete"){
-   
-       let update_keys = check_state()
+       let keys = Object.keys(eto_resource)
+       let update_keys = check_state(keys)
        if (update_keys.length == 0){
          alert("no valve selected")
          
@@ -342,7 +345,7 @@ function main_menu(event,ui){
        {
           for (i=0;i<update_keys.length;i++){
               
-              eto_resource.delete(update_keys[i])
+              delete eto_resource[update_keys[i]]
           }
           refresh_entries(eto_resource)
           
@@ -354,12 +357,12 @@ function main_menu(event,ui){
    }// if delete
    
    if( choice == "select_all"){
-       
-       select_all()
+       let keys = Object.keys(eto_resource)
+       select_values(keys)
    }
    if( choice == "unselect_all"){
-       
-       unselect_all()
+       let keys = Object.keys(eto_resource)
+       unselect_values(keys)
    }
     
   
@@ -433,13 +436,13 @@ func include_station_javascript()string{
   function refresh_entries(eto_resource){
      //console.log(eto_resource)
      station_data = []
-     let key_entries =Array.from(  eto_resource.keys())
+     let key_entries =Object.keys(eto_resource)
      //console.log(key_entries)
      key_entries.sort()
      //console.log(key_entries)
      let i = 0
      for (i = 0;i< key_entries.length;i++){
-         station_data.push(add_station_entry(eto_resource.get(key_entries[i])))
+         station_data.push(add_station_entry(eto_resource[key_entries[i]]))
      }
      //console.log("station data")
      //console.log(station_data)
@@ -452,29 +455,10 @@ func include_station_javascript()string{
   }
   
   
-  function check_state(){
-   keys = Array.from( eto_resource.keys())
-   let check_status = [];
-   //console.log(keys)
-   for (i= 0;i<keys.length;i++){
-      let key = keys[i]
-      //console.log("loop")
-      //console.log(i)
-      //console.log(key)
-      if( $("#"+key).is(":checked") == true )
-      {       
-	         check_status.push(key);
-	         
-       }
-        
-    }
-   return check_status
-     
-  }
+ 
  
   function add_station_entry(data){
-    //console.log(data)
-    //let keys = Array.from( data.keys())
+    
     
     let key = data["key"]
     return_value =  []
@@ -530,39 +514,14 @@ func include_station_javascript()string{
    
 } 
  
-function select_all(){
- let key_entries =Array.from(  eto_resource.keys())
- select_values(key_entries)
-}
+
+ 
+
  
  
-function unselect_all(){
- let key_entries =Array.from(  eto_resource.keys())
- unselect_values(key_entries)
-}
- 
-function select_values(keys){
-
-  let i = 0
-  for( i= 0;i<keys.length;i++){
-      let key = keys[i]
-      $("#"+key).prop('checked', true)
-   }
-
-}
-
-function unselect_values(keys){
-  let i = 0
-  for( i= 0;i<keys.length;i++){
-      let key = keys[i]
-      $("#"+key).prop('checked', false)
-   }
-
-
-}
- 
- </script>
  `
+ js += web_support.Check_box_state_components()
+ js += "</script>"
  return js
 }
 
