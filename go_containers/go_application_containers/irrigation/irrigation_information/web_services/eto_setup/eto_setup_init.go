@@ -181,18 +181,34 @@ func  update_hashtable(input map[string]map[string]interface{}, table redis_hand
     
 func import_station_valve_data(){
     station_data := make(map[string][]int64)
-    nodes := graph_query.Common_qs_search(&[]string{"IRRIGATION_GROUPS:IRRIGATION_GROUPS","IRRIGATION_STATION"})
+    nodes := graph_query.Common_qs_search(&[]string{"IRRIGATION_STATIONS:IRRIGATION_STATIONS","IRRIGATION_STATION"})
+   
     for _,node := range nodes {
         //fmt.Println("node",node)
         station_name := graph_query.Convert_json_string(node["name"])
-        valve_data   := graph_query. Convert_json_int_array(node["valves"])
+        valve_number   := graph_query.Convert_json_int(node["valve_number"])
+        valve_data     := generate_range(valve_number)
         station_data[station_name] = valve_data
     }
     temp,_ := json.Marshal(station_data)
     station_data_json = string(temp)
+    //fmt.Println(station_data_json)
+   
+}
+
+
+func generate_range( number int64)[]int64{
+ 
+    return_value := make([]int64,number)
     
+    for i := int64(0); i< number; i++{
+        return_value[i] = i
+    }
+    return return_value
 }
     
+    
+
    
     
 

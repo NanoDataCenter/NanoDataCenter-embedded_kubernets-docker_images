@@ -1,5 +1,24 @@
 package main
 
+
+/*
+
+notes from erlang supervisor
+
+  call back --- handle specialized recovery action
+  number of retries  for a process
+  reset time  -- recovery process must be active for a tbd time before reset is considered successful
+
+  types of resets
+  one for one  -- just start the one process
+  one for all  --- reset all if any one reset
+  reset for all  all  -- reset all that are following item in the list
+  
+  simple-one-for-all used in dynamically created processes
+  
+
+
+*/
 import "fmt"
 import "os"
 import "time"

@@ -16,10 +16,22 @@ func construct_irrigation( master_flag bool, node_name string){
   
 func generate_irrigation_component_graph(){
  
-    irrigation.Construct_irrigation_scheduling()
-    irrigation.Construct_eto_data()
-    irrigation.Add_irrigation_stations_definitions()
-    irrigation.Eto_valve_setup()
+    // ETO  Setups
+    irrigation.Construct_weather_stations()
+    irrigation.Eto_valve_data_structures()
+    
+    
+    
+    // setup irrigation data
+    irrigation.Add_irrigation_actions()
+    irrigation.Add_irrigation_sensors()
+    irrigation.Add_station_definitions()
+    irrigation.Add_irrigation_servers()
+    
+    
+    
+    
+    
     
 }   
 

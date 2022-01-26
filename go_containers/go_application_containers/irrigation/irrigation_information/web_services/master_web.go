@@ -7,8 +7,8 @@ import (
      "fmt"
     "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/eto_setup"
     "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/eto_adjust"
-    "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/irrigation_schedule_setup"
-    "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/maintainence_schedule_setup"
+    "lacima.com/go_application_containers/irrigation/irrigation_information/web_services/schedules"
+    
     //"lacima.com/redis_support/generate_handlers"
     "os"
     //"lacima.com/redis_support/redis_handlers"
@@ -60,8 +60,7 @@ func initialize_handlers(){
     introduction_page_init()
     eto_setup.Page_init(base_templates)
     eto_adjust.Page_init(base_templates)
-    irrigation_schedules.Page_init(base_templates)
-    maintainence_schedules.Page_init(base_templates)
+    construct_schedule.Page_init(base_templates)
     web_support.Micro_web_page_init(base_templates)
 }
 
@@ -72,13 +71,12 @@ func initialize_handlers(){
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,6)
+    return_value := make(web_support.Menu_array,5)
     return_value[0] = web_support.Construct_Menu_Element( "Iintroduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "ETO Station Setup","eto_setup", eto_setup.Generate_page_setup)
     return_value[2] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
-    return_value[3] = web_support.Construct_Menu_Element( "Modify Irrigation Schedules","irrigation_schedules", irrigation_schedules.Generate_page)
-    return_value[4] = web_support.Construct_Menu_Element( "Modify Irrigation Maintainece Schedules","maintainece_schedules",maintainence_schedules.Generate_page)
-    return_value[5] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
+    return_value[3] = web_support.Construct_Menu_Element( "Construct Schedules","construct_schedule",construct_schedule.Generate_page)
+    return_value[4] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
 }

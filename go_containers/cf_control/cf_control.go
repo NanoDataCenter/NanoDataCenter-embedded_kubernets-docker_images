@@ -1,5 +1,15 @@
 package cf
 
+/*
+ new suggested manager
+ 
+ add erlang suppervision trees
+ 
+ add dynmicall created thread  similar to erlang process
+
+
+
+*/
 import "time"
 //import "container/list"
 //import "fmt"

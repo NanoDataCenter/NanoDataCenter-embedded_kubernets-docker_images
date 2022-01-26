@@ -8,7 +8,7 @@ import (
 
 
 
-func Construct_eto_data(){
+func Construct_weather_stations(){
  
     
     su.Bc_Rec.Add_header_node("WEATHER_DATA_STRUCTURE","WEATHER_DATA_STRUCTURE",make(map[string]interface{}))
