@@ -153,6 +153,12 @@ function set_status_bar( text )
 }
 
 
+var user_function 
+function status_successful( data )
+{
+   set_status_bar("Current Status: Fetch operation successful")
+   user_function(data)
+}
 
 function ajax_get( url_path, error_message, success_function )
 {

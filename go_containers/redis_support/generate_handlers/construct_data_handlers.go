@@ -186,6 +186,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    var time_limit      int64
    var pg_stream       pg_drv.Postgres_Stream_Driver
    var pg_registry     pg_drv.Registry_Driver
+   var pg_table        pg_drv.Postgres_Table_Driver
   
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
@@ -257,6 +258,19 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		   pg_registry = pg_drv. Construct_Registry_Driver( key,user,password,database_name, table_name ) 
 	       pg_registry.Connect(redis_ip)
            (*handlers)[name] = pg_registry	   
+	   } else if type_def == "POSTGRES_TABLE" {
+          
+		   key            = v["key"].(string)
+           
+           name          =   v["name"].(string)  
+           user          =   v["user"] .(string) 
+           password      =   v["password"].(string)  
+           database_name =   v["database_name"].(string) 
+           table_name    =   "T"+generate_table_name(key)
+           
+		   pg_table = pg_drv. Construct_Postgres_Table_Driver( key,user,password,database_name, table_name ) 
+	       pg_table.Connect(redis_ip)
+           (*handlers)[name] = pg_table	   
 	   }else {
 	   panic("Key is not expected "+type_def)
 	 }

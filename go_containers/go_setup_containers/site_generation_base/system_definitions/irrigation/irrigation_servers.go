@@ -37,6 +37,11 @@ func Add_irrigation_servers(){
    construct_sub_server_1()
   master_irrigation_end("main_server")                    
     
+  su.Cd_Rec.Construct_package("IRRIGATION_DATA_STRUCTURES")
+  su.Cd_Rec.Create_postgres_table( "IRRIGATION_SCHEDULES","admin","password","admin")
+  su.Cd_Rec.Create_postgres_table("IRRIGATION_ACTIONS","admin","password","admin")
+  su.Cd_Rec.Close_package_construction()
+
   su.Bc_Rec.End_header_node("IRRIGATION_SERVERS","IRRIGATION_SERVERS")     
         
     
@@ -79,10 +84,7 @@ func master_irrigation_node( server_name               string,
  
   su.Bc_Rec.Add_info_node("MASTER_VALVES",server_name,master_valves)
   su.Bc_Rec.Add_info_node("CLEANING_VALVES",server_name,cleaning_valves)
-  /*
-  *
-  *  add supporting data structures
-  */
+  
 }
 
 func master_irrigation_end(server_name string){

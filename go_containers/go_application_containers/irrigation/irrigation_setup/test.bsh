@@ -1,0 +1,2 @@
+
+docker run --log-driver none   -ti --rm --network host  --mount type=bind,source=/home/pi/system_config,target=/data/    nanodatacenter/irrigation_setup /usr/local/bin/bash 
