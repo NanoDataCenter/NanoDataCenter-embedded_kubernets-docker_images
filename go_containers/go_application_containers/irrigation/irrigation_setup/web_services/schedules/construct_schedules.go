@@ -4,11 +4,12 @@ package construct_schedule
 import(
     //"fmt"
     
-    "strings"
+    //"strings"
     "net/http"
     "html/template"
     
     "lacima.com/go_application_containers/irrigation/irrigation_libraries/postgres_access/schedule_access"
+    "lacima.com/Patterns/web_server_support/jquery_react_support"
 )
 
 var base_templates                    *template.Template
@@ -46,43 +47,56 @@ func Generate_page(w http.ResponseWriter, r *http.Request){
     
 }
 
-
+ 
 func generate_html_js()string{
+    web_variables := make(map[string]string)
+    web_variables["master_sub_server"] = sched_access.Master_table_list_json
+    web_variables["valve_list_json"]   = sched_access.Valve_list_json
     
-    
-    return generate_html()+generate_js()
-}
-
-
-func generate_html()string{
-   html_array := make([]string,5)
-   html_array[0] = generate_top_html()
-   html_array[1] = generate_create_schedule_name_html()
-   html_array[2] = generate_edit_table_html()
-   html_array[3] = generate_valve_table_html()
-   html_array[4] = generate_copy_table_html()
-   return strings.Join(html_array,"\n")
-    
-    
-}
-
-func generate_js()string{
-   js_array := make([]string,7)
-   js_array[0] = js_generate_global_js()
-   js_array[1] = js_generate_top_js()
-   js_array[2] = js_generate_populate_table()
-   js_array[3] = js_generate_create_schedule_name()
-   js_array[4] = js_generate_edit_table()
-   js_array[5] = js_generate_valve_table()
-   js_array[6] = js_generate_copy_table()
-   return strings.Join(js_array,"\n")    
-}
+    ajax_variables := make(map[string]string)
+    ajax_variables["add_schedule"]    =   "ajax/irrigation/irrigation_schedules/add_schedule"
+    ajax_variables["delete_schedule"] =   "ajax/irrigation/irrigation_schedules/delete_schedule" 
+    ajax_variables["get_schedules"]   =   "ajax/irrigation/irrigation_schedules/get_schedules" 
+    global_js                         :=  web_support.Load_jquery_ajax_components()
+    global_js                         +=  web_support.Jquery_components_js()
+    global_js                         +=  js_generate_global_js()
    
+    
+    top_list := web_support.Construct_web_components("main_section","main_form",web_variables,ajax_variables,global_js)    
+    
+    main_component := generate_main_component()
+    top_list.Add_section(main_component)
+    
+    get_schedule_name := generate_get_schedule_name()
+    top_list.Add_section(get_schedule_name)
+    
+    edit_schedule_name := generate_edit_table_html()
+    top_list.Add_section(edit_schedule_name)
+    
+    
+    
+    //top_list.Add_section(edit_schedule())
+    //top_list.Add_section(edit_valve())
+    //top_list.Add_section(copy_schedule)
+    //fmt.Println(top_list.Generate_ending())
+    //panic("done")
+    return top_list.Generate_ending()
+    
+}   
+
+
+
+
+
 func js_generate_global_js()string{
 
  
   return_value := 
-    ` <script type="text/javascript"> 
+    `
+    // global data
+    var schedule_data      =  []
+    var schedule_data_map  =  {}
+    
     master_sub_server_json ='`+ sched_access.Master_table_list_json+`'
     master_sub_server = JSON.parse(master_sub_server_json)
 
@@ -96,32 +110,20 @@ func js_generate_global_js()string{
     
     
     
-    function hide_all_sections(){
-    
-        $("#main_section").hide()
-        $("#table_construction").hide()
-        $("#valve_section").hide()
-        $("#table_name_section").hide()
-        $("#copy_section").hide()
-    
-    }
     
     $(document).ready(
     function()
     {  
+       init_sections()
+       
        hide_all_sections()
-       initialize_main_panel()
-       initialize_schedule_construction_panel()
-       initialize_valve_construction_panel()
-       initialize_table_name_panel()
-       initialize_copy_panel()
-       setup_table()
-       start_main_panel()
+       
+       start_section("main_form")
     
     })
     
     
-    </script>`
+   `
     
   return return_value
     

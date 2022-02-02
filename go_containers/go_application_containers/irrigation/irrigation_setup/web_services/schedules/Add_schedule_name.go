@@ -4,61 +4,70 @@ package construct_schedule
 
 import(
     //"fmt"
-   
+   "lacima.com/Patterns/web_server_support/jquery_react_support"
 )
 
 
+func generate_get_schedule_name()web_support.Sub_component_type{
+    return_value := web_support.Construct_subsystem("add_schedule")
 
+    
+    
+   
+    return_value.Append_line(web_support.Generate_title("Enter New Schedule"))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line("<div>")
+    return_value.Append_line(web_support.Generate_button("Continue","add_schedule_save_id"))
+    return_value.Append_line(web_support.Generate_button("Back","add_schedule_cancel_id"))
+    return_value.Append_line("</div>")
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_input("Enter Schedule Name", "add_schedule_input_id"))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_input("Enter Schedule Description","add_schedule_description_id"))    
+    return_value.Append_line("</div>")
+    return_value.Append_line(js_generate_create_schedule_name())
+    
+    return return_value
 
-func generate_create_schedule_name_html()string{
-    
-  return_value :=
-  `
-  <div class="container" id="table_name_section">
- 
-     
-    <h3>Enter New Table Name</h3>
-    
-    
-       <div>
-        <input type="button" id = "table_name_continue" value="Contine"  data-inline="true"  /> 
-        <input type="button" id = "table_name_abort" value="Abort" data-inline="true"  /> 
-       </div>
-     <input type="text" id="new_schedule_input">
-    
-    
-    </div>
-    
-`
- return return_value
 }
+
+
 
 func js_generate_create_schedule_name()string{
   return_value := 
     ` <script type="text/javascript"> 
+    function add_schedule_start(){
+       hide_all_sections()
+       show_section("add_schedule")
+    }
+  
+    function add_schedule_init(){
       
-       function initialize_table_name_panel(){
-       
-         $("#table_name_continue").bind('click',table_name_continue)
-         $("#table_name_abort").bind('click',table_name_abort)
-       
-    
-       
-       
+      attach_button_handler("#add_schedule_save_id" ,add_schedule_continue)
+      attach_button_handler("#add_schedule_cancel_id" ,add_schedule_cancel)
+      
+    }
+    function add_schedule_continue(){
+       let schedule_name = $("#add_schedule_input_id").val()
+       let description   = $("#add_schedule_description_id").val()
+       if (schedule_name.length == 0){
+           alert("invalid schedule")
+           return
        }
-       function start_table_entry_panel(){
-          hide_all_sections()
-          $("#table_name_section").show()
+       if (schedule_name in schedule_data_map){
+           alert("duplicate schedule")
+           return
        }
-       function table_name_continue(){
-         
-         hide_all_sections()
-         $("#table_construction").show()
+       status = confirm("Create Schedule "+schedule_name)
+      
+       if (status  ) {
+           
+           start_section("edit_schedule")
        }
-       function table_name_abort(){
-         hide_all_sections()
-         $("#main_section").show()
-       }
+    }
+    function add_schedule_cancel(){
+      start_section("main_form")
+    }
     </script>`
     
   return return_value

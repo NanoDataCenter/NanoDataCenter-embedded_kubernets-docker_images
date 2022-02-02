@@ -6,10 +6,79 @@ import(
    
 )
 
+import(
+    //"fmt"
+   "lacima.com/Patterns/web_server_support/jquery_react_support"
+)
+
+
+func generate_edit_table_html()web_support.Sub_component_type{
+    return_value := web_support.Construct_subsystem("edit_schedule")
+
+    
+    
+    
+   
+    return_value.Append_line(web_support.Generate_title("Edit Schedule"))
+    return_value.Append_line(web_support.Generate_sub_title("edit_schedule_name","Schedule Name"))
+    return_value.Append_line(web_support.Generate_sub_title("edit_schedule_description","Description Name"))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line("<div>")
+    return_value.Append_line(web_support.Generate_button("Save","edit_schedule_save_id"))
+    return_value.Append_line(web_support.Generate_button("Back","edit_schedule_cancel_id"))
+    return_value.Append_line("</div>")
+    return_value.Append_line(web_support.Generate_space("25"))
+    values := []string{"null","create","edit","copy","delete","time","move"}
+    text   := []string{"Null Action","Create Step","Edit Step","Copy Step","Delete Step","Change Step Time","Move Steps"}
+    
+    return_value.Append_line(web_support.Generate_select("Select Action","schedule_action",values,text))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_table("List of Steps","edit_schedule_step_list"))
+    return_value.Append_line("</div>")
+    return_value.Append_line(js_generate_edit_schedule())
+    
+    return return_value
+
+}   
+
+func js_generate_edit_schedule()string{
+  return_value := 
+    ` <script type="text/javascript"> 
+    function edit_schedule_start(){
+       alert("edit start")
+       hide_all_sections()
+       //show_section("edit_schedule")
+       $("#edit_schedule").show()
+    }
+  
+    function edit_schedule_init(){
+       alert("edit init")
+    
+    
+    }
+    
+    function edit_schedule_cancel(){
+    
+      start_section("main_form")
+    
+    
+    }
+    </script>`
+    
+  return return_value
+ 
+    
+}
 
 
 
 
+
+
+
+
+
+/*
 
 func generate_edit_table_html()string{
     
@@ -85,3 +154,4 @@ func js_generate_edit_table()string{
 }   
 
     
+*/

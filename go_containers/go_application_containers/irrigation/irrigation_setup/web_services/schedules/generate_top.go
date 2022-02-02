@@ -3,117 +3,79 @@ package construct_schedule
 
 import(
     //"fmt"
-    
+    "lacima.com/Patterns/web_server_support/jquery_react_support"
 )
 
 
-func generate_top_html()string{
-    
-  return_value :=
-  `
-  <div class="container" id="main_section">
- 
-     
-    <h3>Mange Irrigation Schedules</h3>
-    <h4>Select Master Server</h4> 
-    <select id="master_server">
-     </select>
-    <h4>Select Sub Server</h4> 
-    <select id="sub_server">
-    </select>
-    <div style="margin-top:20px"></div>
-    <h4>Select Select Action</h4> 
-    <select id="schedule_action">
-    <option value="null">Null Action</option>
-    <option value="create">Create Schedule</option>
-    <option value="edit">Edit Schedule</option>
-    <option value="copy">Copy Schedule</option>
-    <option value="delete">Delete Schedule</option>
-    </select>
-    <div style="margin-top:20px"></div>
+
+func generate_main_component()web_support.Sub_component_type{
+    return_value := web_support.Construct_subsystem("main_form")
+
+    null_list := make([]string,0)
+    return_value.Append_line("<h3>Mange Irrigation Schedules</h3>")
+    return_value.Append_line(web_support.Generate_select("Select Master Server","master_server",null_list,null_list))
+    return_value.Append_line(web_support.Generate_select("Select Sub Server","sub_server",null_list,null_list))
    
-     <div style="margin-top:20px"></div>
-     <h4>List of Schedules</h4>
-     <div style="margin-top:20px"></div>
     
-     <table id="schedule_list" class="display" width="100%"></table>
+    values := []string{"null","create","edit","copy","delete"}
+    text   := []string{"Null Action","Create Schedule","Edit Schedule","Copy Schedule","Delete Schedule"}
     
+    return_value.Append_line(web_support.Generate_select("Select Action","schedule_action",values,text))
+    return_value.Append_line(web_support.Generate_table("List of Schedules","schedule_list"))
+    return_value.Append_line("</div>")
+    return_value.Append_line(js_generate_top_js())
     
-    </div>
-    
-    
-`
- return return_value
+    return return_value
+
 }
+
+
+
+
+
+
 
 
 func js_generate_top_js()string{
 
   return_value := 
-    ` <script type="text/javascript"> 
-    function initialize_main_panel(){
-
-      populate_master_select()
-      
-      attach_action_handler()
-      populate_table()
-
-    }
-       
-    function start_main_panel(){
+  ` <script type="text/javascript"> 
+  
+    
+    function main_form_start(){
        hide_all_sections()
-       $("#main_section").show()
+       show_section("main_form")
+       populate_schedule_list()
     }
-    
-    // supporting function
-    
-    function populate_master_select(){
+  
+    function main_form_init(){
       
       master_key = Object.keys(master_sub_server)
       master_key.sort()
-      
-      for(let i=0; i<master_key.length; i++){
-        $('#master_server').append($('<option>').val(master_key[i]).text(master_key[i]));
-      }
+      jquery_populate_select('#master_server',master_key,master_key,master_server_change)
       let sub_key  = master_key[0]
       let sub_data = master_sub_server[sub_key]
-      populate_sub_server_select(sub_data)
-      $("#master_server").bind('change', master_server_change)
-      $("#sub_server")[0].selectedIndex = 0;
-     
+      jquery_populate_select("#sub_server",sub_data,sub_data,sub_server_change)
+      jquery_initalize_select("#schedule_action",main_menu)
+      create_schedule_list_table()
+      populate_schedule_list()
     }
+
     
-    
-    function populate_sub_server_select(sub_select_list){
-    
-        
-        for(let i=0; i<sub_select_list.length; i++){
-           $('#sub_server').append($('<option>').val(sub_select_list[i]).text(sub_select_list[i]));
-        }
-        $("#master_server").bind('change', sub_server_change)
-        $("#sub_server")[0].selectedIndex = 0;
-    }
-    function attach_action_handler(){
-    
-      $("#schedule_action").bind('change',main_menu)
-      $("#schedule_action")[0].selectedIndex = 0;
-    }
-    
-   
-    
+
     function main_menu(event,ui){
        var index
        var choice
        choice = $("#schedule_action").val()
        if( choice == "create"){
    
-           start_table_entry_panel()
+           start_section("add_schedule")
            
        }
        
        if( choice == "edit"){
            
-           alert("edit")
+           alert("copy")
            
        }
        if( choice == "copy"){
@@ -134,15 +96,60 @@ func js_generate_top_js()string{
    function master_server_change(event,ui){
       let sub_key  = $("#master_server").val()
       let sub_data = master_sub_server[sub_key]
-      populate_sub_server_select(sub_data)
-      
-   
+      jquery_populate_sub_server_select("#sub_server",sub_data,sub_data,null)
+      populate_schedule_list()   
    }
     
+    
    function sub_server_change(event,ui){
-      populate_table()
+     
+     alert("sub server change")
+     populate_schedule_list()
+   }
+   
+   function create_schedule_list_table(){
+   
+      create_table( "#schedule_list",["Name","Description","Creation Time" ])
+   
    
    }
+   
+  
+   
+   function populate_schedule_list(){
+       let data = {}
+       data["master_controller"] = $("#master_server").val()
+       data["sub_controller"]    = $("#sub_server").val()
+      
+       ajax_post_get(ajax_get_schedule , data, ajax_get_function,  "Schedule Data Not Loaded")
+       
+    }
+   function ajax_get_function(data){
+      schedule_data  = data
+      console.log(schedule_data)
+      
+      schedule_data_map = {}
+      set_status_bar("Schedule Data Downloaded")
+      let station_data = []
+     // let key_entries =Object.keys(data)
+     //console.log(key_entries)
+     //key_entries.sort()
+     //console.log(key_entries)
+     //let i = 0
+     //for (i = 0;i< key_entries.length;i++){
+     //    station_data.push(add_station_entry(eto_resource[key_entries[i]]))
+     //}
+     //console.log("station data")
+     //console.log(station_data)
+     let table = $('#schedule_list').DataTable()
+     table.clear()
+     table.rows.add(station_data)
+     table.draw()
+      
+   }
+    
+   
+   
     </script>`
     
   return return_value
