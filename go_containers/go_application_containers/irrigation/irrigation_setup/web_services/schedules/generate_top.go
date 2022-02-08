@@ -12,15 +12,18 @@ func generate_main_component()web_support.Sub_component_type{
     return_value := web_support.Construct_subsystem("main_form")
 
     null_list := make([]string,0)
-    return_value.Append_line("<h3>Mange Irrigation Schedules</h3>")
+    return_value.Append_line(web_support.Generate_title("Mange Irrigation Schedules"))
+    return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_select("Select Master Server","master_server",null_list,null_list))
+    return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_select("Select Sub Server","sub_server",null_list,null_list))
-   
+   return_value.Append_line(web_support.Generate_space("25"))
     
     values := []string{"null","create","edit","copy","delete"}
     text   := []string{"Null Action","Create Schedule","Edit Schedule","Copy Schedule","Delete Schedule"}
     
     return_value.Append_line(web_support.Generate_select("Select Action","schedule_action",values,text))
+    return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_table("List of Schedules","schedule_list"))
     return_value.Append_line("</div>")
     return_value.Append_line(js_generate_top_js())

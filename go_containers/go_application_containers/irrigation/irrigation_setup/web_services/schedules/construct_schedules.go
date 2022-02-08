@@ -2,7 +2,7 @@ package construct_schedule
 
 
 import(
-    //"fmt"
+    "fmt"
     
     //"strings"
     "net/http"
@@ -26,8 +26,9 @@ func Page_init(input *template.Template){
     
     base_templates = input
     sched_access = irr_sched_access.Construct_irr_schedule_access()
-    
-    
+    fmt.Println(sched_access.Master_table_list_json)
+    fmt.Println(sched_access.Valve_list_json)
+   
 }      
 
 
@@ -51,7 +52,7 @@ func Generate_page(w http.ResponseWriter, r *http.Request){
 func generate_html_js()string{
     web_variables := make(map[string]string)
     web_variables["master_sub_server"] = sched_access.Master_table_list_json
-    web_variables["valve_list_json"]   = sched_access.Valve_list_json
+    web_variables["valve_list"]   = sched_access.Valve_list_json
     
     ajax_variables := make(map[string]string)
     ajax_variables["add_schedule"]    =   "ajax/irrigation/irrigation_schedules/add_schedule"
@@ -74,12 +75,16 @@ func generate_html_js()string{
     top_list.Add_section(edit_schedule_name)
     
     
+    edit_step_name := generate_edit_a_step()
+    top_list.Add_section(edit_step_name)
     
-    //top_list.Add_section(edit_schedule())
-    //top_list.Add_section(edit_valve())
-    //top_list.Add_section(copy_schedule)
-    //fmt.Println(top_list.Generate_ending())
-    //panic("done")
+    edit_valve_name := generate_edit_a_valve()
+    top_list.Add_section(edit_valve_name)
+    
+    step_time_change := generate_step_time_change()
+    top_list.Add_section(step_time_change)
+    
+    
     return top_list.Generate_ending()
     
 }   
@@ -102,6 +107,7 @@ func js_generate_global_js()string{
 
     valve_list_json ='`+sched_access.Valve_list_json+`'
     valve_list = JSON.parse(valve_list_json)
+  
     ajax_add_schedule    = "ajax/irrigation/irrigation_schedules/add_schedule" 
     ajax_delete_scheudle = "ajax/irrigation/irrigation_schedules/delete_schedule" 
     ajax_get_schedule    = "ajax/irrigation/irrigation_schedules/get_schedules" 

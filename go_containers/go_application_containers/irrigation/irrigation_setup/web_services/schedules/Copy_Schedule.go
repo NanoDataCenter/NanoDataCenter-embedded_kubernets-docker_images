@@ -45,9 +45,6 @@ func js_generate_copy_table()string{
          $("#copy_name_continue").bind('click',table_copy_continue)
          $("#copy_name_abort").bind('click',table_copy_abort)
        
-    
-       
-       
        }
        function copy_table_generate_panel(){
           hide_all_sections()

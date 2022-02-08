@@ -114,18 +114,132 @@ func Jquery_components_js()string{
         columns: table_columns
     } );
   }
-    
-    
+  function load_table(tag, data){
   
-    
-    
-    function load_table(tag,data){
-    let table = $(tag).DataTable()
+     let table = $(tag).DataTable()
      table.clear()
      table.rows.add(data)
      table.draw()
+  
+  
+ }
+    
+    
+  function check_box_element(key){
+  
+        let label = " "
+        check_box = '<div class="form-check">\n'+
+       '<label class=""btn  btn-toggle" " for="'+key+'">\n'+     	   
+       '<input type="checkbox" class="btn  btn-toggle" id="'+key+'" name="optradio" value='+key+'>'+label+ '</label></div>'
+        return check_box
+  }
+  
+  function radio_button_element(key){
+  
+       let label = " "
+       radio_button = '<div class="form-check">\n'+
+       '<label class=""btn  btn-toggle" " for="'+key+'">\n'+     	   
+
+       '<input type="radio" class="btn  btn-toggle"  id="'+key+'" name="optradio" value='+key+'>'+label+ '</label></div>'
+       return radio_button
+   }
+  
+   function find_select_index(base_id,length){
+       var i;
+       for( i=0; i< length; i++)
+       {
+         if( $("#"+base_id+i).is(':checked') == true )
+         {
+           return i;
+         }
+      }
+      return  -1;  // no item selected
+     }
+     
+     function find_check_box_elements(base_id,length){
+       var return_value = []
+       for( i=0; i< length; i++)
+       {
+         if( $("#"+base_id+i).is(':checked') == true )
+         {
+           return_value.push(i)
+         }
+      }
+      return return_value
+     
+     
+     }
+    
+    function deepcopy(input){
+       return JSON.parse(JSON.stringify(input))
+   }
+    
+    function deepslice( input, index,number){
+         return_value = []
+         if( input.length < index+number){
+             alert("bad slice values")
+             return return_value
+          }
+          let i = 0
+          for( i = 0; i<input.length;i++){
+              if( (i < index)||(i>index+number-1)){
+                  return_value.push(deepcopy(input[i]))
+               }
+          }
+          return return_value
     }
     
-    `
+    function Keys(input){
+      return Object.keys(input)
+    }
+    
+    function calculate_move(length,move_position,move_array){
+      let return_value = []
+      let ref_array    = []
+     
+      if(move_position+ move_array.length > length){
+          move_position = length-move_array.length
+       }
+    
+       for(let i=0;i<length;i++){
+         return_value.push(-1)
+         ref_array.push(i)
+       }
+       
+       for(let i=0;i<move_array.length;i++){
+          
+          ref_array[move_array[i]] = -1
+          return_value[move_position] = move_array[i]
+          move_position += 1
+        }
+        
+        for(let i= 0;i<ref_array.length;i++){
+            let temp = ref_array[i]
+            
+            if( temp == -1){
+                continue
+             }
+             return_valve = inner_move(temp,return_value)
+             
+         }
+        
+        return return_value
+     }
+     
+     function inner_move(value,return_value){
+        for(let j=0;j<return_value.length;j++){
+              if( return_value[j] == -1 ){
+                return_value[j] =value
+                return return_value
+              }
+         }
+         return return_value
+    }
+     
+     
+    
+     
+     `
+    
     return js
 }
