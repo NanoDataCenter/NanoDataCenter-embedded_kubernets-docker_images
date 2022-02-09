@@ -27,6 +27,7 @@ func generate_irrigation_component_graph(){
     irrigation.Add_irrigation_sensors()
     irrigation.Add_station_definitions()
     irrigation.Add_irrigation_servers()
+    irrigation.Add_irrigation_data_structures()
     
     
     

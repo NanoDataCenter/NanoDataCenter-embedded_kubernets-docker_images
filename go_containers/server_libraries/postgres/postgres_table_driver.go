@@ -151,11 +151,8 @@ func ( v  Postgres_Table_Driver )Insert( tag1,tag2,tag3,tag4,tag5,data string )b
     
   time_stamp    := time.Now().UnixNano()
   
-     
-  
- 
   script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,data,time_stamp)
-
+    fmt.Println("script",script)
     status :=  v.Exec( script  )
  
   return status
@@ -178,7 +175,7 @@ func (v Postgres_Table_Driver)tags_where_clause( tags map[string]string)string{
     
    where_clause_array := make([]string,0)
    for key,value := range tags{
-       entry := `( `+key+`  = "`+value+`" )`
+       entry := `( `+key+`  = '`+value+`' )`
        where_clause_array = append(where_clause_array,entry)
    }
    where_clause := strings.Join(where_clause_array," AND ")   

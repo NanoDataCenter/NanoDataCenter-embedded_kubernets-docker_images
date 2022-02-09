@@ -61,7 +61,7 @@ func js_generate_top_js()string{
       jquery_populate_select("#sub_server",sub_data,sub_data,sub_server_change)
       jquery_initalize_select("#schedule_action",main_menu)
       create_schedule_list_table()
-      populate_schedule_list()
+      
     }
 
     
@@ -112,7 +112,7 @@ func js_generate_top_js()string{
    
    function create_schedule_list_table(){
    
-      create_table( "#schedule_list",["Name","Description","Creation Time" ])
+      create_table( "#schedule_list",["Select","Name","Description" ])
    
    
    }
@@ -129,25 +129,23 @@ func js_generate_top_js()string{
     }
    function ajax_get_function(data){
       schedule_data  = data
+      
       console.log(schedule_data)
       
       schedule_data_map = {}
       set_status_bar("Schedule Data Downloaded")
-      let station_data = []
-     // let key_entries =Object.keys(data)
-     //console.log(key_entries)
-     //key_entries.sort()
-     //console.log(key_entries)
-     //let i = 0
-     //for (i = 0;i< key_entries.length;i++){
-     //    station_data.push(add_station_entry(eto_resource[key_entries[i]]))
-     //}
-     //console.log("station data")
-     //console.log(station_data)
-     let table = $('#schedule_list').DataTable()
-     table.clear()
-     table.rows.add(station_data)
-     table.draw()
+      let row_data = []
+      let i = 0
+      for (i = 0;i< schedule_data.length;i++){
+         entry =[]
+         entry.push(radio_button_element("Schedule_display_"+i))
+         //entry.push("radio")
+         entry.push(schedule_data[i]["name"])
+         entry.push(schedule_data[i]["description"])
+         row_data.push(entry)
+      }
+     
+     load_table('#schedule_list', row_data)
       
    }
     

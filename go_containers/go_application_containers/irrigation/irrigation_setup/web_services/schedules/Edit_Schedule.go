@@ -77,10 +77,12 @@ func js_generate_edit_schedule()string{
     
     function edit_schedule_save(){
     
-       ajax_post_get(ajax_add_schedule, ed_sch_working_schedule, edit_schedule_cancel, "error message not saved") 
+       ajax_post_get(ajax_add_schedule, ed_sch_working_schedule, edit_schedule_complete, "error message not saved") 
      }
      
-    
+    function edit_schedule_complete(){
+       alert("schedule saved")
+    }
     
     function edit_schedule_cancel(){
     

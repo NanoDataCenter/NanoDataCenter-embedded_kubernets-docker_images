@@ -4,7 +4,7 @@ package irrigation_information_web
 import (
      //"fmt"
      "io"
-     "encoding/json"
+     //"encoding/json"
      "fmt"
     "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/eto_setup"
     "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/eto_adjust"
@@ -256,19 +256,14 @@ func get_schedules(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
 
 
-    decoder := json.NewDecoder(r.Body)
-    var input map[string]string
-    err := decoder.Decode(&input)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("input",input)
-     output_string := "{}"
-    //output_string := construct_schedule.Ajax_post_schedules(input)  // input master controller,sub_controller  output json data  
-    output := []byte(output_string)
-  
-   w.Write(output) 
-    
+input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }else{
+    output :=  construct_schedule.Ajax_post_schedules(string(input))
+    fmt.Println("output",output)
+    w.Write([]byte(output) )
+  }  
 }
 
 

@@ -2,7 +2,7 @@ package construct_schedule
 
 
 import(
-    "fmt"
+    //"fmt"
     
     //"strings"
     "net/http"
@@ -26,8 +26,9 @@ func Page_init(input *template.Template){
     
     base_templates = input
     sched_access = irr_sched_access.Construct_irr_schedule_access()
-    fmt.Println(sched_access.Master_table_list_json)
-    fmt.Println(sched_access.Valve_list_json)
+    //fmt.Println(sched_access.Master_table_list_json)
+    //fmt.Println(sched_access.Valve_list_json)
+    initialize_irrigation_schedule_data_structures()
    
 }      
 
@@ -45,6 +46,7 @@ func Generate_page(w http.ResponseWriter, r *http.Request){
     data := make(map[string]interface{})
     data["Title"] = "Edit Irrigation Schedules"
     page_template.ExecuteTemplate(w,"bootstrap", data)
+    
     
 }
 
