@@ -86,6 +86,8 @@ func generate_html_js()string{
     step_time_change := generate_step_time_change()
     top_list.Add_section(step_time_change)
     
+    copy_sched_name := generate_copy_schedule_name()
+    top_list.Add_section(copy_sched_name)
     
     return top_list.Generate_ending()
     
@@ -111,8 +113,9 @@ func js_generate_global_js()string{
     valve_list = JSON.parse(valve_list_json)
   
     ajax_add_schedule    = "ajax/irrigation/irrigation_schedules/add_schedule" 
-    ajax_delete_scheudle = "ajax/irrigation/irrigation_schedules/delete_schedule" 
+    ajax_delete_schedule = "ajax/irrigation/irrigation_schedules/delete_schedule" 
     ajax_get_schedule    = "ajax/irrigation/irrigation_schedules/get_schedules" 
+
 
 
     

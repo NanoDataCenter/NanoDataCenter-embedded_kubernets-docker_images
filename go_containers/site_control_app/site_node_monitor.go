@@ -104,6 +104,7 @@ func main(){
        
        mount_usb_drive(mount_string) // mount external hard drive for storing system data
        fill_in_site_data()
+       
 	   site_init.Site_Master_Init(&site_data)
        
 	} else {

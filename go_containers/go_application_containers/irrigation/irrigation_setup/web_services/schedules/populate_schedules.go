@@ -32,12 +32,12 @@ func Ajax_add_schedule(input string){  // input master controller, sub_controlle
      if err != nil {
        panic(err)
      }
-     fmt.Println("schedule_data",schedule_data)
+    
      list_data :=  schedule_data["steps"].([]interface{})
-     fmt.Println("list_data",list_data)
+    
      bytes,err :=  json.Marshal(list_data)
      list_data_json := string(bytes)
-     fmt.Println("list_data_json",list_data_json)
+     
      description    := schedule_data["description"].(string)
      name           := schedule_data["name"].(string)
      master_server  := schedule_data["master_server"].(string)
@@ -55,12 +55,22 @@ func Ajax_add_schedule(input string){  // input master controller, sub_controlle
 }
     
 func Ajax_delete_schedule(input string){  // input master controller, sub_controller  , schedule_name
-
+     var delete_data map[string]string
+     err :=  json.Unmarshal([]byte(input),&delete_data)
+     if err != nil {
+       panic(err)
+     }
+    
+     master_controller  := delete_data["master_controller"]
+     sub_controller     := delete_data["sub_controller"]
+     schedule_name      := delete_data["schedule_name"]
+    
     
      where_entries := make(map[string]string)
-     //where_entries["tag1"] = master_server
-     //where_entries["tag2"] = sub_server
-     //where_entries["tag3"] = name
+     where_entries["tag1"] = master_controller
+     where_entries["tag2"] = sub_controller
+     where_entries["tag3"] = schedule_name
+     fmt.Println("where entries",where_entries)
      
      fmt.Println("delete",Irrigation_schedules.Delete_Entry(where_entries))
 }    
@@ -72,23 +82,22 @@ func Ajax_post_schedules(input string)string{  // input master controller,sub_co
        panic(err)
      }
      
-    fmt.Println("server_data",server_data)
+    
    
     master_controller  := server_data["master_controller"]
     sub_controller     := server_data["sub_controller"]
    
-    fmt.Println("master_server",master_controller)
-    fmt.Println("sub_server",sub_controller)
+    
     where_entries := make(map[string]string)
     where_entries["tag1"] = master_controller
     where_entries["tag2"] = sub_controller
     
-    fmt.Println("where_entries",where_entries)
+   
     data,result := Irrigation_schedules.Select_tags(where_entries)
     if(result != true){
         panic("fail select")
     }
-    fmt.Println("data",data)
+  
     return_value := make([]map[string]interface{},0)
     
     
@@ -110,7 +119,7 @@ func Ajax_post_schedules(input string)string{  // input master controller,sub_co
         
     bytes,_ :=  json.Marshal(return_value)
         
-    fmt.Println("post ",bytes)
+   
     
    return string(bytes)
 }    

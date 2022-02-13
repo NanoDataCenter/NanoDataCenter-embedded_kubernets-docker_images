@@ -166,6 +166,7 @@ func Convert_json_int( json_string string) int64{
 func Convert_json_float64( json_string string) float64{
    
      var return_value float64;
+     
      var err2 = json.Unmarshal([]byte(json_string),&return_value)
      if err2 != nil{
 	         panic("bad json data")

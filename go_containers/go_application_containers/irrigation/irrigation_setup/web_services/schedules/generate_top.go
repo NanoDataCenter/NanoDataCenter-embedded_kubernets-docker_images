@@ -58,6 +58,7 @@ func js_generate_top_js()string{
       jquery_populate_select('#master_server',master_key,master_key,master_server_change)
       let sub_key  = master_key[0]
       let sub_data = master_sub_server[sub_key]
+      sub_data.sort()
       jquery_populate_select("#sub_server",sub_data,sub_data,sub_server_change)
       jquery_initalize_select("#schedule_action",main_menu)
       create_schedule_list_table()
@@ -77,19 +78,44 @@ func js_generate_top_js()string{
        }
        
        if( choice == "edit"){
-           
-           alert("copy")
+          let select_index = find_select_index("Schedule_display_",schedule_data.length)
+         if( select_index  == -1){
+           alert("no schedule selected")
+          }else{
+             
+              edit_schedule( schedule_data[select_index])
+          }
+          
            
        }
        if( choice == "copy"){
-           
-           // check if selected
-           copy_table_generate_panel()
-           
+         let select_index = find_select_index("Schedule_display_",schedule_data.length)
+         if( select_index  == -1){
+           alert("no schedule selected")
+          }else{
+             
+              copy_schedule_go(select_index)
+          }
+          
        }
        if( choice == "delete"){
-           
-           alert("delete")
+         let select_index = find_select_index("Schedule_display_",schedule_data.length)
+         if( select_index  == -1){
+           alert("no schedule selected")
+          }else{
+              let item = schedule_data[select_index]
+              let name = item["name"]
+              if( confirm("Delete Schedule "+name)== true){
+                   let data = {}
+                   data["master_controller"] = $("#master_server").val()
+                   data["sub_controller"]    = $("#sub_server").val()
+                   data["schedule_name"]     =  name
+                  
+                   ajax_post_get( ajax_delete_schedule,data, populate_schedule_list, "schedule not deleted")
+                  
+              }
+          }
+          
            
        }
        $("#schedule_action")[0].selectedIndex = 0;
@@ -99,14 +125,15 @@ func js_generate_top_js()string{
    function master_server_change(event,ui){
       let sub_key  = $("#master_server").val()
       let sub_data = master_sub_server[sub_key]
-      jquery_populate_sub_server_select("#sub_server",sub_data,sub_data,null)
+      sub_data.sort()
+      jquery_populate_select("#sub_server",sub_data,sub_data,null)
       populate_schedule_list()   
    }
     
     
    function sub_server_change(event,ui){
      
-     alert("sub server change")
+   
      populate_schedule_list()
    }
    
@@ -137,9 +164,11 @@ func js_generate_top_js()string{
       let row_data = []
       let i = 0
       for (i = 0;i< schedule_data.length;i++){
-         entry =[]
+         let entry =[]
+         let name = schedule_data[i]["name"]
+         schedule_data_map[name] = true 
          entry.push(radio_button_element("Schedule_display_"+i))
-         //entry.push("radio")
+         
          entry.push(schedule_data[i]["name"])
          entry.push(schedule_data[i]["description"])
          row_data.push(entry)

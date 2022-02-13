@@ -25,6 +25,8 @@ func generate_edit_table_html()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_button("Back","edit_schedule_cancel_id"))
     return_value.Append_line("</div>")
     return_value.Append_line(web_support.Generate_space("25"))
+    
+    
     values := []string{"null","create","pause","edit","copy","delete","time","move"}
     text   := []string{"Null Action","Create Step","Create Pause","Edit Step","Copy Step","Delete Step","Change Step Time","Move Steps"}
     
@@ -68,12 +70,16 @@ func js_generate_edit_schedule()string{
       ed_sch_working_schedule["steps"]       = []
       $("#edit_schedule_name").html("Schedule Name:  "+name)
       $("#edit_schedule_description").html("Description:  "+description)
-      
-      
-      
-      load_table("#edit_schedule_step_list",ed_sch_working_schedule["steps"] )
+      load_schedule_table()
       start_section("edit_schedule")
     }
+    function edit_schedule( working_step){
+       ed_sch_working_schedule = deepcopy(working_step)
+       $("#edit_schedule_name").html("Schedule Name:  "+ed_sch_working_schedule["name"])
+       $("#edit_schedule_description").html("Description:  "+ed_sch_working_schedule["description"])
+       load_schedule_table()
+       start_section("edit_schedule")
+   }
     
     function edit_schedule_save(){
     
@@ -81,7 +87,7 @@ func js_generate_edit_schedule()string{
      }
      
     function edit_schedule_complete(){
-       alert("schedule saved")
+       start_section("main_form")
     }
     
     function edit_schedule_cancel(){
@@ -124,6 +130,7 @@ func js_generate_edit_schedule()string{
                alert("no item is select")
                
            }else{
+               
             for( i=0;i<select_array.length;i++){  
               let copy_data  = JSON.parse(JSON.stringify(step_data[select_array[i]]))
               

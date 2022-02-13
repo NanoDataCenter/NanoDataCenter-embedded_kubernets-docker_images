@@ -106,6 +106,7 @@ function ajax_post(url_path, data,  success_message, error_message )
 
 function ajax_post_get(url_path, data, success_function, error_message) 
 {
+     //console.log("url_path",url_path)
      var json_string = JSON.stringify(data);
      $("#status_display").text("Current Status: Operation in Progress")
      user_function = success_function

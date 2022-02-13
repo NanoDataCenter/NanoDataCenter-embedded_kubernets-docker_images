@@ -1,5 +1,6 @@
 package data_handler
 
+import "fmt"
 import "context"
 
 import "time"
@@ -56,10 +57,12 @@ func Store_Valid_Set(dict_key string,valid_set map[string]string){
 
 func get_data_base_number()int{
  
+   
     search_list := []string{"SYSTEM"}
     nodes := graph_query.Full_site_serach(&search_list)
+    fmt.Println("nodes",nodes)
     node := nodes[0]
-
+    
     data_db,err :=strconv.Atoi(node["data_db"])
     if err != nil {
       panic("bad data_db")

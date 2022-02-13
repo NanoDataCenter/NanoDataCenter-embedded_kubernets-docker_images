@@ -34,9 +34,12 @@ func Add_irrigation_servers(){
    master_irrigation_node(   "main_server",all_master_actions,
                                   master_valves,cleaning_valves)
  
-   construct_sub_server_1()
-  master_irrigation_end("main_server")                    
-    
+   construct_sub_server_a("main_server")
+   
+   master_irrigation_end("main_server")                    
+
+ 
+   
   su.Cd_Rec.Construct_package("IRRIGATION_DATA_STRUCTURES")
   su.Cd_Rec.Create_postgres_table( "IRRIGATION_SCHEDULES","admin","password","admin")
   su.Cd_Rec.Create_postgres_table("IRRIGATION_ACTIONS","admin","password","admin")
@@ -47,23 +50,24 @@ func Add_irrigation_servers(){
     
 }
 
-func construct_sub_server_1(){
+func construct_sub_server_a(master_node string){
    nil_exclusion := make([]int,0)
    supported_stations := map[string][]int{"station_1":nil_exclusion,
                                         "station_2":nil_exclusion,
                                         "station_3":nil_exclusion,
                                         "station_4":nil_exclusion}
  
-   station_valve_number := map[string]int{"station_1":44,
+   station_valve_number := map[string]int{"station_1":42,
                                         "station_2":22,
                                         "station_3":22,
                                         "station_4":20}
                                         
-   slave_irrigation_server("sub_server_1",supported_stations,station_valve_number ,    all_slave_actions)
+   slave_irrigation_server(master_node+":sub_server_1",supported_stations,station_valve_number ,    all_slave_actions)
  
     
     
 }
+
 
 
 

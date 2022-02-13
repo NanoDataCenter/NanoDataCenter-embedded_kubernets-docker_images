@@ -58,6 +58,8 @@ func js_generate_create_schedule_name()string{
            alert("invalid schedule")
            return
        }
+       console.log("schedule_name",schedule_name)
+       console.log(schedule_data_map)
        if (schedule_name in schedule_data_map){
            alert("duplicate schedule")
            return

@@ -9,18 +9,23 @@ func Add_station_definitions(){
    su.Bc_Rec.Add_header_node("IRRIGATION_STATIONS","IRRIGATION_STATIONS",make(map[string]interface{}))
    
    r :=construct_station_control()
-   r1 := r.construct_valve_array(44,45)
+   description_1 := make([]string,0)
+   rainbird_resistance := float64(45)
+   r1 := r.construct_valve_array(44,rainbird_resistance)
    r1[44] = 45./2.
-   r.Add_Click_PLC_RS485( "station_1", "CLICK_1" , len(r1),100,r1 )
+   r.Add_Click_PLC_RS485( "station_1", "CLICK_1" , len(r1),100,r1,description_1 )
    
-   r2 := r.construct_valve_array(22,45)
-   r.Add_Click_PLC_RS485( "station_2", "CLICK_2" , len(r2),125,r2 )
+   r2 := r.construct_valve_array(22,rainbird_resistance)
+   description_2 := make([]string,0)
+   r.Add_Click_PLC_RS485( "station_2", "CLICK_2" , len(r2),125,r2,description_2 )
    
-   r3 := r.construct_valve_array(22,45)
-   r.Add_Click_PLC_RS485( "station_3", "CLICK_2" , len(r3),170,r3 )
+   r3 := r.construct_valve_array(22,rainbird_resistance)
+   description_3 := make([]string,0)
+   r.Add_Click_PLC_RS485( "station_3", "CLICK_2" , len(r3),170,r3,description_3 )
    
-   r4 := r.construct_valve_array(20,45)
-   r.Add_Click_PLC_RS485( "station_4", "CLICK_1" , len(r4),135,r4 )
+   r4 := r.construct_valve_array(20,rainbird_resistance)
+   description_4 := make([]string,0)
+   r.Add_Click_PLC_RS485( "station_4", "CLICK_1" , len(r4),135,r4 ,description_4)
    r.generate_stations()
    su.Bc_Rec.End_header_node("IRRIGATION_STATIONS","IRRIGATION_STATIONS") 
     
@@ -52,7 +57,7 @@ func ( r *station_control_type ) generate_stations(){
     
 }
 
-func ( r *station_control_type)Add_Click_PLC_RS485( name , plc_type string,  valve_number,modbus_address int ,resistance []float64 ){
+func ( r *station_control_type)Add_Click_PLC_RS485( name , plc_type string,  valve_number,modbus_address int ,resistance []float64,description []string ){
     
     r.check_name(name)
     r.check_type(plc_type)
@@ -64,6 +69,7 @@ func ( r *station_control_type)Add_Click_PLC_RS485( name , plc_type string,  val
     entry["valve_number"]   = valve_number
     entry["modbus_address"] = modbus_address
     entry["resistance"]     = resistance
+    entry["description"]    = description
     r.station_map[name] = entry
     
 }
