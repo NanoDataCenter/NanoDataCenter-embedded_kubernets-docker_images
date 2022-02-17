@@ -1,7 +1,9 @@
 package cd
 
-import "lacima.com/go_setup_containers/site_generation_base/graph_generation/build_configuration"
-
+import (
+ //"fmt"
+ "lacima.com/go_setup_containers/site_generation_base/graph_generation/build_configuration"
+)
 type Package_Constructor struct {
   site                string
   bc                  *bc.Build_Configuration
@@ -103,6 +105,19 @@ func ( v *Package_Constructor)Create_postgres_table( name,user,password, databas
        v.update_entry(name,&properties) 
 }        
         
+// table name is in the derived key
+func ( v *Package_Constructor)Create_postgres_float( name,user,password, database_name string ){
+       v.check_for_duplicates( name)
+	   
+	   properties := make(map[string]interface{})
+       properties["type"]           = "POSTGRES_FLOAT"
+       properties["name"]           = name  
+       properties["user"]           = user
+       properties["password"]       = password
+       properties["database_name"]  = database_name
+
+       v.update_entry(name,&properties) 
+}        
 
    
 func ( v *Package_Constructor) Add_single_element(name string){

@@ -107,9 +107,9 @@ func js_generate_top_js()string{
               let name = item["name"]
               if( confirm("Delete Schedule "+name)== true){
                    let data = {}
-                   data["master_controller"] = $("#master_server").val()
-                   data["sub_controller"]    = $("#sub_server").val()
-                   data["schedule_name"]     =  name
+                   data["master_server"] = $("#master_server").val()
+                   data["sub_server"]    = $("#sub_server").val()
+                   data["name"]     =  name
                   
                    ajax_post_get( ajax_delete_schedule,data, populate_schedule_list, "schedule not deleted")
                   
@@ -148,8 +148,8 @@ func js_generate_top_js()string{
    
    function populate_schedule_list(){
        let data = {}
-       data["master_controller"] = $("#master_server").val()
-       data["sub_controller"]    = $("#sub_server").val()
+       data["master_server"] = $("#master_server").val()
+       data["sub_server"]    = $("#sub_server").val()
       
        ajax_post_get(ajax_get_schedule , data, ajax_get_function,  "Schedule Data Not Loaded")
        
@@ -173,7 +173,7 @@ func js_generate_top_js()string{
          entry.push(schedule_data[i]["description"])
          row_data.push(entry)
       }
-     
+     console.log("row_data",row_data)
      load_table('#schedule_list', row_data)
       
    }

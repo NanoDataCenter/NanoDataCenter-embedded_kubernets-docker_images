@@ -16,7 +16,7 @@ var base_templates                    *template.Template
 
 
 
-var sched_access irr_sched_access.Irr_sched_access_type
+var control_block irr_sched_access.Irr_sched_access_type
 
  
  
@@ -25,10 +25,7 @@ func Page_init(input *template.Template){
     
     
     base_templates = input
-    sched_access = irr_sched_access.Construct_irr_schedule_access()
-    //fmt.Println(sched_access.Master_table_list_json)
-    //fmt.Println(sched_access.Valve_list_json)
-    initialize_irrigation_schedule_data_structures()
+    control_block = irr_sched_access.Construct_irr_schedule_access()
    
 }      
 
@@ -53,8 +50,8 @@ func Generate_page(w http.ResponseWriter, r *http.Request){
  
 func generate_html_js()string{
     web_variables := make(map[string]string)
-    web_variables["master_sub_server"] = sched_access.Master_table_list_json
-    web_variables["valve_list"]   = sched_access.Valve_list_json
+    web_variables["master_sub_server"] = control_block.Master_table_list_json
+    web_variables["valve_list"]   = control_block.Valve_list_json
     
     ajax_variables := make(map[string]string)
     ajax_variables["add_schedule"]    =   "ajax/irrigation/irrigation_schedules/add_schedule"
@@ -106,10 +103,10 @@ func js_generate_global_js()string{
     var schedule_data      =  []
     var schedule_data_map  =  {}
     
-    master_sub_server_json ='`+ sched_access.Master_table_list_json+`'
+    master_sub_server_json ='`+ control_block.Master_table_list_json+`'
     master_sub_server = JSON.parse(master_sub_server_json)
 
-    valve_list_json ='`+sched_access.Valve_list_json+`'
+    valve_list_json ='`+control_block.Valve_list_json+`'
     valve_list = JSON.parse(valve_list_json)
   
     ajax_add_schedule    = "ajax/irrigation/irrigation_schedules/add_schedule" 

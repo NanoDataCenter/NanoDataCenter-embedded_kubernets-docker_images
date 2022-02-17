@@ -68,12 +68,8 @@ func ( v  *Postgres_Table_Driver )Connect( ip string )bool{
         return false
     }
     
-	
-	
-
 	v.create_table()
     
-	
 	return true
 }
 
@@ -133,26 +129,15 @@ func ( v Postgres_Table_Driver)Exists(tags map[string]string)(int,bool){
     
 }
 
-func ( v  Postgres_Table_Driver )Update( tag1,tag2,tag3,tag4,tag5,data string )bool{
+
+
+func ( v  Postgres_Table_Driver )Insert( input Table_Output_Data_Record  )bool{
     
   time_stamp    := time.Now().UnixNano()
   
-     
-  
-   update_part := fmt.Sprint(" SET tag1 ='%s',tag2 ='%s',tag3 ='%s',tag4 ='%s',tag5 ='%s', data ='%s',time =%d ; " ,tag1,tag2,tag3,tag4,tag5,data,time_stamp)
-   script := "UPDATE INTO "+v.table_name+update_part
-
-  status :=  v.Exec( script  )
- 
-  return status
-}
-
-func ( v  Postgres_Table_Driver )Insert( tag1,tag2,tag3,tag4,tag5,data string )bool{
-    
-  time_stamp    := time.Now().UnixNano()
-  
-  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s','%s','%s',%d);",v.table_name,tag1,tag2,tag3,tag4,tag5,data,time_stamp)
-    fmt.Println("script",script)
+  script := fmt.Sprintf("INSERT INTO %s (tag1,tag2,tag3,tag4,tag5,data,time ) VALUES('%s','%s','%s','%s','%s','%s',%d);",v.table_name,input.Tag1, input.Tag2, input.Tag3, 
+                        input.Tag4, input.Tag5,input.Data, time_stamp)
+    //fmt.Println("script",script)
     status :=  v.Exec( script  )
  
   return status
@@ -164,7 +149,7 @@ func ( v   Postgres_Table_Driver)Delete_Entry( tags map[string]string)bool{
     
     where_clause := v.tags_where_clause(tags)
     script := "DELETE FROM "+v.table_name+" where "+where_clause+";"
-    fmt.Println("delete script ",script)
+    //fmt.Println("delete script ",script)
     return v.Exec(script)
     
 }

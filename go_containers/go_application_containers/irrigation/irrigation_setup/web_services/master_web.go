@@ -89,7 +89,7 @@ func define_web_pages()*template.Template  {
     return_value[1] = web_support.Construct_Menu_Element( "ETO Station Setup","eto_setup", eto_setup.Generate_page_setup)
     return_value[2] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
     return_value[3] = web_support.Construct_Menu_Element( "Construct Schedules","construct_schedule",construct_schedule.Generate_page)
-    return_value[4] = web_support.Construct_Menu_Element( "Construct Action","construct_action",construct_action.Generate_page)
+    return_value[4] = web_support.Construct_Menu_Element( "Construct Action","construct_action",construct_actions.Generate_page)
     return_value[5] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
@@ -285,7 +285,7 @@ func add_action(w http.ResponseWriter, r *http.Request) {
       fmt.Println(err)
   }else{   
   
-     construct_action.Ajax_add_action(string(input))  // input master controller, sub_controller, schedule_name , schedule_data
+     construct_actions.Ajax_add_action(string(input))  // input master controller, sub_controller, schedule_name , schedule_data
       
   }
   
@@ -302,7 +302,7 @@ func delete_action(w http.ResponseWriter, r *http.Request) {
       fmt.Println(err)
   }else{   
   
-     construct_action.Ajax_delete_action(string(input))  // input master controller, sub_controller  , schedule_name
+     construct_actions.Ajax_delete_action(string(input))  // input master controller, sub_controller  , schedule_name
       
   }
   
@@ -322,7 +322,7 @@ input,err :=  io.ReadAll(r.Body)
   if err != nil {
       panic(err)
   }else{
-    output :=  construct_actions.Ajax_post_schedules(string(input))
+    output :=  construct_actions.Ajax_post_actions(string(input))
    
     w.Write([]byte(output) )
   }  
