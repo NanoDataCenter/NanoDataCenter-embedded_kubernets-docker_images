@@ -1,4 +1,4 @@
-FROM arm32v7/postgres 
+FROM postgres 
 ENV CONTAINER_NAME "postgres"
 ENV POSTGRES_USER "admin"
 ENV POSTGRES_PASSWORD "password"

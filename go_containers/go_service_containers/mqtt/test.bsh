@@ -1,4 +1,4 @@
-docker run --log-driver none -d   --network host --name mqtt  nanodatacenter/mosquitto 
+docker run --log-driver none -d   --network host --name mqtt_debug  nanodatacenter/mosquitto 
 
 
 

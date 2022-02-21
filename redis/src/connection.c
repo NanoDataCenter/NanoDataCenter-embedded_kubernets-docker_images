@@ -171,7 +171,7 @@ static int connSocketWrite(connection *conn, const void *data, size_t data_len) 
         /* Don't overwrite the state of a connection that is not already
          * connected, not to mess with handler callbacks.
          */
-        if (conn->state == CONN_STATE_CONNECTED)
+        if (errno != EINTR && conn->state == CONN_STATE_CONNECTED)
             conn->state = CONN_STATE_ERROR;
     }
 
@@ -188,7 +188,7 @@ static int connSocketRead(connection *conn, void *buf, size_t buf_len) {
         /* Don't overwrite the state of a connection that is not already
          * connected, not to mess with handler callbacks.
          */
-        if (conn->state == CONN_STATE_CONNECTED)
+        if (errno != EINTR && conn->state == CONN_STATE_CONNECTED)
             conn->state = CONN_STATE_ERROR;
     }
 
@@ -427,7 +427,7 @@ int connGetState(connection *conn) {
  * For sockets, we always return "fd=<fdnum>" to maintain compatibility.
  */
 const char *connGetInfo(connection *conn, char *buf, size_t buf_len) {
-    snprintf(buf, buf_len-1, "fd=%i", conn->fd);
+    snprintf(buf, buf_len-1, "fd=%i", conn == NULL ? -1 : conn->fd);
     return buf;
 }
 

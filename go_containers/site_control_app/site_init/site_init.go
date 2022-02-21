@@ -155,6 +155,7 @@ func start_stopped_master_containers(){
 func start_run_once_containers(){
   //fmt.Println("run once ",site_run_once_containers)
   for _,value := range site_run_once_containers{
+       fmt.Println("container",value)
     if value["name"] == redis_container_name {
 	  
 	  continue
@@ -174,13 +175,14 @@ func start_run_once_containers(){
 
 func start_master_containers(){
   for _,value := range site_containers{
+    fmt.Println("container",value)
     if value["name"] == redis_container_name {
 	 
 	  continue
 	}
 	if docker_control.Image_Exists(value["container_image"]) == false{
 	   
-	   panic("container image should exit")
+	   panic("container image should exit  "+value["container_image"])
 	}
 	
 	docker_control.Container_rm(value["name"])

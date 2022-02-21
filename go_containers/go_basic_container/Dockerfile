@@ -1,4 +1,4 @@
-FROM arm32v6/bash 
+FROM bash 
 
 ENV TZ=America/Los_Angeles
 RUN apk add --no-cache libc6-compat

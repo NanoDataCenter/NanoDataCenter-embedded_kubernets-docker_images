@@ -7,7 +7,7 @@ import "strconv"
 import "context"
 
 
-//import "lacima.com/site_data"
+import "lacima.com/site_data"
 import  "lacima.com/site_control_app/docker_management"
 import "lacima.com/site_control_app/site_init"
 import "lacima.com/site_control_app/node_init"
@@ -17,26 +17,13 @@ import "lacima.com/site_control_app/node_control"
 import "lacima.com/redis_support/redis_handlers"
 
 import "lacima.com/cf_control"
-import "lacima.com/site_control_app/docker_control"
+//import "lacima.com/site_control_app/docker_control"
 import "github.com/go-redis/redis/v8"
 
 const config_file string = "/home/pi/system_config/redis_configuration.json"
 var  CF_site_node_control_cluster cf.CF_CLUSTER_TYPE
 
 
-
-func handle_mount_panic() {
-  
-    if a := recover(); a != nil {
-        fmt.Println("RECOVER", a)
-    }
-}
-
-func mount_usb_drive(mount_string string){
-  defer handle_mount_panic()
-  fmt.Println(docker_control.System_shell("mount /dev/sda /home/pi/mountpoint"))
-
-}
 
 
 
@@ -64,7 +51,7 @@ func fill_in_site_data(){
   site_data["hot_start"]                 = os.Getenv("hot_start")
   fmt.Println("hot_start",site_data["hot_start"])
  
- 
+  get_site_data.Save_site_data(config_file, site_data) 
   
   
   
@@ -87,7 +74,7 @@ func fill_in_slave_data(){
   site_data["host"]     =   os.Getenv("host")
   graph_db,_              := strconv.Atoi(os.Getenv("graph_db"))
   site_data["graph_db"] = graph_db
-  
+ get_site_data.Save_site_data(config_file, site_data) 
 }
 
 
@@ -95,16 +82,17 @@ func main(){
     
     
   
-    var mount_string = os.Getenv("mount_string")
+   
+    
 	var master_flag = os.Getenv("master_flag")
 	fmt.Println("master flag",master_flag)
     redis_handlers.Init_Redis_Mutex()
-
+   fmt.Println("made it here")
 	if master_flag == "true"{
        
-       mount_usb_drive(mount_string) // mount external hard drive for storing system data
+        
        fill_in_site_data()
-       
+        
 	   site_init.Site_Master_Init(&site_data)
        
 	} else {
@@ -113,8 +101,7 @@ func main(){
        
 
 	}
-	
-	
+
 	
  	
 

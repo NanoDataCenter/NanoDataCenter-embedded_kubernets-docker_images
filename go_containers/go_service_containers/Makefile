@@ -5,6 +5,7 @@ server:
 	$(MAKE) -C mqtt_to_db
 	$(MAKE) -C postgresql
 	$(MAKE) -C redis_monitor
+	$(MAKE) -C alert_handlers
 	
 all:  server
 

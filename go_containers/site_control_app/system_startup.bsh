@@ -2,7 +2,9 @@
 
 
 rm /tmp/site_node_monitor.errr
-export hot_start="false"  
+export hot_start="false"   
+mkdir moutpoint
+sudo mount /dev/sda /home/pi/mountpoint
 while [ 1 ]
 do
    echo "executing site node control program ++++++++++++++++++++++++++ "+$hot_start

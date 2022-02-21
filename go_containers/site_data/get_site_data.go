@@ -28,8 +28,9 @@ func Get_site_data(file_name string) map[string]interface{} {
 }
 
 func Save_site_data(file_name string, data map[string]interface{})  {
-
-    fmt.Println("file_name",file_name)
+   //fmt.Println("***************************")
+    //fmt.Println("file_name",file_name)
+    //fmt.Println("data",data)
     json_data, _ := json.MarshalIndent(data,"","")
  
 	err := ioutil.WriteFile(file_name, json_data, 0644)

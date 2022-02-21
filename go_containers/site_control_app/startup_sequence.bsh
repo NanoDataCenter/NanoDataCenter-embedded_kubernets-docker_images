@@ -5,7 +5,7 @@ export master_flag=true
 export site=LACIMA_SITE
 export local_node=site_controller
 export port=6379
-export host=192.168.1.66
+export host=127.0.0.1
 export graph_db=3.0
 
 
@@ -18,7 +18,9 @@ export redis_start_script='docker run  --log-driver local -d  --network host   -
 
 
 #echo --- $hot_start
+rm /tmp/site_node_monitor.err
 ./site_node_monitor 2>  /tmp/site_node_monitor.err
+#./site_node_monitor
 #rm /tmp/site_node_monitor.errr
 cat /tmp/site_node_monitor.err
 cp /tmp/site_node_monitor.err /tmp/site_node_monitor.errr
