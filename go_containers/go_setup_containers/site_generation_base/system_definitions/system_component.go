@@ -90,7 +90,7 @@ func generate_system_component_graph(){
     port_map["mqtt_to_db"]                      = ":2021"
     port_map["mqtt_status_out"]                 = ":2022"
     port_map["error_detection"]                 = ":2023"
-    port_map["eto"]                             = ":2024"
+    port_map["eto"]                                     = ":2024"
     port_map["irrigation_setup"]                = ":2025"
     
     port_description_map                        := make(map[string]string)
@@ -102,11 +102,13 @@ func generate_system_component_graph(){
     port_description_map["irrigation_setup"]    = "Irrigation Setup"
     
     port_start_label_map                        := make(map[string]string)
-    port_start_label_map["site_controller"]      = "site_controller"
-    port_start_label_map["mqtt_to_db"]           = "mqtt_to_db"
-    port_start_label_map["mqtt_status_out"]      = "mqtt_status_out"
-    port_start_label_map["eto"]                  = "eto"
+    port_start_label_map["site_controller"]       = "site_controller"
+    port_start_label_map["mqtt_to_db"]            = "mqtt_to_db"
+    port_start_label_map["mqtt_status_out"]    = "mqtt_status_out"
+    port_start_label_map["eto"]                            = "eto"
     port_start_label_map["irrigation_setup"]     = "irrigation_setup"
+   port_start_label_map["error_detection"]     ="error_detection"
+    
     
     port_map_properties["port_map"]             = port_map
     port_map_properties["description"]          = port_description_map

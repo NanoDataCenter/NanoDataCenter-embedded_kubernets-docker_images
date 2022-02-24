@@ -52,9 +52,10 @@ func Process_functions(){
     initalize_stream_processing()
     for true {
        
-       fmt.Println("sample_time",monitor_control.sample_time)
-       time.Sleep(time.Duration(monitor_control.sample_time)* time.Second)
+      
        process_stream_logs()
+       time.Sleep(time.Duration(monitor_control.sample_time)* time.Second)
+       
       
     
     }
@@ -69,7 +70,7 @@ func initalize_stream_processing(){
 }
 
 func process_stream_logs(){
-    
+    fmt.Println("process stream logs")
      for true {
          stream_data,err :=monitor_control.process_data_stream.Select_after_time_stamp_asc( monitor_control.sample_time)
          ts := time.Now().Unix()
@@ -86,7 +87,7 @@ func process_stream_logs(){
         
        for _,data_element := range stream_data {
        key_string :=    pg_drv.Assemble_key(data_element)
-       fmt.Println("key_string",key_string)
+       
        value,err      :=    msg_pack_utils.Unpack_float64(data_element.Data)
        if err != true {
            panic("bad packed data")
@@ -116,7 +117,7 @@ func process_data(key_string string,value float64,time_stamp int64,data_element 
     stream_processing_data := get_stream_processing_data(key_string,value)
     //fmt.Println("stream_processing_old",key_string,time_stamp,stream_processing_data)
     stream_processing_data = process_entry(stream_processing_data,value)
-    fmt.Println("stream_processing_data_new",key_string,time_stamp,value,stream_processing_data)
+    //fmt.Println("stream_processing_data_new",key_string,time_stamp,value,stream_processing_data)
     
     store_stream_processing_data(key_string,stream_processing_data ,time_stamp,data_element )
     

@@ -1,9 +1,10 @@
 package logging_support
 
-
-import "lacima.com/server_libraries/postgres"
-import "lacima.com/redis_support/generate_handlers"
-
+import (
+       "lacima.com/server_libraries/postgres"
+      "lacima.com/redis_support/generate_handlers"
+    // "fmt"
+)
 
 func Find_stream_logging_driver()pg_drv.Postgres_Stream_Driver{
     
@@ -11,9 +12,9 @@ func Find_stream_logging_driver()pg_drv.Postgres_Stream_Driver{
     data_element := data_handler.Construct_Data_Structures(&search_list)
 	 	 
 	
-	return   (*data_element)[ "LOG_STREAM"].(pg_drv.Postgres_Stream_Driver) 
-	     
-
+	status :=  (*data_element)[ "LOG_STREAM"].(pg_drv.Postgres_Stream_Driver) 
+	
+    return status
 }
 
 

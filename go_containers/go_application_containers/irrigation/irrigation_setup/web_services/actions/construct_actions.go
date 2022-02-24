@@ -67,6 +67,8 @@ func generate_html_js()string{
     main_component := generate_main_component()
     top_list.Add_section(main_component)
     
+    new_action := generate_get_action_name()
+    top_list.Add_section(new_action)
     //get_schedule_name := generate_get_schedule_name()
     //top_list.Add_section(get_schedule_name)
     
@@ -100,8 +102,8 @@ func js_generate_global_js()string{
   return_value := 
     `
     // global data
-    var schedule_data      =  []
-    var schedule_data_map  =  {}
+    var action_data      =  []
+    var action_data_map  =  {}
     
     master_sub_server_json ='`+ control_block.Master_table_list_json+`'
     master_sub_server = JSON.parse(master_sub_server_json)
@@ -109,11 +111,11 @@ func js_generate_global_js()string{
     valve_list_json ='`+control_block.Valve_list_json+`'
     valve_list = JSON.parse(valve_list_json)
   
-    ajax_add_schedule    = "ajax/irrigation/irrigation_schedules/add_schedule" 
-    ajax_delete_schedule = "ajax/irrigation/irrigation_schedules/delete_schedule" 
-    ajax_get_schedule    = "ajax/irrigation/irrigation_schedules/get_schedules" 
+    ajax_add_action    = "ajax/irrigation/irrigation_schedules/add_action" 
+    ajax_delete_action = "ajax/irrigation/irrigation_schedules/delete_action" 
+    ajax_get_actions    = "ajax/irrigation/irrigation_schedules/get_actions" 
 
-
+    
 
     
     

@@ -14,17 +14,23 @@ func generate_main_component()web_support.Sub_component_type{
     null_list := make([]string,0)
     return_value.Append_line(web_support.Generate_title("Manage Irrigation Actions"))
     return_value.Append_line(web_support.Generate_space("25"))
+     return_value.Append_line(web_support.Generate_sub_title("master_state","Master Server State"))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_check_box("Select For Master  Controller", "master_controller_select"))
+     return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_select("Select Master Server","master_server",null_list,null_list))
     return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_div_start("sub_controller_select"))
     return_value.Append_line(web_support.Generate_select("Select Sub Server","sub_server",null_list,null_list))
+    return_value.Append_line(web_support.Generate_div_end())
    return_value.Append_line(web_support.Generate_space("25"))
     
     values := []string{"null","create","edit","copy","delete","edit_start_time"}
-    text   := []string{"Null Action","Create Action","Edit Action","Copy Action","Delete Action","EDIT STart Time"}
+    text   := []string{"Null Action","Create Action","Edit Action","Copy Action","Delete Action","Edit Start Time"}
     
     return_value.Append_line(web_support.Generate_select("Select Action","schedule_action",values,text))
     return_value.Append_line(web_support.Generate_space("25"))
-    return_value.Append_line(web_support.Generate_table("List of Schedules","schedule_list"))
+    return_value.Append_line(web_support.Generate_table("List of Schedules","action_list"))
     return_value.Append_line("</div>")
     return_value.Append_line(js_generate_top_js())
     
@@ -43,12 +49,13 @@ func js_generate_top_js()string{
 
   return_value := 
   ` <script type="text/javascript"> 
-  
+ 
+    /***************************** Main Setup Screen ************************************************/
     
     function main_form_start(){
        hide_all_sections()
        show_section("main_form")
-       populate_schedule_list()
+       // load table
     }
   
     function main_form_init(){
@@ -61,68 +68,30 @@ func js_generate_top_js()string{
       sub_data.sort()
       jquery_populate_select("#sub_server",sub_data,sub_data,sub_server_change)
       jquery_initalize_select("#schedule_action",main_menu)
-      create_schedule_list_table()
+      create_action_list_table()
+      $('#master_controller_select').change(master_controller_select_function)
+      $("#master_state").html("Sub Server State")
+       $("#sub_controller_select").show()
       
     }
-
     
+    /**************************** Control Javascript Function **********************/
+    
+   function master_controller_select_function(){
+     if(this.checked) {
+       $("#sub_controller_select").hide()
+      $("#master_state").html("Master Server State")
+    } else {
+        $("#sub_controller_select").show()
+        $("#master_state").html("Sub Server State")
+   }
+    populate_schedule_list()
+   }
+   
 
-    function main_menu(event,ui){
-       var index
-       var choice
-       choice = $("#schedule_action").val()
-       if( choice == "create"){
    
-           start_section("add_schedule")
-           
-       }
-       
-       if( choice == "edit"){
-          let select_index = find_select_index("Schedule_display_",schedule_data.length)
-         if( select_index  == -1){
-           alert("no schedule selected")
-          }else{
-             
-              edit_schedule( schedule_data[select_index])
-          }
-          
-           
-       }
-       if( choice == "copy"){
-         let select_index = find_select_index("Schedule_display_",schedule_data.length)
-         if( select_index  == -1){
-           alert("no schedule selected")
-          }else{
-             
-              copy_schedule_go(select_index)
-          }
-          
-       }
-       if( choice == "delete"){
-         let select_index = find_select_index("Schedule_display_",schedule_data.length)
-         if( select_index  == -1){
-           alert("no schedule selected")
-          }else{
-              let item = schedule_data[select_index]
-              let name = item["name"]
-              if( confirm("Delete Schedule "+name)== true){
-                   let data = {}
-                   data["master_controller"] = $("#master_server").val()
-                   data["sub_controller"]    = $("#sub_server").val()
-                   data["schedule_name"]     =  name
-                  
-                   ajax_post_get( ajax_delete_schedule,data, populate_schedule_list, "schedule not deleted")
-                  
-              }
-          }
-          
-           
-       }
-       $("#schedule_action")[0].selectedIndex = 0;
-              
-   }      
    
-   function master_server_change(event,ui){
+function master_server_change(event,ui){
       let sub_key  = $("#master_server").val()
       let sub_data = master_sub_server[sub_key]
       sub_data.sort()
@@ -132,14 +101,96 @@ func js_generate_top_js()string{
     
     
    function sub_server_change(event,ui){
-     
-   
+    
      populate_schedule_list()
    }
+
+   /********************************** Main Action Dispacther ************************************/
+    function main_menu(event,ui){
+       var index
+       var choice
+       choice = $("#schedule_action").val()
+       
+       if( choice == "create"){
+           
+           
+           add_action_start()
+       }
+       
+       if( choice == "edit"){
+           edit_handler()
+        }   
+           
+       if( choice == "copy"){
+         copy_handlers()
+       }
+       if( choice == "delete"){
+          delete_handler()
+       }
+     if(choice == "edit_start_time"){
+              edit_start_time_handler()
+      }
+     $("#schedule_action")[0].selectedIndex = 0;
+              
+}      
    
-   function create_schedule_list_table(){
    
-      create_table( "#schedule_list",["Select","Name","Description" ])
+  /*******************************************************  action handlers ***********************/
+
+function edit_handler(){
+     let select_index = find_select_index("Schedule_display_",schedule_data.length)
+     if( select_index  == -1){
+           alert("no schedule selected")
+    }else{
+        edit_schedule( schedule_data[select_index])
+    }
+}
+
+  
+  
+  
+function copy_handlers(){
+      let select_index = find_select_index("Schedule_display_",schedule_data.length)
+      if( select_index  == -1){
+           alert("no schedule selected")
+     }else{
+       ;//   copy_schedule_go(select_index)
+    }
+}         
+
+function delete_handler(){
+     let select_index = find_select_index("Schedule_display_",schedule_data.length)
+     if( select_index  == -1){
+              alert("no schedule selected")
+     }else{
+          let item = schedule_data[select_index]
+          let name = item["name"]
+          if( confirm("Delete Schedule "+name)== true){
+                   let data = {}
+                   data["master_controller"] = $("#master_server").val()
+                   data["sub_controller"]    = $("#sub_server").val()
+                   data["schedule_name"]     =  name
+                  
+                   ajax_post_get( ajax_delete_schedule,data, populate_schedule_list, "schedule not deleted")
+                  
+         }
+   }
+}
+ 
+ 
+ function edit_start_time_handler(){
+   
+     alert("edit_start_time")
+    
+}
+   
+   
+/********************************************** table handlers *******************************************************/   
+   
+   
+   function create_action_list_table(){
+   
+      create_table( "#action_list",["Select","Name","Description" ,"Edit Time","Start Time","End Time","# of Steps"])
    
    
    }
@@ -151,7 +202,7 @@ func js_generate_top_js()string{
        data["master_controller"] = $("#master_server").val()
        data["sub_controller"]    = $("#sub_server").val()
       
-       ajax_post_get(ajax_get_schedule , data, ajax_get_function,  "Schedule Data Not Loaded")
+       ajax_post_get(ajax_get_actions  , data, ajax_get_function,  "Schedule Data Not Loaded")
        
     }
    function ajax_get_function(data){
@@ -178,6 +229,10 @@ func js_generate_top_js()string{
       
    }
     
+   
+  
+   
+   
    
    
     </script>`

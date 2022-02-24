@@ -45,6 +45,7 @@ func  log_data(key string, data map[string]float64 ) {
      //fmt.Println("tag1",tag1,tag2,tag3,value,packed_data)
    
      err :=  stream_logging_driver.Insert(tag1,tag2,tag3,"","",packed_data)
+    
      if err == false {
          panic("done")
      }

@@ -20,6 +20,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/msgpack/msgpack-go v0.0.0-20130625150338-8224460e6fa3 // indirect
+	github.com/neo4j/neo4j-go-driver/v4 v4.4.1 // indirect
 	github.com/polydawn/gosh v0.0.0-20160311223217-af5311114e0e // indirect
 	github.com/reugn/go-quartz v0.3.6 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
@@ -29,7 +30,6 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.4 // indirect
 	github.com/winterssy/gjson v0.0.0-20200306020332-1f68efaec187 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
 	gopkg.in/mail.v2 v2.3.1 // indirect

@@ -3,9 +3,19 @@ package web_support
 import (
     
    "strings"   
+  // "fmt"
     
 )
+func Generate_div_start(id_tag string )string{
+    
+  return  `<div id="`+id_tag+`">`
+  
+    
+}
 
+func Generate_div_end()string{
+    return "</div>"
+}
 
 func Generate_select(title,id_tag string,option_values,option_texts []string)string{
     
@@ -39,7 +49,28 @@ func Generate_table(title,id_tag string)string{
     return strings.Join(return_value,"")
 }
 
+ 
+ func Generate_radio_element(title,key,label string )string{
+       radio_button :=   `<h4>`+title+`</h4>`+
+      `<div class="form-check">`+
+       `<label class="btn  btn-toggle"   for="'`+key+`">`+     	   
+       `<input type="radio"  class="btn  btn-toggle"   id="'`+key+`" name="optradio" value="`+key+`">'`+label+` '</label></div>`
+        return radio_button     
+     
+ }
+  
+ func Generate_check_box(title,key string )string{
+     label := ""
+      check_box :=`<h4>`+title+`</h4>`+
+      `<div class="form-check">`+
+      `<label class="btn  btn-toggle"  for="`+key+`'">`+     	   
+       `<input type="checkbox" class="btn  btn-toggle"   id="`+key+`" name="optradio" value="`+key+`">`+label+ `</label></div>`
+     
+        return check_box
 
+ }
+  
+  
 func Generate_title(label string)string{
  
     return "<h3>"+label+"</h3>"
