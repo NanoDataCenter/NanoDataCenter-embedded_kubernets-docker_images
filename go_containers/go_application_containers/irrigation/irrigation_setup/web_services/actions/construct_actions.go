@@ -69,6 +69,12 @@ func generate_html_js()string{
     
     new_action := generate_get_action_name()
     top_list.Add_section(new_action)
+    
+    copy_action := generate_copy_action_name()
+    top_list.Add_section(copy_action)
+    
+    time_action := generate_time_setup()
+    top_list.Add_section(time_action)
     //get_schedule_name := generate_get_schedule_name()
     //top_list.Add_section(get_schedule_name)
     

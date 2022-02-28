@@ -167,19 +167,20 @@ func ( v Postgres_Float_Driver)Exists(tags map[string]string)(int,bool){
     
 }
 
-
 func ( v  Postgres_Float_Driver )Insert(input Float_Output_Data_Record )bool{
     
   time_stamp    := time.Now().UnixNano()
   
   script := fmt.Sprintf("INSERT INTO %s "+
                         "(Text1,Text2,Text3,Text4,Text5,Text6,Text7,Text8,Text9,Text10,Float1,Float2,Float3,Float4,Float5,Float6,Float7,Float8,Float9,Float10,Data,Time )  "+ 
-                        "VALUES('%s','%s','%s','%s','%s',  '%s','%s','%s','%s','%s', %f, %f , %f . %f , %f,  %f, %f , %f . %f , %f,'%s',%d)",
-                        v.table_name,input.Text1,input.Text2,input.Text3,input.Text4,input.Text5,input.Text6,input.Text7,input.Text8,input.Text9,input.Text10,
-                        input.Float1,input.Float2,input.Float3,input.Float4,input.Float5,input.Float6,input.Float7,input.Float8,input.Float9,input.Float10,
+                        "VALUES('%s',  '%s',  '%s',  '%s',  '%s',    '%s',  '%s',  '%s',  '%s',  '%s',  %f, %f, %f, %f, %f,   %f, %f, %f, %f, %f,  '%s',%d)",
+                        v.table_name,   input.Text1  ,input.Text2,   input.Text3,  input.Text4,   input.Text5,
+                        input.Text6,   input.Text7,   input.Text8,  input.Text9,  input.Text10,
+                        input.Float1,   input.Float2,  input.Float3,   input.Float4,  input.Float5, 
+                        input.Float6,   input.Float7,  input.Float8,   input.Float9,  input.Float10,
                         input.Data,time_stamp)
   
-  fmt.Println("script",script)
+  //fmt.Println("insert script",script)
     status :=  v.Exec( script  )
  
   return status
@@ -191,7 +192,7 @@ func ( v   Postgres_Float_Driver)Delete_Entry( tags map[string]string)bool{
     
     where_clause := v.tags_where_clause(tags)
     script := "DELETE FROM "+v.table_name+" where "+where_clause+";"
-    fmt.Println("delete script ",script)
+    //fmt.Println("delete script ",script)
     return v.Exec(script)
     
 }
@@ -212,6 +213,8 @@ func (v Postgres_Float_Driver)tags_where_clause( tags map[string]string)string{
 
 func (v  Postgres_Float_Driver)Select_tags(tags map[string]string)([]Float_Output_Data_Record, bool){
    where_clause := v.tags_where_clause( tags )
+   
+   //fmt.Println(" select clause ",where_clause)
    return v.Select_where(where_clause)
     
 }
@@ -223,6 +226,7 @@ func (v  Postgres_Float_Driver)Select_where(where_clause string)([]Float_Output_
     
     
     script := "Select * from "+v.table_name +" where "+where_clause+";"
+    //fmt.Println("select script ",script)
     return v.retreive_data(script )
     
 }

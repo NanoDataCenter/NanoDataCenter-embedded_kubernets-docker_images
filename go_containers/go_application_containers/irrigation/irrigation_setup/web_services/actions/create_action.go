@@ -13,7 +13,7 @@ func generate_get_action_name()web_support.Sub_component_type{
     
     
    
-    return_value.Append_line(web_support.Generate_title("Enter New Schedule's Name and Description"))
+    return_value.Append_line(web_support.Generate_title("Enter New Action's Name and Description"))
     return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line("<div>")
     return_value.Append_line(web_support.Generate_button("Continue","add_action_save_id"))
@@ -57,18 +57,18 @@ func js_generate_create_action_name()string{
            alert("invalid action")
            return
        }
-       console.log("action_name",action_name)
-       console.log(action_data_map)
+      
        if (action_name in action_data_map){
            alert("duplicate action")
            return
        }
-       let main_controller  = $("#master_server").val()
-           let sub_controller  = master_sub_server[main_controller]
+          let main_controller  = $("#master_server").val()
+           let sub_controller  = $("#sub_server").val()
+           
            let master_flag = $("#master_controller_select").is(':checked')
            let new_action = blank_new_action()
            new_action["main_controller"]    = main_controller
-            new_action["sub_controller"]       = sub_controlle[main_controller]
+            new_action["sub_controller"]       = sub_controller
            new_action["master_flag"]          = master_flag
            new_action["name"]                       = action_name
             new_action["description"]             = description  
@@ -101,7 +101,7 @@ func js_generate_create_action_name()string{
     
     
    function save_action_save(working_action){
-       console.log("working action",working_action)
+      // console.log("working action",working_action)
        ajax_post_get(ajax_add_action , working_action, add_action_complete, "error action not saved") 
        
      }

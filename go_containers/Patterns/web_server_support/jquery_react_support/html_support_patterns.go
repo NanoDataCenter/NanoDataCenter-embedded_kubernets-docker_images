@@ -107,7 +107,7 @@ func Jquery_components_js()string{
     
         $(id_tag).empty()
         for(let i=0; i<value_array.length; i++){
-           $(id_tag).append($('<option>').val(value_array[i]).text(text_array[i]));
+           $(id_tag).append($('<option>').val(value_array[i]).text(text_array[i])); 
         }
         jquery_initalize_select(id_tag,change_function)
     }
