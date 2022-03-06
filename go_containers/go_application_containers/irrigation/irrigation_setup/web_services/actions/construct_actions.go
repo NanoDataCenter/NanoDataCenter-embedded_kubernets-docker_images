@@ -7,7 +7,7 @@ import(
     //"strings"
     "net/http"
     "html/template"
-    
+
     "lacima.com/go_application_containers/irrigation/irrigation_libraries/postgres_access/schedule_access"
     "lacima.com/Patterns/web_server_support/jquery_react_support"
 )
@@ -75,6 +75,9 @@ func generate_html_js()string{
     
     time_action := generate_time_setup()
     top_list.Add_section(time_action)
+    
+    action_step := generate_action_steps_setup()
+    top_list.Add_section(action_step)
     //get_schedule_name := generate_get_schedule_name()
     //top_list.Add_section(get_schedule_name)
     
@@ -110,7 +113,7 @@ func js_generate_global_js()string{
     // global data
     var action_data      =  []
     var action_data_map  =  {}
-    
+    var keys = []
     master_sub_server_json ='`+ control_block.Master_table_list_json+`'
     master_sub_server = JSON.parse(master_sub_server_json)
 
@@ -120,7 +123,9 @@ func js_generate_global_js()string{
     ajax_add_action    = "ajax/irrigation/irrigation_schedules/add_action" 
     ajax_delete_action = "ajax/irrigation/irrigation_schedules/delete_action" 
     ajax_get_actions    = "ajax/irrigation/irrigation_schedules/get_actions" 
-
+    ajax_get_schedule    = "ajax/irrigation/irrigation_schedules/get_schedules" 
+    
+    var schedule_data_map ={}
     
 
     
@@ -145,7 +150,6 @@ func js_generate_global_js()string{
     
     
 }
-  
-    
 
+  
 

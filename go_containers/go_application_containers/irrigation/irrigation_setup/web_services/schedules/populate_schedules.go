@@ -83,7 +83,7 @@ func Ajax_post_schedules(input string)string{  // input master controller,sub_co
    
     master_server  := server_data["master_server"]
     sub_server     := server_data["sub_server"]
-    
+   
    
     
     data,_  := irr_sched_access.Select_schedule_data(master_server,sub_server) 
@@ -105,5 +105,6 @@ func Ajax_post_schedules(input string)string{  // input master controller,sub_co
     }
         
     bytes,_ :=  json.Marshal(output)
+   
     return string(bytes)
 }    

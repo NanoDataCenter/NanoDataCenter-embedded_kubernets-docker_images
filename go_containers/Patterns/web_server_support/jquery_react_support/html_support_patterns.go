@@ -6,9 +6,11 @@ import (
   // "fmt"
     
 )
+
+
 func Generate_div_start(id_tag string )string{
     
-  return  `<div id="`+id_tag+`">`
+  return  `<div class="container" id="`+id_tag+`">`
   
     
 }

@@ -1,0 +1,5 @@
+<script type="application/lua">
+print("Hello World!")
+</script>
+
+<script src="/my-script.lua" type="application/lua" async></script>

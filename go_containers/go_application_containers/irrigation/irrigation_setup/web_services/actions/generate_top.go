@@ -25,7 +25,7 @@ func generate_main_component()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_div_end())
    return_value.Append_line(web_support.Generate_space("25"))
     
-    values := []string{"null","create","copy","delete","edit_action","edit_start_time"}
+    values := []string{"null","create","copy","delete","edit_actions","edit_start_time"}
     text   := []string{"Null Action","Create Action","Copy Action","Delete Action","Edit Action Steps","Edit Start Time"}
     
     return_value.Append_line(web_support.Generate_select("Select Action","action_map",values,text))
@@ -55,6 +55,7 @@ func js_generate_top_js()string{
     function main_form_start(){
        hide_all_sections()
        show_section("main_form")
+     
         populate_action_list()
     }
   
@@ -85,6 +86,7 @@ func js_generate_top_js()string{
         $("#sub_controller_select").show()
         $("#master_state").html("Sub Server State")
    }
+ 
     populate_action_list()
    }
    
@@ -96,6 +98,7 @@ function master_server_change(event,ui){
       let sub_data = master_sub_server[sub_key]
       sub_data.sort()
       jquery_populate_select("#sub_server",sub_data,sub_data,null)
+     
       populate_action_list()   
    }
     
@@ -123,7 +126,7 @@ function master_server_change(event,ui){
          copy_handlers()
        }
        if( choice == "delete"){
-           alert("delete made it here")
+           
           delete_handler()
        }
      if(choice == "edit_start_time"){
@@ -144,9 +147,13 @@ function edit_start_step_handler(){
      if( select_index  == -1){
            alert("no action selected")
     }else{
-       key = key_list[select_index]
-       alert(key)
-        //edit_action( key)
+         if ($("#master_controller_select").is(':checked') == true) {
+           schedule_map = {}
+           alert("no schedules for master controller")
+         
+       }else{
+       modify_action_steps(select_index)
+       }
     }
 }
 
@@ -261,13 +268,50 @@ function delete_handler(){
       }
      //console.log(row_data)
      load_table('#action_list', row_data)
-      
+      get_schedules()
    }
-    start_time_hr: 0
-start_time_min: 0
    
   
+function get_schedules(){
+       if ($("#master_controller_select").is(':checked') == true) {
+           schedule_map = {}
+           return
+       }
+        let data = {}
+       data["master_server"] = $("#master_server").val()
+       data["sub_server"]    = $("#sub_server").val()
+      
+       ajax_post_get(ajax_get_schedule , data, ajax_get_schedule_function,  "Schedule Data Not Loaded")
+       
+    }
+
+
+
+
+
+ 
+   function ajax_get_schedule_function(data){
    
+     
+      schedule_data  = data
+      
+      console.log(schedule_data)
+      
+      schedule_data_map = {}
+      set_status_bar("Schedule Data Downloaded")
+      let row_data = []
+      let i = 0
+      for (i = 0;i< schedule_data.length;i++){
+         let entry =[]
+         let name = schedule_data[i]["name"]
+         schedule_data_map[name] = schedule_data[i]["description"]
+        
+   
+      }
+     console.log("schedule_data_map",schedule_data_map)
+     
+      
+   }
    
    
     </script>`
