@@ -14,7 +14,12 @@ func Generate_div_start(id_tag string )string{
   
     
 }
-
+func Generate_div_start_plain(id_tag string )string{
+    
+  return  `<div id="`+id_tag+`">`
+  
+    
+}
 func Generate_div_end()string{
     return "</div>"
 }
@@ -111,7 +116,9 @@ func Jquery_components_js()string{
         for(let i=0; i<value_array.length; i++){
            $(id_tag).append($('<option>').val(value_array[i]).text(text_array[i])); 
         }
-        jquery_initalize_select(id_tag,change_function)
+        if( change_function != null ){
+            jquery_initalize_select(id_tag,change_function)
+     }
     }
     
     function jquery_initalize_select(id_tag,change_function){

@@ -20,7 +20,7 @@ func generate_main_component()web_support.Sub_component_type{
      return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_select("Select Master Server","master_server",null_list,null_list))
     return_value.Append_line(web_support.Generate_space("25"))
-    return_value.Append_line(web_support.Generate_div_start("sub_controller_select"))
+    return_value.Append_line(web_support.Generate_div_start_plain("sub_controller_select"))
     return_value.Append_line(web_support.Generate_select("Select Sub Server","sub_server",null_list,null_list))
     return_value.Append_line(web_support.Generate_div_end())
    return_value.Append_line(web_support.Generate_space("25"))
@@ -308,7 +308,7 @@ function get_schedules(){
         
    
       }
-     console.log("schedule_data_map",schedule_data_map)
+     
      
       
    }

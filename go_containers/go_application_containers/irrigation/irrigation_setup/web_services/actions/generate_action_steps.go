@@ -18,8 +18,8 @@ func generate_action_steps_setup()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_button("Save","action_step_save_id"))
     return_value.Append_line(web_support.Generate_button("Back","action_step_cancel_id"))
     return_value.Append_line("</div>")
-    values := []string{"null","add_schedule","add_action","delete_entry"}
-    text   := []string{"Null Action","Add Schedule","Add Action","Delete Entry"}
+    values := []string{"null","add_schedule","add_action","delete_entry","move_elements"}
+    text   := []string{"Null Action","Add Schedule","Add Action","Delete Entry","Move Elements"}
     
     return_value.Append_line(web_support.Generate_select("Select Function","action_step_select",values,text))
     return_value.Append_line(web_support.Generate_space("25"))
@@ -49,24 +49,52 @@ func  js_action_step_top_level()string{
     ` <script type="text/javascript"> 
     
     var time_action_step_copy
-    
+    var action_table_list = [] 
+    var action_table_rows = []
      function generate_action_steps_start(){
        hide_all_sections()
     
       show_section("generate_action_steps")
       $("#add_schedule_select_select").hide()
       $("#add_action_select_select").hide()
+      populate_schedule_table()
+      populate_action_table()
       
     }
   
    function modify_action_steps(select_index){
+      action_table_list = [] 
       generate_action_steps_start()
       key = keys[select_index]
       $("#action_list_display_id").html("For Action   "+key)
        time_action_step_copy = deepCopyObject( action_data[key])
+      load_initial_action_table(time_action_step_copy["steps"])
+   }
+   
+   function load_initial_action_table(steps){
+      
+      action_table_rows = []
+      let temp =[]
+      for( i= 0;i<steps.length;i++){
+          let temp = []
+          temp.push( radio_button_element("Action_display_list_select"+i))
+          temp.push(check_box_element("Action_display_list_checkbox"+i))
+          let step_data = steps[i]
+       
+          type = step_data["type"]
+          name = step_data["name"]
+          description = step_data["description"]
+          temp.push(type)
+          temp.push(name)
+          temp.push(description)
+         action_table_rows.push(temp)
+      }
+      
+      load_table("#action_step_list", action_table_rows)
    
    }
-  
+   
+   
     function generate_action_steps_init(main_controller,sub_controller,master_flag){
        attach_button_handler("#action_step_save_id" ,generate_action_steps_handler)
        attach_button_handler("#action_step_cancel_id" ,generate_action_steps_cancel_handler)
@@ -87,7 +115,13 @@ func  js_action_step_top_level()string{
     function  generate_action_steps_handler(){
     
        time_action_step_copy["steps"]  = []
-     
+       for( let i = 0; i< action_table_rows.length;i++){
+           let temp = {}
+           temp["type"]    = action_table_rows[i][2]
+           temp["name"] = action_table_rows[i][3]
+           temp["description"] = action_table_rows[i][4]
+          time_action_step_copy["steps"].push(temp)
+    }
     
     ajax_post_get(ajax_add_action ,time_action_step_copy, generate_action_steps_complete, "error action not saved") 
      
@@ -118,19 +152,60 @@ func  js_action_step_top_level()string{
        }
       
      if(choice == "delete_entry"){
-            alert("delete_entry")
+           delete_step_entry()
       }
     
-     
+     if(choice == "move_elements"){
+            alert("move_elements")
+      }
               
 }      
+
+function delete_step_entry(){
+
+     let select_index = find_select_index("Action_display_list_select",action_table_rows.length)
+     if( select_index  == -1){
+              alert("no action selected")
+     }else{
+          name = action_table_rows[select_index][3] 
+          if( confirm("Delete Action "+name)== true){
+             action_table_rows.splice(select_index,1)
+             load_table("#action_step_list", action_table_rows)
+         }
+   }
+}
+
+
+
+
+
+
+
   function create_action_step_list_table(){
    
-      create_table( "#action_step_list",["Select","Type","Name" ,"Description"])
+      create_table( "#action_step_list",["Select","Move Select","Type","Name" ,"Description"])
    
    
    }
    
+   function add_action_table(type,name,description){
+      
+      let temp =[]
+      let index = action_table_rows.length
+      temp.push( radio_button_element("Action_display_list_select"+index))
+      temp.push(check_box_element("Action_display_list_checkbox"+index))
+
+      temp.push(type)
+      temp.push(name)
+      temp.push(description)
+  
+     
+      action_table_rows.push(temp)
+      
+      load_table("#action_step_list", action_table_rows)
+   
+   }
+      
     </script>
      `
      return return_value
@@ -159,9 +234,16 @@ func generate_schedule_select_js( )string{
       
        attach_button_handler("#action_add_schedule_save_id" ,save_added_schedule)
        attach_button_handler("#action_add_schedule_cancel_id" ,common_add_step_sub_window_return)
-       
+       populate_schedule_table()
+        
      }
      function save_added_schedule(){
+        let keys = Object.keys(schedule_data_map)
+        if( keys.length >0){
+            let schedule =  $("#add_schedule_select").val()
+            let description = schedule_data_map[schedule]
+            add_action_table("schedule",schedule,description)
+         }
          common_add_step_sub_window_return()
      
      }
@@ -170,6 +252,20 @@ func generate_schedule_select_js( )string{
         $("#add_schedule_select_select").hide()
          $("#add_action_select_select").hide()
      }
+     function populate_schedule_table(){
+        let keys = Object.keys(schedule_data_map)
+        keys.sort()
+        let display_list = []
+        let value_list   = []
+        for( let i= 0;i<keys.length;i++){
+            let key  = keys[i]
+            let description = schedule_data_map[key]
+            let temp = key+":"+description
+            display_list.push(temp)
+            value_list.push(key)
+      }
+    jquery_populate_select($("#add_schedule_select"),value_list,display_list,null)
+    }
      </script>
      `
     return return_value
@@ -196,12 +292,18 @@ func generate_action_select_js( )string{
       
        attach_button_handler("#action_add_action_save_id" ,save_added_action)
        attach_button_handler("#action_add_action_cancel_id" ,common_add_step_sub_window_return)
+
+      populate_action_table()
        
      }
      function save_added_action(){
          common_add_step_sub_window_return()
      
      }
+     function populate_action_table(){
+     
+     
+    }
      </script>
      `
      
