@@ -63,8 +63,9 @@ func init_web_server_pages() {
     web_support.Generate_special_post_route("irrigation/irrigation_schedules/add_action",add_action)
     web_support.Generate_special_post_route("irrigation/irrigation_schedules/delete_action",delete_action) 
     web_support.Generate_special_post_route("irrigation/irrigation_schedules/get_actions",get_actions) 
+    web_support.Generate_special_post_route("irrigation/irrigation_schedules/irrigation_get_actions",get_irrigation_actions) 
     
-                                             
+                                  
 }
 
 func initialize_handlers(){
@@ -329,7 +330,21 @@ input,err :=  io.ReadAll(r.Body)
 }
 
 
+func get_irrigation_actions(w http.ResponseWriter, r *http.Request) {
+ 
+    
+    w.Header().Set("Content-Type", "application/json")
 
+
+input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }else{
+    output :=  construct_actions.Ajax_post_irrigation_actions(string(input))
+   
+    w.Write([]byte(output) )
+  }  
+}
  
 
 

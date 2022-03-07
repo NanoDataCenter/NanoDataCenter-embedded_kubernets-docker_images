@@ -90,7 +90,7 @@ su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","IRRIGATION_SCHEDULE",make(map[st
    
  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","IRRIGATION_ACTIONS")   
  
- all_master_actions = []string{"CLEAN_FILTER:clean_filter_1","VALVE_LEAK:valve_leak_1","OPEN_MASTER_VALVE:open_master_valve_1","CLOsE_MASTER_VALVES:close_master_valve_1"}
+ all_master_actions = []string{"CLEAN_FILTER:clean_filter_1","VALVE_LEAK:valve_leak_1","OPEN_MASTER_VALVE:open_master_valve_1","CLOSE_MASTER_VALVES:close_master_valve_1"}
  all_slave_actions  = []string{"IRRIGATION_OPERATIONS:irrigation_operations_1","VALVE_RESISTANCE:valve_resistance_1"}
 
 

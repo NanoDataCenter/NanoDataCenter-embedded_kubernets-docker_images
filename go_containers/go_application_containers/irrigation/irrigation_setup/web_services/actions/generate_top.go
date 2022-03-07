@@ -113,7 +113,7 @@ function master_server_change(event,ui){
        var index
        var choice
        choice = $("#action_map").val()
-       
+       $("#action_map")[0].selectedIndex = 0;
        if( choice == "create"){
            
            
@@ -135,7 +135,7 @@ function master_server_change(event,ui){
        if(choice == "edit_actions"){
               edit_start_step_handler()
       }
-     $("#action_map")[0].selectedIndex = 0;
+     
               
 }      
    
@@ -210,7 +210,7 @@ function delete_handler(){
    
    function create_action_list_table(){
    
-      create_table( "#action_list",["Select","Name","Description" ,"Start Time","End Time","# of Steps"])
+      create_table( "#action_list",["Select","Name","Description" ,"Time Config","List Of Actions"])
    
    
    }
@@ -243,27 +243,37 @@ function delete_handler(){
      //console.log(action_data)
      keys = Object.keys(action_data)
      keys.sort()
-    // console.log("keys",keys)
+    //console.log("keys",keys)
      key_list = keys
      for( let i= 0;i<keys.length;i++){
          key = keys[i]
          let temp = action_data[key]
         // console.log(key,temp)
-         let entry               =   []
-         let name            =   temp["name"]
-         let description  = temp["description"]
-         let start_time        = temp["start_time_hr"]+":"+temp["start_time_min"]
-         let end_time          = temp["end_time_hr"]+":"+temp["end_time_min"]
-         let number_of_steps   = temp["steps"].length
-         action_data_map[name] = true 
-         entry.push(radio_button_element("Action_display_"+i))
+         let entry                    =   []
+         let name                   =   temp["name"]
+         let description         = temp["description"]
+         let start_time           = temp["start_time_hr"]+":"+temp["start_time_min"]
+         let end_time             = temp["end_time_hr"]+":"+temp["end_time_min"]
+         let  day_mask        = temp["day_mask"]                                                                             
+         let dow_week_flag  = temp["dow_week_flag"]
+         let doy_divisor         =  temp["doy_divisor"]
+         let doy_modulus     =  temp["doy_modulus"]
          
+         let time_format = ""
+          if( dow_week_flag == false){
+             time_format = "F~"+doy_divisor+"~"+doy_modulus+"~"+start_time+"~"+end_time
+          }else{
+              time_format = "T~"+day_mask+"~"+start_time+"~"+end_time
+         }
+        number_of_steps = temp["steps"].length
+         entry.push(radio_button_element("Action_display_"+i))
          entry.push(name)
          entry.push(description)
-         entry.push(start_time)
-         entry.push(end_time)
+         entry.push(time_format)
          entry.push(number_of_steps)
          row_data.push(entry)
+         
+         action_data_map[name] = true 
         
       }
      //console.log(row_data)
@@ -275,6 +285,7 @@ function delete_handler(){
 function get_schedules(){
        if ($("#master_controller_select").is(':checked') == true) {
            schedule_map = {}
+           get_action_data()
            return
        }
         let data = {}
@@ -295,7 +306,7 @@ function get_schedules(){
      
       schedule_data  = data
       
-      console.log(schedule_data)
+      //console.log(schedule_data)
       
       schedule_data_map = {}
       set_status_bar("Schedule Data Downloaded")
@@ -308,12 +319,32 @@ function get_schedules(){
         
    
       }
-     
+     get_action_data()
      
       
    }
    
+   function get_action_data(){
+          let data = {}
+          
+          
+       data["server_type"] =  $("#master_controller_select").is(':checked')
+       data["master_server"] = $("#master_server").val()
+       data["sub_server"]    = $("#sub_server").val()
+      
+       ajax_post_get( ajax_get_irrigation_actions , data, ajax_process_action_data,  "Irrigation Action Data Not Loaded")
+       
+    }
+
+function ajax_process_action_data(data){
+ 
+     action_data_list = data
+     //console.log("irrigation_actions",action_data_list)
+
+}
    
+   
+
     </script>`
     
   return return_value

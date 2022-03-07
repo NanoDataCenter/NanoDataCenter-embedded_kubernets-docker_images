@@ -205,6 +205,7 @@ func js_generate_edit_schedule()string{
      let select_index = find_select_index("edit_table_select_",step_data.length)
      if( select_index == -1){
         alert("no move point")
+        return
      }
      let move_array = find_check_box_elements("edit_table_check_box_",step_data.length)     
      if( move_array.length == 0){

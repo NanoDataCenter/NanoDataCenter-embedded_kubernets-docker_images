@@ -135,7 +135,8 @@ func  js_action_step_top_level()string{
        var index
        var choice
        choice = $("#action_step_select").val()
-       $("#action_map")[0].selectedIndex = 0;
+       $("#action_step_select")[0].selectedIndex = 0;
+      
        if( choice ==  "add_schedule"){
             $("#generate_action_steps").hide()
         $("#add_schedule_select_select").show()
@@ -156,10 +157,36 @@ func  js_action_step_top_level()string{
       }
     
      if(choice == "move_elements"){
-            alert("move_elements")
+            move()
       }
               
 }      
+
+function move(){
+     let step_data    = deepcopy(time_action_step_copy["steps"])
+     let select_index = find_select_index("Action_display_list_select",step_data.length)
+     if( select_index == -1){
+        alert("no move point")
+        return
+     }
+     let move_array = find_check_box_elements("Action_display_list_checkbox",step_data.length)     
+     if( move_array.length == 0){
+         alert("no points to move")
+         return
+     }
+     let input = calculate_move(step_data.length,select_index,move_array)
+    
+     
+     for( let i=0;i<input.length;i++){
+         time_action_step_copy["steps"][i] = step_data[input[i]]
+     }
+     
+     load_initial_action_table(time_action_step_copy["steps"])
+   
+   }
+
+
+
 
 function delete_step_entry(){
 
@@ -297,12 +324,15 @@ func generate_action_select_js( )string{
        
      }
      function save_added_action(){
+        let action =  $("#add_action_select").val()
+            
+        add_action_table("action",action,"")
          common_add_step_sub_window_return()
      
      }
      function populate_action_table(){
      
-     
+      jquery_populate_select($("#add_action_select"),action_data_list,action_data_list,null)
     }
      </script>
      `

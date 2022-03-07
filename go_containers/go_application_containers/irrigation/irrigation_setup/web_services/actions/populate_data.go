@@ -2,7 +2,7 @@ package construct_actions
 
 
 import(
-  //  "fmt"
+  // "fmt"
     "encoding/json"
    "lacima.com/go_application_containers/irrigation/irrigation_libraries/postgres_access/schedule_access"
    
@@ -76,6 +76,32 @@ func Ajax_post_actions(input string)string{
     sub_server              := server_data["sub_controller"].(string)
    
     return_value,result := irr_sched_access.Select_action_data(server_type,master_server,sub_server)
+    
+ 
+    
+    if(result != true){
+        panic("fail select")
+    }
+  
+ 
+        
+        
+    bytes,_ :=  json.Marshal(return_value)
+   return string(bytes)
+}    
+func Ajax_post_irrigation_actions(input string)string{ 
+    var server_data map[string]interface{}
+     err :=  json.Unmarshal([]byte(input),&server_data)
+     if err != nil {
+       panic(err)
+     }
+   //server_data map[master_server:main_server server_type:false sub_server:main_server:sub_server_1]
+
+    server_type             :=  server_data["server_type"].(bool)
+    master_server         := server_data["master_server"].(string)
+    sub_server              := server_data["sub_server"].(string)
+   
+    return_value,result := irr_sched_access.Select_irrigation_action_data(server_type,master_server,sub_server)
     
  
     

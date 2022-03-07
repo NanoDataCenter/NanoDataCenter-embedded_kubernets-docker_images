@@ -120,12 +120,13 @@ func js_generate_global_js()string{
     valve_list_json ='`+control_block.Valve_list_json+`'
     valve_list = JSON.parse(valve_list_json)
   
-    ajax_add_action    = "ajax/irrigation/irrigation_schedules/add_action" 
-    ajax_delete_action = "ajax/irrigation/irrigation_schedules/delete_action" 
-    ajax_get_actions    = "ajax/irrigation/irrigation_schedules/get_actions" 
-    ajax_get_schedule    = "ajax/irrigation/irrigation_schedules/get_schedules" 
-    
+    ajax_add_action                          = "ajax/irrigation/irrigation_schedules/add_action" 
+    ajax_delete_action                      = "ajax/irrigation/irrigation_schedules/delete_action" 
+    ajax_get_actions                         =  "ajax/irrigation/irrigation_schedules/get_actions" 
+    ajax_get_schedule                       = "ajax/irrigation/irrigation_schedules/get_schedules" 
+    ajax_get_irrigation_actions         = "ajax/irrigation/irrigation_schedules/irrigation_get_actions"
     var schedule_data_map ={}
+    var action_data_list = []
     
 
     

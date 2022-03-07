@@ -62,7 +62,7 @@ func construct_sub_server_a(master_node string){
                                         "station_3":22,
                                         "station_4":20}
                                         
-   slave_irrigation_server(master_node+":sub_server_1",supported_stations,station_valve_number ,    all_slave_actions)
+   slave_irrigation_server(master_node+"/sub_server_1",supported_stations,station_valve_number ,    all_slave_actions)
  
     
     
