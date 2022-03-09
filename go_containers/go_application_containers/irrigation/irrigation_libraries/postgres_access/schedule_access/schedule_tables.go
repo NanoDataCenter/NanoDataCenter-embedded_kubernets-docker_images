@@ -23,8 +23,36 @@ type Schedule_delete_type struct {
     
 }
 
+func   Sched_Vacuum()bool{
+    
+ 
+    return control_block.sched_driver.Vacuum()
+    
+}
 
+func Schedule_Select_All()([]Schedule_data_type,bool){
+    
 
+    raw_data,status := control_block.sched_driver.Select_All()
+    return_value := make([]Schedule_data_type,len(raw_data))
+    
+    for index,value := range raw_data {
+       var temp Schedule_data_type
+       temp.Master_server  = value.Tag1
+       temp.Sub_server     = value.Tag2
+       temp.Name           = value.Tag3
+       temp.Description    = value.Tag4
+       
+       
+       
+       temp.Json_data      = value.Data
+       return_value[index] = temp
+       
+    
+    }
+    return return_value,status
+}  
+    
     
 func Delete_schedule_data( input Schedule_delete_type)bool{
     

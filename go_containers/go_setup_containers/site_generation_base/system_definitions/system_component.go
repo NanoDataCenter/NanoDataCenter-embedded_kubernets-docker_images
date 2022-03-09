@@ -92,6 +92,7 @@ func generate_system_component_graph(){
     port_map["error_detection"]                 = ":2023"
     port_map["eto"]                                     = ":2024"
     port_map["irrigation_setup"]                = ":2025"
+    port_map["irrigation_manage"]                = ":2026"
     
     port_description_map                        := make(map[string]string)
     port_description_map["site_controller"]     = "Site Controller Web Site"
@@ -100,6 +101,7 @@ func generate_system_component_graph(){
     port_description_map["error_detection"]     = "Display Error Monitoring Results"
     port_description_map["eto"]                 = "ETO Weather Station Results"
     port_description_map["irrigation_setup"]    = "Irrigation Setup"
+    port_description_map["irrigation_manage"] ="Irrigation Manage"
     
     port_start_label_map                        := make(map[string]string)
     port_start_label_map["site_controller"]       = "site_controller"
@@ -107,6 +109,7 @@ func generate_system_component_graph(){
     port_start_label_map["mqtt_status_out"]    = "mqtt_status_out"
     port_start_label_map["eto"]                            = "eto"
     port_start_label_map["irrigation_setup"]     = "irrigation_setup"
+    port_start_label_map["irrigation_manage"] = "irrigation_manage"
    port_start_label_map["error_detection"]     ="error_detection"
     
     

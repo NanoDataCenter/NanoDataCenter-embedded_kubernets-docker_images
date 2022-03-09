@@ -132,6 +132,7 @@ func Launch_web_server( ){
    
   
    go http.ListenAndServe(web_port[server_id], router)
+   
 }
     
 func find_local_address()string{

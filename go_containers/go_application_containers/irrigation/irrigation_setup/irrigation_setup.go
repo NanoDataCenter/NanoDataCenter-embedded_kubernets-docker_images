@@ -17,7 +17,7 @@ package main
 import (
 	//"fmt"
 	"lacima.com/go_application_containers/irrigation/irrigation_setup/web_services"
-   
+   "lacima.com/go_application_containers/irrigation/irrigation_setup/data_base_cleanup"
 	"lacima.com/redis_support/generate_handlers"
 	"lacima.com/redis_support/graph_query"
 	"lacima.com/redis_support/redis_handlers"
@@ -34,6 +34,7 @@ func main() {
 	graph_query.Graph_support_init(&site_data)
 	data_handler.Data_handler_init(&site_data)
 	irrigation_information_web.Start()
+    data_base_cleanup.Start()
 	for true {
 		time.Sleep(time.Second * 60)
 		//fmt.Println("polling loop")

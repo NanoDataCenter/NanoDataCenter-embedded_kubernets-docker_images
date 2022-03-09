@@ -197,7 +197,15 @@ func ( v   Postgres_Float_Driver)Delete_Entry( tags map[string]string)bool{
     
 }
 
+func ( v Postgres_Float_Driver )Trim( trim_time_second int64  )bool{
 
+    current_time := time.Now().UnixNano()
+    delete_time  := current_time - trim_time_second *1000000000 
+    script := fmt.Sprintf("DELETE FROM %s WHERE time < %d ;",v.table_name, delete_time)
+    
+    return v.Exec(script)
+    
+}
 
 func (v Postgres_Float_Driver)tags_where_clause( tags map[string]string)string{
     
@@ -218,6 +226,9 @@ func (v  Postgres_Float_Driver)Select_tags(tags map[string]string)([]Float_Outpu
    return v.Select_where(where_clause)
     
 }
+
+
+
 
 func (v  Postgres_Float_Driver)Select_where(where_clause string)([]Float_Output_Data_Record, bool){
     

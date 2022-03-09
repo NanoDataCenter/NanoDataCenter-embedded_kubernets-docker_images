@@ -7,7 +7,7 @@ import (
      //"encoding/json"
      "fmt"
     "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/eto_setup"
-    "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/eto_adjust"
+ 
     "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/schedules"
     "lacima.com/go_application_containers/irrigation/irrigation_setup/web_services/actions"
     
@@ -53,7 +53,7 @@ func init_web_server_pages() {
     base_templates = define_web_pages()
     initialize_handlers()
     web_support.Generate_special_post_route("irrigation/eto/eto_setup_store" , eto_setup_store)
-    web_support.Generate_special_post_route("irrigation/eto/eto_adjust_store" , eto_adjust_store)
+    //web_support.Generate_special_post_route("irrigation/eto/eto_adjust_store" , eto_adjust_store)
     
     
     web_support.Generate_special_post_route("irrigation/irrigation_schedules/add_schedule",add_schedule)
@@ -72,7 +72,7 @@ func initialize_handlers(){
  
     introduction_page_init()
     eto_setup.Page_init(base_templates)
-    eto_adjust.Page_init(base_templates)
+    //eto_adjust.Page_init(base_templates)
     construct_schedule.Page_init(base_templates)
     construct_actions.Page_init(base_templates)
     web_support.Micro_web_page_init(base_templates)
@@ -85,13 +85,13 @@ func initialize_handlers(){
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,6)
+    return_value := make(web_support.Menu_array,5)
     return_value[0] = web_support.Construct_Menu_Element( "Iintroduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "ETO Station Setup","eto_setup", eto_setup.Generate_page_setup)
-    return_value[2] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
-    return_value[3] = web_support.Construct_Menu_Element( "Construct Schedules","construct_schedule",construct_schedule.Generate_page)
-    return_value[4] = web_support.Construct_Menu_Element( "Construct Action","construct_action",construct_actions.Generate_page)
-    return_value[5] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
+    //return_value[2] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
+    return_value[2] = web_support.Construct_Menu_Element( "Construct Schedules","construct_schedule",construct_schedule.Generate_page)
+    return_value[3] = web_support.Construct_Menu_Element( "Construct Action","construct_action",construct_actions.Generate_page)
+    return_value[4] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
 }
@@ -201,31 +201,8 @@ func eto_setup_store(w http.ResponseWriter, r *http.Request) {
 
 
 
-func eto_adjust_store(w http.ResponseWriter, r *http.Request) {
-  w.Header().Set("Content-Type", "application/json")
-  //var input interface{}
-
-  /*if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-        fmt.Println(err)
-       // panic("BAD:")
-    }
-  */
   
-  input,err :=  io.ReadAll(r.Body)
-  if err != nil {
-      fmt.Println(err)
-  }else{   
   
-     eto_adjust.Process_new_eto_adjust(string(input))  
-      
-  }
-  
-  output := []byte(`"SUCCESS"`)
-  
-   w.Write(output) 
-    
-}
-
 func add_schedule(w http.ResponseWriter, r *http.Request) {
   w.Header().Set("Content-Type", "application/json")
  

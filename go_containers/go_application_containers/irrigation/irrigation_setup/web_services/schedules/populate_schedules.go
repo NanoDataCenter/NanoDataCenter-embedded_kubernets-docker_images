@@ -2,7 +2,7 @@ package construct_schedule
 
 
 import(
-    "fmt"
+    //"fmt"
     "encoding/json"
    "lacima.com/go_application_containers/irrigation/irrigation_libraries/postgres_access/schedule_access"
    
@@ -57,7 +57,7 @@ func Ajax_delete_schedule(input string){  // input master controller, sub_contro
      if err != nil {
        panic(err)
      }
-     fmt.Println("delete",input,delete_data)
+     
      master_server      := delete_data["master_server"]
      sub_server         := delete_data["sub_server"]
      schedule_name      := delete_data["name"]

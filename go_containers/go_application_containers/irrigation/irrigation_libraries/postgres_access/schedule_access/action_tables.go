@@ -1,7 +1,9 @@
 package irr_sched_access
 
 import (
+    //"fmt"
     "lacima.com/server_libraries/postgres"
+    "encoding/json"
 )
 
 type Action_data_type struct {
@@ -16,8 +18,32 @@ type Action_data_type struct {
     Data                 string 
 }   
 
+func   Action_Vacuum()bool{
+    
+ 
+    return control_block.sched_driver.Vacuum()
+    
+}
 
+func Action_Select_All()([]map[string]interface{},bool){
+    
 
+   
+    raw_data,status := control_block.action_driver.Select_All()
+    return_value := make([]map[string]interface{},len(raw_data))
+    
+    for index,value := range raw_data {
+        
+        item := make(map[string]interface{})
+        err := json.Unmarshal([]byte(value.Data),&item)
+        if err != nil{
+	         panic("bad json data")
+	    }
+        return_value[index] = item
+    }
+    return return_value,status
+}  
+    
     
 func Delete_action_data( input Action_data_type)bool{
     
