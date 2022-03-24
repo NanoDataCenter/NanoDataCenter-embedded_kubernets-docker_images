@@ -57,58 +57,6 @@ type Postgres_Float_Driver struct {
 }
 
 
-
-
-func Construct_Postgres_Float_Driver( key,user,password,database, table_name string) Postgres_Float_Driver{
-    var return_value Postgres_Float_Driver
-    return_value.key            = key
-    return_value.user           = user
-    return_value.password       = password
-    return_value.database       = database
-    return_value.table_name     = table_name
-    
-    
-    return return_value
-}
-
-func ( v  Postgres_Float_Driver )Vacuum( )bool{
-    
-    
-    script := "VACUUM "+v.table_name +";"
-    return v.Exec( script  )
-    
-}
-
-func ( v  *Postgres_Float_Driver )Connect( ip string )bool{
-    connection_url := "postgres://"+v.user+":" + v.password + "@"+ ip+":5432" + "/"+v.database 
-    if v.connect(connection_url) == false {
-        return false
-    }
-    
-	
-	
-
-	v.create_table()
-    
-	
-	return true
-}
-
-
-func ( v  Postgres_Float_Driver )Create_table()bool{
-    v.create_table()
-    
-    return true
-}
-
-
-func ( v  Postgres_Float_Driver )Drop_table(  )bool{
-    script := "DROP TABLE IF EXISTS  "+v.table_name+";" 
-    return v.Exec( script  )
-    
-}
-
-
 func ( v  Postgres_Float_Driver )create_table( )bool{
     script_array := make([]string,24)
     script_array[0] = "CREATE TABLE IF NOT EXISTS  "+ v.table_name +"( "
@@ -140,6 +88,70 @@ func ( v  Postgres_Float_Driver )create_table( )bool{
     script := strings.Join(script_array," ")
    return v.Exec( script  )
 }
+
+
+func Construct_Postgres_Float_Driver( key,user,password,database, table_name string) Postgres_Float_Driver{
+    var return_value Postgres_Float_Driver
+    return_value.key            = key
+    return_value.user           = user
+    return_value.password       = password
+    return_value.database       = database
+    return_value.table_name     = table_name
+    
+    
+    return return_value
+}
+
+func ( v  Postgres_Float_Driver )Vacuum( )bool{
+    
+    
+    script := "VACUUM "+v.table_name +";"
+    return v.Exec( script  )
+    
+}
+
+
+func ( v Postgres_Float_Driver  )Trim( trim_time_second int64  )bool{
+
+    current_time := time.Now().UnixNano()
+    delete_time  := current_time - trim_time_second *1000000000 
+    script := fmt.Sprintf("DELETE FROM %s WHERE Time < %d ;",v.table_name, delete_time)
+    
+    return v.Exec(script)
+    
+}
+
+
+func ( v  *Postgres_Float_Driver )Connect( ip string )bool{
+    connection_url := "postgres://"+v.user+":" + v.password + "@"+ ip+":5432" + "/"+v.database 
+    if v.connect(connection_url) == false {
+        return false
+    }
+    
+	
+	
+
+	v.create_table()
+    
+	
+	return true
+}
+
+
+func ( v  Postgres_Float_Driver )Create_table()bool{
+    v.create_table()
+    
+    return true
+}
+
+
+func ( v  Postgres_Float_Driver )Drop_table(  )bool{
+    script := "DROP TABLE IF EXISTS  "+v.table_name+";" 
+    return v.Exec( script  )
+    
+}
+
+
 
 
 func ( v Postgres_Float_Driver)Exists(tags map[string]string)(int,bool){
@@ -197,7 +209,7 @@ func ( v   Postgres_Float_Driver)Delete_Entry( tags map[string]string)bool{
     
 }
 
-func ( v Postgres_Float_Driver )Trim( trim_time_second int64  )bool{
+func ( v Postgres_Float_Driver )Vac( trim_time_second int64  )bool{
 
     current_time := time.Now().UnixNano()
     delete_time  := current_time - trim_time_second *1000000000 

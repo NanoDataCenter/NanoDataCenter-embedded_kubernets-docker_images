@@ -15,6 +15,8 @@ func Ajax_add_action(input string){
      var action_data map[string]interface{}
      err :=  json.Unmarshal([]byte(input),&action_data)
      if err != nil {
+         
+      
        panic(err)
     
      }
@@ -26,8 +28,7 @@ func Ajax_add_action(input string){
      access.Sub_server          = action_data["sub_controller"].(string)
      access.Name                   = action_data["name"].(string)
      access.Description         = action_data["description"].(string)
-     access.Start_time           = (action_data["start_time_hr"].(float64)*60.)+action_data["start_time_min"].(float64)
-     access.End_time             =  (action_data["end_time_hr"].(float64)*60.)+action_data["end_time_min"].(float64)
+   
     irr_sched_access.Delete_action_data(access)    
     irr_sched_access.Insert_action_data(access) 
 

@@ -39,12 +39,13 @@ func Add_irrigation_servers(){
    master_irrigation_end("main_server")                    
 
  
-   
+/*
   su.Cd_Rec.Construct_package("IRRIGATION_DATA_STRUCTURES")
   su.Cd_Rec.Create_postgres_table( "IRRIGATION_SCHEDULES","admin","password","admin")
-  su.Cd_Rec.Create_postgres_table("IRRIGATION_ACTIONS","admin","password","admin")
+  su.Cd_Rec.Create_postgres_json("IRRIGATION_ACTIONS","admin","password","admin")
+  su.Cd_Rec.Create_postgres_json("IRRIGATION_JOBS","admin","password","admin")
   su.Cd_Rec.Close_package_construction()
-
+*/
   su.Bc_Rec.End_header_node("IRRIGATION_SERVERS","IRRIGATION_SERVERS")     
         
     

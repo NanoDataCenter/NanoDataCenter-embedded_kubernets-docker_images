@@ -1,11 +1,9 @@
-FROM nanodatacenter/bash_basic
-ENV CONTAINER_NAME "irrigation_controller"
-       
-VOLUME [/data/]
+FROM nanodatacenter/bash_basic 
+ENV CONTAINER_NAME "irrigation_controller" 
 
-
-
-
-COPY ./irrigation_controller .
  
+VOLUME [/data/] 
+COPY ./irrigation_controller .
+
+
 

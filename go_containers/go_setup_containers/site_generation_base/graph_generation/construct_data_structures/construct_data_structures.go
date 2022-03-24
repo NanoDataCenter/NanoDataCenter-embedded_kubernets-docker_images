@@ -108,7 +108,7 @@ func ( v *Package_Constructor)Create_postgres_table( name,user,password, databas
 // table name is in the derived key
 func ( v *Package_Constructor)Create_postgres_float( name,user,password, database_name string ){
        v.check_for_duplicates( name)
-	   
+
 	   properties := make(map[string]interface{})
        properties["type"]           = "POSTGRES_FLOAT"
        properties["name"]           = name  
@@ -119,6 +119,20 @@ func ( v *Package_Constructor)Create_postgres_float( name,user,password, databas
        v.update_entry(name,&properties) 
 }        
 
+
+// table name is in the derived key
+func ( v *Package_Constructor)Create_postgres_json( name,user,password, database_name string ){
+       v.check_for_duplicates( name)
+	   
+	   properties := make(map[string]interface{})
+       properties["type"]           = "POSTGRES_JSON"
+       properties["name"]           = name  
+       properties["user"]           = user
+       properties["password"]       = password
+       properties["database_name"]  = database_name
+
+       v.update_entry(name,&properties) 
+}        
    
 func ( v *Package_Constructor) Add_single_element(name string){
        v.check_for_duplicates( name)
@@ -160,6 +174,15 @@ func ( v *Package_Constructor) Add_redis_stream(name string,depth int64){
        properties["depth"]  =depth
     
 
+       v.update_entry(name,&properties) 
+}
+
+func ( v *Package_Constructor) Add_zset(name string,depth int64){
+       v.check_for_duplicates( name)
+
+       properties := make(map[string]interface{})
+       properties["name"] = name
+       properties["type"]  = "ZSET_REDIS"
        v.update_entry(name,&properties) 
 }
 

@@ -22,7 +22,7 @@ type Irr_sched_access_type struct{
   Master_table_list_json string 
   Valve_list_json        string        
   sched_driver           pg_drv.Postgres_Table_Driver
-  action_driver          pg_drv.Postgres_Float_Driver
+  action_driver          pg_drv.Json_Table_Driver
 }
 
 var control_block Irr_sched_access_type
@@ -95,7 +95,7 @@ func construct_postgress_data_structures(r *Irr_sched_access_type){
   handlers := data_handler.Construct_Data_Structures(&search_list)
   
   r.sched_driver = (*handlers)["IRRIGATION_SCHEDULES"].(pg_drv.Postgres_Table_Driver)
-  r.action_driver = (*handlers)["IRRIGATION_ACTIONS"].(pg_drv.Postgres_Float_Driver)
+  r.action_driver = (*handlers)["IRRIGATION_ACTIONS"].(pg_drv.Json_Table_Driver)
   
 }
    

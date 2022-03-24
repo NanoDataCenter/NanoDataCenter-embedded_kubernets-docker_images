@@ -191,6 +191,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
    var pg_registry     pg_drv.Registry_Driver
    var pg_table        pg_drv.Postgres_Table_Driver
    var pg_float        pg_drv.Postgres_Float_Driver
+   var pg_json        pg_drv.Json_Table_Driver
    for _,v := range *handler_definitions {
       type_def = v["type"].(string)
 	  
@@ -275,7 +276,7 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 	       pg_table.Connect(redis_ip)
            (*handlers)[name] = pg_table	   
 	   } else if type_def == "POSTGRES_FLOAT" {
-          
+        
 		   key            = v["key"].(string)
            
            name          =   v["name"].(string)  
@@ -287,8 +288,28 @@ func construct_redis_handlers( handler_definitions *[]map[string]interface{}, ha
 		   pg_float = pg_drv. Construct_Postgres_Float_Driver( key,user,password,database_name, table_name ) 
 	       pg_float.Connect(redis_ip)
            (*handlers)[name] = pg_float	   
-          
-	   }else {
+     
+        } else if type_def == "POSTGRES_JSON" {
+
+		   key                          = v["key"].(string)           
+           name                         =   v["name"].(string)  
+           user                             =   v["user"] .(string) 
+           password                =   v["password"].(string)  
+           database_name    =   v["database_name"].(string) 
+           table_name            =   "T"+generate_table_name(key)
+		   pg_json = pg_drv. Construct_Json_Table_Driver( key,user,password,database_name, table_name ) 
+	       pg_json.Connect(redis_ip)
+           (*handlers)[name] = pg_json	   
+	       
+        }else if type_def == "ZSET_REDIS" {
+
+        key = v["key"].(string)
+		 name = v["name"].(string)
+		
+		 (*handlers)[name] = redis_handlers.Construct_Redis_ZSet(  ctx ,client, key   )
+	       
+ 
+      }else {
 	   panic("Key is not expected "+type_def)
 	 }
    }
