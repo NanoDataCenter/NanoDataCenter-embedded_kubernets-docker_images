@@ -17,6 +17,7 @@ func Add_irrigation_data_structures(){
     
     su.Cd_Rec.Construct_package("IRRIGATION_DATA")
     
+    su.Cd_Rec. Add_hash("IRRIGATION_HISTORY_HASH")
 	su.Cd_Rec.Create_postgres_table( "IRRIGATION_SCHEDULES","admin","password","admin")
     su.Cd_Rec.Create_postgres_json( "IRRIGATION_ACTIONS","admin","password","admin")
     su.Cd_Rec.Create_postgres_json("IRRIGATION_JOBS","admin","password","admin")

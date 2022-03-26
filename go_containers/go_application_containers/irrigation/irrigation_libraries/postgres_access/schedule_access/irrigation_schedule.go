@@ -7,6 +7,7 @@ import (
    "lacima.com/server_libraries/postgres"
    "lacima.com/redis_support/generate_handlers" 
     "lacima.com/redis_support/graph_query"
+    "lacima.com/redis_support/redis_handlers"
     
 )
 
@@ -23,6 +24,7 @@ type Irr_sched_access_type struct{
   Valve_list_json        string        
   sched_driver           pg_drv.Postgres_Table_Driver
   action_driver          pg_drv.Json_Table_Driver
+  redis_hash_driver redis_handlers.Redis_Hash_Struct
 }
 
 var control_block Irr_sched_access_type
@@ -93,11 +95,35 @@ func find_subnodes( master_node string )([]string,map[string]interface{}){
 func construct_postgress_data_structures(r *Irr_sched_access_type){
   search_list := []string{"SCHEDULE_DATA:SCHEDULE_DATA","IRRIGATION_DATA"}
   handlers := data_handler.Construct_Data_Structures(&search_list)
-  
+  r.redis_hash_driver   = (*handlers)["IRRIGATION_HISTORY_HASH"].(redis_handlers.Redis_Hash_Struct)
   r.sched_driver = (*handlers)["IRRIGATION_SCHEDULES"].(pg_drv.Postgres_Table_Driver)
   r.action_driver = (*handlers)["IRRIGATION_ACTIONS"].(pg_drv.Json_Table_Driver)
   
 }
-   
-   
-   
+
+
+func Check_schedule_job( key string )bool{
+    temp := control_block.redis_hash_driver.HGet(key)
+    return_value := false
+    if temp == "true" {
+        return_value = true
+    }
+    return return_value
+}
+
+func Set_schedule_job( key string ){
+ 
+       control_block.redis_hash_driver.HSet(key,"true")
+}
+    
+func Clear_schedule_job( key string ){
+    control_block.redis_hash_driver.HSet(key,"false")
+}
+
+func Get_all_keys( )map[string]string{
+    
+    return control_block.redis_hash_driver.HGetAll()
+    
+}
+        
+    

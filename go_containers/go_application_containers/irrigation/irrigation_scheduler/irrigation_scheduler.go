@@ -79,16 +79,25 @@ func clean_redis_job_table(){
 func check_irrigation_jobs(){
      
      data,err :=    irr_sched_access.Action_Select_All()
-     fmt.Println("all data",err,data)
+     
      if err != true {
          panic("data fetch error")
      }
      fmt.Println("length",len(data)  )
      for  _, item   := range data {
          parse_input(item)
-        if check_irrigation_jobs() == true {
-            queue_irrigation_jobs()   
+        if irr_sched_access.Check_schedule_job(  action_data.key ) == true {
+            fmt.Println("job previous scheduled")
+            continue
         }
+        if check_irrigation_job() == true {
+           irr_sched_access.Set_schedule_job( action_data.key)
+            queue_irrigation_jobs()   
+        }else{
+           irr_sched_access. Clear_schedule_job( action_data.key)
+            fmt.Println("job not queued")
+        }
+        
      }
 }        
 
@@ -100,7 +109,7 @@ func parse_input( item map[string]interface{}){
       fmt.Println(action_data)
 }
 
-func check_irrigation_jobs( ){
+func check_irrigation_job( )bool{
      // check redis data base
     if check_hour() == false{
        return false
@@ -114,32 +123,62 @@ func check_irrigation_jobs( ){
 
 func check_hour()bool {
    currentTime := time.Now()      
-   h := t.Hour()
-    m := t.Minute()
-   // compute 
-
+   h := currentTime.Hour()
+   m := currentTime.Minute()
+   current_min := float64(h*60+m)
+   
+   start_min := (action_data.start_time_hr*60) + action_data.start_time_min
+   end_min  := (action_data.end_time_hr*60) + action_data.end_time_min
+   
+   //fmt.Println("hour data",current_min,start_min,end_min)
+   if start_min < end_min {
+        if current_min < start_min{
+            return false
+        }
+        if current_min > end_min {
+            return false
+        }
+        //fmt.Println("made it to check_hour 1")
+       return true
+       
+   }
+   if  current_min < end_min {
+      // fmt.Println("made it to check hour 2")
+       return true
+   }
+   if current_min > start_min {
+      // fmt.Println("made it to check hour 3")
+       return true
+   }
+   //fmt.Println("made it to chech hour 4")
+   return false
 }
+
+
 
 func check_day()bool{
     currentTime :=  time.Now()      
-    dow               :=  currentTime.Weekday()
-    doy                :=  currentTime.YearDay() 
-    if active_data.dow_week_flag == true {
-        return active_data.day_mask[dow]
+    dow               :=  int64(currentTime.Weekday())
+    doy                :=  int64(currentTime.YearDay()) 
+    if action_data.dow_week_flag == true {
+        //fmt.Println("check day 1",action_data.day_mask[dow])
+        return action_data.day_mask[dow]
     }
-    time_mod :=  doy % active_data.doy_divisor
-    if time_mod == active_data.dow_modulus {
+    time_mod :=  doy %  int64(action_data.doy_divisor)
+    if time_mod == int64(action_data.doy_modulus) {
+        //fmt.Println("check day 2",time_mod ,time_mod)
         return true
     }
+    //fmt.Println("check day 3")
     return false
         
     
 }
 
 
-func queue_irrigation_jobs( iitem map[string]interface{}   ) {
+func queue_irrigation_jobs(  ) {
     
-    
+     fmt.Println("queue this job",action_data)
 }
 
 
@@ -160,7 +199,7 @@ func  form_key(item map[string]interface{}){
     temp_list[2] = action_data.sub_controller
     temp_list[3]  = action_data.name
     action_data.key    = strings.Join(temp_list,"/")
-    fmt.Println("action_data",action_data)
+  
     
     
 }
