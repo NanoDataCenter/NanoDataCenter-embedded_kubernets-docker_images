@@ -31,30 +31,20 @@ func Start(){
     
 func queue_actions( parameters map[string]interface{} ) map[string]interface{}{
   
-   //p_file_name := parameters["file_name"].(string)
-   //p_data := []byte(parameters["data"].(string))
-  
-  //fmt.Println("save_file",file_name,p_data)
+  fmt.Println("queue_actions",parameters)
   parameters["status"] = true
   return parameters
 }
 
  func queue_managed_irrigation( parameters map[string]interface{} ) map[string]interface{}{
   
-   //p_file_name := parameters["file_name"].(string)
-   //p_data := []byte(parameters["data"].(string))
-  
-  //fmt.Println("save_file",file_name,p_data)
+  fmt.Println("queue_managed_irrigation",parameters)
   parameters["status"] = true
   return parameters
 }
 
 func queue_irrigation( parameters map[string]interface{} ) map[string]interface{}{
-  
-   //p_file_name := parameters["file_name"].(string)
-   //p_data := []byte(parameters["data"].(string))
-  
-  //fmt.Println("save_file",file_name,p_data)
+  fmt.Println("queue_irrigation",parameters)
   parameters["status"] = true
   return parameters
 }

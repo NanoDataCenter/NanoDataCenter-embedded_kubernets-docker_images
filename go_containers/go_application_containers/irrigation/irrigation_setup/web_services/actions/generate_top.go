@@ -235,7 +235,7 @@ function delete_handler(){
    function ajax_get_function(data){
       action_data  = {}
       
-      //console.log(data)
+      console.log(data)
       
       action_data_map = {}
       set_status_bar("Action Data Downloaded")

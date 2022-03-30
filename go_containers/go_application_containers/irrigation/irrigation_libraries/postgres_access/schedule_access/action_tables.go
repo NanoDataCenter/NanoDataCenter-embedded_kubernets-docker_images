@@ -3,7 +3,7 @@ package irr_sched_access
 import (
     //"fmt"
     "lacima.com/server_libraries/postgres"
-    //"encoding/json"
+    "encoding/json"
 )
 
 type Action_data_type struct {
@@ -28,6 +28,23 @@ func   Action_Drop()bool{
     
 }
 
+func Action_Select_All_Raw()([]map[string]interface{},bool){
+    raw_data , err:=   control_block.action_driver.Select_All()
+    if err != true{
+        panic("db error")
+    }
+    return_value := make([]map[string]interface{},len(raw_data))
+    for index, value := range raw_data {
+          item := make(map[string]interface{})
+          temp := []byte(value.Data)
+          if err := json.Unmarshal(temp, &item); err != nil {
+           panic(err)
+        }
+        return_value[index] = item
+        
+    }
+    return return_value, true
+}  
 
 func Action_Select_All()([]Action_data_type,bool){
    

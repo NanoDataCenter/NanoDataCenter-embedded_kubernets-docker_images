@@ -2,23 +2,20 @@ package main
 
 import (
           "fmt"
-          "strconv"
+         // "strconv"
           "time"
-          "strings"
+          //"strings"
          "lacima.com/redis_support/generate_handlers"
 	     "lacima.com/redis_support/graph_query"
 	     "lacima.com/redis_support/redis_handlers"
 	     "lacima.com/site_data"   
-         // "encoding/json"
+         "encoding/json"
           "lacima.com/go_application_containers/irrigation/irrigation_libraries/postgres_access/schedule_access"
 )
 
 
 type Action_data_type struct  {
     key                        string
-    main_controller   string
-    sub_controller     string
-    master_flag         bool
     name                    string
     description          string
     day_mask             []bool
@@ -48,7 +45,7 @@ func main(){
     setup_data_structures()
     for true {
         check_irrigation_jobs()
-        fmt.Println("main loop pooling loop")
+        //fmt.Println("main loop pooling loop")
 		time.Sleep(time.Second * 60)
 	}
 
@@ -69,7 +66,7 @@ func setup_data_structures(){
 
 func check_irrigation_jobs(){
      
-     data,err :=    irr_sched_access.Action_Select_All()
+     data,err :=    irr_sched_access.Action_Select_All_Raw()
      
      if err != true {
          panic("data fetch error")
@@ -86,7 +83,7 @@ func check_irrigation_jobs(){
             queue_irrigation_jobs(  action_data.key,  data[index] )   
         }else{
            irr_sched_access. Clear_schedule_job( action_data.key)
-            fmt.Println("job not queued and entry  cleared")
+           // fmt.Println("job not queued and entry  cleared")
         }
         
      }
@@ -165,46 +162,14 @@ func check_day()bool{
         
     
 }
-/*
- * 
-{false/main_server/main_server/sub_server_1/action main_server main_server/sub_server_1 false action action 1 description [true true true true false true true] true 2 0 10 0 21 0 []}
-map[string]interface {}{"day_mask":[]interface {}{true, true, true, true, false, true, true}, "description":"action 1 description", "dow_week_flag":true, "doy_divisor":"2", "doy_modulus":"0", "end_time_hr":21, "end_time_min":0, "main_controller":"main_server", "master_flag":false, "name":"action", "start_time_hr":10, "start_time_min":0, "steps":[]interface {}{map[string]interface {}{"description":"", "name":"VALVE_RESISTANCE:valve_resistance_1", "type":"action"}, map[string]interface {}{"description":"schedule 1 description", "name":"schedule_1", "type":"schedule"}, map[string]interface {}{"description":"", "name":"VALVE_RESISTANCE:valve_resistance_1", "type":"action"}, map[string]interface {}{"description":"schedule 2 description", "name":"test_schedule_2", "type":"schedule"}}, "sub_controller":"main_server/sub_server_1"}panic: done
-*/
-func queue_irrigation_jobs(   key string  ,   json_data map[string]interface{} ) {
-    data :=  json_data["steps"].([]interface{})
-    for  _, temp := range data {
-        array_element                 :=   temp.(map[string]interface{})
-        name                                := array_element["name"].(string)
-        action_type                     := array_element["type"].(string)
-        if action_type == "schedule" {
-            fmt.Println("QUEUE Schedule ******************************************************************")
-        }else{
-            fmt.Println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-            fmt.Println("action",name, irr_sched_access.Queue_Action( key,  name ) )
-        }
-    }
-}
+
+
 
 
 func  form_key(item map[string]interface{}){
-    temp                                := "true"
-    action_data.main_controller  = item["main_controller"].(string)
-    action_data.sub_controller    = item["sub_controller"].(string)
-    action_data.master_flag        =  item["master_flag"].(bool)
-    action_data.name                   =  item["name"].(string)
-    action_data.description          =  item["description"].(string)
-    if  action_data.master_flag == false{
-          temp = "false"
-    }
-    temp_list := make([]string,4)
-    temp_list[0] = temp
-    temp_list[1] = action_data.main_controller
-    temp_list[2] = action_data.sub_controller
-    temp_list[3]  = action_data.name
-    action_data.key    = strings.Join(temp_list,"/")
-  
-    
-    
+   //fmt.Println("item",item)
+    action_data.key                       = item["server_key"].(string)
+   
 }
 
 func form_dow(item map[string]interface{}){
@@ -218,13 +183,14 @@ func form_dow(item map[string]interface{}){
     }
    action_data.day_mask = day_mask
    
-   temp_string :=  item["doy_divisor"].(string)
-   temp_float, _ := strconv.ParseFloat(temp_string, 64)
-   action_data.doy_divisor = temp_float
+   //temp_string :=  item["doy_divisor"].(string)
+   //temp_float, _ := strconv.ParseFloat(temp_string, 64)
+   //action_data.doy_divisor = item["doy_divisor"].(float64)
+   action_data.doy_divisor = item["doy_divisor"].(float64)
    
-   temp_string =  item["doy_modulus"].(string)
-   temp_float, _  = strconv.ParseFloat(temp_string, 64)
-   action_data.doy_modulus = temp_float
+   //temp_string =  item["doy_modulus"].(string) 
+   //temp_float, _  = strconv.ParseFloat(temp_string, 64)
+   action_data.doy_modulus = item["doy_modulus"].(float64) 
     
 }
 
@@ -237,3 +203,56 @@ func form_hr(item map[string]interface{}){
 
 }
 
+
+func queue_irrigation_jobs(   key string  ,   json_data map[string]interface{} ) {
+    data :=  json_data["steps"].([]interface{})
+    for  _, temp := range data {
+        array_element                 :=   temp.(map[string]interface{})
+        name                                := array_element["name"].(string)
+        action_type                     := array_element["type"].(string)
+        if action_type == "schedule" {
+               handle_schedule(key,name)
+        }else{
+          
+            fmt.Println("action",name, irr_sched_access.Queue_Action( key,  name ) )
+        }
+    }
+}
+
+
+func  handle_schedule(server_key, schedule_name string ){
+     schedule_data,_   :=irr_sched_access.Select_schedule_name(server_key,schedule_name )
+     for _, temp := range schedule_data{
+               steps := generate_step_data(temp.Json_data)
+               for _,step := range steps {
+                   time           := step["time"].(float64)
+                   temp         :=  step["station"].(map[string]interface {})
+                    station_io := generate_station_io( temp )
+                    //fmt.Println("station",time,station_io)
+                   fmt.Println(irr_sched_access.Queue_Managed_Irrigation( server_key, time ,  station_io ))
+               }
+               
+           }
+           
+           //irr_sched_access.Queue_Managed_Irrigation( key ,  time ,  station_io )
+
+}
+
+func generate_step_data(input string)[]map[string]interface{}{
+    var data []map[string]interface{}
+        if err := json.Unmarshal([]byte(input), &data); err != nil {
+           panic(err)
+        }
+        return data
+}
+
+//station:map[station_3:map[1:1] station_4:map[1:1]] time:60]
+func generate_station_io(  input map[string]interface {})[]string{
+  return_value := make([]string,0)
+   for station, io_data :=  range input {
+       for pin , _  := range io_data.(map[string]interface{}) {
+          return_value= append(return_value, station+":"+pin)
+       }
+   }
+   return return_value
+}

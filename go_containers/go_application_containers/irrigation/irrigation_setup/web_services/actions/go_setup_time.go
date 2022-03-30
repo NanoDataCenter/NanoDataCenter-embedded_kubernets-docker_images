@@ -94,8 +94,8 @@ func  js_time_top_level()string{
      
      
      time_data_copy["dow_week_flag"] =   $("#time_type_select").is(':checked') 
-     time_data_copy["doy_divisor"] = $("#doy_divisor").val()
-     time_data_copy["doy_modulus"] = $("#doy_modulus").val()
+     time_data_copy["doy_divisor"]        =   parseFloat(   $("#doy_divisor").val())
+     time_data_copy["doy_modulus"]    =  parseFloat($("#doy_modulus").val())
     
     ajax_post_get(ajax_add_action , time_data_copy, time_data_action_complete, "error action not saved") 
      

@@ -57,11 +57,12 @@ func Queue_Action( key,  name string )bool{
     
 }
 
-func Queue_Managed_Irrigation( key string , station_io []string  )bool{
+func Queue_Managed_Irrigation( key string , time float64 , station_io []string  )bool{
        parameters := make(map[string]interface{})
-       parameters["COMMAND"]                = "QUEUE_MANAGED_IRRIGATION"
-       parameters["KEY"]                             = key 
-       parameters["NAME"]                         = station_io
+       parameters["COMMAND"]                           = "QUEUE_MANAGED_IRRIGATION"
+       parameters["KEY"]                                       = key 
+       parameters["TIME"]                                     = time
+       parameters["STATION_IO"]                         = station_io
      result :=   rpc_irrigation_driver.Send_json_rpc_message( "QUEUE_MANAGED_IRRIGATION",parameters )  
      fmt.Printf("%#v \n",result)
   if result == nil {
@@ -71,11 +72,12 @@ func Queue_Managed_Irrigation( key string , station_io []string  )bool{
 
 }
 
-func Queue_Irrigation( key string , station_io []string  )bool{
+func Queue_Irrigation( key string , time float64 , station_io []string  )bool{
        parameters := make(map[string]interface{})
-       parameters["COMMAND"]                = "QUEUE_IRRIGATION"
-       parameters["KEY"]                             = key 
-       parameters["NAME"]                         = station_io
+       parameters["COMMAND"]                          = "QUEUE_IRRIGATION"
+        parameters["KEY"]                                       = key 
+       parameters["TIME"]                                     = time
+       parameters["STATION_IO"]                         = station_io
       result :=   rpc_irrigation_driver.Send_json_rpc_message( "QUEUE_IRRIGATION",parameters )
         fmt.Printf("%#v \n",result)
   if result == nil {
