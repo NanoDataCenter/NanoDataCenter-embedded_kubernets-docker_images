@@ -3,14 +3,12 @@ package irr_sched_access
 import (
     //"fmt"
     "lacima.com/server_libraries/postgres"
-    "encoding/json"
+    //"encoding/json"
 )
 
 type Action_data_type struct {
     
-     Server_type    bool
-    Master_server string
-    Sub_server      string
+    Server_key      string
     Name               string
     Description     string
     Data                 string 
@@ -23,37 +21,40 @@ func   Action_Vacuum()bool{
     
 }
 
-func Action_Select_All()([]map[string]interface{},bool){
+func   Action_Drop()bool{
     
+ 
+    return control_block.action_driver.Drop_table()
+    
+}
 
+
+func Action_Select_All()([]Action_data_type,bool){
    
-    raw_data,status := control_block.action_driver.Select_All()
-    return_value := make([]map[string]interface{},len(raw_data))
-    
-    for index,value := range raw_data {
-        
-        item := make(map[string]interface{})
-        err := json.Unmarshal([]byte(value.Data),&item)
-        if err != nil{
-	         panic("bad json data")
-	    }
-        return_value[index] = item
+    raw_data , err:=   control_block.action_driver.Select_All()
+    if err != true{
+        panic("db error")
     }
-    return return_value,status
+    return_value := make([]Action_data_type,len(raw_data))
+    for index, value := range raw_data {
+        var temp Action_data_type
+        temp.Server_key     =   value.Tag1
+        temp.Name              =   value.Tag2
+        temp.Description    =   value.Tag3
+        temp.Data                =   value.Data
+        return_value[ index ] = temp      
+    }
+    return return_value, true
 }  
     
     
 func Delete_action_data( input Action_data_type)bool{
     
      where_entries := make(map[string]string)
-     if input.Server_type == true {
-        where_entries["Tag1"] = "true"
-     }else{
-         where_entries["Tag1"] = "false"
-     }
-     where_entries["Tag2"]  = input.Master_server
-     where_entries["Tag3"]  = input.Sub_server
-     where_entries["Tag4"]  = input.Name
+   
+     where_entries["Tag1"]  = input.Server_key
+     where_entries["Tag2"]  = input.Name
+    
      
      status :=  control_block.action_driver.Delete_Entry(where_entries)
      
@@ -63,16 +64,13 @@ func Delete_action_data( input Action_data_type)bool{
 func convert_format( input Action_data_type)pg_drv.Json_Table_Record{
     
     var output  pg_drv.Json_Table_Record
-    if input.Server_type == true {
-       output.Tag1 = "true"
-     }else{
-        output.Tag1= "false"
-     }
     
-    output.Tag2        =  input.Master_server
-    output.Tag3        =  input.Sub_server
-    output.Tag4        =  input.Name
-    output.Tag5        =  input.Description
+    
+    output.Tag1        =  input.Server_key
+    output.Tag2        =  input.Name
+    output.Tag3        =  input.Description
+    output.Tag4        =  ""
+    output.Tag5        = ""
     output.Tag6        =  ""
     output.Tag7        =  ""
     output.Tag8        =  ""
@@ -95,15 +93,11 @@ func Insert_action_data( input Action_data_type)bool{
      
 }
 
-func Select_action_data(server_type, master_controller,sub_server string)([]string,bool){
+func Select_action_data(server_key  string)([]string,bool){
     
     where_entries := make(map[string]string)
-    where_entries["Tag1"] = server_type
-    where_entries["Tag2"] =master_controller
-    where_entries["Tag3"] = sub_server
+    where_entries["Tag1"] = server_key
     
-  
-   
     raw_data,status := control_block.action_driver.Select_tags(where_entries)
     if status == false {
         
@@ -121,4 +115,25 @@ func Select_action_data(server_type, master_controller,sub_server string)([]stri
 }  
     
     
+func Select_action_name(server_key,name  string)([]string,bool){
+    
+    where_entries := make(map[string]string)
+    where_entries["Tag1"] = server_key
+    where_entries["Tag2"] = name
+    
+    raw_data,status := control_block.action_driver.Select_tags(where_entries)
+    if status == false {
+        
+        
+    }
+    
+    return_value := make([]string,len(raw_data))
+    
+    for index,value := range raw_data {
+       
+       return_value[index] = value.Data
+    }
+    
+    return return_value,status
+}  
     

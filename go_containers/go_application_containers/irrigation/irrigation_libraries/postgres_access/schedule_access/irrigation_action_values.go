@@ -3,14 +3,19 @@ package irr_sched_access
 
 import (
       //"fmt"
+      "strings"
       "lacima.com/redis_support/graph_query"
 	//"lacima.com/redis_support/redis_handlers"
 )
 
 
-func Select_irrigation_action_data( server_type bool,master_server,sub_server string)([]string ,bool){
+func Select_irrigation_action_data( server_key  string )([]string ,bool){
+     key_list  :=  strings.Split(server_key,"~")
+     server_type      := key_list[0]
+     master_server := key_list[1]
+     sub_server       := key_list[2]
      search_string := []string{"IRRIGATION_SERVER:"+master_server,"IRRIGATION_SUBSERVER:"+sub_server}
-    if server_type == true{
+    if server_type == "true"{
        search_string = []string{"IRRIGATION_SERVER:"+master_server}
     } 
   

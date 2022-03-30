@@ -46,7 +46,7 @@ func js_generate_copy_schedule_name()string{
     function copy_schedule_init(){
       
       attach_button_handler("#copy_schedule_save_id" ,copy_schedule_save)
-      attach_button_handler("copy_schedule_cancel_id" ,add_schedule_cancel)
+      attach_button_handler("#copy_schedule_cancel_id" ,add_schedule_cancel)
       
     }
     
@@ -73,6 +73,8 @@ func js_generate_copy_schedule_name()string{
        let ed_sch_working_schedule = deepcopy(schedule_data[copy_select_index])
        ed_sch_working_schedule["name"]        = schedule_name
        ed_sch_working_schedule["description"] = description
+       ed_sch_working_schedule["server_key"] =  g_server_key
+       ed_sch_working_schedule["json_steps"] = JSON.stringify([])
        ajax_post_get(ajax_add_schedule, ed_sch_working_schedule, copy_schedule_complete, "error copy schedule not saved") 
      }
      

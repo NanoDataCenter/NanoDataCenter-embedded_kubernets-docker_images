@@ -130,9 +130,12 @@ function master_server_change(event,ui){
           delete_handler()
        }
      if(choice == "edit_start_time"){
-              edit_start_time_handler()
+            
+                edit_start_time_handler()
+
       }
        if(choice == "edit_actions"){
+           
               edit_start_step_handler()
       }
      
@@ -147,14 +150,10 @@ function edit_start_step_handler(){
      if( select_index  == -1){
            alert("no action selected")
     }else{
-         if ($("#master_controller_select").is(':checked') == true) {
-           schedule_map = {}
-           alert("no schedules for master controller")
-         
-       }else{
+
        modify_action_steps(select_index)
        }
-    }
+
 }
 
   
@@ -182,10 +181,8 @@ function delete_handler(){
           if( confirm("Delete Action "+name)== true){
               
                    let data = {}
-                   let master_flag = $("#master_controller_select").is(':checked')
-                   data["master_flag"]   = master_flag
-                   data["main_controller"] = $("#master_server").val()
-                   data["sub_controller"]    = $("#sub_server").val()
+                   
+                   data["server_key"] = g_server_key
                    data["name"]     =  name
                   
                    ajax_post_get( ajax_delete_action,data, populate_action_list, "action not deleted")
@@ -219,13 +216,22 @@ function delete_handler(){
    
    function populate_action_list(){
        let data = {}
-       data["master_flag"]           = $("#master_controller_select").is(':checked')
-       data["master_controller"] = $("#master_server").val()
-       data["sub_controller"]    = $("#sub_server").val()
+       let master_flag = $("#master_controller_select").is(':checked')
+       let master_name  =   $("#master_server").val()
+       let sub_name        =  $("#sub_server").val()
+       if (master_flag == true) {
+           g_server_key  =  "true~"+master_name+"~"+sub_name
+       }else{
+           g_server_key = "false~"+master_name+"~"+sub_name   
+        }
+       data["server_key"] = g_server_key
       
        ajax_post_get(ajax_get_actions  , data, ajax_get_function,  "Action Data Not Loaded")
        
     }
+    
+    
+    
    function ajax_get_function(data){
       action_data  = {}
       
@@ -289,8 +295,7 @@ function get_schedules(){
            return
        }
         let data = {}
-       data["master_server"] = $("#master_server").val()
-       data["sub_server"]    = $("#sub_server").val()
+       data["server_key"]  = g_server_key
       
        ajax_post_get(ajax_get_schedule , data, ajax_get_schedule_function,  "Schedule Data Not Loaded")
        
@@ -328,10 +333,8 @@ function get_schedules(){
           let data = {}
           
           
-       data["server_type"] =  $("#master_controller_select").is(':checked')
-       data["master_server"] = $("#master_server").val()
-       data["sub_server"]    = $("#sub_server").val()
-      
+       
+        data["server_key"]   = g_server_key
        ajax_post_get( ajax_get_irrigation_actions , data, ajax_process_action_data,  "Irrigation Action Data Not Loaded")
        
     }

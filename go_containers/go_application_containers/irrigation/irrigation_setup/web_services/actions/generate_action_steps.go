@@ -57,10 +57,17 @@ func  js_action_step_top_level()string{
       show_section("generate_action_steps")
       $("#add_schedule_select_select").hide()
       $("#add_action_select_select").hide()
-      populate_schedule_table()
+       if($("#master_controller_select").is(':checked')==false){
+            populate_schedule_table()
+             $('#action_step_select option[value="add_schedule"]' ).attr("disabled", false);
+       }else{
+             $('#action_step_select option[value="add_schedule"]' ).attr("disabled", true);
+     }
       populate_action_table()
       
     }
+  
+  
   
    function modify_action_steps(select_index){
       action_table_list = [] 
@@ -171,7 +178,7 @@ function move(){
      }
      let move_array = find_check_box_elements("Action_display_list_checkbox",step_data.length)     
      if( move_array.length == 0){
-         alert("no points to move")
+         alert("no points to move ")
          return
      }
      let input = calculate_move(step_data.length,select_index,move_array)
@@ -340,130 +347,3 @@ func generate_action_select_js( )string{
      
     return return_value
 }
-/*
- * 
- * 
- * 
- * 
-
-func generate_time_hr_min(return_value web_support.Sub_component_type)web_support.Sub_component_type{
- null_list := make([]string,0)
- return_value.Append_line(web_support.Generate_div_start("hr_min_tag"))
- return_value.Append_line(web_support.Generate_sub_title("hr_min_display","Enter Earliest and Latest Start Time"))
-return_value.Append_line(web_support.Generate_space("25"))
-  return_value.Append_line(web_support.Generate_select("Select Earliest Start Time Hr","start_time_hr",null_list,null_list))
-  return_value.Append_line(web_support.Generate_select("Select Earliest Start Time Min","start_time_min",null_list,null_list))  
-  return_value.Append_line(web_support.Generate_select("Select Latest Start Time Hr","end_time_hr",null_list,null_list))
-  return_value.Append_line(web_support.Generate_select("Select Latest Start Time Min","end_time_min",null_list,null_list))
-   return_value.Append_line(web_support.Generate_div_end())
-  return_value.Append_line(generate_time_js( ))
-  return return_value
-}
-
-func generate_time_js( )string{
- return_value := 
-    ` <script type="text/javascript">    
-    
-     function time_type_change_function(){
-        let checked = $("#time_type_select").is(':checked')
-       if( checked == true ){
-           $("#dow_tag").show()
-           $("#doy_tag").hide()
-       }else{
-             $("#dow_tag").hide()
-           $("#doy_tag").show()
-           
-    }
-    }
-    
-    function initialize_hr_min_controls(){
-    
-     $('#time_type_select').change(time_type_change_function)
-       $("#start_time_hr").empty()
-        for(let i=0; i<24; i++){
-           $("#start_time_hr").append($('<option>').val(i).text(i));
-        }
-        $("#start_time_min").empty()
-        for(let i=0; i<60; i++){
-           $("#start_time_min").append($('<option>').val(i).text(i));
-        }
-       $("#end_time_hr").empty()
-        for(let i=0; i<24; i++){
-           $("#end_time_hr").append($('<option>').val(i).text(i));
-        }
-
-       $("#end_time_min").empty()
-        for(let i=0; i<60; i++){
-           $("#end_time_min").append($('<option>').val(i).text(i));
-        }
-     }
-        </script>
-     `
-     return return_value
-}
-
-/
-func generate_time_dow(return_value web_support.Sub_component_type)web_support.Sub_component_type{
-  return_value.Append_line(web_support.Generate_div_start("dow_tag"))
-  
-return_value.Append_line(`  <input type="checkbox" id="dow_0" name="dow_0" >`)
-return_value.Append_line(`   <label for="dow_0"> Sunday</label>`)
-return_value.Append_line(`   <input type="checkbox" id="dow_1" name="dow_1" >`)
-return_value.Append_line(`   <label for="dow_1"> Monday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_2" name="dow_2" >`)
-return_value.Append_line(`   <label for="dow_2">Tuesday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_3" name="dow_3" >`)
-return_value.Append_line(`   <label for="dow_3"> Wednesday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_0" name="dow_4" >`)
-return_value.Append_line(`   <label for="dow_4">Thursday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_5" name="dow_5" >`)
-return_value.Append_line(`   <label for="dow_5"> Friday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_6" name="dow_6" >`)
-return_value.Append_line(`   <label for="dow_6"> Saturday</label>`)
-
- 
- 
-  return_value.Append_line(web_support.Generate_div_end())
-  return return_value
-}
-
-func generate_time_doy(return_value web_support.Sub_component_type)web_support.Sub_component_type{
-   null_list := make([]string,0)
-  return_value.Append_line(web_support.Generate_div_start("doy_tag"))
-  return_value.Append_line(web_support.Generate_select("Select DOY Divisor","doy_divisor",null_list,null_list))
-  return_value.Append_line(web_support.Generate_select("Select DOY Modulus","doy_modulus",null_list,null_list))
-  return_value.Append_line(generate_time_doy_js( ))
-    return_value.Append_line(web_support.Generate_div_end())
-  return return_value
-}
-   
-func generate_time_doy_js( )string{
- return_value := 
-    ` <script type="text/javascript">    
-    function time_doy_js_init(){
-        $("#doy_divisor").empty()
-        for(let i=2; i<11; i++){
-           $("#doy_divisor").append($('<option>').val(i).text(i));
-        }
-        $("#doy_modulus").empty()
-        for(let i=0; i<10; i++){
-           $("#doy_modulus").append($('<option>').val(i).text(i));
-        }    
-        jquery_initalize_select("#doy_divisor",doy_divisor_change)
-      
-   }
-   
-   function doy_divisor_change(){
-     let index = $("#doy_divisor").val()
-     $("#doy_modulus").empty()
-        for(let i=0; i<index; i++){
-           $("#doy_modulus").append($('<option>').val(i).text(i));
-        }  
-      $("#doy_moduls").val(0)
-   }
-    
-    </script>`
-    
-    return return_value
-}
-*/

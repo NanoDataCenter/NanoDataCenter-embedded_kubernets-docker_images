@@ -82,6 +82,7 @@ func ( v  Json_Table_Driver )Create_table()bool{
 
 
 func ( v  Json_Table_Driver )Drop_table(  )bool{
+   
     script := "DROP TABLE IF EXISTS  "+v.table_name+";" 
     return v.Exec( script  )
     
@@ -180,6 +181,8 @@ func ( v Json_Table_Driver )Vacuum( )bool{
 }
 
 
+
+
 func (v  Json_Table_Driver)Select_tags(tags map[string]string)([]Json_Table_Record, bool){
    where_clause := v.tags_where_clause( tags )
    
@@ -196,7 +199,7 @@ func (v Json_Table_Driver)Select_where(where_clause string)([]Json_Table_Record,
     return_value := make([]Json_Table_Record,0)
     
     script := "Select * from "+v.table_name +" where "+where_clause+ ";"
-    fmt.Println("script",script)
+    //fmt.Println("script",script)
     rows, err := v.conn.Query(context.Background(), script)
     if err != nil {
       fmt.Println("err",err)

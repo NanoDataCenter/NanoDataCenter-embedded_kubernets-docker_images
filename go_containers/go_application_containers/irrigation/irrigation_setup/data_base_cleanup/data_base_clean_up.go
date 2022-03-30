@@ -11,10 +11,6 @@ import (
  * 
  */
 var control_block  irr_sched_access. Irr_sched_access_type
-var map_list_data   map[string][]string
-
-var  master_map_keys map[string]bool
-var master_map            map[string]map[string]bool
 
 func Start(){
     
@@ -25,17 +21,6 @@ func Start(){
 }
 func init_data_structures(){
     control_block =  irr_sched_access.Construct_irr_schedule_access()
-    map_list_data  = control_block.Master_table_list  
-    master_map_keys = make(map[string]bool)
-    master_map         =  make(map[string]map[string]bool)
-    for key , value := range map_list_data {
-         master_map_keys[key] = true
-         temp := make(map[string]bool)
-         for _, list_value := range value {
-             temp[list_value] = true
-         }
-         master_map[key] = temp
-    }
   
 }
     
@@ -44,12 +29,12 @@ func init_data_structures(){
 func start_database_services(){
  	for true {
  
-      clean_schedule_table()
-       clean_action_table()
-       irr_sched_access.Action_Vacuum()
-       irr_sched_access.Sched_Vacuum() 
-       time.Sleep(time.Second * 3600) // one hour
-      fmt.Println("polling loop")
+        clean_schedule_table()
+        clean_action_table()
+        irr_sched_access.Sched_Vacuum()
+        irr_sched_access.Action_Vacuum()
+        time.Sleep(time.Second * 3600) // one hour
+       fmt.Println("polling loop")
 
 	}
    
@@ -58,21 +43,17 @@ func start_database_services(){
 
 func clean_schedule_table(){
  
-    all_entries,err := irr_sched_access.Schedule_Select_All() 
+    all_entries,err :=  irr_sched_access.Schedule_Select_All() 
     if err != true {
         panic("bad action table access")
     }
     for _, value := range all_entries {
-         master_server :=   value.Master_server 
-        sub_server        :=  value.Sub_server    
-       name                 :=   value.Name   
+        key := value.Server_key 
        
-       if   general_map_check(master_server,sub_server) == false{
-           var input irr_sched_access.Schedule_delete_type
-          input.Master_server = master_server
-           input.Sub_server       = sub_server
-           input.Name               = name
-            irr_sched_access.Delete_schedule_data( input )
+       if   general_map_check(key ) == false{
+           fmt.Println("key does not exit",key)
+          
+            irr_sched_access.Delete_schedule_data( value )
             
        }
     } 
@@ -80,59 +61,29 @@ func clean_schedule_table(){
 
 func clean_action_table(){
  
-    all_entries,err := irr_sched_access.Action_Select_All()
+    all_entries,err :=  irr_sched_access.Action_Select_All()
     if err != true {
         panic("bad action table access")
     }
     for _, value := range all_entries {
-            var  temp  irr_sched_access.Action_data_type
-            temp.Server_type      =   value["master_flag"].(bool)
-            temp.Master_server  =   value["main_controller"].(string)
-            temp.Sub_server       =   value["sub_controller"].(string)
-            temp.Name                 =  value["name"].(string)
+            key := value.Server_key 
             
-            if temp.Server_type == false {
-                if general_map_check(temp.Master_server,temp.Sub_server) == false{
-                    
-                    irr_sched_access.Delete_action_data(temp)
-                }
-                   
+             if   general_map_check(key ) == false{
+                  fmt.Println("key does not exit",key)
+                irr_sched_access.Delete_action_data(value)
+             }
             
-            }else{
-                if check_action_map_list(temp.Master_server) == false{
-                  
-                     irr_sched_access.Delete_action_data(temp)
-                }
-                
-                
-            }
-                
     } 
 }
 
-func general_map_check( master, sub string) bool{
-    if _, ok := master_map_keys[master]; ok == false {
-        fmt.Println("fail master",master)
-    
-        return false
-    }
-    if _, ok := master_map[master][sub]; ok == false{
-        fmt.Println("fail sub",sub)
+func general_map_check( key  string) bool{
+    if _,ok := control_block.Node_list[key] ; ok == false {
         return false
     }
     return true
 }
 
-func check_action_map_list(master string)bool{
-   if _, ok := master_map_keys[master]; ok == false {
-        fmt.Println("fail master",master)
-    
-        return false
-    }
-    return true
-    
-    
-}
+
     
     
 

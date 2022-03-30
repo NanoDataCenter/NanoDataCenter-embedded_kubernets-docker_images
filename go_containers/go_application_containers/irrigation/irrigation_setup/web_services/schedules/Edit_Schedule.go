@@ -63,16 +63,18 @@ func js_generate_edit_schedule()string{
     function add_schedule(name,description){
  
       ed_sch_working_schedule = {}
-      ed_sch_working_schedule["master_server"] = $("#master_server").val()
-      ed_sch_working_schedule["sub_server"]    = $("#sub_server").val()
+      ed_sch_working_schedule["server_key"] =  g_server_key
       ed_sch_working_schedule["name"]        = name
       ed_sch_working_schedule["description"] = description
-      ed_sch_working_schedule["steps"]       = []
+      
+      ed_sch_working_schedule["json_steps"] = JSON.stringify([])
       $("#edit_schedule_name").html("Schedule Name:  "+name)
       $("#edit_schedule_description").html("Description:  "+description)
-      load_schedule_table()
-      start_section("edit_schedule")
-    }
+      ajax_post_get(ajax_add_schedule, ed_sch_working_schedule, edit_schedule_complete, "error message not saved")
+    
+   }
+   
+   
     function edit_schedule( working_step){
        ed_sch_working_schedule = deepcopy(working_step)
        $("#edit_schedule_name").html("Schedule Name:  "+ed_sch_working_schedule["name"])
@@ -82,7 +84,7 @@ func js_generate_edit_schedule()string{
    }
     
     function edit_schedule_save(){
-    
+       ed_sch_working_schedule["json_steps"] = JSON.stringify(ed_sch_working_schedule["steps"])      
        ajax_post_get(ajax_add_schedule, ed_sch_working_schedule, edit_schedule_complete, "error message not saved") 
      }
      

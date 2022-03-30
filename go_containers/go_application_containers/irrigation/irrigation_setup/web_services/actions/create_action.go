@@ -62,14 +62,9 @@ func js_generate_create_action_name()string{
            alert("duplicate action")
            return
        }
-          let main_controller  = $("#master_server").val()
-           let sub_controller  = $("#sub_server").val()
-           
-           let master_flag = $("#master_controller_select").is(':checked')
+          
            let new_action = blank_new_action()
-           new_action["main_controller"]    = main_controller
-            new_action["sub_controller"]       = sub_controller
-           new_action["master_flag"]          = master_flag
+           
            new_action["name"]                       = action_name
             new_action["description"]             = description  
             save_action_save(new_action)  
@@ -82,9 +77,7 @@ func js_generate_create_action_name()string{
     
     function blank_new_action(){
       let return_value = {}
-      return_value["main_controller"] = ""
-      return_value["sub_controller"] = ""
-      return_value["master_flag"] = false
+      return_value["server_key"]             =  g_server_key
       return_value["name"] = ""
       return_value["description"] = ""
       return_value["steps"] = []

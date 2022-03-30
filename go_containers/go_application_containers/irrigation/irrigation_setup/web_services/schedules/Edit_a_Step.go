@@ -115,6 +115,7 @@ func js_edit_a_step()string{
     function edit_step_save(){
   
        if( create_step_flag == true){
+           console.log("edit step",ed_sch_working_schedule)
           ed_sch_working_schedule["steps"].push(edit_step_working)
        }else{
            ed_sch_working_schedule["steps"][ed_step_number] = edit_step_working

@@ -40,7 +40,7 @@ func main(){
     
 	var config_file = "/data/redis_configuration.json"
 	var site_data map[string]interface{}
-
+      
 	site_data = get_site_data.Get_site_data(config_file)
 	redis_handlers.Init_Redis_Mutex()
 	graph_query.Graph_support_init(&site_data)
@@ -57,6 +57,7 @@ func main(){
 func setup_data_structures(){
     
       control_block = irr_sched_access.Construct_irr_schedule_access()
+     irr_sched_access.Delete_schedule_job()
      // setup redis job table
     // setup rpc job table
      // clean redis job table    
@@ -64,16 +65,6 @@ func setup_data_structures(){
     
 }
 
-func clean_redis_job_table(){
-    // base_time
-    // get all the keys
-    // for all redis keys 
-    //   convert string to float64
-    //   if base_time > redis_time
-    //    delete redis key
-    
-    
-}
 
 
 func check_irrigation_jobs(){
@@ -83,19 +74,19 @@ func check_irrigation_jobs(){
      if err != true {
          panic("data fetch error")
      }
-     fmt.Println("length",len(data)  )
-     for  _, item   := range data {
+     
+     for  index, item   := range data {
          parse_input(item)
         if irr_sched_access.Check_schedule_job(  action_data.key ) == true {
-            fmt.Println("job previous scheduled")
+            //fmt.Println("job previous scheduled")
             continue
         }
         if check_irrigation_job() == true {
            irr_sched_access.Set_schedule_job( action_data.key)
-            queue_irrigation_jobs()   
+            queue_irrigation_jobs(  action_data.key,  data[index] )   
         }else{
            irr_sched_access. Clear_schedule_job( action_data.key)
-            fmt.Println("job not queued")
+            fmt.Println("job not queued and entry  cleared")
         }
         
      }
@@ -106,7 +97,7 @@ func parse_input( item map[string]interface{}){
       form_key( item )
       form_hr( item )
       form_dow(item)
-      fmt.Println(action_data)
+     
 }
 
 func check_irrigation_job( )bool{
@@ -174,13 +165,25 @@ func check_day()bool{
         
     
 }
-
-
-func queue_irrigation_jobs(  ) {
-    
-     fmt.Println("queue this job",action_data)
+/*
+ * 
+{false/main_server/main_server/sub_server_1/action main_server main_server/sub_server_1 false action action 1 description [true true true true false true true] true 2 0 10 0 21 0 []}
+map[string]interface {}{"day_mask":[]interface {}{true, true, true, true, false, true, true}, "description":"action 1 description", "dow_week_flag":true, "doy_divisor":"2", "doy_modulus":"0", "end_time_hr":21, "end_time_min":0, "main_controller":"main_server", "master_flag":false, "name":"action", "start_time_hr":10, "start_time_min":0, "steps":[]interface {}{map[string]interface {}{"description":"", "name":"VALVE_RESISTANCE:valve_resistance_1", "type":"action"}, map[string]interface {}{"description":"schedule 1 description", "name":"schedule_1", "type":"schedule"}, map[string]interface {}{"description":"", "name":"VALVE_RESISTANCE:valve_resistance_1", "type":"action"}, map[string]interface {}{"description":"schedule 2 description", "name":"test_schedule_2", "type":"schedule"}}, "sub_controller":"main_server/sub_server_1"}panic: done
+*/
+func queue_irrigation_jobs(   key string  ,   json_data map[string]interface{} ) {
+    data :=  json_data["steps"].([]interface{})
+    for  _, temp := range data {
+        array_element                 :=   temp.(map[string]interface{})
+        name                                := array_element["name"].(string)
+        action_type                     := array_element["type"].(string)
+        if action_type == "schedule" {
+            fmt.Println("QUEUE Schedule ******************************************************************")
+        }else{
+            fmt.Println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            fmt.Println("action",name, irr_sched_access.Queue_Action( key,  name ) )
+        }
+    }
 }
-
 
 
 func  form_key(item map[string]interface{}){
@@ -234,94 +237,3 @@ func form_hr(item map[string]interface{}){
 
 }
 
-
-/*
-item map[day_mask:[true true true true false true true] description:action_data 1 description dow_week_flag:true doy_divisor:2 doy_modulus:0 end_time_hr:21 end_time_min:0 main_controller:main_server master_flag:false name:action start_time_hr:10 start_time_min:0 steps:[map[description: name:VALVE_RESISTANCE:valve_resistance_1 type:action] map[description:schedule 1 description name:schedule_1 type:schedule] map[description: name:VALVE_RESISTANCE:valve_resistance_1 type:action] map[description:schedule 2 description name:test_schedule_2 type:schedule]] sub_controller:main_server/sub_server_1]
-
-item map[day_mask:[true true true true false true true] description:test 2 action dow_week_flag:true doy_divisor:2 doy_modulus:0 end_time_hr:21 end_time_min:0 main_controller:main_server master_flag:false name:test2 start_time_hr:5 start_time_min:0 steps:[map[description:schedule 1 description name:schedule_1 type:schedule]] sub_controller:main_server/sub_server_1]
-
-
-item map[day_mask:[false false false false false false false] description:test 3  example dow_week_flag:false doy_divisor:2 doy_modulus:0 end_time_hr:23 end_time_min:0 main_controller:main_server master_flag:true name:test3 start_time_hr:10 start_time_min:0 steps:[] sub_controller:main_server/sub_server_1]
-
-*/
-/*
- key start_time_hr float64  
-value 10
-key end_time_hr float64  
-value 21
-key day_mask []interface {}  
-value [true true true true false true true]
-key end_time_min float64  
-value 0
-key master_flag bool  
-value false
-key start_time_min float64  
-value 0
-key dow_week_flag bool  
-value true
-key doy_divisor string  
-value 2
-key sub_controller string  
-value main_server/sub_server_1
-key name string  
-value action
-key doy_modulus string  
-value 0
-key sub_controller string  
-value main_server/sub_server_1
-key day_mask []interface {}  
-value [true true true true false true true]
-key start_time_hr float64  
-value 5
-key start_time_min float64  
-value 0
-key end_time_min float64  
-value 0
-key main_controller string  
-value main_server
-key description string  
-value test 2 action
-key steps []interface {}  
-value [map[description:schedule 1 description name:schedule_1 type:schedule]]
-key dow_week_flag bool  
-value true
-key master_flag bool  
-value false
-key name string  
-value test2
-key doy_modulus string  
-value 0
-key end_time_hr float64  
-value 21
-key doy_divisor string  
-value 2
-key description string  
-value test 3  example
-key start_time_min float64  
-value 0
-key dow_week_flag bool  
-value false
-key master_flag bool  
-value true
-key name string  
-value test3
-key steps []interface {}  
-value []
-key start_time_hr float64  
-value 10
-key end_time_hr float64  
-value 23
-key doy_modulus string  
-value 0
-key main_controller string  
-value main_server
-key sub_controller string  
-value main_server/sub_server_1
-key end_time_min float64  
-value 0
-key day_mask []interface {}  
-value [false false false false false false false]
-key doy_divisor string  
-value 2
-
-*/

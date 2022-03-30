@@ -21,13 +21,15 @@ func Start(){
 	
 
 	
-	driver.Add_handler( "handle_job", handle_job)
+	driver.Add_handler( "QUEUE_ACTION", queue_actions)
+    driver.Add_handler(  "QUEUE_MANAGED_IRRIGATION", queue_managed_irrigation)
+    driver.Add_handler( "QUEUE_IRRIGATION", queue_irrigation)
 	driver.Json_Rpc_start() 
     
     
 }    
     
-func handle_job( parameters map[string]interface{} ) map[string]interface{}{
+func queue_actions( parameters map[string]interface{} ) map[string]interface{}{
   
    //p_file_name := parameters["file_name"].(string)
    //p_data := []byte(parameters["data"].(string))
@@ -37,4 +39,22 @@ func handle_job( parameters map[string]interface{} ) map[string]interface{}{
   return parameters
 }
 
-    
+ func queue_managed_irrigation( parameters map[string]interface{} ) map[string]interface{}{
+  
+   //p_file_name := parameters["file_name"].(string)
+   //p_data := []byte(parameters["data"].(string))
+  
+  //fmt.Println("save_file",file_name,p_data)
+  parameters["status"] = true
+  return parameters
+}
+
+func queue_irrigation( parameters map[string]interface{} ) map[string]interface{}{
+  
+   //p_file_name := parameters["file_name"].(string)
+   //p_data := []byte(parameters["data"].(string))
+  
+  //fmt.Println("save_file",file_name,p_data)
+  parameters["status"] = true
+  return parameters
+}
