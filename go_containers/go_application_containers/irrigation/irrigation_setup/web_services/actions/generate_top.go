@@ -73,6 +73,8 @@ func js_generate_top_js()string{
       $('#master_controller_select').change(master_controller_select_function)
       $("#master_state").html("Sub Server State")
        $("#sub_controller_select").show()
+        $("#dow_tag").hide()
+           $("#doy_tag").hide()
       
     }
     
@@ -235,7 +237,7 @@ function delete_handler(){
    function ajax_get_function(data){
       action_data  = {}
       
-      console.log(data)
+      //console.log(data)
       
       action_data_map = {}
       set_status_bar("Action Data Downloaded")

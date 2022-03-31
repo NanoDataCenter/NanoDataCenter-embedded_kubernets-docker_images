@@ -86,10 +86,10 @@ func  js_time_top_level()string{
     time_data_copy["day_mask"].push($("#dow_1").is(':checked'))                                        
     time_data_copy["day_mask"].push($("#dow_2").is(':checked'))                          
     time_data_copy["day_mask"].push($("#dow_3").is(':checked'))                      
-    time_data_copy["day_mask"].push($("#dow_4").is(':checked'))                         
+    time_data_copy["day_mask"].push( $("#dow_4").is(':checked'))                                
     time_data_copy["day_mask"].push( $("#dow_5").is(':checked'))                              
     time_data_copy["day_mask"].push($("#dow_6").is(':checked'))
-     
+   
      
      
      
@@ -149,6 +149,8 @@ func  js_time_top_level()string{
     $("#dow_4").prop('checked', time_data_copy["day_mask"][4])
    $("#dow_5").prop('checked',  time_data_copy["day_mask"][5])
    $("#dow_6").prop('checked',  time_data_copy["day_mask"][6])
+   
+    
       // set time doy
     $("#doy_divisor").val(time_data_copy["doy_divisor"])
     $("#doy_modulus").val(time_data_copy["doy_modulus"])
@@ -241,7 +243,7 @@ return_value.Append_line(`  <input type="checkbox" id="dow_2" name="dow_2" >`)
 return_value.Append_line(`   <label for="dow_2">Tuesday</label>`)
 return_value.Append_line(`  <input type="checkbox" id="dow_3" name="dow_3" >`)
 return_value.Append_line(`   <label for="dow_3"> Wednesday</label>`)
-return_value.Append_line(`  <input type="checkbox" id="dow_0" name="dow_4" >`)
+return_value.Append_line(`  <input type="checkbox" id="dow_4" name="dow_4" >`)
 return_value.Append_line(`   <label for="dow_4">Thursday</label>`)
 return_value.Append_line(`  <input type="checkbox" id="dow_5" name="dow_5" >`)
 return_value.Append_line(`   <label for="dow_5"> Friday</label>`)
