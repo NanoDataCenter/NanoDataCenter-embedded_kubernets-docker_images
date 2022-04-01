@@ -80,18 +80,13 @@ func Add_irrigation_actions(){
   /* ------------------------------------------------------------------------------------------- */ 
    
   
- /* ********************************************************************************************* */  
-su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","IRRIGATION_SCHEDULE",make(map[string]interface{}))   
-
-   su.Bc_Rec.Add_info_node("IRRIGATION_OPERATIONS","irrigation_operations_1",make(map[string]interface{}))
-   
- su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","IRRIGATION_SCHEDULE")     
+ 
   /* ------------------------------------------------------------------------------------------- */
    
  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","IRRIGATION_ACTIONS")   
  
  all_master_actions = []string{"CLEAN_FILTER:clean_filter_1","VALVE_LEAK:valve_leak_1","OPEN_MASTER_VALVE:open_master_valve_1","CLOSE_MASTER_VALVES:close_master_valve_1"}
- all_slave_actions  = []string{"IRRIGATION_OPERATIONS:irrigation_operations_1","VALVE_RESISTANCE:valve_resistance_1"}
+ all_slave_actions  = []string{"VALVE_RESISTANCE:valve_resistance_1"}
 
 
    

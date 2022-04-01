@@ -4,9 +4,15 @@ import (
     "lacima.com/go_setup_containers/site_generation_base/site_generation_utilities"
 )
 
+
+
+
+
 func Add_station_definitions(){
     
    su.Bc_Rec.Add_header_node("IRRIGATION_STATIONS","IRRIGATION_STATIONS",make(map[string]interface{}))
+   
+   Add_valve_group_definitions()
    
    r :=construct_station_control()
    description_1 := make([]string,0)
@@ -64,12 +70,12 @@ func ( r *station_control_type)Add_Click_PLC_RS485( name , plc_type string,  val
    
     
     entry := make(map[string]interface{})
-    entry["name"]           = name
-    entry["plc"]            = plc_type
-    entry["valve_number"]   = valve_number
-    entry["modbus_address"] = modbus_address
-    entry["resistance"]     = resistance
-    entry["description"]    = description
+    entry["name"]                        = name
+    entry["plc"]                            = plc_type
+    entry["valve_number"]         = valve_number
+    entry["modbus_address"]    = modbus_address
+    entry["resistance"]                = resistance
+    entry["description"]               = description
     r.station_map[name] = entry
     
 }

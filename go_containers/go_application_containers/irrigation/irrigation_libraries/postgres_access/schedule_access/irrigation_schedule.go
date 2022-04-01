@@ -128,16 +128,20 @@ func Check_schedule_job( key string )bool{
     if temp == "true" {
         return_value = true
     }
+    fmt.Println("temp",temp,return_value)
     return return_value
 }
 
 func Set_schedule_job( key string ){
  
        control_block.redis_hash_driver.HSet(key,"true")
+        fmt.Println(Get_all_keys())
 }
     
 func Clear_schedule_job( key string ){
     control_block.redis_hash_driver.HSet(key,"false")
+      fmt.Println(Get_all_keys())
+  
 }
 
 func Get_all_keys( )map[string]string{
@@ -147,6 +151,10 @@ func Get_all_keys( )map[string]string{
 }
 
 func Delete_schedule_job(){
+    fmt.Println(Get_all_keys())
+   
+    
+    
     control_block.redis_hash_driver.Delete_All()
 }
         

@@ -44,6 +44,7 @@ func main(){
 	data_handler.Data_handler_init(&site_data)
     setup_data_structures()
     for true {
+        fmt.Println("\nCheck Cycle \n")
         check_irrigation_jobs()
         //fmt.Println("main loop pooling loop")
 		time.Sleep(time.Second * 60)
@@ -73,10 +74,10 @@ func check_irrigation_jobs(){
      for  index, item   := range data {
          
          parse_input(item)
-         fmt.Println("action_data",index,action_data)
+         //fmt.Println("action_data",index,action_data)
          
         if irr_sched_access.Check_schedule_job(  action_data.key +":"+action_data.name) == true {
-            fmt.Println("job previous scheduled")
+            //fmt.Println("job previous scheduled")
             continue
         }
         if check_irrigation_job() == true {
@@ -84,7 +85,7 @@ func check_irrigation_jobs(){
             queue_irrigation_jobs(  action_data.key,  data[index] )   
         }else{
            irr_sched_access. Clear_schedule_job( action_data.key +":"+action_data.name)
-        fmt.Println("job not queued and entry  cleared")
+          //fmt.Println("job not queued and entry  cleared")
         }
         
      }
@@ -119,7 +120,7 @@ func check_hour()bool {
    start_min := (action_data.start_time_hr*60) + action_data.start_time_min
    end_min  := (action_data.end_time_hr*60) + action_data.end_time_min
    
-   fmt.Println("hour data",current_min,start_min,end_min)
+   //fmt.Println("hour data",current_min,start_min,end_min)
    if start_min < end_min {
         if current_min < start_min{
             return false
@@ -127,19 +128,19 @@ func check_hour()bool {
         if current_min > end_min {
             return false
         }
-        fmt.Println("made it to check_hour 1")
+        //fmt.Println("made it to check_hour 1")
        return true
        
    }
    if  current_min < end_min {
-       fmt.Println("made it to check hour 2")
+       //fmt.Println("made it to check hour 2")
        return true
    }
    if current_min > start_min {
-       fmt.Println("made it to check hour 3")
+       //fmt.Println("made it to check hour 3")
        return true
    }
-   fmt.Println("made it to chech hour 4")
+   //fmt.Println("made it to chech hour 4")
    return false
 }
 
@@ -150,17 +151,17 @@ func check_day()bool{
     dow               :=  int64(currentTime.Weekday())
     doy                :=  int64(currentTime.YearDay()) 
     if action_data.dow_week_flag == true {
-        fmt.Println("check day 1",action_data.day_mask[dow])
+        //fmt.Println("check day 1",action_data.day_mask[dow])
         return action_data.day_mask[dow]
     }
     
     time_mod := int64( doy) %  int64(action_data.doy_divisor)
-    fmt.Println("tod",time_mod,int64(action_data.doy_modulus))    
+    //fmt.Println("tod",time_mod,int64(action_data.doy_modulus))    
     if time_mod == int64(action_data.doy_modulus) {
-        fmt.Println("check day 2",time_mod ,time_mod)
+        //fmt.Println("check day 2",time_mod ,time_mod)
         return true
     }
-    fmt.Println("check day 3")
+    //fmt.Println("check day 3")
     return false
         
     
