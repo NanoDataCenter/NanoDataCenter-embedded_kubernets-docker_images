@@ -17,7 +17,6 @@ package main
 import (
 	//"fmt"
 	"lacima.com/go_application_containers/irrigation/irrigation_manage/web_services"
- 
 	"lacima.com/redis_support/generate_handlers"
 	"lacima.com/redis_support/graph_query"
 	"lacima.com/redis_support/redis_handlers"
@@ -33,8 +32,7 @@ func main() {
 	redis_handlers.Init_Redis_Mutex()
 	graph_query.Graph_support_init(&site_data)
 	data_handler.Data_handler_init(&site_data)
-	irrigation_manage_web.Start()
-   
+	irrigation_information_web.Start()
 	for true {
 		time.Sleep(time.Second * 60)
 		//fmt.Println("polling loop")
