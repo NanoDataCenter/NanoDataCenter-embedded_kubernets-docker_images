@@ -86,3 +86,18 @@ func Queue_Irrigation( key string , time float64 , station_io []string  )bool{
    return result["status"].(bool)   
 
 }
+
+func Queue_Irrigation_Direct( station string , io int64  )bool{
+       parameters := make(map[string]interface{})
+       parameters["COMMAND"]                          = "QUEUE_IRRIGATION_DIRECT"
+        parameters["STATION"]                             = station 
+       parameters["IO"]                                           = io
+
+      result :=   rpc_irrigation_driver.Send_json_rpc_message( "QUEUE_IRRIGATION_DIRECT",parameters )
+        fmt.Printf("%#v \n",result)
+  if result == nil {
+       return false
+   }
+   return result["status"].(bool)   
+
+}

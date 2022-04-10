@@ -24,6 +24,7 @@ func Start(){
 	driver.Add_handler( "QUEUE_ACTION", queue_actions)
     driver.Add_handler(  "QUEUE_MANAGED_IRRIGATION", queue_managed_irrigation)
     driver.Add_handler( "QUEUE_IRRIGATION", queue_irrigation)
+    driver.Add_handler("QUEUE_IRRIGATION_DIRECT",queue_irrigation_direct)
 	driver.Json_Rpc_start() 
     
     
@@ -45,6 +46,12 @@ func queue_actions( parameters map[string]interface{} ) map[string]interface{}{
 
 func queue_irrigation( parameters map[string]interface{} ) map[string]interface{}{
   fmt.Println("queue_irrigation",parameters)
+  parameters["status"] = true
+  return parameters
+}
+
+func queue_irrigation_direct( parameters map[string]interface{} ) map[string]interface{}{
+  fmt.Println("queue_irrigation_direct",parameters)
   parameters["status"] = true
   return parameters
 }

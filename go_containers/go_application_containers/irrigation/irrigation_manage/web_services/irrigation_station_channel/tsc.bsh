@@ -1,0 +1,1 @@
+tsc --allowJs --outDir js  $1

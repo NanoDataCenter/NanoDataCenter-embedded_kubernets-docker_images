@@ -342,7 +342,7 @@ var nav_end = `
   </ul>
   <ul class="navbar-nav">
 
-      <button id="status_panel", class="btn " type="submit">Status</button>
+      <button id="status_panel", class="btn " type="submit" style="background-color:white;color:black"  >RT Status</button>
   </ul>
   <nav class="navbar navbar-light bg-dark navbar-dark">
   <span class="navbar-text" >
@@ -350,5 +350,12 @@ var nav_end = `
   </span>
   </nav>
 </nav>
+
+
+
+ 
+
+
+
 
 `

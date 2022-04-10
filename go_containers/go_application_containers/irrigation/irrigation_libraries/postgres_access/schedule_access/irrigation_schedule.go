@@ -13,20 +13,21 @@ import (
 
 
 type Irr_sched_access_type struct{
-  Table_type                        string;
-  Master_controller           string;
-  Sub_controller                 string;
-  Table_name                     string;
-  Data_json                         string;
-  Node_list                          map[string]bool
-  Master_table_list            map[string][]string
+  Table_type                           string;
+  Master_controller               string;
+  Sub_controller                     string;
+  Table_name                         string;
+  Data_json                             string;
+  Node_list                              map[string]bool
+  Master_table_list                map[string][]string
+ Valve_group_data                map[string]string
   
-  Valve_list                         map[string]map[string]interface{}
-  Master_table_list_json  string 
-  Valve_list_json               string        
-  sched_driver                  pg_drv.Json_Table_Driver
-  action_driver                 pg_drv.Json_Table_Driver
-  redis_hash_driver         redis_handlers.Redis_Hash_Struct
+  Valve_list                               map[string]map[string]interface{}
+  Master_table_list_json       string 
+  Valve_list_json                    string        
+  sched_driver                        pg_drv.Json_Table_Driver
+  action_driver                        pg_drv.Json_Table_Driver
+  redis_hash_driver               redis_handlers.Redis_Hash_Struct
 }
 
 var control_block Irr_sched_access_type
@@ -35,7 +36,10 @@ func Construct_irr_schedule_access()Irr_sched_access_type{
     
     construct_master_server_list(&control_block )
     construct_postgress_data_structures(&control_block)
+  
+    
     irrigation_RPC_Client_Init()
+    Get_Valve_Group_data(  )
     return control_block
 }
 
@@ -95,7 +99,7 @@ func find_subnodes( r  *Irr_sched_access_type, master_node string ,flag bool)([]
     for _,sub_node := range(sub_nodes){
         name     := graph_query.Convert_json_string(sub_node["name"])
         key :=  Construct_server_key(flag,master_node,name)
-        fmt.Println("key",key)
+       
        r.Node_list[key] = true
         byte_array := []byte(sub_node["supported_stations"])
         var data map[string][]int
