@@ -60,7 +60,8 @@ func init_web_server_pages() {
     initialize_handlers()
     web_support.Generate_special_post_route("irrigation/eto/eto_adjust_store" , eto_adjust_store)
     web_support.Generate_special_post_route("irrigation/irrigation_manage/post_job" , irrigation_post_job)
-   
+    web_support.Generate_special_post_route("irrigation/irrigation_manage/get_actions",get_actions) 
+    web_support.Generate_special_post_route("irrigation/irrigation_manage/get_schedules",get_schedules)
 }
 
 func initialize_handlers(){
@@ -69,7 +70,7 @@ func initialize_handlers(){
     eto_adjust.Page_init(base_templates)
     irrigation_station_channel.Page_init(base_templates)
     irrigation_valve_group.Page_init(base_templates)
-    irrigation_manual_ops.Page_init(base_templates)
+    irrigation_operations.Page_init(base_templates)
     irrigation_manage_parameters.Page_init(base_templates)
     irrigation_past_operation.Page_init(base_templates)
     irrigation_manage_queue.Page_init(base_templates)
@@ -89,7 +90,7 @@ func define_web_pages()*template.Template  {
     return_value[1] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
     return_value[2] = web_support.Construct_Menu_Element("Irrigation Valve Group","irrigation_valve_group",irrigation_valve_group.Generate_page_adjust)
     return_value[3] = web_support.Construct_Menu_Element("Irrigation Station Channel","irrigation_station_channel",irrigation_station_channel.Generate_page_adjust)
-    return_value[4] = web_support.Construct_Menu_Element("Irrigation Operations","manual_operations",irrigation_manual_ops.Generate_page_adjust)
+    return_value[4] = web_support.Construct_Menu_Element("Irrigation Operations","manual_operations",irrigation_operations.Generate_page_adjust)
     return_value[5] = web_support.Construct_Menu_Element("Irrigation Manage Parameters","irrigation_manage_parameters",irrigation_manage_parameters.Generate_page_adjust)
     return_value[6] = web_support.Construct_Menu_Element("Irrigation Past Operations","irrigation_past_operation",irrigation_past_operation.Generate_page_adjust)
     return_value[7] = web_support.Construct_Menu_Element("Manage Irrigation Queue","irrigation_manage_queue",irrigation_manage_queue.Generate_page_adjust)
@@ -250,4 +251,38 @@ func eto_adjust_store(w http.ResponseWriter, r *http.Request) {
   
    w.Write(output) 
     
+}
+
+
+
+func get_actions(w http.ResponseWriter, r *http.Request) {
+ 
+    
+    w.Header().Set("Content-Type", "application/json")
+
+
+input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }else{
+    output :=  irrigation_operations.Ajax_post_irrigation_actions(string(input))
+   
+    w.Write([]byte(output) )
+  }  
+}
+
+func get_schedules(w http.ResponseWriter, r *http.Request) {
+ 
+    
+    w.Header().Set("Content-Type", "application/json")
+
+
+input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }else{
+    output :=  irrigation_operations.Ajax_post_schedules(string(input))
+   
+    w.Write([]byte(output) )
+  }  
 }
