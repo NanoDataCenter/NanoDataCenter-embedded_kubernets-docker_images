@@ -76,13 +76,25 @@ function open_queue_manage() {
     alert("open queue manager");
 }
 function queue_action_data() {
-    var index = $("#action_select")[0].selectedIndex;
-    var choice = $("#action_select").val();
-    $("#action_select")[0].selectedIndex = 0;
+    "action_select";
+    index = $("#action_select")[0].selectedIndex;
+    choice = $("#action_select").val();
     if (index == 0) {
         return;
     }
-    alert("queue action   " + choice);
+    $("#action_select")[0].selectedIndex = 0;
+    var data = {};
+    data["key"] = g_server_key;
+    data["action"] = choice;
+    var url_path = "ajax/irrigation/irrigation_manage/post_action";
+    ajax_post_confirmation(url_path, data, "Queue Selected Action  " + choice, "Action Queued", "Action Not Queued");
+}
+function queue_schedule_data(schedule_data) {
+    var data = {};
+    data["key"] = g_server_key;
+    data["schedule"] = schedule_data;
+    var url_path = "ajax/irrigation/irrigation_manage/post_schedule";
+    ajax_post_confirmation(url_path, data, "Queue Schedule", "Schedule is queue", "Schedule Not Queue");
 }
 function show_schedule_page() {
     var index = $("#irrigation_schedule_select")[0].selectedIndex;
@@ -97,6 +109,7 @@ function process_schedule_step(step_data) {
     var return_value = [];
     for (var i = 0; i < step_data.length; i++) {
         var temp = {};
+        temp["step"] = i + 1;
         temp["time"] = step_data[i]["time"];
         temp["steps"] = JSON.stringify(process_valve_data(step_data[i]["station"]));
         return_value.push(temp);

@@ -75,6 +75,8 @@ func generate_html_js()string{
     top_list.Add_section(main_component)
     schedule_component :=  generate_schedule_component()
     top_list.Add_section(schedule_component)
+    time_component :=  irrigation_web_support.Generate_step_time_change()
+    top_list.Add_section(time_component)
     return irrigation_web_support.Attach_status_panel()+top_list.Generate_ending()  
     
 }   

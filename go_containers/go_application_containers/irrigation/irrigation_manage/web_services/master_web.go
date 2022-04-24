@@ -62,6 +62,8 @@ func init_web_server_pages() {
     web_support.Generate_special_post_route("irrigation/irrigation_manage/post_job" , irrigation_post_job)
     web_support.Generate_special_post_route("irrigation/irrigation_manage/get_actions",get_actions) 
     web_support.Generate_special_post_route("irrigation/irrigation_manage/get_schedules",get_schedules)
+    web_support.Generate_special_post_route("irrigation/irrigation_manage/post_action",post_action)
+    web_support.Generate_special_post_route("irrigation/irrigation_manage/post_schedule",post_schedule)
 }
 
 func initialize_handlers(){
@@ -85,7 +87,7 @@ func initialize_handlers(){
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,10)
+    return_value := make(web_support.Menu_array,9)
     return_value[0] = web_support.Construct_Menu_Element( "Iintroduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
     return_value[2] = web_support.Construct_Menu_Element("Irrigation Valve Group","irrigation_valve_group",irrigation_valve_group.Generate_page_adjust)
@@ -93,9 +95,8 @@ func define_web_pages()*template.Template  {
     return_value[4] = web_support.Construct_Menu_Element("Irrigation Operations","manual_operations",irrigation_operations.Generate_page_adjust)
     return_value[5] = web_support.Construct_Menu_Element("Irrigation Manage Parameters","irrigation_manage_parameters",irrigation_manage_parameters.Generate_page_adjust)
     return_value[6] = web_support.Construct_Menu_Element("Irrigation Past Operations","irrigation_past_operation",irrigation_past_operation.Generate_page_adjust)
-    return_value[7] = web_support.Construct_Menu_Element("Manage Irrigation Queue","irrigation_manage_queue",irrigation_manage_queue.Generate_page_adjust)
-    return_value[8] = web_support.Construct_Menu_Element("Irrigation Streaming Data","irrigation_streaming_data",irrigation_streaming_data.Generate_page_adjust)
-    return_value[9] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
+    return_value[7] = web_support.Construct_Menu_Element("Irrigation Streaming Data","irrigation_streaming_data",irrigation_streaming_data.Generate_page_adjust)
+    return_value[8] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
 }
@@ -181,6 +182,69 @@ func generate_intro_data()[]web_support.Accordion_Elements{
  * Ajax handlers 
  * 
 */
+
+ 
+
+func post_action( w http.ResponseWriter, r *http.Request) {
+  w.Header().Set("Content-Type", "application/json")
+ input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }
+  
+  handle_post_action(string(input))
+  
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}   
+
+func   handle_post_action(raw_input string ){
+       var decode_value map[string]interface{}
+  
+    if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
+        panic("bad json")
+    }else{
+        key := decode_value["key"].(string)
+        action := decode_value["action"].(string)
+        
+         fmt.Println("action",action, irr_sched_access.Queue_Action( key,   action ) )
+    }
+    
+}
+
+
+
+func post_schedule( w http.ResponseWriter, r *http.Request) {
+    
+    w.Header().Set("Content-Type", "application/json")
+
+
+input,err :=  io.ReadAll(r.Body)
+  if err != nil {
+      panic(err)
+  }
+  handle_post_schedule(string(input))
+  output := []byte(`"SUCCESS"`)
+  
+   w.Write(output) 
+    
+}   
+
+func   handle_post_schedule(raw_input string ){
+       var decode_value map[string]interface{}
+  
+    if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
+        panic("bad json")
+    }else{
+        handle_schedule(decode_value)
+    }
+    
+}
+
+ 
+
 
 func irrigation_post_job(w http.ResponseWriter, r *http.Request) {
    w.Header().Set("Content-Type", "application/json")
@@ -285,4 +349,77 @@ input,err :=  io.ReadAll(r.Body)
    
     w.Write([]byte(output) )
   }  
+}
+
+/*
+func queue_irrigation_jobs(   json_data map[string]interface{} ) {
+    data :=  json_data["steps"].([]interface{})
+    for  _, temp := range data {
+        array_element                 :=   temp.(map[string]interface{})
+        name                                := array_element["name"].(string)
+        action_type                     := array_element["type"].(string)
+        if action_type == "schedule" {
+               handle_schedule(key,name)
+        }else{
+          
+            fmt.Println("action",name, irr_sched_access.Queue_Action( key,  name ) )
+        }
+    }
+}
+
+*/
+
+/*
+func  handle_schedule(data map[string]interface{} ){
+     key := data["key"].(string)
+     steps := data["schedule"].([]interface{})
+     for _, temp := range steps{
+         
+             temp_map := temp.(map[string]interface{})
+             time              := temp_map["time"].(float64)
+             steps            :=   generate_step_data(temp_map["steps"].(string))
+             fmt.Println("steps",key,time,steps)
+            station_io := generate_station_io( steps )
+            fmt.Println("station",time,station_io)
+            fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_io ))
+
+      }
+        
+}
+*/
+func  handle_schedule(data map[string]interface{}  ){
+                key := data["key"].(string)
+    
+               steps := generate_step_data(data["schedule"].([]interface))
+               for _,step := range steps {
+                   time           := step["time"].(float64)
+                   temp         :=  step["station"].(map[string]interface {})
+                    station_io := generate_station_io( temp )
+                    //fmt.Println("station",time,station_io)
+                   fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_io ))
+               }
+               
+       
+           
+       
+}
+
+
+func generate_step_data(input string)[]map[string]interface{}{
+    var data []map[string]interface{}
+        if err := json.Unmarshal([]byte(input), &data); err != nil {
+           panic(err)
+        }
+        return data
+}
+
+//station:map[station_3:map[1:1] station_4:map[1:1]] time:60]
+func generate_station_io(  input map[string]interface {})[]string{
+  return_value := make([]string,0)
+   for station, io_data :=  range input {
+       for pin , _  := range io_data.(map[string]interface{}) {
+          return_value= append(return_value, station+":"+pin)
+       }
+   }
+   return return_value
 }

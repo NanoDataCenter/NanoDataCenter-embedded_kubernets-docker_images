@@ -124,14 +124,32 @@ function open_queue_manage(){
 }
 
 function queue_action_data(){
+  "action_select"    
+  index    = $("#action_select")[0].selectedIndex
+   choice = $("#action_select").val()
+  if (index == 0) {
+           return
+   }
+  $("#action_select")[0].selectedIndex = 0;
     
-     let index = $("#action_select")[0].selectedIndex 
-    let  choice = $("#action_select").val()
-    $("#action_select")[0].selectedIndex = 0;
-    if( index == 0){
-       return
-     }
-    alert("queue action   "+choice)
+    let data = {}
+    data["key"]=  g_server_key
+    data["action"]= choice
+    let url_path = "ajax/irrigation/irrigation_manage/post_action"
+    ajax_post_confirmation(url_path, data, "Queue Selected Action  "+choice,"Action Queued","Action Not Queued")
+                                    
+    
+}
+
+function queue_schedule_data(schedule_data){
+    
+    
+    let data = {}
+    data["key"]            =  g_server_key
+    data["schedule"]  = schedule_data
+    let url_path = "ajax/irrigation/irrigation_manage/post_schedule"
+    ajax_post_confirmation(url_path, data, "Queue Schedule","Schedule is queue","Schedule Not Queue")
+                                    
     
 }
 

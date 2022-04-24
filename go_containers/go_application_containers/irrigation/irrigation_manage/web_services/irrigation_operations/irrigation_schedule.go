@@ -37,7 +37,7 @@ func generate_schedule_component()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_table("List of Schedule Step","schedule_table"))
     return_value.Append_line("</div>")
-
+   return_value.Append_line(web_support.Table_JS_Routines())
     return_value.Append_line(js_generate_schedule_queue())
     
     
