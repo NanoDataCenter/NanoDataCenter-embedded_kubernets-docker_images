@@ -232,16 +232,7 @@ input,err :=  io.ReadAll(r.Body)
     
 }   
 
-func   handle_post_schedule(raw_input string ){
-       var decode_value map[string]interface{}
-  
-    if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
-        panic("bad json")
-    }else{
-        handle_schedule(decode_value)
-    }
-    
-}
+
 
  
 
@@ -387,11 +378,43 @@ func  handle_schedule(data map[string]interface{} ){
         
 }
 */
-func  handle_schedule(data map[string]interface{}  ){
-                key := data["key"].(string)
+
+func   handle_post_schedule(raw_input string ){
+       var decode_value map[string]interface{}
+  
+    if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
+        panic("bad json")
+    }else{
+        handle_schedule(decode_value)
+    }
     
-               steps := generate_step_data(data["schedule"].([]interface))
-               for _,step := range steps {
+}
+ /*
+
+
+data map[key:false~main_server~main_server/sub_server_1 schedule:[map[step:1 steps:["station_1:1","station_2:1"] time:10] map[step:2 steps:["station_3:1","station_4:1"] time:10] map[step:3 steps:["station_1:1","station_2:1"] time:60] map[step:4 steps:["station_3:1","station_4:1"] time:60]]]
+
+*/
+ 
+ 
+func  handle_schedule(data map[string]interface{}  ){
+                fmt.Println("data",data)
+                key := data["key"].(string)
+                fmt.Println("key",key)
+                steps := data["schedule"].([]interface{})
+                for _,temp := range steps{
+                    step := temp.(map[string]interface{})
+                    fmt.Println("step",step)
+                    time      := step["time"].(float64)
+                    station_list := generate_step_data(step["steps"].(string ))
+                    //fmt.Println("time", time,station_list)
+                     fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_list ))
+                }
+   
+ /*               
+                //steps := generate_step_data(data["schedule)
+               for _,temp := range steps {
+                   step           := temp.(map[string][]interface{})
                    time           := step["time"].(float64)
                    temp         :=  step["station"].(map[string]interface {})
                     station_io := generate_station_io( temp )
@@ -400,13 +423,13 @@ func  handle_schedule(data map[string]interface{}  ){
                }
                
        
-           
+*/           
        
 }
 
 
-func generate_step_data(input string)[]map[string]interface{}{
-    var data []map[string]interface{}
+func generate_step_data(input string)[]string{
+    var data []string
         if err := json.Unmarshal([]byte(input), &data); err != nil {
            panic(err)
         }
@@ -414,6 +437,7 @@ func generate_step_data(input string)[]map[string]interface{}{
 }
 
 //station:map[station_3:map[1:1] station_4:map[1:1]] time:60]
+/*
 func generate_station_io(  input map[string]interface {})[]string{
   return_value := make([]string,0)
    for station, io_data :=  range input {
@@ -423,3 +447,4 @@ func generate_station_io(  input map[string]interface {})[]string{
    }
    return return_value
 }
+*/
