@@ -270,7 +270,8 @@ func parse_irrigation_direct(raw_input string){
     }else{
        station := decode_value["station"].(string)
        io          := int64(decode_value["io"].(float64))
-       irr_sched_access.Queue_Irrigation_Direct( station ,io  )
+       time     := int64(decode_value["time"].(float64))
+       irr_sched_access.Queue_Irrigation_Direct( station ,io,time  )
     }
     
 }

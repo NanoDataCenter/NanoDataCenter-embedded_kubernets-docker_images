@@ -17,6 +17,15 @@ function main_form_init() {
     valve_choice = valve_group_names[0];
     description_array_a = make_description_array(valve_choice);
     jquery_populate_select("#valve_id", valves_index, description_array_a, valve_change);
+    Time_load_schedule_time("#step_time_time_select", 60);
+    $("#step_time_time_select").val('15').change();
+}
+function Time_load_schedule_time(id, number) {
+    load_times = [];
+    for (var i = 1; i <= number; i++) {
+        load_times.push(i);
+    }
+    jquery_populate_select(id, load_times, load_times, null);
 }
 function make_description_array(valve_choice) {
     return_value = [];
@@ -60,5 +69,7 @@ function valve_change(event, ui) {
     var io = valve_group_data["io"];
     var selected_station = stations[choice];
     var selected_io = io[choice];
-    queue_irrigation_direct(selected_station, selected_io);
+    var time = parseInt($("#step_time_time_select").val());
+    message = "Queue Valve Group  " + master_controller_name + " Valve Id " + choice;
+    queue_irrigation_direct(selected_station, selected_io, time, message);
 }

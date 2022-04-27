@@ -87,10 +87,11 @@ func Queue_Irrigation( key string , time float64 , station_io []string  )bool{
 
 }
 
-func Queue_Irrigation_Direct( station string , io int64  )bool{
+func Queue_Irrigation_Direct( station string , io, time  int64  )bool{
        parameters := make(map[string]interface{})
        parameters["COMMAND"]                          = "QUEUE_IRRIGATION_DIRECT"
         parameters["STATION"]                             = station 
+        parameters["TIME"]                                   = time
        parameters["IO"]                                           = io
 
       result :=   rpc_irrigation_driver.Send_json_rpc_message( "QUEUE_IRRIGATION_DIRECT",parameters )

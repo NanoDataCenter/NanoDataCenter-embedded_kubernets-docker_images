@@ -128,9 +128,12 @@ func generate_main_component()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_select("Select Valve Group","valve_group",null_list,null_list))
     return_value.Append_line(web_support.Generate_space("25"))
     return_value.Append_line(web_support.Generate_select("Select Valve","valve_id",null_list,null_list))
+    return_value.Append_line(web_support.Generate_space("25"))
+    return_value.Append_line(web_support.Generate_select("Select Irrigation Time","step_time_time_select",null_list,null_list))
+  
     return_value.Append_line("</div>")
     return_value.Append_line(js_generate_top_js())
-    
+  
     return return_value
 
 }

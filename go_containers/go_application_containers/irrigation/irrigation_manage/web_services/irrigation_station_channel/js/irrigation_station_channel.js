@@ -12,6 +12,15 @@ function main_form_init() {
     jquery_populate_select('#stations', station_list, station_list, station_change);
     var io_data = integer_io_map[station_list[0]];
     populate_io_list(io_data);
+    Time_load_schedule_time("#step_time_time_select", 60);
+    $("#step_time_time_select").val('15').change();
+}
+function Time_load_schedule_time(id, number) {
+    load_times = [];
+    for (var i = 1; i <= number; i++) {
+        load_times.push(i);
+    }
+    jquery_populate_select(id, load_times, load_times, null);
 }
 function station_change(event, ui) {
     var station = $("#stations").val();
@@ -29,7 +38,9 @@ function io_change(event, ui) {
         return;
     }
     var station = $("#stations").val();
-    queue_irrigation_direct(station, io);
+    var time = parseInt($("#step_time_time_select").val());
+    var message = "station  " + station + " Valve Id " + io;
+    queue_irrigation_direct(station, io, time, message);
 }
 function generate_integer_io_map() {
     for (var i = 0; i < station_list.length; i++) {
