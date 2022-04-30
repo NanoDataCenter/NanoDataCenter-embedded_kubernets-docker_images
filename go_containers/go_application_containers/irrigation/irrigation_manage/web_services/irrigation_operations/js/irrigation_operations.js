@@ -10,6 +10,8 @@ function main_form_start() {
 function main_form_init() {
     controller_init();
     attach_button_handler("#manage_select", open_queue_manage);
+    attach_button_handler("#manage_valve_group_io", open_valve_group_manage);
+    attach_button_handler("#manage_direct_io", station_channel_manage);
 }
 function load_new_data() {
     var data = {};
@@ -74,6 +76,12 @@ function ajax_process_action_data(data) {
 }
 function open_queue_manage() {
     alert("open queue manager");
+}
+function open_valve_group_manage() {
+    valve_group_components_start();
+}
+function station_channel_manage() {
+    station_channel_start();
 }
 function queue_action_data() {
     "action_select";

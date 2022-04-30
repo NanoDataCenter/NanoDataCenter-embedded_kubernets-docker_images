@@ -1,7 +1,7 @@
 package irrigation_operations
 
 import (
-   // "fmt"
+   //"fmt"
     //"strings"
     "net/http"
     "html/template"
@@ -23,7 +23,9 @@ import (
 var base_templates                    *template.Template
 var control_block irr_sched_access.Irr_sched_access_type
 
-
+var io_map                                  string
+var valve_io                             string
+var valve_group_names         string
 
 //go:embed js/irrigation_operations.js
 var irrigation_operations_js string
@@ -32,7 +34,15 @@ func Page_init(input *template.Template){
   
     base_templates = input
 
+   
     control_block =  irr_sched_access.Construct_irr_schedule_access()
+ 
+
+    temp               := control_block.Valve_group_data     
+   
+    io_map                                = temp["io_map"]
+    valve_io                               = temp["valve_io"]
+   valve_group_names          = temp["valve_group_names"]
   
    
    
@@ -60,7 +70,7 @@ func Generate_page_adjust(w http.ResponseWriter, r *http.Request){
 func generate_html_js()string{
     web_variables := make(map[string]string)
     //web_variables["master_sub_server"]  = control_block.Master_table_list_json
-   // web_variables["valve_list"]         = control_block.Valve_list_json
+    //web_variables["valve_list"]         = control_block.Valve_list_json
     
     ajax_variables := make(map[string]string)
     
@@ -77,6 +87,10 @@ func generate_html_js()string{
     top_list.Add_section(schedule_component)
     time_component :=  irrigation_web_support.Generate_step_time_change()
     top_list.Add_section(time_component)
+    valve_group := generate_valve_group_component_component()
+    top_list.Add_section(valve_group)
+    station_channel := generate_station_channel()
+    top_list.Add_section(station_channel)
     return irrigation_web_support.Attach_status_panel()+top_list.Generate_ending()  
     
 }   
@@ -86,15 +100,24 @@ func generate_html_js()string{
 
 
 func js_generate_global_js()string{
-  
+    
+ 
 
   return_value := 
-    `
+    ` valve_group_names_json =' `+valve_group_names +`'
+     valve_group_names = JSON.parse(valve_group_names_json)
+    //console.log(valve_group_names)
+  
+     valve_io_json = '`+ valve_io  +`'
+    valve_io         = JSON.parse( valve_io_json )
+    
+    io_map_json =' `+ io_map     +`'
+    io_map = JSON.parse(io_map_json)
     master_sub_server_json ='`+ control_block.Master_table_list_json+`'
     master_sub_server = JSON.parse(master_sub_server_json)
     ajax_get_actions                         =  "ajax/irrigation/irrigation_manage/get_actions" 
     ajax_get_schedule                       = "ajax/irrigation/irrigation_manage/get_schedules" 
-
+   
     $(document).ready(
     function()
     {  
@@ -121,7 +144,11 @@ func generate_main_component()web_support.Sub_component_type{
     return_value.Append_line(web_support.Generate_space("10"))
 
     return_value.Append_line(web_support.Generate_space("10"))
+    return_value.Append_line("<div>")
     return_value.Append_line(web_support.Generate_button("Manage Irrigation Queue","manage_select"))
+    return_value.Append_line(web_support.Generate_button("Valve Io Management","manage_valve_group_io"))
+    return_value.Append_line(web_support.Generate_button("Direct Io Management","manage_direct_io"))
+    return_value.Append_line("</div>")
      return_value.Append_line(web_support.Generate_space("10"))
      null_list := make([]string,0)
     return_value.Append_line(web_support.Generate_select("Select Action","action_select",null_list,null_list))

@@ -18,9 +18,10 @@ function main_form_start(){
      
        controller_init()
         attach_button_handler("#manage_select",open_queue_manage)
-    
+       attach_button_handler("#manage_valve_group_io",open_valve_group_manage)
+       attach_button_handler("#manage_direct_io", station_channel_manage)
     }
- 
+
   function  load_new_data(){
        let data = {}
        let master_flag = $("#master_controller_select").is(':checked')
@@ -122,7 +123,18 @@ function open_queue_manage(){
            
            
 }
+function open_valve_group_manage(){
+    valve_group_components_start()
+    
+}
 
+function station_channel_manage(){
+    station_channel_start()
+    
+}
+
+
+    
 function queue_action_data(){
   "action_select"    
   index    = $("#action_select")[0].selectedIndex

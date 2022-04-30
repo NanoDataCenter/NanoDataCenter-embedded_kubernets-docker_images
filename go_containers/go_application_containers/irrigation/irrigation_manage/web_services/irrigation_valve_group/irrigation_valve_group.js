@@ -101,7 +101,7 @@ function valve_group_change(event,ui){
      let selected_station                = stations[choice]
      let selected_io                          = io[choice]
      let time                                     = parseInt($("#step_time_time_select").val())
-     message = "Queue Valve Group  "+master_controller_name +" Valve Id "+choice
+     let message = "Queue Valve Group  "+master_controller_name +" Valve Id "+choice
     queue_irrigation_direct(selected_station ,selected_io,time,message)
 }      
    

@@ -70,6 +70,6 @@ function valve_change(event, ui) {
     var selected_station = stations[choice];
     var selected_io = io[choice];
     var time = parseInt($("#step_time_time_select").val());
-    message = "Queue Valve Group  " + master_controller_name + " Valve Id " + choice;
+    var message = "Queue Valve Group  " + master_controller_name + " Valve Id " + choice;
     queue_irrigation_direct(selected_station, selected_io, time, message);
 }

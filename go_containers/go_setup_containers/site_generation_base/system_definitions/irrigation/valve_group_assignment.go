@@ -101,7 +101,6 @@ func add_valve_group_2(){
  valve_group_dump(name,description)
 
 }
-
 func add_valve_group_3(){
     name            :=  "valve group 3"
      description  := "xxxxxxxxxxxxxxx"
@@ -133,10 +132,15 @@ func add_valve_group_5(){
     name            :=  "valve group 5"
      description  := "xxxxxxxxxxxxxxx"
     valve_group_init()  
-    add_valve_group_entry(    "Fruit Trees on Block #9"  ,                    "satellite_2"     ,2)
-    add_valve_group_entry(   "Waters Bank Closest to House"     ,    "satellite_2"     ,4)
-    add_valve_group_entry(   "Sprinkler on Bank"                             ,    "satellite_2"    ,3)
-    add_valve_group_entry(   "Avocado Block6"       ,                            "satellite_2"    ,1)
+    add_valve_group_entry(    "Fruit Trees on Block #9"  ,                    "satellite_4"     ,9)
+    add_valve_group_entry(   "Waters Bank Closest to House"     ,    "satellite_4"     ,10)
+    add_valve_group_entry(   "Sprinkler on Bank"                             ,    "satellite_4"    ,11)
+    add_valve_group_entry(   "Avocado Block6"       ,                            "satellite_4"    ,12)
+    add_valve_group_entry(    "Fruit Trees on Block #9"  ,                    "satellite_4"     ,13)
+    add_valve_group_entry(   "Waters Bank Closest to House"     ,    "satellite_4"     ,14)
+    add_valve_group_entry(   "Sprinkler on Bank"                             ,    "satellite_4"    ,15)
+    add_valve_group_entry(   "Avocado Block6"       ,                            "satellite_4"    ,16)
+    
 valve_group_dump(name,description)
 }
   
@@ -205,6 +209,8 @@ func add_valve_group_10(){
     add_valve_group_entry(      "?????????????????",                   "satellite_4"   ,5)
     add_valve_group_entry(     "??????????????????",                   "satellite_4"   ,6)    
     add_valve_group_entry(     "???????????????????",                 "satellite_4"   ,7)    
+    add_valve_group_entry(       "????????????????"   ,                 "satellite_4"   ,8)
+    
 valve_group_dump(name,description)
 }
     
