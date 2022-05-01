@@ -1,11 +1,11 @@
  
-station_list = []
-integer_io_map = {}
+ var integer_io_map = {}
+
 
 function station_channel_start(){
     
-    
-    
+       initialize_direct_io_control()
+       direct_irrigation_state = false
        hide_all_sections()
        show_section("station_channel")     
      
@@ -29,9 +29,12 @@ function station_channel_start(){
     }
     
     function station_channel_cancel_id(){
-      start_section("main_form")
+       direct_io_close_then_action(station_channel_return )
     }
   
+   function station_channel_return(){
+        start_section("main_form")
+   }
   
 
 function station_change (event,ui){
@@ -58,8 +61,10 @@ function io_change(event,ui){
        }
      let station          = $("#stations").val()
      let time                                     = parseInt($("#step_time_time_select").val())
-     let message = "station  "+station +" Valve Id "+io
-    queue_irrigation_direct(station , io,time, message )
+    let message = "station  "+station +" Valve Id "+io
+    
+        queue_irrigation_direct(station , io,time, message )
+   
 }      
 
 

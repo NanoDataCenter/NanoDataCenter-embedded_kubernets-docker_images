@@ -1,6 +1,7 @@
-station_list = [];
-integer_io_map = {};
+var integer_io_map = {};
 function station_channel_start() {
+    initialize_direct_io_control();
+    direct_irrigation_state = false;
     hide_all_sections();
     show_section("station_channel");
 }
@@ -16,6 +17,9 @@ function station_channel_init() {
     $("#station_step_time_time_select").val('15').change();
 }
 function station_channel_cancel_id() {
+    direct_io_close_then_action(station_channel_return);
+}
+function station_channel_return() {
     start_section("main_form");
 }
 function station_change(event, ui) {

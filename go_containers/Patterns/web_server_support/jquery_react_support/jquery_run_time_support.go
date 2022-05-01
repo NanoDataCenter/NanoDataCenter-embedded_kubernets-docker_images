@@ -127,6 +127,30 @@ function ajax_post_get(url_path, data, success_function, error_message)
    
 }
 
+function ajax_post_get_new(url_path, data, success_function, error_message) 
+{
+     //console.log("url_path",url_path)
+     var json_string = JSON.stringify(data);
+     $("#status_display").text("Current Status: Operation in Progress")
+     
+
+     $.ajax ({  type: "POST",
+                  url: url_path,
+                  dataType: 'json',
+	                 contentType: "application/json",
+                  async: true,
+                  data: json_string,
+                  success: success_function,
+
+                   error: function () 
+		                {
+                       set_status_bar("Current Status: "+error_message)  
+		                 }
+           })
+   
+}
+
+
 `
  
 return return_value

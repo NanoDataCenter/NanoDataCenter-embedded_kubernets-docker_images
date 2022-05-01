@@ -7,13 +7,11 @@ import (
      "fmt"
     
     "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/eto_adjust"
-    "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/irrigation_station_channel"
-    "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/irrigation_valve_group"
     "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/irrigation_operations"
     "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/irrigation_stream_data"
     "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/manage_irrigation_parameters"
     "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/past_irrigation_jobs"
-    "lacima.com/go_application_containers/irrigation/irrigation_manage/web_services/manage_irrigation_queue"
+    
     
     //"lacima.com/redis_support/generate_handlers"
     "os"
@@ -70,12 +68,9 @@ func initialize_handlers(){
  
     introduction_page_init()
     eto_adjust.Page_init(base_templates)
-    irrigation_station_channel.Page_init(base_templates)
-    irrigation_valve_group.Page_init(base_templates)
     irrigation_operations.Page_init(base_templates)
     irrigation_manage_parameters.Page_init(base_templates)
     irrigation_past_operation.Page_init(base_templates)
-    irrigation_manage_queue.Page_init(base_templates)
     irrigation_streaming_data.Page_init(base_templates)
     web_support.Micro_web_page_init(base_templates)
 }
@@ -87,16 +82,14 @@ func initialize_handlers(){
 
 func define_web_pages()*template.Template  {
  
-    return_value := make(web_support.Menu_array,9)
+    return_value := make(web_support.Menu_array,7)
     return_value[0] = web_support.Construct_Menu_Element( "Iintroduction page","introduction_page",introduction_page_generate)
     return_value[1] = web_support.Construct_Menu_Element( "ETO Manage","eto_manage", eto_adjust.Generate_page_adjust)
-    return_value[2] = web_support.Construct_Menu_Element("Irrigation Valve Group","irrigation_valve_group",irrigation_valve_group.Generate_page_adjust)
-    return_value[3] = web_support.Construct_Menu_Element("Irrigation Station Channel","irrigation_station_channel",irrigation_station_channel.Generate_page_adjust)
-    return_value[4] = web_support.Construct_Menu_Element("Irrigation Operations","manual_operations",irrigation_operations.Generate_page_adjust)
-    return_value[5] = web_support.Construct_Menu_Element("Irrigation Manage Parameters","irrigation_manage_parameters",irrigation_manage_parameters.Generate_page_adjust)
-    return_value[6] = web_support.Construct_Menu_Element("Irrigation Past Operations","irrigation_past_operation",irrigation_past_operation.Generate_page_adjust)
-    return_value[7] = web_support.Construct_Menu_Element("Irrigation Streaming Data","irrigation_streaming_data",irrigation_streaming_data.Generate_page_adjust)
-    return_value[8] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
+    return_value[2] = web_support.Construct_Menu_Element("Irrigation Operations","manual_operations",irrigation_operations.Generate_page_adjust)
+    return_value[3] = web_support.Construct_Menu_Element("Irrigation Manage Parameters","irrigation_manage_parameters",irrigation_manage_parameters.Generate_page_adjust)
+    return_value[4] = web_support.Construct_Menu_Element("Irrigation Past Operations","irrigation_past_operation",irrigation_past_operation.Generate_page_adjust)
+    return_value[5] = web_support.Construct_Menu_Element("Irrigation Streaming Data","irrigation_streaming_data",irrigation_streaming_data.Generate_page_adjust)
+    return_value[6] = web_support.Construct_Menu_Element( "Other Servers","other_servers", web_support.Micro_web_page)
     web_support.Register_web_pages(return_value)
     return web_support.Generate_single_row_menu(return_value)
 }
@@ -121,17 +114,9 @@ func introduction_page_generate(w http.ResponseWriter, r *http.Request) {
    introduction_page_template.ExecuteTemplate(w,"bootstrap", data)
 }   
 
-
-
-
-const eto_modify_body  string =`
-  This page allows modification of eto accumulation data `
-
-const irrigation_valve_group_op  string =`
-  This page allows to do diagnostics operations by valve group`
-
-const irrigation_station_channel_op  string =`
-  This page allows to do diagnostics operations by station channel `
+const eto_modify_body string = `
+  This page allows ETO values to be manually changed
+`
 
 
 const manual_operations_op  string =`
@@ -144,9 +129,7 @@ const past_irrigation_jobs_op string =`
   This page allows to do diagnostics operations `
 
 
- const manage_irrigation_jobs_op string =`
-  This page allows to do diagnostics operations `
-
+ 
 
  
 const irrigation_stream_data_op  string =`
@@ -166,8 +149,8 @@ Clink the the link opens Web Page for the Micro Service in a separate table.`
     
 func generate_intro_data()[]web_support.Accordion_Elements{
 
-  title_array := []string{"ETO Change","Irrigation Diagnostics Valve Group","Irrigation Diagnostics Station Channel","Manual Operations","Manage Irrigation Parameters","Past Irrigation Jobs","Manage Irrigation Jobs", "Irrigation Stream Data","Application Servers"}
-  body_array  := []string{eto_modify_body, irrigation_valve_group_op ,  irrigation_station_channel_op,  manual_operations_op ,manage_irrigation_parameters_op,past_irrigation_jobs_op,manage_irrigation_jobs_op, irrigation_stream_data_op,application_server_body }
+  title_array := []string{"ETO Change","Manual Operations","Manage Irrigation Parameters","Past Irrigation Jobs", "Irrigation Stream Data","Application Servers"}
+  body_array  := []string{eto_modify_body,   manual_operations_op ,manage_irrigation_parameters_op,past_irrigation_jobs_op, irrigation_stream_data_op,application_server_body }
 
                           
   return web_support.Populate_accordian_elements(title_array,body_array)
@@ -271,7 +254,8 @@ func parse_irrigation_direct(raw_input string){
        station := decode_value["station"].(string)
        io          := int64(decode_value["io"].(float64))
        time     := int64(decode_value["time"].(float64))
-       irr_sched_access.Queue_Irrigation_Direct( station ,io,time  )
+       action    :=  decode_value["action"].(bool)
+       irr_sched_access.Queue_Irrigation_Direct( station ,io,time,action  )
     }
     
 }

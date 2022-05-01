@@ -18,7 +18,14 @@ import (
 
 type Menu_function_type func(http.ResponseWriter, *http.Request)
 
-
+/*
+ * //<!-- Load React. -->
+//  <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+ <!-- Load React. End -->
+ */
 
 type Menu_element struct{
   

@@ -1,5 +1,6 @@
 description_array = [];
 function valve_group_components_start() {
+    initialize_direct_io_control();
     hide_all_sections();
     show_section("valve_group_components");
 }
@@ -9,7 +10,7 @@ function valve_group_components_init() {
         var temp = valve_io[valve_group_names[i]];
         valve_group_description_map.push(valve_group_names[i] + ":" + temp["description"]);
     }
-    attach_button_handler("#valve_group_cancel_id", valve_group_cancel_id);
+    attach_button_handler("#valve_group_cancel_id", station_channel_cancel_id);
     //console.log("valve_group_names",valve_group_names)
     // console.log("valve_group_description_map",valve_group_description_map)
     jquery_populate_select('#valve_group', valve_group_names, valve_group_description_map, valve_group_change);
