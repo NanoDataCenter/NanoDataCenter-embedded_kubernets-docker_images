@@ -16,15 +16,16 @@ func Add_irrigation_actions(){
   su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","IRRIGATION_ACTIONS",make(map[string]interface{}))
   
   /* ********************************************************************************************* */
-  su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","CLEAN_FILTER",make(map[string]interface{}))
+ 
   
-       clean_filter_properties := make(map[string]interface{})
-       clean_filter_properties["charge_time"]   = 60 //seconds
-       clean_filter_properties["back_flush"]    = 30 // seconds
-       clean_filter_properties["forward_flush"] = 30 // seconds
-       su.Bc_Rec.Add_info_node("CLEAN_FILTER","clean_filter_1",clean_filter_properties)
+       properties := make(map[string]interface{})
+       properties["immediate"] = false
+       properties["charge_time"]   = 60 //seconds
+       properties["back_flush"]    = 30 // seconds
+       properties["forward_flush"] = 30 // seconds
+       su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","CLEAN_FILTER", properties)
        
-  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","CLEAN_FILTER")     
+
    
   
   /* ------------------------------------------------------------------------------------------- */
@@ -33,60 +34,88 @@ func Add_irrigation_actions(){
   
   
   /* ********************************************************************************************* */
-  su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","VALVE_RESISTANCE",make(map[string]interface{}))  
-   
-      valve_resistance_properties := make(map[string]interface{})  
-      valve_resistance_properties["hold_time"] = 5
-      valve_resistance_properties["measure_dt"] = 1
-      valve_resistance_properties["meas_number"] = 5
-      valve_resistance_properties["next_time"] = 5
-      su.Bc_Rec.Add_info_node("VALVE_RESISTANCE","valve_resistance_1",valve_resistance_properties)
-   
-  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","VALVE_RESISTANCE")
   
-  /* ------------------------------------------------------------------------------------------- */
    
-   /* ********************************************************************************************* */
-  
-  su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","VALVE_LEAK",make(map[string]interface{}))
-  
-     valve_leak_properties := make(map[string]interface{})  
-     valve_leak_properties["charge_time"] = 300
-     valve_leak_properties["wait_time"] = 300
-     su.Bc_Rec.Add_info_node("VALVE_LEAK","valve_leak_1",valve_leak_properties)
+      properties = make(map[string]interface{})  
+      properties["immediate"] = false
+      properties["hold_time"] = 5
+      properties["measure_dt"] = 1
+      properties["meas_number"] = 5
+      properties["next_time"] = 5
+      su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","VALVE_RESISTANCE",properties)
    
-  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","VALVE_LEAK")     
-   
-  /* ------------------------------------------------------------------------------------------- */
-  
-  
-   /* ********************************************************************************************* */
-   
-  su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","OPEN_MASTER_VALVE",make(map[string]interface{}))   
  
+  
+  /* ------------------------------------------------------------------------------------------- */
+   
+   /* ********************************************************************************************* */
+  
 
-     su.Bc_Rec.Add_info_node("OPEN_MASTER_VALVE","open_master_valve_1",make(map[string]interface{}))
+  
+     properties = make(map[string]interface{})  
+     properties["immediate"] = false
+     properties["charge_time"] = 300
+     properties["wait_time"] = 300
+     su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","VALVE_LEAK",properties)
+   
+  
+   
+  /* ------------------------------------------------------------------------------------------- */
+  
+  
+   /* ********************************************************************************************* */
+   
  
-  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","OPEN_MASTER_VALVE")     
+ 
+      properties = make(map[string]interface{})  
+     properties["immediate"] = true
+     su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","OPEN_MASTER_VALVE",properties)
+ 
+ 
    
   /* ------------------------------------------------------------------------------------------- */
   
    /* ********************************************************************************************* */
-  su.Bc_Rec.Add_header_node("IRRIGATION_ACTIONS","CLOSE_MASTER_VALVES",make(map[string]interface{}))   
-   
-    su.Bc_Rec.Add_info_node("CLOSE_MASTER_VALVES","close_master_valve_1",make(map[string]interface{}))
+ 
+     properties = make(map[string]interface{})  
+     properties["immediate"] = true
+    su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","CLOSE_MASTER_VALVES",properties)
 
-  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","CLOSE_MASTER_VALVES")     
+  
   /* ------------------------------------------------------------------------------------------- */ 
    
-  
+  /* ********************************************************************************************* */
+
+    properties = make(map[string]interface{})  
+     properties["immediate"] = true
+    su.Bc_Rec.Add_info_node("IRRIGATION_ACTION","SKIP_ENTRY",properties)
+
  
+  /* ------------------------------------------------------------------------------------------- */   
+   /* ********************************************************************************************* */
+ 
+    properties = make(map[string]interface{})  
+    properties["immediate"] = true
+    su.Bc_Rec.Add_info_node( "IRRIGATION_ACTION","CLEAR_QUEUE",properties)
+
+  
+  
+  
+    /* ********************************************************************************************* */
+ 
+    properties = make(map[string]interface{})  
+    properties["immediate"] = true
+    su.Bc_Rec.Add_info_node( "IRRIGATION_ACTION","PAUSE",properties)
+
+  
+  /* ------------------------------------------------------------------------------------------- */ 
   /* ------------------------------------------------------------------------------------------- */
    
  su.Bc_Rec.End_header_node("IRRIGATION_ACTIONS","IRRIGATION_ACTIONS")   
  
- all_master_actions = []string{"CLEAN_FILTER:clean_filter_1","VALVE_LEAK:valve_leak_1","OPEN_MASTER_VALVE:open_master_valve_1","CLOSE_MASTER_VALVES:close_master_valve_1"}
- all_slave_actions  = []string{"VALVE_RESISTANCE:valve_resistance_1"}
+ all_master_actions = []string{"CLEAN_FILTER","VALVE_LEAK","OPEN_MASTER_VALVE","CLOSE_MASTER_VALVES","VALVE_RESISTANCE",
+                     "CLEAR_QUEUE"}
+ all_slave_actions  = []string{"CLEAR_QUEUE:","SKIP_ENTRY"}
 
 
    

@@ -35,7 +35,7 @@ func rpc_queue_command( rpc_command string, key string, name string,  data map[s
    if result == nil {
        return false
    }
-   return result["status"].(bool)   
+   return result["STATUS"].(bool)   
 
 }
 
@@ -51,7 +51,7 @@ func Queue_Action( key,  name string )bool{
   if result == nil {
        return false
    }
-   return result["status"].(bool)   
+   return result["STATUS"].(bool)   
 
        
     
@@ -68,11 +68,12 @@ func Queue_Managed_Irrigation( key string , time float64 , station_io []string  
   if result == nil {
        return false
    }
-   return result["status"].(bool)   
+   return result["STATUS"].(bool)   
 
 }
-
+/*
 func Queue_Irrigation( key string , time float64 , station_io []string  )bool{
+       panic("should not happen")
        parameters := make(map[string]interface{})
        parameters["COMMAND"]                          = "QUEUE_IRRIGATION"
         parameters["KEY"]                                       = key 
@@ -86,7 +87,7 @@ func Queue_Irrigation( key string , time float64 , station_io []string  )bool{
    return result["status"].(bool)   
 
 }
-
+*/
 func Queue_Irrigation_Direct( station string , io, time  int64,action bool  )bool{
        parameters := make(map[string]interface{})
        parameters["COMMAND"]                          = "QUEUE_IRRIGATION_DIRECT"

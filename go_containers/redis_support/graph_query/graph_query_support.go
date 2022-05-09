@@ -174,6 +174,18 @@ func Convert_json_float64( json_string string) float64{
      return return_value
 
 }
+
+func Convert_json_bool( json_string string) bool{
+   
+     var return_value bool;
+     
+     var err2 = json.Unmarshal([]byte(json_string),&return_value)
+     if err2 != nil{
+	         panic("bad json data")
+	  }
+     return return_value
+
+}
  
 func Graph_support_init(sdata *map[string]interface{}) {
     site_data = *sdata
