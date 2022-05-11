@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"lacima.com/go_application_containers/irrigation/irrigation_controller/controller"
      "lacima.com/go_application_containers/irrigation/irrigation_controller/rpc_server"
+      "lacima.com/go_application_containers/irrigation/irrigation_controller/irrigation_controller_library"
 	"lacima.com/redis_support/generate_handlers"
 	"lacima.com/redis_support/graph_query"
 	"lacima.com/redis_support/redis_handlers"
@@ -29,11 +30,12 @@ import (
 func main() {
 	var config_file = "/data/redis_configuration.json"
 	var site_data map[string]interface{}
-
+ 
 	site_data = get_site_data.Get_site_data(config_file)
 	redis_handlers.Init_Redis_Mutex()
 	graph_query.Graph_support_init(&site_data)
 	data_handler.Data_handler_init(&site_data)
+    irrigation_controller_library.Contruct_Registry()
 	go irrigation_rpc.Start()
     go irrigation_controller.Start()
 	for true {

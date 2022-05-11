@@ -115,7 +115,7 @@ func Add_irrigation_actions(){
  
  all_master_actions = []string{"CLEAN_FILTER","VALVE_LEAK","OPEN_MASTER_VALVE","CLOSE_MASTER_VALVES","VALVE_RESISTANCE",
                      "CLEAR_QUEUE"}
- all_slave_actions  = []string{"CLEAR_QUEUE:","SKIP_ENTRY"}
+ all_slave_actions  = []string{"CLEAR_QUEUE","SKIP_ENTRY"}
 
 
    

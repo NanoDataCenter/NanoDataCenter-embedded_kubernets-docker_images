@@ -46,8 +46,8 @@ func Queue_Action( key,  name string )bool{
        parameters["KEY"]                             = key 
        parameters["NAME"]                         = name 
       result :=   rpc_irrigation_driver.Send_json_rpc_message( "QUEUE_ACTION",parameters )  	   
-    
-    fmt.Printf("%#v \n",result)
+      
+     fmt.Printf("%#v \n",result)
   if result == nil {
        return false
    }

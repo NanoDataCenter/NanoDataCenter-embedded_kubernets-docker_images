@@ -10,7 +10,10 @@ import (
 
 func Start(){
     
-//[SYSTEM:farm_system][SITE:LACIMA_SITE][IRRIGATION_DATA_STRUCTURES:IRRIGATION_DATA_STRUCTURES][SCHEDULE_DATA:SCHEDULE_DATA][RPC_SERVER:IRRIGATION_JOB_QUEUE][PACKAGE:RPC_SERVER]
+   // get  action data structures 
+  // irrigation controllers and sub controllers
+  // get station and io data
+    // map station/io to master and sub controllers
  	  
     fmt.Println("irrigaiton initialization rpc server")
      search_list := []string{ "IRRIGATION_DATA_STRUCTURES:IRRIGATION_DATA_STRUCTURES",  "RPC_SERVER:IRRIGATION_JOB_QUEUE","RPC_SERVER"}
@@ -21,37 +24,10 @@ func Start(){
 	
 
 	
-	driver.Add_handler( "QUEUE_ACTION", queue_actions)
-    driver.Add_handler(  "QUEUE_MANAGED_IRRIGATION", queue_managed_irrigation)
-    driver.Add_handler( "QUEUE_IRRIGATION", queue_irrigation)
-    driver.Add_handler("QUEUE_IRRIGATION_DIRECT",queue_irrigation_direct)
+	driver.Add_handler( "QUEUE_ACTION", handler_actions)
+    driver.Add_handler(  "QUEUE_MANAGED_IRRIGATION", handle_managed_irrigation)
+    driver.Add_handler("QUEUE_IRRIGATION_DIRECT",handler_irrigation_direct)
 	driver.Json_Rpc_start() 
     
     
 }    
-    
-func queue_actions( parameters map[string]interface{} ) map[string]interface{}{
-  
-  fmt.Println("queue_actions",parameters)
-  parameters["status"] = true
-  return parameters
-}
-
- func queue_managed_irrigation( parameters map[string]interface{} ) map[string]interface{}{
-  
-  fmt.Println("queue_managed_irrigation",parameters)
-  parameters["status"] = true
-  return parameters
-}
-
-func queue_irrigation( parameters map[string]interface{} ) map[string]interface{}{
-  fmt.Println("queue_irrigation",parameters)
-  parameters["status"] = true
-  return parameters
-}
-
-func queue_irrigation_direct( parameters map[string]interface{} ) map[string]interface{}{
-  fmt.Println("queue_irrigation_direct",parameters)
-  parameters["status"] = true
-  return parameters
-}

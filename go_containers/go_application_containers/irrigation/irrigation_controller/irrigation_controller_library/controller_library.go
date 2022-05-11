@@ -12,11 +12,11 @@ import (
 
 type Registry_type struct{
  
-  Master_table_list                 map[string][]string
+  Master_table_list                 map[string]map[string]bool
   Valve_list                               map[string]map[string]map[string][]int
   Inverse_Valve_Map             map[string]string
   Actions                                 map[string]map[string]interface{}
-  Action_list                           map[string][]string
+  Action_list                           map[string]map[string]bool
 }
 
 
@@ -45,7 +45,7 @@ func Contruct_Registry(){
 func Construct_master_server_list(r *Registry_type){
 
    
-    r.Master_table_list           = make(map[string][]string)
+    r.Master_table_list           = make(map[string]map[string]bool)
     r.Valve_list                        = make(map[string]map[string]map[string][]int)
     nodes                                := graph_query.Common_qs_search(&[]string{"IRRIGATION_SERVERS:IRRIGATION_SERVERS","IRRIGATION_SERVER"})
     
@@ -61,9 +61,9 @@ func Construct_master_server_list(r *Registry_type){
 
 
 
-func find_subnodes( r  *Registry_type, master_node string ,flag bool)([]string,map[string]map[string][]int){
+func find_subnodes( r  *Registry_type, master_node string ,flag bool)(map[string]bool,  map[string]map[string][]int){
     return_value2 := make(map[string]map[string][]int)
-    return_value1 := make([]string,0)
+    return_value1 := make(map[string]bool)
     sub_nodes := graph_query.Common_qs_search(&[]string{"IRRIGATION_SERVERS:IRRIGATION_SERVERS","IRRIGATION_SERVER:"+master_node,"IRRIGATION_SUBSERVER"})
     if len(sub_nodes) == 0{
         return return_value1,return_value2
@@ -80,7 +80,7 @@ func find_subnodes( r  *Registry_type, master_node string ,flag bool)([]string,m
         }
         
         return_value2[name]=data
-        return_value1 = append(return_value1,name)
+        return_value1[name]  = true
     }
    
     return return_value1,return_value2
@@ -118,12 +118,12 @@ func scan_station_channel_data( return_value map[string]string, data_value strin
     
 }
 
-func Construct_Action_List( station_map  map[string][]string )map[string][]string{
-    return_value := make(map[string][]string)
-    for master_controller , sub_controller_list := range station_map{
+func Construct_Action_List( controller_map  map[string]map[string]bool )map[string]map[string]bool{
+    return_value := make(map[string]map[string]bool)
+    for master_controller , sub_controller_map := range controller_map{
          master_key :=    Construct_server_key(true,  master_controller, "" )
          return_value[master_key] =  select_irrigation_action_data( master_key)
-         for _ , sub_controller := range sub_controller_list {
+         for sub_controller,_ := range sub_controller_map {
              sub_controller_key :=    Construct_server_key(false,  master_controller, sub_controller )
              return_value[sub_controller_key] =  select_irrigation_action_data(sub_controller_key)
          }        
@@ -133,7 +133,7 @@ func Construct_Action_List( station_map  map[string][]string )map[string][]strin
 
     
     
-func select_irrigation_action_data( server_key  string )([]string){
+func select_irrigation_action_data( server_key  string )(map[string]bool){
      key_list  :=  strings.Split(server_key,"~")
      server_type      := key_list[0]
      master_server := key_list[1]
@@ -146,7 +146,11 @@ func select_irrigation_action_data( server_key  string )([]string){
     properties := graph_query.Common_qs_search(&search_string)
     
     property := properties[0]
-    return_value := graph_query.Convert_json_string_array( property["supported_actions"] )
+    action_list := graph_query.Convert_json_string_array( property["supported_actions"] )
+    return_value := make(map[string]bool)
+    for _, action := range action_list{
+        return_value[action] = true
+    }
     return return_value
     
     
@@ -158,7 +162,8 @@ func Construct_Actions( )map[string]map[string]interface{}{
     properties := graph_query.Common_qs_search(&search_string)
     
     for _,property := range properties{
-        name := property["name"]
+         name     := graph_query.Convert_json_string(property["name"])
+    
         temp := make(map[string]interface{})
         for key, value := range property{
             temp[key] = value

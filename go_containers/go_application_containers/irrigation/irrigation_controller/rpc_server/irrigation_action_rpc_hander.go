@@ -2,7 +2,7 @@ package irrigation_rpc
 
 
 import (
-   "fmt"
+  "fmt"
 )
 
 /*
@@ -18,27 +18,32 @@ parameters["COMMAND"]                = "QUEUE_ACTION"
 */
 func handler_actions(parameters map[string]interface{})map[string]interface{}{
     
-    fmt.Println("parameters  ",parameters)
+  
     key := parameters["KEY"].(string)
     action := parameters["NAME"].(string)
-    parameters["STATUS"] = false   
-    if verify_controller( key ) == false{
+    parameters["STATUS"] = false  
+    key_list, status := verify_controller(key)
+    if  status == false{
         return parameters
     }
+    
     if verify_action( action ) == false {
         return parameters
     }
-    if verify_action_to_controller(key,action ) == false{
+   
+    if verify_action_to_controller(key_list ,action ) == false{
         return parameters
     }
+    
     action_data := fetch_action(action)
+    
     if action_data["immediate"] == true {
-         parameters["STATUS"] =queue_immediate(action_data)
+         parameters["STATUS"] =queue_action_immediate(key,action_data)
          
     }else{
-         parameters["STATUS"] =queue_delayed(action_data)
+         parameters["STATUS"] =queue_action_delayed(key,action_data)
     }
-    
+   fmt.Println("parameters",parameters)
     return parameters
 }
 
