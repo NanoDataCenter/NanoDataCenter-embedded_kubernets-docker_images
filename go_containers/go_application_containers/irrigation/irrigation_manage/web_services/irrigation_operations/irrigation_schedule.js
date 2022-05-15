@@ -6,6 +6,7 @@
     function start_schedule_select(choice){
          working_scheduling = choice
          working_data = schedule_step_map[working_scheduling] 
+         console.log("start schedule",choice , working_scheduling,working_data)
          queue_schedule_start()
        
     }
@@ -86,7 +87,7 @@
 function fill_in_schedule_table(){
     
      let steps = working_data
-    console.log("steps",steps)
+    //console.log("steps",steps)
     Table_clear_table("#schedule_table")
       for(let  i= 0;i<steps.length;i++){
           let temp = []

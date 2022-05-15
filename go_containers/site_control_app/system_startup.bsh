@@ -3,7 +3,7 @@
 
 rm /tmp/site_node_monitor.errr
 export hot_start="false"   
-mkdir moutpoint
+mkdir ~mountpoint
 sudo mount /dev/sda /home/pi/mountpoint
 while [ 1 ]
 do

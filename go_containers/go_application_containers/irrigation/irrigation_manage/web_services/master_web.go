@@ -251,6 +251,7 @@ func parse_irrigation_direct(raw_input string){
     if err := json.Unmarshal([]byte(raw_input), &decode_value); err != nil {
         panic("bad json")
     }else{
+      
        station := decode_value["station"].(string)
        io          := int64(decode_value["io"].(float64))
        time     := int64(decode_value["time"].(float64))
@@ -327,42 +328,7 @@ input,err :=  io.ReadAll(r.Body)
   }  
 }
 
-/*
-func queue_irrigation_jobs(   json_data map[string]interface{} ) {
-    data :=  json_data["steps"].([]interface{})
-    for  _, temp := range data {
-        array_element                 :=   temp.(map[string]interface{})
-        name                                := array_element["name"].(string)
-        action_type                     := array_element["type"].(string)
-        if action_type == "schedule" {
-               handle_schedule(key,name)
-        }else{
-          
-            fmt.Println("action",name, irr_sched_access.Queue_Action( key,  name ) )
-        }
-    }
-}
 
-*/
-
-/*
-func  handle_schedule(data map[string]interface{} ){
-     key := data["key"].(string)
-     steps := data["schedule"].([]interface{})
-     for _, temp := range steps{
-         
-             temp_map := temp.(map[string]interface{})
-             time              := temp_map["time"].(float64)
-             steps            :=   generate_step_data(temp_map["steps"].(string))
-             fmt.Println("steps",key,time,steps)
-            station_io := generate_station_io( steps )
-            fmt.Println("station",time,station_io)
-            fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_io ))
-
-      }
-        
-}
-*/
 
 func   handle_post_schedule(raw_input string ){
        var decode_value map[string]interface{}
@@ -374,12 +340,6 @@ func   handle_post_schedule(raw_input string ){
     }
     
 }
- /*
-
-
-data map[key:false~main_server~main_server/sub_server_1 schedule:[map[step:1 steps:["station_1:1","station_2:1"] time:10] map[step:2 steps:["station_3:1","station_4:1"] time:10] map[step:3 steps:["station_1:1","station_2:1"] time:60] map[step:4 steps:["station_3:1","station_4:1"] time:60]]]
-
-*/
  
  
 func  handle_schedule(data map[string]interface{}  ){
@@ -392,23 +352,11 @@ func  handle_schedule(data map[string]interface{}  ){
                     fmt.Println("step",step)
                     time      := step["time"].(float64)
                     station_list := generate_step_data(step["steps"].(string ))
-                    //fmt.Println("time", time,station_list)
+                    fmt.Println("time", time,station_list)
                      fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_list ))
                 }
    
- /*               
-                //steps := generate_step_data(data["schedule)
-               for _,temp := range steps {
-                   step           := temp.(map[string][]interface{})
-                   time           := step["time"].(float64)
-                   temp         :=  step["station"].(map[string]interface {})
-                    station_io := generate_station_io( temp )
-                    //fmt.Println("station",time,station_io)
-                   fmt.Println(irr_sched_access.Queue_Managed_Irrigation( key, time ,  station_io ))
-               }
-               
-       
-*/           
+            
        
 }
 
@@ -421,15 +369,4 @@ func generate_step_data(input string)[]string{
         return data
 }
 
-//station:map[station_3:map[1:1] station_4:map[1:1]] time:60]
-/*
-func generate_station_io(  input map[string]interface {})[]string{
-  return_value := make([]string,0)
-   for station, io_data :=  range input {
-       for pin , _  := range io_data.(map[string]interface{}) {
-          return_value= append(return_value, station+":"+pin)
-       }
-   }
-   return return_value
-}
-*/
+

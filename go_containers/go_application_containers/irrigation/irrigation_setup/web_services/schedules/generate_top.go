@@ -70,6 +70,7 @@ func js_generate_top_js()string{
     function main_menu(event,ui){
        var index
        var choice
+         
        choice = $("#schedule_action").val()
        if( choice == "create"){
    

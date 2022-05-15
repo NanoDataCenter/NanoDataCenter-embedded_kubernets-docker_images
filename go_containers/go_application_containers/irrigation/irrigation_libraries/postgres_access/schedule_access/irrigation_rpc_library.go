@@ -100,6 +100,6 @@ func Queue_Irrigation_Direct( station string , io, time  int64,action bool  )boo
   if result == nil {
        return false
    }
-   return result["status"].(bool)   
+   return result["STATUS"].(bool)   
 
 }

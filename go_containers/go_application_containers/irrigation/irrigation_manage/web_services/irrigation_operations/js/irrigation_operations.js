@@ -36,6 +36,7 @@ function load_new_data() {
 }
 function ajax_get_schedule_function(data) {
     schedule_data = data;
+    console.log("ajax_get_schedule", data);
     // generatate schecu
     schedule_name_list = [];
     schedule_description_list = [];
@@ -48,6 +49,7 @@ function ajax_get_schedule_function(data) {
         schedule_map[name_1] = data[i];
     }
     temp.sort();
+    console.log("schedule_map", schedule_map);
     schedule_description_list = ["select schedule"];
     schedule_name_list = ["blank"];
     for (var i = 0; i < temp.length; i++) {
@@ -57,6 +59,7 @@ function ajax_get_schedule_function(data) {
         schedule_description_list.push(name_2 + "  :  " + description);
         schedule_step_map[name_2] = process_schedule_step(schedule_map[name_2].steps);
     }
+    console.log("schedule step map ", schedule_step_map);
     jquery_populate_select('#irrigation_schedule_select', schedule_name_list, schedule_description_list, show_schedule_page);
     get_action_data();
 }
@@ -122,6 +125,7 @@ function process_schedule_step(step_data) {
         temp["steps"] = JSON.stringify(process_valve_data(step_data[i]["station"]));
         return_value.push(temp);
     }
+    console.log(return_value);
     return return_value;
 }
 function process_valve_data(station_data) {
@@ -131,7 +135,7 @@ function process_valve_data(station_data) {
         var station = stations[i];
         var temp = station_data[station];
         var io_list = Object.keys(temp);
-        for (var j = 0; j < io_list; j++) {
+        for (var j = 0; j < io_list.length; j++) {
             return_value.push(station + ":" + io_list[j]);
         }
     }

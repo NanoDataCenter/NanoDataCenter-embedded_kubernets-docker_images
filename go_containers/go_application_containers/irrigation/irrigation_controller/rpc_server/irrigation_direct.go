@@ -35,11 +35,10 @@ func print_data(parameters map[string]interface{}){
 
 
 
+
 func verify_valve( station string , io int64)bool{
      key := station+":"+strconv.Itoa(int(io))
-     for test_key,_ := range  irrigation_controller_library.Registry_data.Inverse_Valve_Map{
-         fmt.Println("key",key,test_key, key==test_key)
-     }
+    
      if _,ok := irrigation_controller_library.Registry_data.Inverse_Valve_Map[key];ok==false{
          return false
      }

@@ -59,22 +59,36 @@ function valve_group_change(event, ui) {
     description_array_a = make_description_array(valve_choice);
     jquery_populate_select("#valve_id", valves_index, description_array_a, valve_change);
 }
+/*
+ * relation "time_idx" already exists (SQLSTATE 42P07) CREATE INDEX time_idx ON T8878891975870246288(Time);
+valve io  {"valve group 1":{"description":"xxxxxxxxxxxxxxx","io":[20,19,14,18,15,17,16],"stations":["station_1","station_1","station_1","station_1","station_1","station_1","station_1"],"valve_descriptions":["Flowers along side walk","Well Water Drip Line","Barbecue Clover Area","Well Clover Area","Triangle Pool Area","Dragon Fruit — Fruit Tree Drip Line","Pool Fence Area"]},"valve group 10":{"description":"xxxxxxxxxxxxxxx","io":[1,2,3,4,5,6,7,8],"stations":["station_4","station_4","station_4","station_4","station_4","station_4","station_4","station_4"],"valve_descriptions":["???????????
+*/
 function valve_change(event, ui) {
     var index;
-    var choice;
-    choice = $("#valve_id").val();
-    $("#valve_id")[0].selectedIndex = 0;
-    if (choice == 0) {
+    var valve_group_id;
+    if ($("#valve_id")[0].selectedIndex == 0) {
         return;
     }
-    var master_controller_id = $("#valve_group")[0].selectedIndex;
-    var master_controller_name = valve_group_names[master_controller_id];
-    var valve_group_data = valve_io[master_controller_name];
-    var stations = valve_group_data["stations"];
-    var io = valve_group_data["io"];
-    var selected_station = stations[choice];
-    var selected_io = io[choice];
-    var time = parseInt($("#step_time_time_select").val());
-    var message = "Queue Valve Group  " + master_controller_name + " Valve Id " + choice;
-    queue_irrigation_direct(selected_station, selected_io, time, message);
+    valve_group_id = parseInt($("#valve_id").val());
+    var valve_group = $("#valve_group").val();
+    var item = valve_io[valve_group];
+    console.log("item", item);
+    valve_group_id = valve_group_id - 1;
+    var station = item["stations"][valve_group_id];
+    var io = item["io"][valve_group_id];
+    var time = parseInt($("#valve_step_time_time_select").val());
+    console.log("valve data ", station, io, time);
+    queue_irrigation_direct(station, io, time, "Queue Valve Group " + valve_group + "  Valve Number " + (valve_group_id + 1));
+    $("#valve_id")[0].selectedIndex = 0;
+    /*
+     let valve_group_data               = valve_io[master_controller_name]
+   
+     let stations                                = valve_group_data["stations"]
+     let io                                           = valve_group_data["io"]
+     let selected_station                = stations[choice]
+     let selected_io                          = io[choice]
+     let time                                     = parseInt($("#valve_step_time_time_select").val())
+     let message = "Queue Valve Group  "+master_controller_name +" Valve Id "+choice
+    queue_irrigation_direct(selected_station ,selected_io,time,message)
+    */
 }

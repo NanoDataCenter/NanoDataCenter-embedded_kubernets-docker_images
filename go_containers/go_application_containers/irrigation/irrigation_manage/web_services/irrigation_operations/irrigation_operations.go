@@ -46,7 +46,6 @@ func Page_init(input *template.Template){
   
    
    
-   
   
 }
 
@@ -110,7 +109,7 @@ func js_generate_global_js()string{
   
      valve_io_json = '`+ valve_io  +`'
     valve_io         = JSON.parse( valve_io_json )
-    
+    //console.log("valve io",valve_io)
     io_map_json =' `+ io_map     +`'
     io_map = JSON.parse(io_map_json)
     master_sub_server_json ='`+ control_block.Master_table_list_json+`'

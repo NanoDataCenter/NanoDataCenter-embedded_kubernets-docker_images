@@ -29,11 +29,15 @@ function station_channel_start(){
     }
     
     function station_channel_cancel_id(){
-       direct_io_close_then_action(station_channel_return )
+        
+        start_section("main_form")
+        if( direct_io_state ==  true){
+            direct_io_close_then_action (station_channel_return )
+        }
     }
   
    function station_channel_return(){
-        start_section("main_form")
+      ;  //start_section("main_form")
    }
   
 
@@ -60,9 +64,10 @@ function io_change(event,ui){
            return
        }
      let station          = $("#stations").val()
-     let time                                     = parseInt($("#step_time_time_select").val())
-    let message = "station  "+station +" Valve Id "+io
     
+     let time                                     = parseInt($("#station_step_time_time_select").val())
+    let message = "station  "+station +" Valve Id "+io
+     
         queue_irrigation_direct(station , io,time, message )
    
 }      
@@ -80,9 +85,9 @@ function generate_integer_io_map_station( input_data){
      let io_channel        = [0]
      let description      = ["select channel"]
      let temp_dict  =  generate_integer_channels(input_data)
-     console.log("temp_dict",temp_dict)
+    // console.log("temp_dict",temp_dict)
      let keys           = generate_key_list(input_data)
-     console.log("keys",keys)
+    // console.log("keys",keys)
     
      for( i= 0; i < keys.length; i++){
          let key = keys[i]

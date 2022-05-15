@@ -17,10 +17,13 @@ function station_channel_init() {
     $("#station_step_time_time_select").val('15').change();
 }
 function station_channel_cancel_id() {
-    direct_io_close_then_action(station_channel_return);
+    start_section("main_form");
+    if (direct_io_state == true) {
+        direct_io_close_then_action(station_channel_return);
+    }
 }
 function station_channel_return() {
-    start_section("main_form");
+    ; //start_section("main_form")
 }
 function station_change(event, ui) {
     var station = $("#stations").val();
@@ -38,7 +41,7 @@ function io_change(event, ui) {
         return;
     }
     var station = $("#stations").val();
-    var time = parseInt($("#step_time_time_select").val());
+    var time = parseInt($("#station_step_time_time_select").val());
     var message = "station  " + station + " Valve Id " + io;
     queue_irrigation_direct(station, io, time, message);
 }
@@ -53,9 +56,9 @@ function generate_integer_io_map_station(input_data) {
     var io_channel = [0];
     var description = ["select channel"];
     var temp_dict = generate_integer_channels(input_data);
-    console.log("temp_dict", temp_dict);
+    // console.log("temp_dict",temp_dict)
     var keys = generate_key_list(input_data);
-    console.log("keys", keys);
+    // console.log("keys",keys)
     for (i = 0; i < keys.length; i++) {
         var key = keys[i];
         io_channel.push(key);

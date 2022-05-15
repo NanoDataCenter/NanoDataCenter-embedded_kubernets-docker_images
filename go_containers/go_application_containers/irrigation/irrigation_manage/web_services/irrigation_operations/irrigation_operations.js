@@ -52,7 +52,7 @@ function main_form_start(){
    
      
       schedule_data  = data
-      
+      console.log("ajax_get_schedule",data)
       // generatate schecu
       schedule_name_list            = []
       schedule_description_list = []
@@ -69,7 +69,7 @@ function main_form_start(){
           schedule_map[name] = data[i]
       }
       temp.sort()
-     
+     console.log("schedule_map",schedule_map)
      
       schedule_description_list = ["select schedule"]
       schedule_name_list           = ["blank"]
@@ -84,6 +84,7 @@ function main_form_start(){
           schedule_step_map[name] = process_schedule_step(schedule_map[name].steps)
     
       }
+      console.log("schedule step map ",schedule_step_map)
       
       
       jquery_populate_select('#irrigation_schedule_select',schedule_name_list ,schedule_description_list,show_schedule_page)
@@ -159,6 +160,7 @@ function queue_schedule_data(schedule_data){
     let data = {}
     data["key"]            =  g_server_key
     data["schedule"]  = schedule_data
+
     let url_path = "ajax/irrigation/irrigation_manage/post_schedule"
     ajax_post_confirmation(url_path, data, "Queue Schedule","Schedule is queue","Schedule Not Queue")
                                     
@@ -186,26 +188,29 @@ function process_schedule_step(step_data){
         let temp                  = {}
         temp["step"]      = i+1
         temp["time"]      =step_data[i]["time"]
+       
         temp["steps"]      = JSON.stringify(process_valve_data(step_data[i]["station"]))
-     
+        
         return_value.push(temp)
     }
-   
+   console.log(return_value)
 
     return return_value
 
 }
 
 function process_valve_data( station_data ){
- 
+    
     return_value = []
     stations = Object.keys(station_data)
+    
     for(let i=0;i<stations.length;i++){
-        
+    
         let station = stations[i]
         let temp = station_data[ station  ]
+        
         let io_list       =  Object.keys(temp)
-        for(  let j=0; j<io_list;j++){
+        for(  let j=0; j<io_list.length;j++){
             return_value.push(station+":"+io_list[j] )
         }
     }

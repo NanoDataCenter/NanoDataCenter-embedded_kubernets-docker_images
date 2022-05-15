@@ -37,7 +37,7 @@ func Construct_weather_stations(){
     
     su.Bc_Rec.Add_header_node("WEATHER_STATIONS","WEATHER_STATIONS",make(map[string]interface{}))
     add_station_cimis()
-    add_station_cimis_satellite()
+    add_station_cimis_station()
     add_station_messo_west_sruc1_eto()
     add_station_messo_west_sruc1_rain()
     add_station_wunderground()
@@ -66,7 +66,7 @@ func add_station_wunderground(){
   su.Bc_Rec.Add_info_node("WEATHER_STATION","WUNDERGROUND",properties)
 }       
 
-func add_station_cimis_satellite() {
+func add_station_cimis_station() {
     
        
     properties := make(map[string]interface{})
