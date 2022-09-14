@@ -1,0 +1,6 @@
+
+
+
+docker build --tag  nanodatacenter/mqtt_to_db . 
+
+
