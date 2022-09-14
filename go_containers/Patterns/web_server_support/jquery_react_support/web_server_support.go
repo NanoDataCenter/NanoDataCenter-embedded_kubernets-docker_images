@@ -137,7 +137,7 @@ func Launch_web_server( ){
    fmt.Println("web_port",web_port)
    fmt.Println("web_ip",web_ip.HGetAll())
    
-  
+
    go http.ListenAndServe(web_port[server_id], router)
    
 }
@@ -152,9 +152,11 @@ func find_local_address()string{
   
     defer conn.Close()  
     ipAddress_port := conn.LocalAddr().(*net.UDPAddr).String()
+
+   
     temp := strings.Split(ipAddress_port,":")
     ip_address := temp[0]
-  
+    fmt.Print(ip_address)
     return ip_address
 }  
 

@@ -142,8 +142,9 @@ func  generate_parsed_fields( ) map[string]float64{
   
   cmd_string := "ps -uT "
   output := docker_control.System_shell(cmd_string)
+  fmt.Println("output",output)
   split_lines := strings.Split(output,"\n")
-  
+  fmt.Println("split lines",split_lines)
   data := find_process_data_lines(split_lines)
   if len(data) > 0 {
     //fmt.Println("process_lines",process_lines)
@@ -174,10 +175,14 @@ func  generate_parsed_fields( ) map[string]float64{
 func find_process_data_lines( input_lines []string )string{
     for _,input := range input_lines {
          fields := strings.Fields(input)
-         //fmt.Println("fields",fields)
+         if len(fields)<11 {
+              continue
+         }
+         fmt.Println("fields",fields)
+         fmt.Println("field len",len(fields))
          name_list := fields[10:]
-         //fmt.Println("name_list",name_list)
-         if name_list[0] == "./site_node_monitor" {
+         fmt.Println("name_list",name_list)
+         if name_list[0] == "/home/pi/work/startup/site_node_monitor" {
              return input
          }
     }
