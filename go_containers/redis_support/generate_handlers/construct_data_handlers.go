@@ -111,7 +111,7 @@ func create_constructors( constructor_table *map[string]interface{}){
 
 func Construct_Data_Structures(  search_list *[]string )  *map[string]interface{}{
 
-   //fmt.Println("$$$$$$$$$$$$$$",search_list)
+   fmt.Println("$$$$$$$$$$$$$$",search_list)
    handlers             := make(map[string]interface{})
    handler_definitions  := make([]map[string]interface{},0)
    construct_handler_definitions( search_list , &handler_definitions  ) 

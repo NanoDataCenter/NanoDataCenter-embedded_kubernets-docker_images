@@ -9,32 +9,21 @@ import (
 	"net/http"
 )
 
-func Get_data(url_base, app_name,url_after ,password,limit, after string )([]Loran_raw_data_stream, bool){
+func Get_data(url_base, app_name,url_after ,password,limit, after string ){
     
-    return_value := make([]Loran_raw_data_stream,0)
+    
     raw_text_stream , err := Get_raw_stream( url_base, app_name,url_after ,password,limit, after)
     if err == false{
-        return return_value, false
+        fmt.Println("bad")
     }
-    for _, raw_text_record := range raw_text_stream {
-          var item  Loran_raw_data_stream
-          return_value.app_id              := extract_string_field(
-          return_value.device_id        := extract_string_field(
-          return_value.f_port              :=  extract_int_field(
-          return_value.f_cnt                :=  extract_int_field(
-          return_value.raw_payload   :=  extract_string_field(
-          return_value.meta_data       :=  extract_string_field(
-          return_value.time_stamp     :=  extract_string_field(
-          
-        
-        
-    }
+    fmt.Println("raw_text_stream",raw_text_stream)
     
     
     
     
     
 }
+
 
 
 func Get_raw_stream( url_base, app_name,url_after ,password,limit, after string )( string,bool){

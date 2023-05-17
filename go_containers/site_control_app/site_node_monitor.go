@@ -67,12 +67,14 @@ func fill_in_slave_data(){
   site_data["master_flag"]  = os.Getenv("master_flag")
   site_data["site"]  = os.Getenv("site")
   site_data["local_node"]  = os.Getenv("local_node")
-  
+  site_data["hot_start"]                 = os.Getenv("hot_start")
   // ip of the redis server
-   port,_               := strconv.Atoi(os.Getenv("port"))
+  
+  
+  port,_               := strconv.Atoi(os.Getenv("port"))
   site_data["port"]     = float64(port)
   site_data["host"]     =   os.Getenv("host")
-  graph_db,_              := strconv.Atoi(os.Getenv("graph_db"))
+  graph_db,_              := strconv.ParseFloat(os.Getenv("graph_db"),64)
   site_data["graph_db"] = graph_db
  get_site_data.Save_site_data(config_file, site_data) 
 }
@@ -96,6 +98,7 @@ func main(){
 	   site_init.Site_Master_Init(&site_data)
        
 	} else {
+      fmt.Println("\n@@@@@@@@@@@@@@@@@@\nslave path\n@@@@@@@@@@@@@@@@\n")
       fill_in_slave_data()
       site_init.Site_Slave_Init(&site_data)
        
@@ -104,7 +107,7 @@ func main(){
 
 	
  	
-
+    
 	node_init.Node_Init(&site_data)
     
 	
@@ -116,11 +119,13 @@ func main(){
     var all_containers = make([]string,0)
     if master_flag == "true" {
 	    all_containers = docker_management.Find_containers(&[]string{ "SITE:"+site_data["site"].(string) })
+    
     }
     all_containers = append( all_containers, docker_management.Find_containers( &[]string{"NODE:"+site_data["local_node"].(string)} )...)
 	
     
-    node_control.Node_Startup(&CF_site_node_control_cluster,&site_data,all_containers)
+    
+    node_control.Node_Startup(master_flag,&CF_site_node_control_cluster,&site_data,all_containers)
     site_control.Site_Startup(&CF_site_node_control_cluster,&site_data)
 	/*
 	

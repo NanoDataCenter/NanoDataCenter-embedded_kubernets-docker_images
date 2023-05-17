@@ -35,7 +35,7 @@ func construct_node(name string, containers []string){
 
       
       
-      Construct_RPC_Server("NODE_CONTROL","rpc for controlling node",10,15,  make(map[string]interface{}) )
+      Construct_RPC_Server("NODE_CONTROL","rpc for controlling node:    "+name ,10,15,  make(map[string]interface{}) )
       
       
       

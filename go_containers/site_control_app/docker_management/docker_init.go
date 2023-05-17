@@ -37,12 +37,12 @@ func Find_containers(search_list *[]string )[]string{
     return graph_query.Convert_json_string_array( site_node["containers"] ) 
 }
 
-func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor( container_list []string ,display_struct_search_list,incident_search_list *[]string, site_data *map[string]interface{}){
+func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor(master_flag string, container_list []string ,display_struct_search_list,incident_search_list *[]string, site_data *map[string]interface{}){
 
   
    docker_handle.containers = container_list
    site_ptr = site_data
-   (docker_handle).initialize_docker_container_monitoring(display_struct_search_list,incident_search_list)
+   (docker_handle).initialize_docker_container_monitoring(master_flag, display_struct_search_list,incident_search_list)
    
    
  
@@ -51,7 +51,7 @@ func (docker_handle *Docker_Handle_Type)Initialize_Docker_Monitor( container_lis
 
 
 
-func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(display_struct_search_list, incident_search_list  *[]string ){
+func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(master_flag string,display_struct_search_list, incident_search_list  *[]string ){
   
   
   
@@ -62,7 +62,9 @@ func (docker_handle *Docker_Handle_Type) initialize_docker_container_monitoring(
   (docker_handle).hash_status = (*data_structures)["DOCKER_DISPLAY_DICTIONARY"].(redis_handlers.Redis_Hash_Struct)
   (docker_handle).incident_stream = logging_support.Construct_incident_log((*incident_search_list))
   (docker_handle).logging_stream  = logging_support.Find_stream_logging_driver()
-  (docker_handle).hash_status.Delete_All()  // table will be repopulated later on
+  if master_flag == "true" {
+      (docker_handle).hash_status.Delete_All()  // table will be repopulated later on
+  }
 }
 
 

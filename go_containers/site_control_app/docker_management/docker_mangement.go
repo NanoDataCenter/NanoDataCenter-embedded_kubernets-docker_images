@@ -200,6 +200,7 @@ func (docker_handle Docker_Handle_Type) hget_status_value( field string ) *map[s
    
     v,err := msg_pack_utils.Unpack_map_string_bool(driver.HGet(field) )  
     if err != true {
+       fmt.Println(driver.HGetAll() )
         panic("error")
     }
     

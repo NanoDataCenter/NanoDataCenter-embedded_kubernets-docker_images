@@ -21,7 +21,7 @@ var local_node string
 
 
 
-func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interface{} , containers []string ){
+func Node_Startup(master_flag string,cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interface{} , containers []string ){
 
     local_node = (*site_data)["local_node"].(string)
    
@@ -30,10 +30,10 @@ func Node_Startup(cf_cluster *cf.CF_CLUSTER_TYPE , site_data *map[string]interfa
     
     logging_stream  = logging_support.Find_stream_logging_driver()
     
-    (docker_handle).Initialize_Docker_Monitor(containers , &display_struct_search_list,&incident_search_list,site_data)
-    
-	(docker_handle).Set_Initial_Hash_Values_Values()
-    
+    (docker_handle).Initialize_Docker_Monitor(master_flag, containers , &display_struct_search_list,&incident_search_list,site_data)
+   
+    (docker_handle).Set_Initial_Hash_Values_Values()
+  
 	node_perform.Init_processor_data_structures(site_data )
 	
 	initialize_node_docker_monitoring(cf_cluster)
@@ -182,7 +182,8 @@ func find_process_data_lines( input_lines []string )string{
          fmt.Println("field len",len(fields))
          name_list := fields[10:]
          fmt.Println("name_list",name_list)
-         if name_list[0] == "/home/pi/work/startup/site_node_monitor" {
+         result := strings.Split(name_list[0],"/")
+         if result[len(result)-1]  == "site_node_monitor" {
              return input
          }
     }

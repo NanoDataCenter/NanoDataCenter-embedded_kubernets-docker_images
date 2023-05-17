@@ -22,6 +22,9 @@ notes from erlang supervisor
 import "fmt"
 import "os"
 import "time"
+import "strconv"
+import "context"
+import "github.com/go-redis/redis/v8"
 import "lacima.com/site_data"
 import "lacima.com/redis_support/graph_query"
 import "lacima.com/redis_support/redis_handlers"
@@ -29,6 +32,7 @@ import "lacima.com/redis_support/generate_handlers"
 import "lacima.com/cf_control"
 import "lacima.com/go_basic_container/process_control_support"
 
+var ctx    = context.TODO()
 var  cf_control_cluster cf.CF_CLUSTER_TYPE
 var site_data_store map[string]interface{}
 const config_file = "/data/redis_configuration.json"
@@ -39,8 +43,16 @@ func main(){
 
     fmt.Println("container_name",container_name)
     
+    // wait for redis connection
     site_data_store = get_site_data.Get_site_data(config_file)
-	
+	 address :=  site_data_store["host"].(string)
+     port  := 	      int(site_data_store["port"].(float64))//float 64 because of json
+    
+ 
+    wait_for_redis_connection(address, port  )
+
+    
+    
     graph_query.Graph_support_init(&site_data_store)
 	redis_handlers.Init_Redis_Mutex()
 	data_handler.Data_handler_init(&site_data_store)
@@ -71,6 +83,35 @@ func main(){
 }
 
 
+func wait_for_redis_connection(address string, port int ) {
+   
+   
+   var loop_flag = true
+   for loop_flag == true {
+      if test_redis_connection(address,port ) == true {
+          return
+      }
+      time.Sleep(time.Second)
+    
+   }		
+   
+}
 
 
+func test_redis_connection( address string, port int )bool{
+    
+    address_port  := address+":"+strconv.Itoa(port)
+   //fmt.Println("address port",address_port)
+    
+   client := redis.NewClient(&redis.Options{
+                                              Addr: address_port,
+                                              DB: 0,
+                                        })
+     err := client.Ping(ctx).Err()
+     client.Close() 
+     if err != nil{
+		  return false
+     }
+     return true
+}
 

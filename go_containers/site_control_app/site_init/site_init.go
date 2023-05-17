@@ -249,7 +249,7 @@ func  determine_master_containers(site string){
 func test_redis_connection( address string, port int )bool{
     
     address_port  := address+":"+strconv.Itoa(port)
-
+   //fmt.Println("address port",address_port)
     
    client := redis.NewClient(&redis.Options{
                                               Addr: address_port,
@@ -358,8 +358,9 @@ func wait_for_reboot_flag_to_clear(){
   reboot_flag_driver := (*reboot_flag_data_structures)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
   loop_flag := true
   for loop_flag {
-    if reboot_flag_driver.Get() == "NOT_ACTIVE" {
-         loop_flag = true
+    fmt.Println("wait_for reboot", reboot_flag_driver.Get())
+    if reboot_flag_driver.Get() == "ACTIVE" {
+         loop_flag = false
     }else{
        time.Sleep(time.Second)
     }   
@@ -432,7 +433,8 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
      
       reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
       reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
-      reboot_flag_driver.Set("ACTIVE")
+      reboot_flag_driver.Set("NOT_ACTIVE")
+     
       
       // remove obselete data Construct_Data_Structures
       
@@ -478,9 +480,9 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
    }
    time.Sleep(time.Second*5) // allow containers to startup_command
    verify_master_containers()
-   reboot_flag_data_structures := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
-   reboot_flag_driver := (*reboot_flag_data_structures)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
-   reboot_flag_driver.Set("NOT_ACTIVE")
+   reboot_flag := data_handler.Construct_Data_Structures(&[]string{"REBOOT_FLAG"})
+   reboot_flag_driver := (*reboot_flag)["REBOOT_FLAG"].(redis_handlers.Redis_Single_Structure)
+   reboot_flag_driver.Set("ACTIVE")
    
    master_log_incident_data()  // this is for master node only
    slave_log_incident_data(site_data) // this is for all nodes
@@ -504,17 +506,23 @@ func Site_Master_Init(  site_data *map[string]interface{} ){
 func Site_Slave_Init(site_data *map[string]interface{} ){
     
     hot_start = determine_slave_hot_start(site_data)
-    slave_log_incident_data(site_data)  
+     fmt.Println("\n@@@@@@@@@@@@@@@@@@\nhot start",hot_start,"\n@@@@@@@@@@@@@@@@\n")
     if hot_start == false {
         
         docker_control.Stop_Running_Containters() 
         docker_control.Remove_All_Containers()
     }
-    
+      fmt.Println("\n@@@@@@@@@@@@@@@@@@\ncontainer removed \n@@@@@@@@@@@@@@@@\n")
+      fmt.Println((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
     wait_for_redis_connection((*site_data)["host"].(string), int((*site_data)["port"].(float64)))
+    fmt.Println("\n@@@@@@@@@@@@@@@@@@\nredis connection\n@@@@@@@@@@@@@@@@\n")
+     graph_query.Graph_support_init(site_data)
+      data_handler.Data_handler_init(site_data)
+      store_site_data(site_data)
     
     wait_for_reboot_flag_to_clear()
- 
+    fmt.Println("\n@@@@@@@@@@@@@@@@@@\nreboot\n@@@@@@@@@@@@@@@@\n")
+     slave_log_incident_data(site_data)  
     get_store_site_data(site_data)
     ip_table    := data_handler.Construct_Data_Structures(&[]string{"NODE_MAP"})
     ip_driver   := (*ip_table)["NODE_MAP"].(redis_handlers.Redis_Hash_Struct)

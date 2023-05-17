@@ -47,7 +47,7 @@ func main(){
     redis_file.Create_redis_data_handle(address, port , file_db )
 	driver = redis_file.Construct_File_Struct(  ) 
 	(driver).FlushDB()
-    //fmt.Println("made it here ",file_base)
+    fmt.Println("made it here ")
     csvReader(secret_file)
 	
 	
