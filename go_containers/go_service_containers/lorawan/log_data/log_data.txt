@@ -1,0 +1,954 @@
+{"result":
+    {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},
+	"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-12T17:47:09.667637020Z",
+	"uplink_message":{
+	   "f_port":2,"f_cnt":9,"frm_payload":"AQYQDDAAAPUi", 
+	   "decoded_payload":{"err":0,
+	        "messages":[
+			    {"measurementId":4102,"measurementValue":12.3,"type":"report_telemetry"}],"payload":"0106100C300000F522","valid":true},
+				"rx_metadata":[
+				  {"gateway_ids":{
+				    "gateway_id":"eui-00800000a0001ace",
+					"eui":"00800000A0001ACE"},
+					"timestamp":4254913772,
+					"rssi":-112,"channel_rssi":-112,
+					"snr":-4.2,"channel_index":2,
+					"received_at":"2023-01-12T17:47:09.454484501Z"},
+				{"gateway_ids":
+				   {"gateway_id":"lacina-ranch-2",
+				   "eui":"58A0CBFFFE803EA7"},
+				   "time":"2023-01-12T17:47:09.452680110Z",
+				   "timestamp":1976447172,"rssi":-102,
+				   "channel_rssi":-102,
+				   "snr":3.75,
+				   "received_at":"2023-01-12T17:47:09.453834679Z"},
+				 {"gateway_ids":{"gateway_id":"lacima-ranch-1",
+				    "eui":"58A0CBFFFE803E79"},
+				    "time":"2023-01-12T17:47:09.458692073Z",
+				    "timestamp":2883726572,"rssi":-107,
+				     "channel_rssi":-107,"snr":-1.25,
+				     "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+					 "received_at":"2023-01-12T17:47:09.476063306Z"}],
+				 "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":10,"coding_rate":"4/5"}},
+				 "frequency":"904300000","timestamp":4254913772},"received_at":"2023-01-12T17:47:09.463580282Z","consumed_airtime":"0.370688s",
+				 "version_ids":
+				    {"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+				 "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+      {       "end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},
+	          "dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-12T18:27:02.187726523Z",
+	         "uplink_message":{"f_port":2,"f_cnt":4,"frm_payload":"AQwQAAAAAAEGEHQnAAABBxCgKAAAW6o=",
+			 "decoded_payload":{"err":0,
+			                    "messages":
+								  [
+								     {"measurementId":4108,"measurementValue":0,"type":"report_telemetry"}
+									 ,{"measurementId":4102,"measurementValue":10.1,"type":"report_telemetry"},
+									 {"measurementId":4103,"measurementValue":10.4,"type":"report_telemetry"}],
+					 "payload":"010C100000000001061074270000010710A02800005BAA","valid":true},
+		
+		"rx_metadata":
+		   [
+		     {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},
+			   "timestamp":2352462676,"rssi":-113,"channel_rssi":-113,"snr":-1,"channel_index":3,
+			   "received_at":"2023-01-12T18:27:01.977389261Z"},
+			   {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},
+			   "time":"2023-01-12T18:27:01.973782062Z",
+			   "timestamp":923719028,
+			   "rssi":-101,"channel_rssi":-101,"snr":10,"received_at":"2023-01-12T18:27:01.995935308Z"},
+			{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-12T18:27:01.971451044Z","timestamp":981281628,
+			   "rssi":-102,"channel_rssi":-102,"snr":7.5,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,
+			   "altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-12T18:27:01.992953361Z"}],
+			 "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":8,"coding_rate":"4/5"}},
+			 "frequency":"904500000","timestamp":2352462676},"received_at":"2023-01-12T18:27:01.978099407Z",
+			 "consumed_airtime":"0.143872s",
+			 "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+			 "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+      {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},
+	  "dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-12T18:46:56.569941674Z",
+	  "uplink_message":{"f_port":2,"f_cnt":11,"frm_payload":"AQwQbgAAAAEGEHAwAAABBxDoZwAASIc=","decoded_payload":
+	  {"err":0,"messages":
+	      [
+		     {"measurementId":4108,"measurementValue":0.11,"type":"report_telemetry"},
+	         {"measurementId":4102,"measurementValue":12.4,"type":"report_telemetry"}, 
+			 {"measurementId":4103,"measurementValue":26.6,"type":"report_telemetry"}],
+			 "payload":"010C106E00000001061070300000010710E86700004887","valid":true},
+			 "rx_metadata":
+			 [ 
+			 {"gateway_ids": {"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},
+				"timestamp":3546841980,"rssi":-111,"channel_rssi":-111,"snr":-3.8,"channel_index":6,"received_at":"2023-01-12T18:46:56.359352616Z"},
+			{"gateway_ids":
+			    {"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-12T18:46:56.344674110Z,
+			      "timestamp":2118102532,"rssi":-109,"channel_rssi":-109,"snr":3.75,"received_at":"2023-01-12T18:46:56.366407867Z"},
+			{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-12T18:46:56.359548091Z",
+			   "timestamp":2175664028,"rssi":-106,"channel_rssi":-106,"snr":-0.25,
+			     "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-12T18:46:56.375461996Z"}
+		  ],
+		      "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":9,"coding_rate":"4/5"}},"frequency":"905100000","timestamp":3546841980},
+			  "received_at":"2023-01-12T18:46:56.360151448Z","consumed_airtime":"0.267264s",
+			  "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec",
+			  "hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+			  "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{{"result":
+      {"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},
+	  "dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-12T19:27:03.606721091Z",
+	  "uplink_message":{"f_port":2,"f_cnt":5,"frm_payload":"AQwQAAAAAAEGENgnAAABBxCgKAAANTg=",
+	  "decoded_payload":{"err":0,"messages":
+	     [{"measurementId":4108,"measurementValue":0,"type":"report_telemetry"},
+		 {"measurementId":4102,"measurementValue":10.2,"type":"report_telemetry"},{
+		 "measurementId":4103,"measurementValue":10.4,"type":"report_telemetry"}],
+		 "payload":"010C1000000000010610D8270000010710A02800003538","valid":true},"rx_metadata":
+		 [{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-12T19:27:03.363805055Z","timestamp":287715772
+		      ,"rssi":-100,"channel_rssi":-100,"snr":8.5,
+			  "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-12T19:27:03.380374470Z"},
+	{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-12T19:27:03.378572940Z","timestamp":1324349516,
+	         "rssi":-100,"channel_rssi":-100,"snr":8.75,"received_at":"2023-01-12T19:27:03.395417868Z"}],
+	  "settings":
+			 {"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":8,"coding_rate":"4/5"}},"frequency":"903900000","timestamp":287715772,"time":"2023-01-12T19:27:03.363805055Z"},
+			 "received_at":"2023-01-12T19:27:03.396382972Z","consumed_airtime":"0.143872s",
+			 version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+			 "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+{"result":
+    {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},
+	  "dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-12T19:47:03.993055791Z",
+	  "uplink_message":{"f_port":2,"f_cnt":12,"frm_payload":"AQwQbgAAAAEGEHAwAAABBxBMaAAAXh0=",
+	  "decoded_payload":{"err":0,
+	  "messages":[
+{"measurementId":4108,"measurementValue":0.11,"type":"report_telemetry"},
+	  {"measurementId":4102,"measurementValue":12.4,"type":"report_telemetry"},
+	  {"measurementId":4103,"measurementValue":26.7,"type":"report_telemetry"}],
+	  "payload":"010C106E000000010610703000000107104C6800005E1D","valid":true},
+	  "rx_metadata":[{"gateway_ids":
+	    {"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1198661020,"rssi":-115,"channel_rssi":-115,"snr":-2.2,"channel_index":1,
+		   "received_at":"2023-01-12T19:47:03.778993448Z"},
+	    {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-12T19:47:03.774955034Z" "timestamp":1488122644,
+		  "rssi":-111,"channel_rssi":-111,"snr":-5.5,"location":{"latitude":33.57851455733027,
+		  "longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-12T19:47:03.778327110Z"},
+		 {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-12T19:47:03.777287006Z","timestamp":2524757476,
+		 "rssi":-107,"channel_rssi":-107,"snr":6.25,"received_at":"2023-01-12T19:47:03.794213147Z"}],"settings":
+		 {"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":9,"coding_rate":"4/5"}},
+		 "frequency":"904100000","timestamp":1198661020},"received_at":"2023-01-12T19:47:03.788516031Z","consumed_airtime":"0.267264s",
+		 "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec",
+		 "hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1",
+		 "cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+ETO .16
+
+{"result":
+    {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+	"received_at":"2023-01-13T18:46:47.016546558Z",
+	"uplink_message":{"f_port":2,"f_cnt":35,"frm_payload":"AQwQ8AAAAAEGEOAuAAABBxAIawAAKaE=",
+	"decoded_payload":{"err":0,"messages":[
+	{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+	{"measurementId":4102,"measurementValue":12,"type":"report_telemetry"},
+	{"measurementId":4103,"measurementValue":27.4,"type":"report_telemetry"}],
+	"payload":"010C10F0000000010610E02E0000010710086B000029A1","valid":true},"rx_metadata":
+	[{"gateway_ids":
+	 {"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3351322668,"rssi":-111,"channel_rssi":-111,"snr":-0.2,"channel_index":5,
+	   "received_at":"2023-01-13T18:46:46.800665680Z"},
+	     {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-13T18:46:46.809988975Z","timestamp":206287772,
+		     "rssi":-107,"channel_rssi":-107,"snr":2.25,
+		     "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-13T18:46:46.800363906Z"},
+		 {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-13T18:46:46.796991109Z","timestamp":180176756,
+		        "rssi":-107,"channel_rssi":-107,"snr":3.25,"received_at":"2023-01-13T18:46:46.816334229Z"}],
+		 "settings":{"data_rate":{"lora":
+		   {"bandwidth":125000,"spreading_factor":8,"coding_rate":"4/5"}},"frequency":"904900000","timestamp":3351322668},
+		   "received_at":"2023-01-13T18:46:46.810942707Z","consumed_airtime":"0.143872s",
+		 "version_ids":{
+		     "brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+		  "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+
+   {"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+      "received_at":"2023-01-13T19:26:43.399889683Z",
+	     "uplink_message":{"f_port":2,"f_cnt":29,"frm_payload":"AQwQAAAAAAEGENgnAAABBxBoKQAA6Lw=",
+		     "decoded_payload":{"err":0,"messages":
+			   [   {"measurementId":4108,"measurementValue":0,"type":"report_telemetry"},
+			      {"measurementId":4102,"measurementValue":10.2,"type":"report_telemetry"},
+				  {"measurementId":4103,"measurementValue":10.6,"type":"report_telemetry"}],
+				  
+				  "payload":"010C1000000000010610D827000001071068290000E8BC","valid":true},
+		"rx_metadata":[
+		
+		{"gateway_ids":
+		
+		   {"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-13T19:26:43.149590969Z","timestamp":49300020,
+		       "rssi":-95,"channel_rssi":-95,"snr":8,"received_at":"2023-01-13T19:26:43.171068971Z"},
+		{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-13T19:26:43.181049108Z","timestamp":2602650052,
+		    "rssi":-99,"channel_rssi":-99,"snr":7.5,
+			    "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-13T19:26:43.183226348Z"}
+		],
+		   "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+		   "frequency":"905300000","timestamp":49300020,"time":"2023-01-13T19:26:43.149590969Z"},
+		   "received_at":"2023-01-13T19:26:43.193656868Z","consumed_airtime":"0.077056s",
+		   "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+		   "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+ETO .10
+
+
+
+{"result":
+    {"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+	"received_at":"2023-01-14T18:26:27.934946236Z","uplink_message":{"f_port":2,"f_cnt":52,"frm_payload":"AQwQAAAAAAEGENgnAAABBxA8KAAAzkE=",
+	"decoded_payload":{"err":0,"messages":[
+	{"measurementId":4108,"measurementValue":0,"type":"report_telemetry"},
+	{"measurementId":4102,"measurementValue":10.2,"type":"report_telemetry"},
+	{"measurementId":4103,"measurementValue":10.3,"type":"report_telemetry"}],
+	"payload":"010C1000000000010610D82700000107103C280000CE41","valid":true},
+	"rx_metadata":[
+	{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3605684844,
+	    "rssi":-111,"channel_rssi":-111,"snr":-6,"channel_index":6,"received_at":"2023-01-14T18:26:27.715003525Z"},
+	{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-14T18:26:27.698704957Z","timestamp":3274718700,
+	    "rssi":-97,"channel_rssi":-97,"snr":6,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+		"received_at":"2023-01-14T18:26:27.718334677Z"}],
+	"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905100000","timestamp":3605684844}
+	,"received_at":"2023-01-14T18:26:27.724120739Z","consumed_airtime":"0.077056s",
+	"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0",
+	  "firmware_version":"1.0","band_id":"US_902_928"},
+	"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+    {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-14T18:46:37.725656962Z",
+	"uplink_message":{"f_port":2,"f_cnt":59,"frm_payload":"AQwQ5gAAAAEGEBguAAABBxD8bAAAb6w=",
+	"decoded_payload":{"err":0,
+	"messages":[
+	   {"measurementId":4108,"measurementValue":0.23,"type":"report_telemetry"},
+	   {"measurementId":4102,"measurementValue":11.8,"type":"report_telemetry"},
+	   {"measurementId":4103,"measurementValue":27.9,"type":"report_telemetry"}],
+	   "payload":"010C10E6000000010610182E0000010710FC6C00006FAC","valid":true},"
+	   rx_metadata":
+	   [
+	       {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":520506444,"rssi":-110,"channel_rssi":-110,"snr":-2.5,"channel_index":7,
+		   "received_at":"2023-01-14T18:46:37.510913539Z"},
+		   {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-14T18:46:37.501965999Z","timestamp":189543396,
+		   "rssi":-108,"channel_rssi":-108,"snr":-0.25,
+		   "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+		   "received_at":"2023-01-14T18:46:37.494377901Z"}],
+		   
+		"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":8,"coding_rate":"4/5"}},"frequency":"905300000","timestamp":520506444},
+		"received_at":"2023-01-14T18:46:37.520373117Z","consumed_airtime":"0.143872s",
+		"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0",
+		  "band_id":"US_902_928"},
+	   "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+3 inch of rain
+
+{"result":
+   {"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+      "received_at":"2023-01-15T17:26:22.607418943Z",
+	  "uplink_message":{"f_port":2,"f_cnt":75,"frm_payload":"AQwQFAAAAAEGEEgmAAABBxAgTgAAlgQ=",
+	  "decoded_payload":{"err":0,
+	  "messages":[
+	       {"measurementId":4108,"measurementValue":0.02,"type":"report_telemetry"},
+		   {"measurementId":4102,"measurementValue":9.8,"type":"report_telemetry"},
+		   {"measurementId":4103,"measurementValue":20,"type":"report_telemetry"}],
+		   "payload":"010C101400000001061048260000010710204E00009604","valid":true},
+	  "rx_metadata":
+	  [
+	    {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1475661803,
+		     "rssi":-114,"channel_rssi":-114,"snr":-2.8,"channel_index":3,"received_at":"2023-01-15T17:26:22.395502713Z"},
+		{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-15T17:26:22.369853019Z","timestamp":928683867,"rssi":-102,
+		    "channel_rssi":-102,"snr":4.75,
+		    "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-15T17:26:22.406605266Z"}
+		],"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":1475661803},"received_at":"2023-01-15T17:26:22.396363307Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+{"result":
+   {"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+     "received_at":"2023-01-15T17:46:27.022055430Z",
+	 "uplink_message":{"f_port":2,"f_cnt":82,"frm_payload":"AQwQfAEAAAEGEFwrAAABBxD0fgAAbho=",
+	   "decoded_payload":{"err":0,"messages":[
+	   {"measurementId":4108,"measurementValue":0.38,"type":"report_telemetry"},
+	   {"measurementId":4102,"measurementValue":11.1,"type":"report_telemetry"},
+	   {"measurementId":4103,"measurementValue":32.5,"type":"report_telemetry"}],
+	   "payload":"010C107C0100000106105C2B0000010710F47E00006E1A","valid":true},"
+	 rx_metadata":[
+	    {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1018661243,
+		   "rssi":-111,"channel_rssi":-111,"snr":2,"channel_index":4,"received_at":"2023-01-15T17:46:26.801389610Z"},
+		 {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-15T17:46:26.794850111Z","timestamp":765911435,"rssi":-102,
+		 "channel_rssi":-102,"snr":5.5,"received_at":"2023-01-15T17:46:26.812261079Z"},
+		 {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-15T17:46:26.787035942Z","timestamp":2133101395,
+		 "rssi":-106,"channel_rssi":-106,"snr":2.75,
+		 "location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-15T17:46:26.822202730Z"}],
+		 "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+		 "frequency":"904700000","timestamp":1018661243},"received_at":"2023-01-15T17:46:26.811461922Z","consumed_airtime":"0.077056s",
+		 "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+	"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+ 
+ 
+ before rain
+ 
+ {"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+ "received_at":"2023-01-15T23:46:17.746465464Z",
+ "uplink_message":{"f_port":2,"f_cnt":88,"frm_payload":"AQwQfAEAAAEGEOwsAAABBxAAfQAAAAcAZAA8AI6o",
+ "decoded_payload":{"err":0,"messages":
+ [
+   {"measurementId":4108,"measurementValue":0.38,"type":"report_telemetry"},
+   {"measurementId":4102,"measurementValue":11.5,"type":"report_telemetry"},
+   {"measurementId":4103,"measurementValue":32,"type":"report_telemetry"},
+   {"battery":100,"type":"upload_battery"},
+   {"interval":3600,"type":"upload_interval"}
+   ],
+   "payload":"010C107C010000010610EC2C0000010710007D000000070064003C008EA8","valid":true},
+   "rx_metadata":
+   [{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1134489028,"rssi":-110,
+   "channel_rssi":-110,"snr":-2.2,"channel_index":7,"received_at":"2023-01-15T23:46:17.528179257Z"},{
+   "gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-15T23:46:17.509099006Z","timestamp":2248984988,
+   "rssi":-107,"channel_rssi":-107,"snr":1.25,"location":
+   {"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-15T23:46:17.536087541Z"},
+  
+  {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-15T23:46:17.542602062Z","timestamp":881814404,
+   "rssi":-108,"channel_rssi":-108,"snr":2.75,"received_at":"2023-01-15T23:46:17.541109946Z"}],
+   
+   "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+	     "frequency":"905300000","timestamp":1134489028},"received_at":"2023-01-15T23:46:17.528869204Z","consumed_airtime":"0.087296s",
+	"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+     "received_at":"2023-01-16T00:26:18.529250928Z",
+	 "uplink_message":{"f_port":2,"f_cnt":82,"frm_payload":"AQwQFAAAAAEGEDwoAAABBxBwSQAA4dw=",
+	 "decoded_payload":{"err":0,"messages":[
+	 {"measurementId":4108,"measurementValue":0.02,"type":"report_telemetry"},
+	 {"measurementId":4102,"measurementValue":10.3,"type":"report_telemetry"},
+	 {"measurementId":4103,"measurementValue":18.8,"type":"report_telemetry"}],
+	 "payload":"010C10140000000106103C28000001071070490000E1DC","valid":true},"rx_metadata":
+	 [
+	 {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3535273931,
+	 "rssi":-113,"channel_rssi":-113,"snr":-7,"channel_index":4,"received_at":"2023-01-16T00:26:18.318251635Z"},
+	 {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-16T00:26:18.316898107Z","timestamp":3282607571,
+	 "rssi":-99,"channel_rssi":-99,"snr":9,"received_at":"2023-01-16T00:26:18.320070926Z"},
+	 {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-16T00:26:18.307288885Z","timestamp":354808731,
+	 "rssi":-101,"channel_rssi":-101,"snr":7,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+	 "received_at":"2023-01-16T00:26:18.341009627Z"}],
+	 
+	 "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904700000",
+	 "timestamp":3535273931},"received_at":"2023-01-16T00:26:18.319119021Z","consumed_airtime":"0.077056s",
+	 "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0",
+	 "firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+	 
+	 
+after another 1 inch of rain
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-16T15:26:09.865690179Z",
+"uplink_message":{"f_port":2,"f_cnt":97,"frm_payload":"AQwQFAAAAAEGELgkAAABBxB4UAAASTU=",
+"decoded_payload":{"err":0,"messages":[
+   {"measurementId":4108,"measurementValue":0.02,"type":"report_telemetry"},
+   {"measurementId":4102,"measurementValue":9.4,"type":"report_telemetry"},
+   {"measurementId":4103,"measurementValue":20.6,"type":"report_telemetry"}],
+   "payload":"010C1014000000010610B8240000010710785000004935","valid":true},
+   "rx_metadata":[
+   {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":2666518971,
+   "rssi":-114,"channel_rssi":-114,"snr":-2.8,"channel_index":4,"received_at":"2023-01-16T15:26:09.654960767Z"},
+   {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-16T15:26:09.635829925Z","timestamp":219117707,
+   "rssi":-96,"channel_rssi":-96,"snr":8.25,"received_at":"2023-01-16T15:26:09.659012972Z"},
+   {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-16T15:26:09.647175073Z","timestamp":3830298779,
+   "rssi":-102,"channel_rssi":-102,"snr":5,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+   "received_at":"2023-01-16T15:26:09.671683774Z"}],
+   "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+   "frequency":"904700000","timestamp":2666518971},"received_at":"2023-01-16T15:26:09.655780237Z","consumed_airtime":"0.077056s",
+   "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+   "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-16T15:46:12.957325886Z",
+"uplink_message":{"f_port":2,"f_cnt":104,"frm_payload":"AQwQ+gAAAAEGEGgpAAABBxD0fgAAyhE=","decoded_payload":{"err":0,"messages":[
+   {"measurementId":4108,"measurementValue":0.25,"type":"report_telemetry"},
+   {"measurementId":4102,"measurementValue":10.6,"type":"report_telemetry"},
+   {"measurementId":4103,"measurementValue":32.5,"type":"report_telemetry"}],
+   "payload":"010C10FA00000001061068290000010710F47E0000CA11","valid":true},
+   "rx_metadata":[{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3869614427,
+   "rssi":-114,"channel_rssi":-114,"snr":-5,"channel_index":1,"received_at":"2023-01-16T15:46:12.751281844Z"},
+   {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-16T15:46:12.746871948Z","timestamp":738430099,
+   "rssi":-108,"channel_rssi":-108,"snr":-5.75,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+   "received_at":"2023-01-16T15:46:12.748293068Z"},
+   {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-16T15:46:12.748083114Z","timestamp":123066891,"rssi":-106,
+   "channel_rssi":-106,"snr":4.5,"received_at":"2023-01-16T15:46:12.768061173Z"}],
+   "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":3869614427},
+   "received_at":"2023-01-16T15:46:12.752667100Z","consumed_airtime":"0.077056s",
+   "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+   "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+next day 1 inch rain
+
+
+{"result":
+{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-17T15:25:52.123610854Z",
+"uplink_message":{"f_port":2,"f_cnt":121,"frm_payload":"AQwQFAAAAAEGEMQiAAABBxBMTwAAAAcAZAA8AOq6",
+"decoded_payload":{"err":0,"messages":
+[{"measurementId":4108,"measurementValue":0.02,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8.9,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":20.3,"type":"report_telemetry"},
+{"battery":100,"type":"upload_battery"},
+{"interval":3600,"type":"upload_interval"}],
+"payload":"010C1014000000010610C42200000107104C4F000000070064003C00EABA","valid":true},
+"rx_metadata":[{"gateway_ids":
+{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":4123947955,
+"rssi":-113,"channel_rssi":-113,"snr":-3,"channel_index":3,
+"received_at":"2023-01-17T15:25:51.902986049Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-17T15:25:51.900427103Z","timestamp":97350235,
+"rssi":-96,"channel_rssi":-96,"snr":9.5,
+"received_at":"2023-01-17T15:25:51.920611690Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-17T15:25:51.882663965Z","timestamp":834729699,
+"rssi":-102,"channel_rssi":-102,"snr":8,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-17T15:25:51.924782087Z"}],
+
+"settings":
+{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":4123947955},
+"received_at":"2023-01-17T15:25:51.912123975Z","consumed_airtime":"0.087296s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+
+
+
+{"result":
+{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-17T15:45:58.054574513Z",
+"uplink_message":{"f_port":2,"f_cnt":128,"frm_payload":"AQwQ+gAAAAEGENgnAAABBxAAfQAAAAcAZAA8ADSf",
+"decoded_payload":{"err":0,"messages":
+[
+ {"measurementId":4108,"measurementValue":0.25,"type":"report_telemetry"},
+ {"measurementId":4102,"measurementValue":10.2,"type":"report_telemetry"},
+ {"measurementId":4103,"measurementValue":32,"type":"report_telemetry"},{
+ "battery":100,"type":"upload_battery"},
+ {"interval":3600,"type":"upload_interval"}],
+ "payload":"010C10FA000000010610D8270000010710007D000000070064003C00349F","valid":true},
+ "rx_metadata":[
+ {"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1034910731,
+ "rssi":-111,"channel_rssi":-111,"snr":2.2,"channel_index":4,"received_at":"2023-01-17T15:45:57.834616714Z"},
+ {"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-17T15:45:57.815995931Z","timestamp":176030755,
+ "rssi":-103,"channel_rssi":-103,"snr":6.75,"received_at":"2023-01-17T15:45:57.835532248Z"},
+ {"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-17T15:45:57.812762975Z","timestamp":2040662915,
+ "rssi":-107,"channel_rssi":-107,"snr":0.75,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+ "received_at":"2023-01-17T15:45:57.816729742Z"}],
+ "settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+ "frequency":"904700000","timestamp":1034910731},"received_at":"2023-01-17T15:45:57.843731757Z","consumed_airtime":"0.087296s",
+ "version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+ "network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+ 
+ 
+ 
+
+{"result":
+{"end_device_ids":
+{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-18T14:25:38.913674426Z",
+"uplink_message":{"f_port":2,"f_cnt":144,"frm_payload":"AQwQHgAAAAEGEGwgAAABBxBkSwAA7Qs=",
+"decoded_payload":{"err":0,"messages":
+[{"measurementId":4108,"measurementValue":0.03,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8.3,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":19.3,"type":"report_telemetry"}],
+"payload":"010C101E0000000106106C200000010710644B0000ED0B","valid":true},
+"rx_metadata":[
+
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1984580187,
+"rssi":-114,"channel_rssi":-114,"snr":-0.5,"channel_index":3,"received_at":"2023-01-18T14:25:38.708457899Z"},
+
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-18T14:25:38.684782028Z","timestamp":184402435,
+"rssi":-99,"channel_rssi":-99,"snr":6.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-18T14:25:38.712557092Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":1984580187},
+
+"received_at":"2023-01-18T14:25:38.709586266Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+{"end_device_ids":
+{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-18T14:45:47.601657100Z",
+"uplink_message":{"f_port":2,"f_cnt":151,"frm_payload":"AQwQ8AAAAAEGEBAnAAABBxDUewAAL8I=","decoded_payload":{"err":0,"messages":
+[{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.7,"type":"report_telemetry"}]
+,"payload":"010C10F000000001061010270000010710D47B00002FC2","valid":true},
+"rx_metadata":[{
+
+"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3193257844,
+"rssi":-110,"channel_rssi":-110,"snr":-1,"channel_index":5,"received_at":"2023-01-18T14:45:47.382803318Z"},
+
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-18T14:45:47.366414070Z","timestamp":1393083300,
+"rssi":-107,"channel_rssi":-107,"snr":-2,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+
+"received_at":"2023-01-18T14:45:47.386361913Z"}],"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"904900000","timestamp":3193257844},"received_at":"2023-01-18T14:45:47.391506032Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+.09 ETO
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-18T23:25:37.691986574Z",
+"uplink_message":{"f_port":2,"f_cnt":153,"frm_payload":"AQwQHgAAAAEGEPwhAAABBxDUSQAAsBA=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.03,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8.7,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":18.9,"type":"report_telemetry"}],
+"payload":"010C101E000000010610FC210000010710D4490000B010","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":2657992595,
+"rssi":-115,"channel_rssi":-115,"snr":-1.8,"channel_index":3,"received_at":"2023-01-18T23:25:37.485553473Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-18T23:25:37.476001024Z","timestamp":2379943419,
+"rssi":-100,"channel_rssi":-100,"snr":6.5,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-18T23:25:37.498529824Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-18T23:25:37.492513895Z","timestamp":1499284979,
+"rssi":-93,"channel_rssi":-93,"snr":8.75,"received_at":"2023-01-18T23:25:37.453045099Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":2657992595},
+"received_at":"2023-01-18T23:25:37.486644838Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-18T23:45:42.642094722Z",
+"uplink_message":{"f_port":2,"f_cnt":160,"frm_payload":"AQwQ8AAAAAEGEMwpAAABBxBwewAAoV8=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10.7,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.6,"type":"report_telemetry"}],
+"payload":"010C10F0000000010610CC290000010710707B0000A15F","valid":true},
+"rx_metadata":[{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3862938835,
+"rssi":-114,"channel_rssi":-114,"snr":-1.8,"channel_index":4,"received_at":"2023-01-18T23:45:42.435722536Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-18T23:45:42.436017990Z","timestamp":2704235427,
+"rssi":-103,"channel_rssi":-103,"snr":5.75,"received_at":"2023-01-18T23:45:42.422462986Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-18T23:45:42.418442964Z","timestamp":3584892771,
+"rssi":-108,"channel_rssi":-108,"snr":0.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-18T23:45:42.474986017Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"904700000","timestamp":3862938835},"received_at":"2023-01-18T23:45:42.436805184Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-19T16:25:21.972542732Z",
+"uplink_message":{"f_port":2,"f_cnt":170,"frm_payload":"AQwQHgAAAAEGEEAfAAABBxAYRwAAcbA=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.03,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":18.2,"type":"report_telemetry"}
+],"payload":"010C101E000000010610401F00000107101847000071B0","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":2128455964,
+"rssi":-110,"channel_rssi":-110,"snr":-4,"channel_index":7,"received_at":"2023-01-19T16:25:21.766281177Z"},
+
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-19T16:25:21.763253927Z","timestamp":3434683660,
+"rssi":-99,"channel_rssi":-99,"snr":6.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-19T16:25:21.777341848Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-19T16:25:21.780941009Z","timestamp":3036240628,
+"rssi":-93,"channel_rssi":-93,"snr":8.5,"received_at":"2023-01-19T16:25:21.780638701Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905300000","timestamp":2128455964},
+"received_at":"2023-01-19T16:25:21.767368836Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-19T16:45:29.531513670Z",
+"uplink_message":{"f_port":2,"f_cnt":177,"frm_payload":"AQwQ8AAAAAEGEBAnAAABBxAMewAAj98=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.5,"type":"report_telemetry"}],"payload":"010C10F0000000010610102700000107100C7B00008FDF","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3336010275,
+"rssi":-114,"channel_rssi":-114,"channel_index":1,"received_at":"2023-01-19T16:45:29.326816647Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-19T16:45:29.332421064Z","timestamp":4243799139,
+"rssi":-102,"channel_rssi":-102,"snr":5.75,"received_at":"2023-01-19T16:45:29.329921163Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-19T16:45:29.332741975Z","timestamp":347273699,
+"rssi":-108,"channel_rssi":-108,"snr":-3.5,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-19T16:45:29.382654497Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":3336010275},
+"received_at":"2023-01-19T16:45:29.327864257Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+{"result":
+{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-19T19:25:24.252334391Z",
+"uplink_message":{"f_port":2,"f_cnt":173,"frm_payload":"AQwQWgAAAAEGEAggAAABBxBUbwAAP28=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.09,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8.2,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":28.5,"type":"report_telemetry"}],
+"payload":"010C105A00000001061008200000010710546F00003F6F","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-19T19:25:24.021243095Z","timestamp":953581443,
+"rssi":-95,"channel_rssi":-95,"snr":8.75,"received_at":"2023-01-19T19:25:24.012055667Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-19T19:25:23.984426021Z","timestamp":844020811,
+"rssi":-100,"channel_rssi":-100,"snr":7.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-19T19:25:24.017581190Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":953581443,"time":"2023-01-19T19:25:24.021243095Z"},
+"received_at":"2023-01-19T19:25:24.028802053Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-19T20:25:17.636997458Z","uplink_message":{"f_port":2,"f_cnt":174,"frm_payload":"AQwQWgAAAAEGENAgAAABBxDwbgAAw3c=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.09,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8.4,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":28.4,"type":"report_telemetry"}],
+"payload":"010C105A000000010610D0200000010710F06E0000C377","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3639167939,
+"rssi":-114,"channel_rssi":-114,"snr":-0.5,"channel_index":1,"received_at":"2023-01-19T20:25:17.425945227Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-19T20:25:17.390002965Z","timestamp":142471563,
+"rssi":-97,"channel_rssi":-97,"snr":6.5,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-19T20:25:17.418507593Z"},{"gateway_ids":
+{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-19T20:25:17.448682069Z","timestamp":252035563,"rssi":-97,
+"channel_rssi":-97,"snr":9.25,"received_at":"2023-01-19T20:25:17.431280244Z"}],"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"904100000","timestamp":3639167939},"received_at":"2023-01-19T20:25:17.426576725Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":
+{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-19T18:45:34.463900865Z","uplink_message":{"f_port":2,"f_cnt":179,"frm_payload":"AQwQ8AAAAAEGEHQnAAABBxAMewAAVa4=","
+decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10.1,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.5,"type":"report_telemetry"}],
+"payload":"010C10F0000000010610742700000107100C7B000055AE","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-19T18:45:34.244313955Z","timestamp":2858767324,
+"rssi":-107,"channel_rssi":-107,"snr":1,"received_at":"2023-01-19T18:45:34.238396012Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-19T18:45:34.224715948Z","timestamp":3257202268,
+"rssi":-107,"channel_rssi":-107,"snr":-2,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-19T18:45:34.216239682Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905100000","timestamp":2858767324,
+"time":"2023-01-19T18:45:34.244313955Z"},"received_at":"2023-01-19T18:45:34.253927620Z","consumed_airtime":"0.082176s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0",
+"firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1",
+"cluster_address":"nam1.cloud.thethings.network"}}}}
+
+.25 inch of rain
+{"result":{"end_device_ids":
+{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-01-20T18:45:19.475204597Z",
+"uplink_message":{"f_port":2,"f_cnt":203,"frm_payload":"AQwQ+gAAAAEGEKwmAAABBxA4fAAACKQ=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.25,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":9.9,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.8,"type":"report_telemetry"}],
+"payload":"010C10FA000000010610AC260000010710387C000008A4","valid":true},
+
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3418475371,
+"rssi":-113,"channel_rssi":-113,"snr":-2.2,"channel_index":3,"received_at":"2023-01-20T18:45:19.254687424Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-20T18:45:19.245449066Z","timestamp":3234898947,
+"rssi":-106,"channel_rssi":-106,"snr":0.5,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-20T18:45:19.270178872Z"}],
+
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":3418475371},
+"received_at":"2023-01-20T18:45:19.264136163Z","consumed_airtime":"0.077056s","
+
+version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":
+{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},"received_at":"2023-01-20T19:25:10.452258729Z",
+"uplink_message":{"f_port":2,"f_cnt":197,"frm_payload":"AQwQbgAAAAEGEEwdAAABBxBIcQAALl4=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.11,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":7.5,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":29,"type":"report_telemetry"}],"payload":"010C106E0000000106104C1D0000010710487100002E5E","valid":true},
+"rx_metadata":[{"gateway_ids":
+{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1514476995,
+"rssi":-114,"channel_rssi":-114,"snr":-0.5,"channel_index":1,"received_at":"2023-01-20T19:25:10.240952647Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-20T19:25:10.219712972Z","timestamp":823006875,"rssi":-101,
+"channel_rssi":-101,"snr":7.75,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-20T19:25:10.231308542Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":1514476995},
+"received_at":"2023-01-20T19:25:10.241749884Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+.13 inch
+
+
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-21T18:24:57.294607312Z",
+"uplink_message":{"f_port":2,"f_cnt":220,"frm_payload":"AQwQZAAAAAEGEFgbAAABBxC4bwAA2X0=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.1,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":7,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":28.6,"type":"report_telemetry"}],
+"payload":"010C1064000000010610581B0000010710B86F0000D97D","valid":true},"rx_metadata":
+[{"gateway_ids":
+{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-21T18:24:57.034920930Z","timestamp":3518368924,
+"rssi":-99,"channel_rssi":-99,"snr":6.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-21T18:24:57.046845489Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905100000","timestamp":3518368924,"time":"2023-01-21T18:24:57.034920930Z"},
+"received_at":"2023-01-21T18:24:57.079600881Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":
+"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"
+received_at":"2023-01-21T18:44:58.434495760Z","uplink_message":{"f_port":2,"f_cnt":227,"frm_payload":"AQwQ8AAAAAEGEOQlAAABBxAMewAARRU=",
+"decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":9.7,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.5,"type":"report_telemetry"}],
+"payload":"010C10F0000000010610E42500000107100C7B00004515","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3211688803,"rssi":-115,"channel_rssi":-115,"received_at":"2023-01-21T18:44:58.227946524Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-21T18:44:58.205950021Z","timestamp":424578251,"rssi":-110,"channel_rssi":-110,"snr":-2,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-21T18:44:58.233405216Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"903900000","timestamp":3211688803},
+"received_at":"2023-01-21T18:44:58.229125120Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec",
+"hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+lacina-ranch-2 router
+
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-21T16:44:59.595128547Z",
+"uplink_message":{"f_port":2,"f_cnt":225,"frm_payload":"AQwQ8AAAAAEGEIAlAAABBxAMewAAn2Q=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":9.6,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.5,"type":"report_telemetry"}],"payload":"010C10F0000000010610802500000107100C7B00009F64","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-21T16:44:59.343271017Z","timestamp":307016379,
+"rssi":-101,"channel_rssi":-101,"snr":5,"received_at":"2023-01-21T16:44:59.360386118Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-21T16:44:59.339576005Z","timestamp":1815632747,
+"rssi":-109,"channel_rssi":-109,"snr":-3.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-21T16:44:59.333568917Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904300000","timestamp":307016379,"time":"2023-01-21T16:44:59.343271017Z"},
+"received_at":"2023-01-21T16:44:59.385193281Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec",
+"hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-21T17:24:53.853399011Z","uplink_message":{"f_port":2,"f_cnt":219,"frm_payload":"AQwQZAAAAAEGEJAaAAABBxC4bwAASrI=","decoded_payload":{"err":0,"messages":
+[
+{"measurementId":4108,"measurementValue":0.1,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":6.8,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":28.6,"type":"report_telemetry"}],
+"payload":"010C1064000000010610901A0000010710B86F00004AB2","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":2702078619,
+"rssi":-110,"channel_rssi":-110,"snr":1,"channel_index":1,"received_at":"2023-01-21T17:24:53.637728828Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-21T17:24:53.634264945Z","timestamp":413623947,
+"rssi":-101,"channel_rssi":-101,"snr":8.75,"received_at":"2023-01-21T17:24:53.657763515Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-21T17:24:53.630752086Z","timestamp":4209923339,
+"rssi":-99,"channel_rssi":-99,"snr":7.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-21T17:24:53.662064427Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":2702078619},
+"received_at":"2023-01-21T17:24:53.648084161Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+eto .09 inches
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-22T16:44:52.375513528Z",
+"uplink_message":{"f_port":2,"f_cnt":249,"frm_payload":"AQwQ8AAAAAEGEEgmAAABBxBEegAA8Vo=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.24,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":9.8,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31.3,"type":"report_telemetry"}]
+,"payload":"010C10F000000001061048260000010710447A0000F15A","valid":true},
+"rx_metadata":[{"gateway_ids":
+{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-22T16:44:52.124478101Z","timestamp":288262955,
+"rssi":-108,"channel_rssi":-108,"snr":-6.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-22T16:44:52.118843534Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-22T16:44:52.141777992Z","timestamp":3054577923,
+"rssi":-101,"channel_rssi":-101,"snr":5.5,
+"received_at":"2023-01-22T16:44:52.126760318Z"}],"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":288262955,"time":"2023-01-22T16:44:52.124478101Z"},"received_at":"2023-01-22T16:44:52.164739111Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-22T17:24:35.907529716Z",
+"uplink_message":{"f_port":2,"f_cnt":243,"frm_payload":"AQwQZAAAAAEGELwbAAABBxBgbQAAADY=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.1,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":7.1,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":28,"type":"report_telemetry"}],
+"payload":"010C1064000000010610BC1B0000010710606D00000036","valid":true},
+"rx_metadata":[{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":4158062379,
+"rssi":-114,"channel_rssi":-114,"snr":-2.5,
+"received_at":"2023-01-22T17:24:35.701025920Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-22T17:24:35.680603981Z","timestamp":1143165443,
+"rssi":-95,"channel_rssi":-95,"snr":8.5,"received_at":"2023-01-22T17:24:35.670516544Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-22T17:24:35.693474054Z","timestamp":2671815451,
+"rssi":-100,"channel_rssi":-100,"snr":7.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-22T17:24:35.706542036Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"903900000","timestamp":4158062379},
+"received_at":"2023-01-22T17:24:35.702146804Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+.16 inch ETO
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-23T17:24:32.083584996Z",
+"uplink_message":{"f_port":2,"f_cnt":267,"frm_payload":"AQwQWgAAAAEGEGQZAAABBxBsawAA7VM=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.09,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":6.5,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":27.5,"type":"report_telemetry"}],
+"payload":"010C105A000000010610641900000107106C6B0000ED53","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-23T17:24:31.840573072Z","timestamp":568741435,
+"rssi":-91,"channel_rssi":-91,"snr":9.5,"received_at":"2023-01-23T17:24:31.857632915Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":568741435,"time":"2023-01-23T17:24:31.840573072Z"},
+"received_at":"2023-01-23T17:24:31.872642807Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-23T17:44:34.702730824Z",
+"uplink_message":{"f_port":2,"f_cnt":274,"frm_payload":"AQwQ5gAAAAEGEBwlAAABBxAYeQAANJU=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.23,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":9.5,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":31,"type":"report_telemetry"}],
+"payload":"010C10E60000000106101C250000010710187900003495","valid":true},"
+rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-23T17:44:34.460103988Z","timestamp":1771347500,"rssi":-101,
+"channel_rssi":-101,"snr":6.25,"received_at":"2023-01-23T17:44:34.468566697Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-23T17:44:34.459275960Z","timestamp":3863052636,
+"rssi":-108,"channel_rssi":-108,"snr":-2.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-23T17:44:34.457595452Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905100000","timestamp":1771347500,"time":"2023-01-23T17:44:34.460103988Z"},
+"received_at":"2023-01-23T17:44:34.491504299Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0",
+"firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-24T21:24:07.825130523Z",
+"uplink_message":{"f_port":2,"f_cnt":295,"frm_payload":"AQwQUAAAAAEGEBQeAAABBxAUaQAAZ8U=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.08,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":7.7,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":26.9,"type":"report_telemetry"}],
+"payload":"010C1050000000010610141E00000107101469000067C5","valid":true},
+"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-24T21:24:07.568185091Z","timestamp":3635742548,
+"rssi":-101,"channel_rssi":-101,"snr":6.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-24T21:24:07.602705967Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-24T21:24:07.570080995Z","timestamp":737756236,
+"rssi":-94,"channel_rssi":-94,"snr":9,
+"received_at":"2023-01-24T21:24:07.613954884Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"905300000","timestamp":3635742548,"time":"2023-01-24T21:24:07.568185091Z"},
+"received_at":"2023-01-24T21:24:07.619027176Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-24T21:44:21.329542201Z",
+"uplink_message":{"f_port":2,"f_cnt":302,"frm_payload":"AQwQ5gAAAAEGENgnAAABBxBQeAAAgmU=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.23,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10.2,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":30.8,"type":"report_telemetry"}],
+"payload":"010C10E6000000010610D8270000010710507800008265","valid":true},
+"rx_metadata":[{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":3852004267,
+"rssi":-111,"channel_rssi":-111,"snr":-4.5,
+"channel_index":4,"received_at":"2023-01-24T21:44:21.112007686Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-24T21:44:21.075270891Z","timestamp":554286427,
+"rssi":-107,"channel_rssi":-107,"snr":0.25,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-24T21:44:21.109378030Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-24T21:44:21.081948041Z","timestamp":1951268499,
+"rssi":-99,"channel_rssi":-99,"snr":8.5,"received_at":"2023-01-24T21:44:21.112321097Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904700000","timestamp":3852004267},
+"received_at":"2023-01-24T21:44:21.112763121Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0",
+"firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+.16 inch Eto
+
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-25T18:24:03.624460755Z",
+"uplink_message":{"f_port":2,"f_cnt":316,"frm_payload":"AQwQRgAAAAEGEHgeAAABBxCEZwAAPAI=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.07,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":7.8,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":26.5,"type":"report_telemetry"}]
+,"payload":"010C1046000000010610781E0000010710846700003C02","valid":true},
+"rx_metadata":[{"gateway_ids":
+{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":1898974067,
+"rssi":-112,"channel_rssi":-112,"snr":0.2,"channel_index":1,
+"received_at":"2023-01-25T18:24:03.410402779Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-25T18:24:03.411727905Z","timestamp":1922158019,
+"rssi":-100,"channel_rssi":-100,"snr":6.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-25T18:24:03.271076015Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-25T18:24:03.421158075Z","timestamp":165567979,
+"rssi":-96,"channel_rssi":-96,"snr":8.25,
+"received_at":"2023-01-25T18:24:03.440395349Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904100000","timestamp":1898974067},
+"received_at":"2023-01-25T18:24:03.419675577Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-25T18:44:11.773800005Z",
+"uplink_message":{"f_port":2,"f_cnt":323,"frm_payload":"AQwQ5gAAAAEGEDwoAAABBxDsdwAA8Jc=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.23,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10.3,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":30.7,"type":"report_telemetry"}],"payload":"010C10E60000000106103C280000010710EC770000F097","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-25T18:44:11.520193099Z","timestamp":3130267420,
+"rssi":-107,"channel_rssi":-107,"snr":-0.25,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-25T18:44:11.463531800Z"},{"gateway_ids":
+{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-25T18:44:11.527951955Z","timestamp":1373678468,
+"rssi":-94,"channel_rssi":-94,"snr":8,
+"received_at":"2023-01-25T18:44:11.548129605Z"}]
+,"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"905300000","timestamp":3130267420,"time":"2023-01-25T18:44:11.520193099Z"},"received_at":"2023-01-25T18:44:11.563037067Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+
+{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},
+"received_at":"2023-01-26T15:43:58.094962866Z",
+"uplink_message":{"f_port":2,"f_cnt":344,"frm_payload":"AQwQ3AAAAAEGEAQpAAABBxAkdwAAo18=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.22,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":10.5,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":30.5,"type":"report_telemetry"}
+],"payload":"010C10DC0000000106100429000001071024770000A35F","valid":true},"rx_metadata":[
+{"gateway_ids":{"gateway_id":"eui-00800000a0001ace","eui":"00800000A0001ACE"},"timestamp":2357982219,
+"rssi":-114,"channel_rssi":-114,"snr":-7.5,"channel_index":3,"received_at":"2023-01-26T15:43:57.880357315Z"},
+{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-26T15:43:57.865542888Z","timestamp":2970957107,
+"rssi":-99,"channel_rssi":-99,"snr":7.75,
+"received_at":"2023-01-26T15:43:57.869794953Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-26T15:43:57.878380060Z","timestamp":409928811,
+"rssi":-107,"channel_rssi":-107,"snr":0.75,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-01-26T15:43:57.887640338Z"}],"
+settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"904500000","timestamp":2357982219},
+"received_at":"2023-01-26T15:43:57.883427570Z","consumed_airtime":"0.077056s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec",
+"hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+{"result":{"end_device_ids":{"device_id":"lacima1a","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C043500646","dev_addr":"260C8CA4"},
+"received_at":"2023-01-26T16:23:44.799965449Z",
+"uplink_message":{"f_port":2,"f_cnt":338,"frm_payload":"AQwQRgAAAAEGEEAfAAABBxD0ZQAAg+4=","decoded_payload":{"err":0,"messages":[
+{"measurementId":4108,"measurementValue":0.07,"type":"report_telemetry"},
+{"measurementId":4102,"measurementValue":8,"type":"report_telemetry"},
+{"measurementId":4103,"measurementValue":26.1,"type":"report_telemetry"}],
+"payload":"010C1046000000010610401F0000010710F465000083EE","valid":true},
+"rx_metadata":[{"gateway_ids":
+{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-01-26T16:23:44.551584959Z","timestamp":1062677452,
+"rssi":-95,"channel_rssi":-95,"snr":9.75,
+"received_at":"2023-01-26T16:23:44.572615660Z"},
+{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-01-26T16:23:44.561320066Z","timestamp":2796614204,"rssi":-101,"
+channel_rssi":-101,"snr":6.25,
+"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},
+"received_at":"2023-01-26T16:23:44.574089617Z"}],
+"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},
+"frequency":"905300000","timestamp":1062677452,"time":"2023-01-26T16:23:44.551584959Z"},
+"received_at":"2023-01-26T16:23:44.588026128Z","consumed_airtime":"0.077056s",
+"version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},
+"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}}
+
+
+

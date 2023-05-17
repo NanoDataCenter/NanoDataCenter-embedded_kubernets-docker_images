@@ -1,0 +1,28 @@
+Soil Water Holding Characteristics
+Understanding Soil Water Holding Characteristicsz
+
+Pdf version
+The table below shows the plant-available water held by different textured soils when they are fully wet. Plant-available water is the amount of water stored in the soil that plants can take up.  Technically, it is the difference in soil water content held between field capacity and the permanent wilting point.  Since some water is held so tightly by the soil that plants cannot take it up, available water content is less than the total amount of water held in soil.
+ 
+Deciding when to irrigate should be based largely on soil moisture depletion by plants.  Plants withdraw soil moisture to meet their evapotranspiration (ET) demands based on weather conditions and plant physiological traits. The ET rate modified by a Plant Factor (PF) or crop coefficient (Kc) determines how much and how fast water is taken up from the soil by plants. It becomes more and more difficult for plants to withdraw water as the soil becomes drier, until the plants can no longer withdraw soil moisture and then they die (permanent wilting point is reached). For most plants, water must be added to the soil before it dries to this point in order for plants to perform well.
+ 
+Soils that can store larger amounts of plant-available water do not need to be irrigated as frequently as soils that store smaller amounts. In general, sandier (light textured) soils need to be irrigated more frequently than soils with a greater clay content (heavier textured).  A given plant will use water at the same rate regardless of soil texture, but it will run out of water sooner in a sandier textured soil.
+Plant-available water holding capacities of various textured soil.
+ 
+ 
+Soil Texture
+Plant-Available Water Holding Capacity (inches of water
+per foot of soil)
+Very coarse sands
+0.4 - 0.75
+Coarse sands, fine sands, loamy sands
+0.75 - 1.25
+Sandy loams, fine sandy loams
+1.25 - 1.75
+Very fine sandy loams, loams, silt loams
+1.50 - 2.30
+Clay loams, silty clay loams, sandy clay loams
+1.75 - 2.50
+Sandy clays, silty clays, clays
+1.60 - 2.50
+ 

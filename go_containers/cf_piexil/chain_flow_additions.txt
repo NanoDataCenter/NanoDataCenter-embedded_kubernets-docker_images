@@ -1,0 +1,76 @@
+This document addresses the changes that are needed to incorporate plexil features.
+
+Primitives are referenced by opcodes
+Primitives are loadable from an API
+Primitives have distinct classes
+   Chain Flow Primitives
+   Boolean Primitives
+   Return a list of chains
+
+Column Definition 
+   Add in disable function
+
+Add in concept of Super Column
+   Must be defined first before any chains
+   Can be enabled and disabled
+   Has an optional disable function
+   When disabled all columns attached are disabled
+   Keeps track of local columns
+   
+Add Events to the system
+
+
+
+
+Primitives from PIEXIL
+
+Spawn
+Wait
+Spawn-Wait
+Unchecked Sequence
+Checked Sequence
+Try
+
+IF_THEN_ESLE_ELSEIF
+While
+Do While
+For
+
+
+
+
+
+ Concurrent -- Node has a list of subnodes.  All sub nodes are spawned for execution.  Node ends execution when all the sub nodes terminate
+2. Unchecked Sequence -- Node has a list of sub nodes.  Each subnodes are run in order with no checking for execution
+3. Checked Sequence  -- Similar to 2 except if an error in a subnode will result in stoping sequence processes.
+4. Try -- Node has a list of sub nodes.  Each subnodes are run in order till a node succeeds.  Execution stops when a subnode succeeds  
+5. IF_THEN_ESLE_ELSEIF is a logic statement with each succeeding branch having a list of nodes to run
+6. While and DO_WHILE  a node to test loop termination and a node for execution
+7. For similar for c type for
+
+
+func (system *CF_SYSTEM_TYPE) cf_initialize_opcodes(){
+  (system).op_code_map = make(map[string] CF_Function_type)
+  (system).add_opcode("Log",cf_op_log_message)
+  (system).add_opcode("Reset", cf_op_reset )
+  (system).add_opcode("Terminate", cf_op_termination )
+  (system).add_opcode("Wait_Interval", cf_op_wait_interval)
+  (system).add_opcode("One_Step", cf_op_one_step)
+  (system).add_opcode("Enable_Chains",cf_op_enable_chains)
+  (system).add_opcode("Disable_Chains",cf_op_disable_chains) 
+  (system).add_opcode("Unfiltered_Element",cf_op_unfiltered_element)
+  (system).add_opcode("Wait_hour_minute_le",cf_wait_hour_minute_le)
+  (system).add_opcode("Wait_hour_minute_ge",cf_wait_hour_minute_ge)
+
+}
+
+func (system *CF_SYSTEM_TYPE) add_opcode( op_code string, function CF_Function_type){
+
+  _ , err := (system).op_code_map[op_code]
+  if err == true {
+    panic("duplicate_opcode")
+  }
+  (system).op_code_map[op_code] = function
+
+
+}

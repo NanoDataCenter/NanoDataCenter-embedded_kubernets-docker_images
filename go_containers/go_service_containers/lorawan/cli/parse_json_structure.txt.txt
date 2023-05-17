@@ -1,0 +1,129 @@
+package main
+
+import (
+	"encoding/json"
+	"time"
+)
+
+type Payload struct {
+	Result Result `json:"result"`
+}
+
+type Result struct {
+	EndDeviceIDs   EndDeviceIDs     `json:"end_device_ids"`
+	ReceivedAt     time.Time        `json:"received_at"`
+	UplinkMessage  UplinkMessage    `json:"uplink_message"`
+	RxMetadata     []RxMetadata     `json:"rx_metadata"`
+	Settings       Settings         `json:"settings"`
+	ConsumedAirtime string          `json:"consumed_airtime"`
+	VersionIDs     VersionIDs       `json:"version_ids"`
+	NetworkIDs     NetworkIDs       `json:"network_ids"`
+}
+
+type EndDeviceIDs struct {
+	DeviceID       string         `json:"device_id"`
+	ApplicationIDs ApplicationIDs `json:"application_ids"`
+	DevEUI         string         `json:"dev_eui"`
+	DevAddr        string         `json:"dev_addr"`
+}
+
+type ApplicationIDs struct {
+	ApplicationID string `json:"application_id"`
+}
+
+type UplinkMessage struct {
+	FPort          int             `json:"f_port"`
+	FCnt           int             `json:"f_cnt"`
+	FRMPayload     string          `json:"frm_payload"`
+	DecodedPayload DecodedPayload  `json:"decoded_payload"`
+}
+
+type DecodedPayload struct {
+	Err       int         `json:"err"`
+	Messages  []Message   `json:"messages"`
+	Payload   string      `json:"payload"`
+	Valid     bool        `json:"valid"`
+}
+
+type Message struct {
+	MeasurementID    int     `json:"measurementId"`
+	MeasurementValue float64 `json:"measurementValue"`
+	Type             string  `json:"type"`
+}
+
+type RxMetadata struct {
+	GatewayIDs  GatewayIDs `json:"gateway_ids"`
+	Time        time.Time  `json:"time"`
+	Timestamp   uint64     `json:"timestamp"`
+	RSSI        int        `json:"rssi"`
+	ChannelRSSI int        `json:"channel_rssi"`
+	SNR         float64    `json:"snr"`
+	ReceivedAt  time.Time  `json:"received_at"`
+	Location    *Location  `json:"location,omitempty"`
+}
+
+type GatewayIDs struct {
+	GatewayID string `json:"gateway_id"`
+	EUI       string `json:"eui"`
+}
+
+type Location struct {
+	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Altitude  int     `json:"altitude"`
+	Source    string  `json:"source"`
+}
+
+type Settings struct {
+	DataRate SettingsDataRate `json:"data_rate"`
+	Frequency string          `json:"frequency"`
+	Timestamp uint64          `json:"timestamp"`
+	Time      time.Time       `json:"time"`
+}
+
+type SettingsDataRate struct {
+	LoRa LoRa `json:"lora"`
+}
+
+type LoRa struct {
+	Bandwidth      int    `json:"bandwidth"`
+	SpreadingFactor int    `json:"spreading_factor"`
+	CodingRate     string `json:"coding_rate"`
+}
+
+type VersionIDs struct {
+	BrandID        string `json:"brand_id"`
+	ModelID        string `json:"model_id"`
+	HardwareVersion string `json:"hardware_version"`
+	FirmwareVersion string `json:"firmware_version"`
+	BandID         string `json:"band_id"`
+}
+
+type NetworkIDs struct {
+	NetID          string `json:"net_id"`
+	TenantID       string `json:"tenant_id"`
+	ClusterID      string `json:"cluster_id"`
+	ClusterAddress string `json:"cluster_address"`
+}
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+const jsonString = `{"result":{"end_device_ids":{"device_id":"lacamia1b","application_ids":{"application_id":"seeedec"},"dev_eui":"2CF7F1C0435006A5","dev_addr":"260C290F"},"received_at":"2023-03-24T17:31:15.151531934Z","uplink_message":{"f_port":2,"f_cnt":1714,"frm_payload":"AQwQmgEAAAEGEOQlAAABBxCAogAAkY0=","decoded_payload":{"err":0,"messages":[{"measurementId":4108,"measurementValue":0.41,"type":"report_telemetry"},{"measurementId":4102,"measurementValue":9.7,"type":"report_telemetry"},{"measurementId":4103,"measurementValue":41.6,"type":"report_telemetry"}],"payload":"010C109A010000010610E425000001071080A20000918D","valid":true},"rx_metadata":[{"gateway_ids":{"gateway_id":"lacina-ranch-2","eui":"58A0CBFFFE803EA7"},"time":"2023-03-24T17:31:14.897768974Z","timestamp":4087311364,"rssi":-103,"channel_rssi":-103,"snr":6,"received_at":"2023-03-24T17:31:14.923421335Z"},{"gateway_ids":{"gateway_id":"lacima-ranch-1","eui":"58A0CBFFFE803E79"},"time":"2023-03-24T17:31:14.895203113Z","timestamp":3935355644,"rssi":-105,"channel_rssi":-105,"snr":2.75,"location":{"latitude":33.57851455733027,"longitude":-117.29939270420267,"altitude":731,"source":"SOURCE_REGISTRY"},"received_at":"2023-03-24T17:31:14.912169137Z"}],"settings":{"data_rate":{"lora":{"bandwidth":125000,"spreading_factor":7,"coding_rate":"4/5"}},"frequency":"905300000","timestamp":4087311364,"time":"2023-03-24T17:31:14.897768974Z"},"received_at":"2023-03-24T17:31:14.940471207Z","consumed_airtime":"0.082176s","version_ids":{"brand_id":"sensecap","model_id":"sensecaps2105-soll-moisture-temp-ec","hardware_version":"1.0","firmware_version":"1.0","band_id":"US_902_928"},"network_ids":{"net_id":"000013","tenant_id":"ttn","cluster_id":"nam1","cluster_address":"nam1.cloud.thethings.network"}}}`
+
+func main() {
+	var payload Payload
+
+	err := json.Unmarshal([]byte(jsonString), &payload)
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Parsed JSON: %+v\n", payload)
+}
+

@@ -1,0 +1,73 @@
+Soil moisture sensors for irrigation scheduling
+Home
+ Crop production
+ Soil and water
+ Irrigation
+ Soil moisture sensors for irrigation scheduling
+Efficient irrigation management can improve yields, grain quality, conserve water and energy, and reduce nutrient leaching. One of the easiest and most effective ways to improve irrigation efficiency is to implement soil sensor technology in irrigation scheduling. This article provides basic knowledge and practical recommendations for using soil moisture sensors for irrigation scheduling.
+
+Types of soil moisture sensors
+Soil moisture sensors are divided into two categories depending on the technology they use: 1) Sensors that measure volumetric water content and 2) Sensors that measure soil tension when placed in the soil profile. Lists of the most common sensors available in each category and their pros, cons and costs are below.
+
+Open all  |  Close all
+ Pros, cons and costs of volumetric water content sensors
+ Pros, cons and costs of soil water tension sensors
+Soil moisture sensors measure or estimate the amount of water in the soil. These sensors can be stationary or portables such as handheld probes. Stationary sensors are placed at the predetermined locations and depths in the field, whereas portable soil moisture probes can measure soil moisture at several locations.
+
+A better understanding of the basic principles, definitions, and terms behind the soil-water-plant relationship is essential to effectively utilize soil moisture sensors. For more information, see Basics of irrigation scheduling.
+
+Volumetric water content (VWC) soil moisture sensors
+Volumetric water content is the volume of liquid water per volume of soil. It is usually expressed as a percentage. For example, 25% volumetric water content (VWC) means 0.25 cubic inch of water per cubic inch of soil.
+
+When compared with the maximum amount of water that the soil can hold or field capacity, volumetric water content (VWC) measurements can be used to measure soil water deficit for irrigation scheduling:
+
+Soil water depletion/deficit (inches) = soil water content at field capacity (inches) - current soil water content (inches)
+
+Note: %Soil water content measurements must be multiplied by the depth of the root zone to give total water in that soil depth. For example:
+
+If a 12-inch soil profile has a VWC of 9%, then
+Total water in a 12-inch profile = 0.09 x 12 inches = 1.08 inches water
+If field capacity is 18%, then
+Soil water depletion/deficit = (0.18 x 12 inches) - 1.08 inches = 1.08 inches
+Soil water deficits and crop stress
+For irrigation scheduling, it's important to understand the soil water content at which a crop begins to experience stress. In general, most crops begin to experience stress when soil water depletion/deficit is 30-50% of available water holding capacity (AWC). This is called management allowable depletion (MAD) or irrigation trigger point.
+
+MAD can vary depending upon crop, growth stage and an irrigation system’s pumping capacity. For more information, see MAD strategies by growth stage/season. Irrigation should be triggered when the % soil water depletion is equal or close to the % MAD.
+
+Volumetric water content (VWC) can be used to calculate %soil water depletion using the following formula:
+%Depletion = (1- (
+soil water depletion formula
+Where PWP is permanent wilting point and FC is field capacity.
+
+Field capacity can be measured very easily in the field using soil moisture sensors. The VWC measurements provided by the soil moisture sensor after 12-24 hours of heavy irrigation or rain is the field capacity of the soil.
+
+Get a detailed look at your field’s FC, PWP and AWC at NRCS' Web Soil Survey. The example calculations for measuring soil water deficit for irrigation scheduling using volumetric soil moisture sensors are given at the end this publication.
+
+The most common soil water content or volumetric water content sensors follow:
+
+Open all  |  Close all
+ Electromagnetic sensors
+ Time domain reflectometry (TDR) sensors
+ Neutron probe
+Soil water tension or matric potential sensors
+Soil water tension indicates the energy required by plant roots to extract water from soil particles. As soil water is removed from soil, soil tension increases. Soil tension is expressed in centibars (cb) or bars of atmospheric pressure. When the soil is full of water, soil water tension is close to zero. For coarse textured soils, AWC is 50% depleted when soil tension is at 25-45 cb. In these soils, a crop should be irrigated before the sensor indicates 25-45 cb.
+
+However, soil tension measurements are soil specific and can be inaccurate.Depending on your crop and soil observations, soil tension limits should be refined. For example, note the soil tension at the earliest indication of water stress and always make sure that you irrigate before it reaches that point.
+
+You can also track your water movement by taking measurement right after an irrigation event. If your bottom sensor after irrigation indicates zero reading that means you might have irrigated more than required, but if it shows no movement that means you irrigated less.
+
+Charts like Table 1 can also be used to convert the tension readings from sensors to soil water deficit values. Then these soil water deficit values can be used for irrigation scheduling as shown in example calculations at the end of this article.
+
+The most common soil tension sensors follow:
+
+Open all  |  Close all
+ Tensiometers
+ Electrical resistance sensors
+Table 1. Soil water deficits in inches per foot of soil for various soil tensions (cb).
+Soil type	10 cb	30 cb	50 cb	70 cb	100 cb	200 cb	1500* cb
+Coarse sands	0 in/ft	0.1 in/ft	0.2 in/ft	0.3 in/ft	0.4 in/ft	0.6 in/ft	0.7 in/ft
+Fine sands	0 in/ft	0.3 in/ft	0.4 in/ft	0.6 in/ft	0.7 in/ft	0.9 in/ft	1.1 in/ft
+Loamy sands	0 in/ft	0.4 in/ft	0.5 in/ft	0.8 in/ft	0.9 in/ft	1.1 in/ft	1.4 in/ft
+Sandy loams	0 in/ft	0.5 in/ft	0.7 in/ft	0.9 in/ft	1.0 in/ft	1.3 in/ft	1.7 in/ft
+Loams	0 in/ft	0.2 in/ft	0.5 in/ft	0.8 in/ft	1.0 in/ft	1.6 in/ft	2.4 in/ft
+*Soil deficit at 1500 Cbs is equal to total available soil water capacit

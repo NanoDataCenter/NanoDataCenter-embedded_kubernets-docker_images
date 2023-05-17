@@ -1,0 +1,39 @@
+
+PIEXIL is an XML FORMAT
+
+XML tree format of nodes
+
+Basic Nodes are simply nodes  
+
+Extended Nodes are the working nodes which compile to basic nodes.
+
+There are 8 extended nodes
+
+1. Concurrent -- Node has a list of subnodes.  All sub nodes are spawned for execution.  Node ends execution when all the sub nodes terminate
+2. Unchecked Sequence -- Node has a list of sub nodes.  Each subnodes are run in order with no checking for execution
+3. Checked Sequence  -- Similar to 2 except if an error in a subnode will result in stoping sequence processes.
+4. Try -- Node has a list of sub nodes.  Each subnodes are run in order till a node succeeds.  Execution stops when a subnode succeeds  
+5. IF_THEN_ESLE_ELSEIF is a logic statement with each succeeding branch having a list of nodes to run
+6. While and DO_WHILE  a node to test loop termination and a node for execution
+7. For similar for c type for
+
+--- communication with external systems
+8  On_message
+9. On Command
+10. Synchrounos 
+
+11. Wait -- time delay
+
+
+A node has 8 conditions
+1. Start Condition
+2. End condition
+3. Repeat Condition
+4. Skip Condition
+
+Failure Conditions
+
+5. Preconditons
+6. Post Conditions
+7. Invariant Conditons  -- condition is checked while node is executing.
+8. Exit Conditions

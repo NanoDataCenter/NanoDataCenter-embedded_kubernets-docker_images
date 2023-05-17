@@ -1,0 +1,208 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"regexp"
+)
+
+func main() {
+	largeString := `{"key": "value", "received_at": "2023-04-01T19:29:21.078765574Z", ...}`
+
+	receivedAtPattern := `,"received_at":"([^"]+)",`
+	re := regexp.MustCompile(receivedAtPattern)
+
+	matches := re.FindStringSubmatch(largeString)
+
+	if len(matches) > 1 {
+		receivedAt := matches[1]
+		fmt.Printf("Received at: %s\n", receivedAt)
+	} else {
+		log.Println("The 'received_at' substring was not found.")
+	}
+}
+
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func main() {
+	timeStr := "2023-04-01T19:29:21.078765574Z"
+
+	// The layout string that represents the reference time, defined as Mon Jan 2 15:04:05 -0700 MST 2006
+	layout := "2006-01-02T15:04:05.999999999Z"
+
+	// Parse the time string using the layout
+	parsedTime, err := time.Parse(layout, timeStr)
+	if err != nil {
+		fmt.Printf("Error parsing time string: %v\n", err)
+		return
+	}
+
+	// Convert the parsed time to epoch seconds
+	epochSeconds := parsedTime.Unix()
+	fmt.Printf("Epoch seconds: %d\n", epochSeconds)
+}
+
+
+package main
+
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
+
+func extractBalanced(s, prefix, openEntity, closeEntity string) (string, error) {
+	prefixIndex := strings.Index(s, prefix)
+	if prefixIndex == -1 {
+		return "", errors.New("prefix not found")
+	}
+
+	startIndex := -1
+	endIndex := -1
+	balance := 0
+
+	for i := prefixIndex + len(prefix); i < len(s); i++ {
+		c := s[i : i+1]
+
+		if c == openEntity {
+			if startIndex == -1 {
+				startIndex = i
+			}
+			balance++
+		} else if c == closeEntity {
+			balance--
+			if balance == 0 && startIndex != -1 {
+				endIndex = i
+				break
+			}
+		}
+	}
+
+	if startIndex != -1 && endIndex != -1 {
+		return s[startIndex+1 : endIndex], nil
+	}
+
+	return "", errors.New("no balanced substring found")
+}
+
+func main() {
+	largeString := "xxxx:{ { { {  }}} some other text"
+
+	substr, err := extractBalanced(largeString, "xxxx:", "{", "}")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Printf("Balanced substring content: %s\n", substr)
+}
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func splitAndTrim(s string) []string {
+	// Split the input string by comma
+	parts := strings.Split(s, ",")
+
+	// Initialize an empty slice to store the trimmed substrings
+	trimmed := make([]string, len(parts))
+
+	// Iterate over the parts, trim the whitespace, and append to the trimmed slice
+	for i, part := range parts {
+		trimmed[i] = strings.TrimSpace(part)
+	}
+
+	return trimmed
+}
+
+func main() {
+	input := "apple, banana , orange, pineapple , grape"
+	result := splitAndTrim(input)
+
+	fmt.Printf("Trimmed substrings: %v\n", result)
+}
+
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func splitKeyValue(s string) (string, string, error) {
+	// Split the input string by colon
+	parts := strings.SplitN(s, ":", 2)
+
+	if len(parts) != 2 {
+		return "", "", fmt.Errorf("invalid input string format")
+	}
+
+	// Trim the whitespace around the key and value substrings
+	key := strings.TrimSpace(parts[0])
+	value := strings.TrimSpace(parts[1])
+
+	return key, value, nil
+}
+
+func main() {
+	input := `"xxxx" : value`
+	key, value, err := splitKeyValue(input)
+
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Key: %s\nValue: %s\n", key, value)
+}
+
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func splitKeyValue(s string) (string, string, error) {
+	// Count the number of colons in the input string
+	colonCount := strings.Count(s, ":")
+
+	if colonCount >= 2 {
+		return "", "", fmt.Errorf("invalid input string format: more than one colon found")
+	}
+
+	// Split the input string by colon
+	parts := strings.SplitN(s, ":", 2)
+
+	if len(parts) != 2 {
+		return "", "", fmt.Errorf("invalid input string format: no colon found")
+	}
+
+	// Trim the whitespace around the key and value substrings
+	key := strings.TrimSpace(parts[0])
+	value := strings.TrimSpace(parts[1])
+
+	return key, value, nil
+}
+
+func main() {
+	input := `"xxxx" : value : extra`
+	key, value, err := splitKeyValue(input)
+
+	if err != nil {
+		fmt.Printf("Error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("Key: %s\nValue: %s\n", key, value)
+}
+
+
